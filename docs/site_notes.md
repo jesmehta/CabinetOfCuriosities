@@ -149,6 +149,8 @@ Other resources and things to look into later :
 
 ---
 
-Files
-[deploy.yml](files/deploy.yml.txt)
-[requirements.txt](files/requirements.txt)
+Files  
+[deploy.yml](files/deploy.yml.txt)  
+[requirements.txt](files/requirements.txt)  
+
+---
