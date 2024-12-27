@@ -301,6 +301,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Notes on this site
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -310,6 +321,67 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#new-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Environments
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gitlab-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitLab pages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub pages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -343,6 +415,56 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#new-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Environments
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gitlab-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitLab pages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub pages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -357,10 +479,129 @@
 
 
 <div><h1 id="creating-this-site">Creating this site</h1>
-<p>issues
-process
-workflow
-blank template</p></div>
+<p>This site came about at a funky point in time for me, in a lot of ways.</p>
+<p>Tech-wise, I have had to get a new laptop since the previous one died, and that means I need to setup all my coding IDEs and other such all over again. I used to use Atom, which is being archived, so I am finally switching over to VSCode. VSCode, I am sure, is very full-featured; but it can get a little complicated until you get used to it, so I had avoided it for the past few years.</p>
+<p>Anyway, here's the list of things - notes for me - to do whenever I need to setup a new machine</p>
+<h2 id="new-environments">New Environments</h2>
+<ul>
+<li>
+<p><a href="https://www.python.org/downloads/">Install Python</a><br>
+ Make sure to check off adding it to the Environment Variables</p>
+</li>
+<li>
+<p><a href="https://git-scm.com/downloads">Install Git</a>  </p>
+</li>
+<li>
+<p><a href="https://code.visualstudio.com/download">Install VSCode</a></p>
+</li>
+<li>
+<p>VSCode Extensions</p>
+<ul>
+<li>Live Server (Ritwick Dey)<br>
+    For serving pages, especially my p5/javascript work  </li>
+<li>Prettier (Prettier)<br>
+    Code syntax prettification, not sure what exactly it is doing, but it has been only 2 hours so far</li>
+<li>File Utils (Steffen Leistner)<br>
+    More than the default options on copying, duplicating, path copy, etc</li>
+<li>Duplicate Action (mrmlnc)<br>
+    Specifically duplicating files</li>
+<li>Github pull requests (Github)<br>
+    Manage GitHub syncs, but this I haven't managed to get to work, so it's back to my previous workflow using GitHub Desktop  </li>
+<li>Add keybindings to the duplicate file command to get yourself a keyboard shortcut as well, since this was a command I used frequently in Atom.  </li>
+</ul>
+</li>
+<li>
+<p>Install MKDocs, the <a href="https://squidfunk.github.io/mkdocs-material/getting-started/">Material theme</a>, etc  </p>
+<ul>
+<li><code>pip install mkdocs</code></li>
+<li><code>pip install mkdocs-material</code></li>
+<li><code>pip install mkdocs-video</code></li>
+</ul>
+<p>Use <code>pip list</code> to see installed packages and add whatever is missing.<br>
+Use <code>pip list -&gt; requirements.txt</code> to generate the requirments.txt file of all currently installed packages </p>
+</li>
+<li>
+<p><a href="https://desktop.github.com/download/">Install GitHub Desktop</a></p>
+</li>
+</ul>
+<h2 id="workflows">Workflows</h2>
+<p>I have not been able to get VSCode to work with GitHub (not that I tried too hard) but I do find my previous workflow convenient, and it provides a good separation, if an airgap is what one needs between the working files and the deployed files. If you are looking for seamless integration, feel free to make it work. I find it safer to work on the files offline, test them using <code>mkdocs serve</code>, and only then sync them to github pages to be deployed.  </p>
+<h3 id="gitlab-pages">GitLab pages</h3>
+<p>GitLab workflow from Fab times
+- MKDocs, GitGui, GitLab
+- Work on the MD files offline in working copy, Folder A
+- Preview and check this using <code>mkdocs serve</code>
+- Use WinMerge to overwrite and sync working folder with synced Folder B
+- Sync using GitGUI (while I am a fan of CLI for certain things, I prefer my GIT with a GUI)
+- The GitLab pipeline then deploys the MD pages to a static HTML site</p>
+<p>Thus, there are 3 copies of the webpages at any given time.<br>
+1. Working copy - folder A<br>
+2. Synced clean copy - folder B<br>
+3. Online copy - deployed on Gitlab and rendered as HTML  </p>
+<p>I developed this slightly elongated workflow in the early days of doing the FabAcademy course since I was frequently messing up the files, uploads, YMLs, etc floundering about on my own, and I wanted a rather absolute degree of separation that did not involve messing around with version control. Yes, the irony of manual versions and separate editions WHILE using a version control system has not gone unnoticed, but honestly, I am using GitLab/GitHub as much or more to serve a website as to manage versioning.</p>
+<p>This is all the more useful when you screw up the GitLab uploads and things get stuck between the online and the offline. This may happen due to errors in the pipeline or yml files, or simply that upload sizes exceed the 10 MB fabAcademy limit. Instead of reversing the push and messing around in there, it is far simpler, atleast for a newbie, to <br>
+    - clone a new copy pulled down from the web version, (folder B.2, for eg)<br>
+    - repeat WinMerge to update it with the latest changes, (folder A -&gt; folder B.2)<br>
+    - manage the issue that had happened, and <br>
+    - push this to the repo for deployment (B.2 -&gt; Gitlab)  </p>
+<p>B.1, the original clean version whose push threw the error, gets abandoned and evetually deleted.<br>
+This works very well for sites and pages that aren't too large and can be quickly downloaded.</p>
+<p>The same process can be followed if you have had to use the Web IDE to edit files for any reason and now your web version is ahead of the desktop version, or that you have two separate sets of changes, one in the web version and one in the desktop. WinMerge to the rescue.</p>
+<p>I am sure git,  github, and gitlab have several relevant tools to update, merge and sync different commits across branches, and I would love to get deeper into this, but at the moment, this is quick and dirty but very effective, especially with the right apps in your workflow.</p>
+<h3 id="github-pages">GitHub pages</h3>
+<p>The above workflow works, so I wanted to replicate it with GitHub for this set of pages.
+I had mucked around trying to figure GitHub actions and suchlike at some point last year. But things weren't quite working. </p>
+<p>I found templates on the Materials for MKDocs pages as well, but they were repo templates, and would still need some sort of actions.</p>
+<p>Most basic searches and readings told me to use <code>mkdocs build</code> and push or <code>mkdocs deploy</code>, but those will only push static HTML that is already rendered by MKDocs, not the MD files. </p>
+<p>I found some reference to generating a <code>gh-pages</code> branch which would contain the html and a main branch to contain the MD, but no info on Actions or Pipelines that was easily understandable.</p>
+<p>I then had a long-winded conversation with ChatGPT. I explained my GitLab workflow, uploaded my gitlab-ci.yml and requirements.txt files, and got an explanation of how that setup worked, and what was the closest option in GitHub, etc.</p>
+<p>To cut a long story short,<br>
+and you can find the conversation <a href="https://chatgpt.com/share/676e7582-c400-8004-b849-48bf3045e69c">here</a>  </p>
+<ul>
+<li>GitHub does not have the exact same process as GitLabs. In GitLabs, you see only the MD and none of the HTML files in the repo. However, in GitHub, you will see both. As I had seen earlier, there will be a <code>main</code> branch and a <code>gh-pages</code> branch, and one can be edited using MKDocs while the other is deployed to github pages.</li>
+<li>However, you can, infact specify Actions to generate HTML pages whenever the MD pages are updated</li>
+<li>GPT also gave me the deploy.yml and requirements.txt files to add to the repo</li>
+</ul>
+<p>This is what the repo should look like</p>
+<pre><code>my-mkdocs-site/
+├── docs/
+│   ├── index.md
+│   ├── about.md
+│   └── guide.md
+├── mkdocs.yml
+├── requirements.txt
+└── .github/
+    └── workflows/
+        └── deploy.yml
+</code></pre>
+<p>After doing all of this, and also making sure the offline version served correctly using <code>mkdocs serve</code>, I pushed the new repo.
+Ofcourse it threw an error.</p>
+<p>No <code>gh-pages</code> branch was generated to be able to be deployed as the source branch of the GitHub page. The Action page showed where the error was. More conversation with ChatGPT later, the solution :</p>
+<pre><code>- Go to Settings &gt; Actions &gt; General in your repository.
+- Under Workflow permissions, ensure Read and write permissions are enabled.
+- Save the changes and re-run the workflow.
+</code></pre>
+<p>This worked ! The Action ran successfully.</p>
+<p>From the GitHub pages' <code>Settings &gt; Pages</code>, I selected the gh-pages as the branch to deploy, and voila, the site appeared on the interwebs.<br>
+After some cloning down, edits, and pushing back up, changes did trigger the action and the page got updated. </p>
+<p>It finally worked.  </p>
+<p>It's been a day. Phew.  </p>
+<hr>
+<p>Had this not worked, I still had some plans up my sleeve.</p>
+<p>Any existing public repo that used MKDocs to create pages could be cloned and stripped of the content but keeping the structure and actions (like what I did initially for the GitLab workflow.) All that would remain would be to find such sites.</p>
+<p>Option 1 : I was already part of the <a href="https://github.com/make4animals/make4animals.github.io/">Make4Animals repo</a>, and Salman Faris had very graciously created the site for Nanditha and the rest of the group to use as the primary M4A website. Cloning that was next on my agenda if nothing else worked.</p>
+<p>Option 2 : I did a quick google search : <code>site: github.io "Made with Material for MkDocs"</code> to turn up results that I could use to get to a working repo to clone. <a href="https://vra.github.io/mkdocs-material-example/">This one</a> was a promising barebones page to work with.</p>
+<p>I might just put up a barebones clone of this repo as well, to start off new pages in the future, and help anyone else stuck like me.</p>
+<p>I again suspect that, if the correct learning and process is followed, there is very likely an existing action to choose from on GitHub that can be directly applied to your repo. A solution so obvious that there isn't any reason to document a manual process to achive the same result. However, I have this now. Maybe in the upcomin months, I'll check with some Fab alums to figure it out.</p>
+<hr>
+<p>Other resources and things to look into later :<br>
+<a href="https://squidfunk.github.io/mkdocs-material/creating-your-site/">Material - Creating your site</a><br>
+<a href="https://squidfunk.github.io/mkdocs-material/setup/setting-up-social-cards/">Material - Social Cards</a><br>
+<a href="https://squidfunk.github.io/mkdocs-material/setup/setting-up-a-blog/">Material - Blog</a>  </p>
+<hr>
+<p>Files
+<a href="../files/deploy.yml.txt">deploy.yml</a>
+<a href="../files/requirements.txt">requirements.txt</a></p></div>
 
 
 
