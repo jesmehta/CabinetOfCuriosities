@@ -32,6 +32,7 @@ Anyway, here's the list of things - notes for me - to do whenever I need to setu
     - `pip install mkdocs`
     - `pip install mkdocs-material `
     - `pip install mkdocs-video`
+    - `pip install markdown-captions`
 
     Use `pip list` to see installed packages and add whatever is missing.  
     Use `pip list -> requirements.txt` to generate the requirments.txt file of all currently installed packages 
