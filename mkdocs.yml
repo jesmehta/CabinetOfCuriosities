@@ -10,7 +10,9 @@ nav:
     - MiniLoom : mini_loom.md
     - Makings : makings.md
     - Creative Coding : creative_code.md
+    - Twine : emergent_twine.md
     - Notes on this site : site_notes.md
+
   
 extra:
   # Set your own social media below (or remove)
@@ -37,6 +39,8 @@ theme:
   features:
     # - navigation.tabs
     # - navigation.instant
+    - navigation.expand
+    # - navigation.sections
 
 markdown_extensions:
   - extra
