@@ -1,15 +1,15 @@
 # MiniLoom
+Looms are used to weave fabric, but stories are woven as well. Fabrications, literally. And much can be woven into the weave - some  colour, names, a hair from a friend, or cotton tufts picked off thorn bushes in the warm dusty evening, snagged there by the wind when the Bombax blooms have turned to pods and exploded in the summer heat. This story though is woven of strands of experiences from around the world - Mumbai, Bhujodi, Lima and Thimpu.
 
 ## Weaving
 I have always been weaving things, since I was a kid. I remeber newspaper strips turned into hats and baskets, and coloured paper strips creating checkerboard patterns. With string as well, I weave, but string lends itself to knotwork as well, which I do a lot of as well. And I should write about these at length sometime.
-
 
 ## Kutch
 In February 2023, we went to Kutch for a week-long field trip to Somaiya Kala Vidya, for a series of workshops conducted by their alumni artisans. This was my first trip to Kutch, and what an deep dive it was. And I should write about it at length at some point.
 
 We centred around Bhuj, beside the iconic Prag Mahal, and visited SKV at Anjar, also home of my fabled namesake. However, in Bhujodi, we met the weavers, and I was introduced for the first time to the Kutch technique of the Double-Weft.
 
-While a couple of students got onto the loom and attempted it, I watched all agog. This was something new, and I was fascinated.
+Time was at a premium due to medical crises earlier in the day, so only a couple of students got onto the loom and attempted it, while I watched all agog. This was something new, and I was fascinated.
 
 ## From the Andes to the Himalayas - the Peruvians in Bhutan
 In August of 2023, I attended Fab23 Bhutan, the Fab conference, and the graduation ceremony for the 2023 cohort, of which I was one. It was brilliant. This one too, in hindsight, I should have (and maybe will) write about sometime.
@@ -37,6 +37,8 @@ At some point, I redesigned and reprinted the needle since the first one's eye k
 The comb can be better designed as well, to allow easier setup. 
 And the 3d printed teeth are strong enough that I should try a finer toothed version that allows more warp threads.
 And certainly, the wool looks good, but a finer thread with the larger number of warps would work better.
+
+I'll get around to it one of these days.
 
 Anyway, that's the story of this Mumbai guy doing a Kutchi techinique on a Peruvian frame that he learnt of in Bhutan.
 Cheers.
