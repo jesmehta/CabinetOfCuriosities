@@ -49,3 +49,31 @@ I'll get around to it one of these days.
 ## Fin
 Anyway, that's the story of this Mumbai guy doing a Kutchi techinique on a Peruvian frame that he learnt of in Bhutan.  
 Cheers.
+
+![]()
+
+
+![](./images/FabLoom/Fabloom-10.jpg){width="300";}
+![](./images/FabLoom/Fabloom-11.jpg){width="300";}
+![](./images/FabLoom/Fabloom-12.jpg){width="300";}  
+![](./images/FabLoom/Fabloom-13.jpg){width="300";}  
+![](./images/FabLoom/Fabloom-14.jpg){width="300";}  
+![](./images/FabLoom/Fabloom-15.jpg){width="300";}  
+![](./images/FabLoom/Fabloom-16.jpg){width="300";}
+![](./images/FabLoom/Fabloom-17.jpg){width="300";}
+![](./images/FabLoom/Fabloom-18.jpg){width="300";}
+![](./images/FabLoom/Fabloom-19.jpg){width="300";}
+![](./images/FabLoom/Fabloom-20.jpg){width="300";}  
+![](./images/FabLoom/Fabloom-21.jpg){width="300";}
+![](./images/FabLoom/Fabloom-22.jpg){width="300";}
+![](./images/FabLoom/Fabloom-23.jpg){width="300";}
+![](./images/FabLoom/Fabloom-101.jpg){width="300";}
+![](./images/FabLoom/Fabloom-102.jpg){width="300";}
+![](./images/FabLoom/Fabloom-103.jpg){width="300";}
+![](./images/FabLoom/Fabloom-104.jpg){width="300";}
+![](./images/FabLoom/Fabloom-105.jpg){width="300";}
+![](./images/FabLoom/Fabloom-106.jpg){width="300";}
+![](./images/FabLoom/Fabloom-107.jpg){width="300";}
+![](./images/FabLoom/Fabloom-108.jpg){width="300";}
+![](./images/FabLoom/Fabloom-109.jpg){width="300";}
+![](./images/FabLoom/Fabloom-110.jpg){width="300";}
