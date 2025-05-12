@@ -51,8 +51,8 @@ With no lasercutter at hand, I used Fusion360 to model a 3D printable version. M
 
 I started off plain but then added a double weft strand to start creating a pattern. The Kutch standard is to increase or decrease by one warp on every weft, so the patterns are always made of triangular forms. I considered ways of altering this, and essentially treated the whole motif as a pixel map. If I did not always change the number of warp threads engaged by the second weft, or did not change the number at a constant rate, I could modulate the margin to form curves rather than diagonals. And that is what I did. I started off with some idea of making a fish, but finally wrapped it up to be a kalash. But the curves work !  
 
-![](./images/FabLoom/Fabloom-12.jpg){width="300";}
-![](./images/FabLoom/Fabloom-13.jpg){width="300";}
+![](./images/FabLoom/Fabloom-12.jpg)
+![](./images/FabLoom/Fabloom-13.jpg)
 ![](./images/FabLoom/Fabloom-15.jpg)  
 
 The other change was working with a "needle" where the original technique just calls for the extra weft to be added by hand. But I knew the wool was thicker and the gap to pass the shuttle between the warp layers was small, so the needle made sense.  
