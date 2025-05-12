@@ -1,4 +1,6 @@
 # MiniLoom
+![](./images/FabLoom/Fabloom-18.jpg)  
+
 Looms are used to weave fabric, but stories are woven as well. Fabrications, literally.  
 
 And much can be woven into the weave - some  colour, names, a hair from a friend, or cotton tufts picked off thorn bushes in the warm dusty evening, snagged there by the wind when the Bombax blooms have turned to pods and exploded in the summer heat.  
@@ -56,9 +58,8 @@ I started off plain but then added a double weft strand to start creating a patt
 The other change was working with a "needle" where the original technique just calls for the extra weft to be added by hand. But I knew the wool was thicker and the gap to pass the shuttle between the warp layers was small, so the needle made sense.  
 
 ![](./images/FabLoom/Fabloom-16.jpg){width="300";}
-![](./images/FabLoom/Fabloom-17.jpg){width="300";}
-![](./images/FabLoom/Fabloom-18.jpg){width="300";}
 ![](./images/FabLoom/Fabloom-19.jpg){width="300";}  
+![](./images/FabLoom/Fabloom-17.jpg){width="300";}
 
 Finally I finished off with the plaiting technique I had seen in Bhujodi as well, and snipped off the strands to slip them off the loom edge and comb. This latter half and the finishing I managed to complete on a long car ride another few weeks later, going to Alibag where I was taking a much needed break.  
 
@@ -70,14 +71,14 @@ At some point, I redesigned and reprinted the needle since the first one's eye k
 ![](./images/FabLoom/Fabloom-14.jpg){width="300";}
 ![](./images/FabLoom/Fabloom-23.jpg){width="300";}
 
-The comb can be better designed as well, to allow easier setup. 
+The comb can be better designed as well, to allow easier setup.  
 And the 3d printed teeth are strong enough that I should try a finer toothed version that allows more warp threads.
-And certainly, the wool looks good, but a finer thread with the larger number of warps would work better.
+And certainly, the wool looks good, but a finer thread with the larger number of warps would work better.  
 
 I'll get around to it one of these days.
 
 ## Fin
-Anyway, that's the story of this Mumbai guy doing a Kutchi techinique on a Peruvian frame that he learnt of in Bhutan.  
+Anyway, that's the story of this Mumbai guy doing a Kutchi technique on a Peruvian frame that he learnt of in Bhutan.  
 Cheers.
 
 ![]()
