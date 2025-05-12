@@ -78,10 +78,12 @@ And certainly, the wool looks good, but a finer thread with the larger number of
 I'll get around to it one of these days.
 
 ## Fin
-Anyway, that's the story of this Mumbai guy doing a Kutchi technique on a Peruvian frame that he learnt of in Bhutan.  
+Anyway, that's the story of this Mumbai guy doing a Kutchi technique on a Peruvian frame that he learnt of in Bhutan.
+Props to the Fab community and the communities of Kutch, I am the better for having known you.  
+![](./images/FabLoom/Fabloom-99.jpg){width="300";}  
+
 Cheers.
 
-![]()
 
 
 
