@@ -9,3 +9,61 @@
   --md-primary-fg-color--light: #B8292F;
   --md-primary-fg-color--dark:  #B8292F;
 */
+
+/* Full-bleed iframe wrapper that escapes MkDocs' content width */
+.radial-embed-wrapper {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  max-width: 100vw;
+  padding: 0;
+  overflow: hidden;
+}
+
+.radial-embed-wrapper iframe {
+  width: 100vw;
+  height: 90vh;
+  border: none;
+  display: block;
+}
+
+/* Hide sidebar and expand layout only for dotMandalaTool page
+body[data-md-page="dotMandalaTool"] .md-sidebar,
+body[data-md-page="dotMandalaTool"] .md-nav,
+body[data-md-page="dotMandalaTool"] .md-header__title {
+  display: none !important;
+}
+
+body[data-md-page="dotMandalaTool"] .md-main__inner {
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+} */
+
+/* page background */
+body.page-dot-mandala {
+  background-image: url('../images/DotMandala/DMUI-22.jpg');
+  background-attachment: fixed;
+  /* background-position: center center; */
+  
+  background-position: calc(75% + 100px) center; /* Center vertically, shift horizontally to the right side */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: transparent;
+}
+
+/* page background washout */
+
+ 
+body.page-dot-mandala::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(255, 255, 255, 0.97); 
+  /* ← soft white wash */
+   
+  z-index: -1;
+  pointer-events: none;
+} 
