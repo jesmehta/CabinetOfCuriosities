@@ -38,5 +38,5 @@ GenAI has taken off in the five years since I started playing with Tracery and C
 
 [Trippy Gourmet on Twitter](https://twitter.com/GourmetTrippy)
 
-<iframe src="https://jesmehta.github.io/TrippyGourmetSimple/index.html" width="100%" height="600" style="border:1px solid #ccc; border-radius:8px;"></iframe>
+<iframe src="https://jesmehta.github.io/TraceryBots/TrippyGourmetBot/" width="100%" height="600" style="border:1px solid #ccc; border-radius:8px;"></iframe>
 
