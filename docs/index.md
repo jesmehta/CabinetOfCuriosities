@@ -6,7 +6,7 @@ This is my newest home on the internet.
 
 Find me elsewhere at 
 
-[Personal Website and Portfolio at jesalmehta.com](www.jesalmehta.com)  
+[Personal Website and Portfolio - jesalmehta.com](www.jesalmehta.com)  
 - [Work](https://www.jesalmehta.com/work/)  
 - [Explorations](https://www.jesalmehta.com/explorations/)  
 - [Cabinet of Curiosities](https://www.jesalmehta.com/cabinet-of-curiosities/)  
@@ -18,6 +18,12 @@ Find me elsewhere at
 [Instagram @cabofcuriosity](https://www.instagram.com/cabofcuriosity/)
 
 [Creative Coding Visuals on Behance](https://www.behance.net/jesmehta)
+
+Older work
+
+[Hackaday.io](https://hackaday.io/projects/hacker/288487)  
+[Coroflot](https://www.coroflot.com/jesmehta/portfolio)
+
 <!-- Twitter -->
 <!-- etc -->
 
