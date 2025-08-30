@@ -31,7 +31,7 @@ The result was one of my personal favourites.
 
 ![](../images/CirclePacking/Koi.jpg)
 
-Later, I used the same process, but diversified from circles to other shapes to create a notebook cover for myself, as well as got comissioned to do a gift for the Mom&Co webseries.
+Later, I used the same process, but diversified from circles to other shapes to create a [notebook cover](https://www.jesalmehta.com/cabinet-of-curiosities/notebook-covers) for myself, as well as got comissioned to do a gift for the [Mom&Co webseries](https://www.imdb.com/title/tt9752814/).
 
 ![](../images/CirclePacking/TreeNotebook.jpg)  
 
