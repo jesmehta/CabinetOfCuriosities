@@ -1,3 +1,3 @@
 # Tracery and Twine
 
-Branching narratives go here !
+Branching narratives interactive pages to go here !
