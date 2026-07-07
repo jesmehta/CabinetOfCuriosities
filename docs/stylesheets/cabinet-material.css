@@ -1,0 +1,31 @@
+/* Cabinet of Curiosities -- maps cabinet-tokens.css onto MkDocs Material's
+   --md-* variables, so normal content pages (About, Makings, 3DP, etc.) read
+   as part of the same parchment/ink world as the standalone map homepage,
+   instead of Material's default light theme. */
+
+@import url("../assets/css/cabinet-tokens.css");
+
+:root {
+  --md-primary-fg-color: var(--cab-ink);
+  --md-primary-fg-color--light: var(--cab-ink-soft);
+  --md-primary-fg-color--dark: var(--cab-ink);
+  --md-primary-bg-color: var(--cab-paper);
+
+  --md-accent-fg-color: var(--cab-accent);
+
+  --md-default-bg-color: var(--cab-paper);
+  --md-default-fg-color: var(--cab-ink);
+  --md-default-fg-color--light: var(--cab-ink-soft);
+  --md-default-fg-color--lighter: var(--cab-ink-faint);
+
+  --md-typeset-a-color: var(--cab-accent);
+}
+
+.md-typeset {
+  font-family: var(--cab-font-body);
+}
+
+.md-header,
+.md-tabs {
+  background-color: var(--cab-ink);
+}
