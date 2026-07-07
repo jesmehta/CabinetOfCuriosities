@@ -1,8 +1,9 @@
-// One-time authoring script: generates organic island + coastline-ripple SVG path
-// data for the Cabinet of Curiosities archipelago map. Run with `node`, not at
-// runtime. Output is hand-reviewed and pasted into docs/index.html, then this
-// script + its seed config are committed under assets/map/source/ so the map
-// can be regenerated or revised later without re-deriving the approach.
+// Round 2 of the one-time authoring script: jaggier, more irregular island
+// coastlines (closer to the Earthsea/Gont/fantasticmaps reference set), with
+// ripple rings generated as correlated contours of the land shape (so they
+// read as "the same coastline traced further out") plus short hachure ticks
+// just outside the coast. Run with `node`, not at runtime -- output is
+// hand-reviewed and pasted into docs/index.html.
 
 function mulberry32(seed) {
   let a = seed;
@@ -31,18 +32,23 @@ function smooth(values, passes) {
   return v;
 }
 
-function blobPoints(cx, cy, rx, ry, points, seed, variance, passes) {
+function radiusArray(points, seed, variance, passes) {
   const rand = mulberry32(seed);
   const raw = [];
   for (let i = 0; i < points; i++) raw.push(1 + (rand() - 0.5) * variance);
-  const smoothed = smooth(raw, passes);
+  return smooth(raw, passes);
+}
+
+function toPoints(cx, cy, rx, ry, radii) {
+  const n = radii.length;
   const pts = [];
-  for (let i = 0; i < points; i++) {
-    const angle = (i / points) * Math.PI * 2;
-    const r = smoothed[i];
+  for (let i = 0; i < n; i++) {
+    const angle = (i / n) * Math.PI * 2;
+    const r = radii[i];
     pts.push({
       x: cx + Math.cos(angle) * rx * r,
       y: cy + Math.sin(angle) * ry * r,
+      angle,
     });
   }
   return pts;
@@ -67,20 +73,52 @@ function catmullRomPath(pts, close) {
   return d.trim();
 }
 
-function island(id, cx, cy, rx, ry, seed) {
-  const land = blobPoints(cx, cy, rx, ry, 14, seed, 0.34, 2);
-  const landPath = catmullRomPath(land, true);
+function hachurePath(landPoints, cx, cy, seed) {
+  const rand = mulberry32(seed);
+  const segs = [];
+  for (let i = 0; i < landPoints.length; i += 2) {
+    const p = landPoints[i];
+    const dx = p.x - cx;
+    const dy = p.y - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = dx / len;
+    const ny = dy / len;
+    const wobble = (rand() - 0.5) * 0.5;
+    const tx = -ny * wobble;
+    const ty = nx * wobble;
+    const inner = 1 + rand() * 2;
+    const outer = 6 + rand() * 6;
+    const x1 = p.x + nx * inner + tx;
+    const y1 = p.y + ny * inner + ty;
+    const x2 = p.x + nx * outer + tx * 1.5;
+    const y2 = p.y + ny * outer + ty * 1.5;
+    segs.push(`M ${x1.toFixed(1)},${y1.toFixed(1)} L ${x2.toFixed(1)},${y2.toFixed(1)}`);
+  }
+  return segs.join(" ");
+}
 
-  const ripples = [1.06, 1.14, 1.24].map((scale, i) => {
-    const pts = blobPoints(cx, cy, rx * scale, ry * scale, 14, seed + 1000 * (i + 1), 0.22, 3);
+function island(id, cx, cy, rx, ry, seed) {
+  const points = 22;
+  const baseRadii = radiusArray(points, seed, 0.4, 1);
+  const landPts = toPoints(cx, cy, rx, ry, baseRadii);
+  const landPath = catmullRomPath(landPts, true);
+
+  const ringScales = [1.07, 1.15, 1.24];
+  const ripples = ringScales.map((scale, i) => {
+    const extra = radiusArray(points, seed + 1000 * (i + 1), 0.1, 2);
+    const combined = baseRadii.map((r, idx) => r * scale * (0.94 + 0.12 * extra[idx]));
+    const pts = toPoints(cx, cy, rx, ry, combined);
     return catmullRomPath(pts, true);
   });
 
-  return { id, landPath, ripples };
+  const hachures = hachurePath(landPts, cx, cy, seed + 500);
+
+  return { id, landPath, ripples, hachures };
 }
 
 function islet(id, cx, cy, r, seed) {
-  const pts = blobPoints(cx, cy, r, r * 0.8, 9, seed, 0.4, 2);
+  const radii = radiusArray(9, seed, 0.4, 1);
+  const pts = toPoints(cx, cy, r, r * 0.8, radii);
   return { id, path: catmullRomPath(pts, true) };
 }
 
@@ -105,6 +143,7 @@ for (const isl of islands) {
   console.log(`\n/* ---- ${isl.id} ---- */`);
   console.log(`LAND: ${isl.landPath}`);
   isl.ripples.forEach((r, i) => console.log(`RIPPLE${i + 1}: ${r}`));
+  console.log(`HACHURE: ${isl.hachures}`);
 }
 
 console.log(`\n/* ---- islets ---- */`);

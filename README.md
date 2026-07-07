@@ -105,6 +105,58 @@ leading slash (`about/`, not `/about/`) — see `WORLD-SYSTEMS.md`'s note on
 
 ## Changelog
 
+### v2.1 — Round 1 visual pass (branch `cabinet-map-v2`, 2026-07-07)
+
+Follow-up to v2.0 after reviewing it against the two AI-generated concept
+images the original build prompt was written around (only their text
+description had been read before, not the images themselves) plus a set
+of plainer reference maps (Earthsea, the island of Gont, a Viking
+trade-routes map, fantasticmaps.com's coastline-ripple sketches). Decision:
+richer painted illustration doesn't fit a map that will keep gaining
+islands/entries (an image would need constant re-illustration and
+wouldn't be responsive) — stay with data-driven SVG, but move the linework
+itself much closer to the plainer engraved-map references, in two rounds
+(Round 1: map/terrain/coastlines/cartouche/compass/markers; Round 2+:
+more detail as needed).
+
+Round 1 changes:
+
+- **Coastlines**: regenerated all 7 islands with jaggier, more irregular
+  edges (22 points/1 smoothing pass instead of 14/2) and ripple rings now
+  generated as *correlated contours* of the actual land shape (scaled +
+  lightly re-jittered) instead of independent random blobs, so they read
+  as "the same coastline traced further out," plus a short hachure
+  tick-mark stroke pattern just outside each coast. Land fill lightened
+  to sit much closer to the paper/sea tone — islands now read mainly
+  through their ink outline and contour lines, not a block of contrasting
+  color.
+- **Cartouche**: added corner scrollwork flourishes and a small fleuron
+  above the title, replacing the plain double-rectangle frame.
+- **Compass rose**: replaced the simple diamond-needle compass with an
+  8-point engraved star (4 major + 4 minor spikes, N/E/S/W ticks).
+- **Entry markers**: replaced monogram-letter placeholder tiles with 23
+  topic-matched line icons (rocket, book, typewriter, circles, particles,
+  gradient, graduation cap, magnifier, "Aa" type sample, door, boat,
+  layers, origami, laser, loom, gear, branch, chart, quill, code
+  brackets, robot, scroll, hourglass) — still pure inline SVG, still
+  driven by a new `icon` column in `cabinet-entries.tsv`, monogram
+  remains the fallback for any entry with neither a thumbnail nor an
+  assigned icon.
+- **Mood motifs** (decorative only, `aria-hidden`, never carrying
+  information): a faint dashed wave-line texture drifting very slowly
+  across open water, two cloud wisps in empty corners, a small "here be
+  dragons" sea-serpent tucked into open water, and a gentle ship-bob
+  animation — all collapsed by the existing `prefers-reduced-motion`
+  rule.
+- Added an SVG `feTurbulence` grain filter over the page background for
+  a paper-texture feel, cheap and framework-free.
+- **Known follow-ups**: the CV entry's "scroll" icon reads a bit
+  ambiguous at card size; the sea-serpent motif is subtle to the point of
+  being easy to miss (intentionally restrained per "should support mood,
+  not compete with entries" — revisit if it should be a bit more
+  present); the Bookshelf/fffx/Interfaces label-clipping issue noted in
+  v2.0 is unchanged by this pass.
+
 ### v2.0 — archipelago map rebuild (branch `cabinet-map-v2`, 2026-07-07)
 
 Replaced the plain MkDocs Material homepage (`docs/index.md`, a static

@@ -126,6 +126,7 @@ function buildEntries() {
     if (row.leaderTo) entry.visual.leaderTo = row.leaderTo;
 
     if (row.thumbnail) entry.thumbnail = row.thumbnail;
+    if (row.icon) entry.icon = row.icon;
 
     const relatedLinks = parseRelatedLinks(row.relatedLinks, `entry ${row.id}`);
     if (relatedLinks.length) entry.relatedLinks = relatedLinks;

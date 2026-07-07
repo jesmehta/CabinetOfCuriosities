@@ -200,7 +200,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 30,
       "y": 35
-    }
+    },
+    "icon": "icon-rocket"
   },
   {
     "id": "asimov",
@@ -224,7 +225,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 37,
       "y": 24
-    }
+    },
+    "icon": "icon-book"
   },
   {
     "id": "christie",
@@ -249,6 +251,7 @@ export const entries = [
       "x": 44,
       "y": 35
     },
+    "icon": "icon-typewriter",
     "notes": "Author page not live yet; links to Bookshelf root as placeholder."
   },
   {
@@ -272,7 +275,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 62,
       "y": 33
-    }
+    },
+    "icon": "icon-circles"
   },
   {
     "id": "circle-packing-library",
@@ -297,6 +301,7 @@ export const entries = [
       "x": 69,
       "y": 22
     },
+    "icon": "icon-circles",
     "relatedLinks": [
       {
         "label": "GitHub repository",
@@ -327,7 +332,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 76,
       "y": 33
-    }
+    },
+    "icon": "icon-particles"
   },
   {
     "id": "100-gradients",
@@ -351,7 +357,8 @@ export const entries = [
       "cardType": "port-card",
       "anchor": "north",
       "order": 1
-    }
+    },
+    "icon": "icon-gradient"
   },
   {
     "id": "teaching-student-work",
@@ -375,7 +382,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 34,
       "y": 51
-    }
+    },
+    "icon": "icon-cap"
   },
   {
     "id": "teaching-approach",
@@ -399,6 +407,7 @@ export const entries = [
       "x": 27,
       "y": 61
     },
+    "icon": "icon-book",
     "notes": "No page yet -- renders as non-navigating (coming soon)."
   },
   {
@@ -423,6 +432,7 @@ export const entries = [
       "x": 41,
       "y": 61
     },
+    "icon": "icon-magnifier",
     "notes": "No page yet."
   },
   {
@@ -447,7 +457,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 58,
       "y": 61
-    }
+    },
+    "icon": "icon-type"
   },
   {
     "id": "doors-of-kutch",
@@ -471,7 +482,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 66,
       "y": 51
-    }
+    },
+    "icon": "icon-door"
   },
   {
     "id": "kochi",
@@ -495,7 +507,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 74,
       "y": 61
-    }
+    },
+    "icon": "icon-boat"
   },
   {
     "id": "makings-3d-printing",
@@ -518,7 +531,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 43,
       "y": 76
-    }
+    },
+    "icon": "icon-layers"
   },
   {
     "id": "makings-origami-paper",
@@ -541,7 +555,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 35,
       "y": 86
-    }
+    },
+    "icon": "icon-origami"
   },
   {
     "id": "makings-lasercutting",
@@ -564,7 +579,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 51,
       "y": 86
-    }
+    },
+    "icon": "icon-laser"
   },
   {
     "id": "looms",
@@ -588,7 +604,8 @@ export const entries = [
       "cardType": "port-card",
       "anchor": "south",
       "order": 1
-    }
+    },
+    "icon": "icon-loom"
   },
   {
     "id": "drawing-machines",
@@ -611,7 +628,8 @@ export const entries = [
       "cardType": "port-card",
       "anchor": "south",
       "order": 2
-    }
+    },
+    "icon": "icon-gear"
   },
   {
     "id": "branching-narrative",
@@ -635,7 +653,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 74,
       "y": 77
-    }
+    },
+    "icon": "icon-branch"
   },
   {
     "id": "dataviz",
@@ -660,6 +679,7 @@ export const entries = [
       "x": 86,
       "y": 77
     },
+    "icon": "icon-chart",
     "notes": "Cross-listed from Bookshelf's Christie geography-of-murder dataviz page."
   },
   {
@@ -683,7 +703,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 74,
       "y": 87
-    }
+    },
+    "icon": "icon-quill"
   },
   {
     "id": "webtech",
@@ -706,7 +727,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 86,
       "y": 87
-    }
+    },
+    "icon": "icon-code"
   },
   {
     "id": "tracery-bots",
@@ -730,7 +752,8 @@ export const entries = [
       "cardType": "port-card",
       "anchor": "east",
       "order": 1
-    }
+    },
+    "icon": "icon-bot"
   },
   {
     "id": "cv",
@@ -753,7 +776,8 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 88,
       "y": 29
-    }
+    },
+    "icon": "icon-scroll"
   },
   {
     "id": "currently",
@@ -776,6 +800,7 @@ export const entries = [
       "cardType": "thumbnail-plaque",
       "x": 95,
       "y": 37
-    }
+    },
+    "icon": "icon-hourglass"
   }
 ];

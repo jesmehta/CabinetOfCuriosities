@@ -32,6 +32,13 @@ function makeThumb(entry) {
     img.loading = "lazy";
     return img;
   }
+  if (entry.icon) {
+    const wrap = document.createElement("div");
+    wrap.className = "card-thumb card-icon-tile";
+    wrap.setAttribute("aria-hidden", "true");
+    wrap.innerHTML = `<svg class="card-icon" viewBox="0 0 24 24"><use href="#${entry.icon}"></use></svg>`;
+    return wrap;
+  }
   const div = document.createElement("div");
   div.className = "card-thumb card-thumb-placeholder";
   div.setAttribute("aria-hidden", "true");

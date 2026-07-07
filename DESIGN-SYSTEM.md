@@ -49,11 +49,16 @@ Card subtitles and "coming soon" badges are smaller and italic/muted.
 
 Every island is: an outer `.island-land` fill+stroke path, three nested
 `.coast-ripples` rings drawn *outside* the land edge (largest first, so
-land paints on top), optionally a couple of `.islet` satellite blobs, one
-or two `<use>` `.building` marks, and one `.island-label-title` text.
-All island shapes come from one seeded generator
+land paints on top) as correlated contours of the land shape rather than
+independent blobs, a `.hachure` tick-mark path just outside the coast,
+optionally a couple of `.islet` satellite blobs, one or two `<use>`
+`.building` marks, and one `.island-label-title` text. Land fill is
+deliberately close to the paper/sea tone (`--cab-land-light`) — islands
+should read mainly through ink linework, the way the Earthsea/Gont/
+fantasticmaps.com reference set does, not through a block of contrasting
+fill color. All island shapes come from one seeded generator
 (`assets/map/source/generate-cabinet-map.js`) so every island shares the
-same organic-blob "handwriting" regardless of size — see
+same coastline "handwriting" regardless of size — see
 `LANDING-PAGE-NOTES.md` for the generation pipeline.
 
 Islands are wrapped in `<a class="island-link" data-section="…">`.
@@ -81,10 +86,15 @@ placeholder tile + title + subtitle-on-hover/focus):
   future leader-line-connected card sitting off the island entirely
   (`leaderTo`). Supported in the renderer; no current entry uses it.
 
-Entries with no real thumbnail render a generated placeholder: a
-diagonal-hatch tile with the entry's first letter, produced purely in CSS
-(`.card-thumb-placeholder`, see `cabinet-render.js`'s `makeThumb`) — never
-a broken `<img>`.
+Entries with no real thumbnail render a topic-matched line icon (the
+`icon` column in `cabinet-entries.tsv`, one of 23 simple `<symbol>` defs
+in `index.html` — rocket, book, typewriter, circles, particles, gradient,
+graduation cap, magnifier, "Aa" type sample, door, boat, layers, origami,
+laser, loom, gear, branch, chart, quill, code brackets, robot, scroll,
+hourglass), never a broken `<img>`. An entry with neither a thumbnail nor
+an assigned icon falls back to a generated diagonal-hatch monogram tile
+(`.card-thumb-placeholder`, first letter of the title) — see
+`cabinet-render.js`'s `makeThumb`.
 
 `status: "wip"` entries render as a non-navigating `<span>` (not an
 `<a>`), muted background, italic text, and a small "Coming soon" badge —

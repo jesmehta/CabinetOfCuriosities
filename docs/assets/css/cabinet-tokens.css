@@ -18,9 +18,13 @@
   --cab-sea: #b8c6bd;
   --cab-sea-deep: #93a89c;
 
-  /* Land */
-  --cab-land: #c8b178;
-  --cab-land-light: #dccb9a;
+  /* Land -- deliberately close to --cab-paper. Islands should read mainly
+     through their ink outline, ripple contours, and hachure, not a block
+     of contrasting fill color (closer to the Earthsea/Gont/fantasticmaps
+     reference set than to a flat game-map tile). */
+  --cab-land: #ddd0ab;
+  --cab-land-light: #f4ead0;
+  --cab-land-hover: #faf3dc;
 
   /* Cards / plaques */
   --cab-card-bg: rgba(238, 222, 184, 0.95);

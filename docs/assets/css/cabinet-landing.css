@@ -90,16 +90,28 @@ body {
 .coast-ripples path {
   fill: none;
   stroke: var(--cab-ink-faint);
-  stroke-width: 0.7;
+  stroke-width: 0.6;
 }
 
 .coast-ripples path:nth-child(1) {
-  stroke-width: 0.9;
-  opacity: 0.9;
+  stroke-width: 0.5;
+  opacity: 0.5;
+}
+
+.coast-ripples path:nth-child(2) {
+  opacity: 0.65;
 }
 
 .coast-ripples path:nth-child(3) {
-  opacity: 0.55;
+  stroke-width: 0.8;
+  opacity: 0.85;
+}
+
+.hachure {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.7;
+  stroke-linecap: round;
 }
 
 .islet {
@@ -131,7 +143,7 @@ body {
 
 .island-link:hover .island-land,
 .island-link:focus-visible .island-land {
-  fill: var(--cab-paper);
+  fill: var(--cab-land-hover);
   stroke-width: 2;
 }
 
@@ -162,6 +174,24 @@ body {
   fill: none;
   stroke: var(--cab-ink-soft);
   stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cab-bob 6s ease-in-out infinite;
+}
+
+.ship-group .ship:nth-child(2) {
+  animation-duration: 7.5s;
+  animation-delay: -2s;
+}
+
+.ship-group .ship:nth-child(3) {
+  animation-duration: 5.2s;
+  animation-delay: -1s;
+}
+
+@keyframes cab-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2px) rotate(0.6deg); }
 }
 
 .route-line {
@@ -177,10 +207,52 @@ body {
   opacity: 0.9;
 }
 
+/* ---------------------------------------------------------------------- */
+/* Mood motifs -- enrich the space without carrying information. All muted,
+   all aria-hidden in the markup, all covered by the reduced-motion rule
+   at the bottom of this file. */
+
+.sea-texture path {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.5;
+  opacity: 0.35;
+  stroke-dasharray: 2 6;
+  animation: cab-drift 40s linear infinite;
+}
+
+@keyframes cab-drift {
+  to { stroke-dashoffset: -160; }
+}
+
+.cloud {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.7;
+  opacity: 0.4;
+}
+
+.sea-serpent {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 1;
+  opacity: 0.75;
+}
+
 .compass {
   fill: none;
   stroke: var(--cab-ink-soft);
   stroke-width: 1;
+}
+
+.compass-star-major {
+  fill: var(--cab-ink);
+}
+
+.compass-star-minor {
+  fill: var(--cab-paper);
+  stroke: var(--cab-ink);
+  stroke-width: 0.6;
 }
 
 .compass-needle {
@@ -200,6 +272,16 @@ body {
   fill: none;
   stroke: var(--cab-ink);
   stroke-width: 0.8;
+}
+
+.cartouche-flourish {
+  fill: none;
+  stroke: var(--cab-ink);
+  stroke-width: 1.1;
+}
+
+.cartouche-fleuron {
+  fill: var(--cab-ink);
 }
 
 .cartouche-title {
@@ -277,8 +359,36 @@ body {
   background: var(--cab-land-light);
 }
 
-/* Generated placeholder tile used when an entry has no real thumbnail yet --
-   a parchment monogram, not a broken <img>. See cabinet-render.js. */
+/* Line-icon tile: the normal case for an entry with no real thumbnail --
+   a topic-matched icon (see the icon-* <symbol> defs in index.html and the
+   `icon` column in cabinet-entries.tsv), not a photo, not a broken <img>. */
+.card-icon {
+  display: block;
+  width: 62%;
+  height: 62%;
+  stroke: var(--cab-ink);
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--cab-ink);
+}
+
+.card-thumb.card-icon-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cab-land-light);
+}
+
+.status-wip .card-icon {
+  stroke: var(--cab-ink-soft);
+  color: var(--cab-ink-soft);
+}
+
+/* Generated placeholder tile used only when an entry has neither a real
+   thumbnail nor an assigned icon -- a parchment monogram, not a broken
+   <img>. See cabinet-render.js. */
 .card-thumb-placeholder {
   display: flex;
   align-items: center;

@@ -87,11 +87,22 @@ placement (`placement`, `x`/`y`, `anchor`, `cardOrder`, `size`,
 
 Island/coastline shapes are **not** generated at runtime. They were
 produced once by `assets/map/source/generate-cabinet-map.js` — a small
-seeded generator (Mulberry32 PRNG → per-island radius jitter → smoothing
-passes → Catmull-Rom-to-Bézier closed path) — and the resulting `d`
-path strings were hand-pasted into `docs/index.html`. `assets/map/source/cabinet-map-source.json`
+seeded generator (Mulberry32 PRNG → per-island base radius array, jittered
+and lightly smoothed for a jagged-but-closed outline → Catmull-Rom-to-
+Bézier closed path for the land) — and the resulting `d` path strings
+were hand-pasted into `docs/index.html`. `assets/map/source/cabinet-map-source.json`
 records the seed/center/radius per island so the exact shapes can be
 reproduced or revised.
+
+As of v2.1, the three coastline-ripple rings are **not** independently
+random blobs — they reuse the land's own base radius array, scaled up
+(1.07×/1.15×/1.24×) with a small amount of additional independent jitter
+layered on top, so each ring reads as a contour line that actually
+follows the land's specific bumps and inlets rather than a generic
+concentric ellipse. A `HACHURE` path is also emitted per island: short
+perpendicular tick marks sampled around the coast, each with a small
+random angle/length wobble, approximating the hand-drawn hachure texture
+in old engraved maps.
 
 ```
 node assets/map/source/generate-cabinet-map.js
