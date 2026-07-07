@@ -1,0 +1,21 @@
+{
+  "mapVersion": "v2",
+  "viewBox": { "width": 1600, "height": 1000 },
+  "generator": "generate-cabinet-map.js",
+  "note": "Run with `node assets/map/source/generate-cabinet-map.js` to reproduce the LAND/RIPPLE path data pasted into docs/index.html. Authoring-only -- not loaded at runtime.",
+  "islands": [
+    { "id": "bookshelf", "svgGroupId": "island-bookshelf", "cx": 592, "cy": 300, "rx": 190, "ry": 100, "seed": 11 },
+    { "id": "fffx", "svgGroupId": "island-fffx", "cx": 1104, "cy": 280, "rx": 192, "ry": 100, "seed": 22 },
+    { "id": "teaching", "svgGroupId": "island-teaching", "cx": 544, "cy": 570, "rx": 190, "ry": 90, "seed": 33 },
+    { "id": "visual-field-notes", "svgGroupId": "island-field-notes", "cx": 1056, "cy": 570, "rx": 222, "ry": 100, "seed": 44 },
+    { "id": "machines-makings", "svgGroupId": "island-machines-makings", "cx": 688, "cy": 820, "rx": 238, "ry": 100, "seed": 55 },
+    { "id": "interfaces-data-texts", "svgGroupId": "island-interfaces", "cx": 1280, "cy": 820, "rx": 206, "ry": 90, "seed": 66 },
+    { "id": "about", "svgGroupId": "island-about", "cx": 1464, "cy": 330, "rx": 100, "ry": 68, "seed": 77 }
+  ],
+  "islets": [
+    { "id": "islet-bookshelf-1", "cx": 372, "cy": 400, "r": 20, "seed": 111 },
+    { "id": "islet-fffx-1", "cx": 1300, "cy": 210, "r": 16, "seed": 222 },
+    { "id": "islet-mm-1", "cx": 470, "cy": 900, "r": 18, "seed": 333 },
+    { "id": "islet-idt-1", "cx": 1420, "cy": 900, "r": 14, "seed": 444 }
+  ]
+}
