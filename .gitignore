@@ -8,3 +8,6 @@ docs/images/FabLoom/Fabloom-51.jpg
 docs/images/FabLoom/Fabloom-52.jpg
 docs/images/FabLoom/Fabloom-53.jpg
 docs/images/FabLoom/Fabloom-54.jpg
+site/
+_test-build/
+public/
