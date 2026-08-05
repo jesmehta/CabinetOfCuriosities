@@ -124,23 +124,49 @@ function smoothstep(edge0, edge1, x) {
 }
 
 // v3.5.2 -- angle-modulated radius, the actual silhouette fix (octaves
-// alone, tried first, only added edge texture below the grid's own
-// sampling resolution -- see Landing-page-notes.2.0.md). Rather than a
-// constant falloff radius in every direction (a jittered-edge circle no
-// matter how much noise rides on top of it), the radius itself becomes
-// a function of angle around the circle's own center: sample a SEPARATE
-// single-octave noise at a point on a small loop in noise-space (one
-// loop around the circle in world-angle = one loop around that noise-
-// space circle), which gives smooth, low-frequency, seamless (no seam
-// at theta=0/2pi, since it's a genuine closed loop in noise-space)
-// angular variation -- a few broad bulges/pinches per island, not
-// texture. Deliberately a single perlin2D call, not fbm2D -- layering
-// multiple octaves back in here would reintroduce the same high-
-// frequency wiggle this is meant to be independent of.
-function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength) {
-  const nx = phaseX + freqRadius * Math.cos(theta);
-  const ny = phaseY + freqRadius * Math.sin(theta);
-  const n = perlin2D(perm, nx, ny); // roughly [-0.7, 0.7]
+// on the *edge* noise, tried first, only added detail below the grid's
+// own sampling resolution -- see Landing-page-notes.2.0.md). Rather than
+// a constant falloff radius in every direction (a jittered-edge circle
+// no matter how much noise rides on top of it), the radius itself
+// becomes a function of angle around the circle's own center: sample
+// noise at a point on a loop in noise-space (one loop around the circle
+// in world-angle = one loop around that noise-space circle), which
+// gives seamless (no seam at theta=0/2pi, since it's a genuine closed
+// loop in noise-space) angular variation.
+//
+// v3.5.3: that sampling is now itself layered across `angularOctaves`
+// (same fbm idea as the edge noise's `fbm2D`, just walked around a loop
+// instead of across a plane) -- v3.5.2 used one octave only, which
+// produces a smooth, single-wavelength deformation (a handful of gentle
+// bulges) that still visibly reads as "a distorted circle," not a
+// coastline: there was a real gap between that one broad wavelength and
+// the edge noise's much finer one, with nothing filling the medium
+// frequencies real coastlines get their fjord/peninsula complexity from.
+// Each octave increases the loop's radius by `angularLacunarity` (more
+// wiggles per revolution) at `angularGain` the previous octave's
+// amplitude -- same trade fbm2D makes, just around a circle. Every
+// octave's sample point still traces its own fully closed loop as theta
+// sweeps 0..2pi (only the loop's radius changes per octave, not whether
+// it closes), so the sum stays exactly seamless at every frequency, not
+// just the base one.
+function angularFbm(perm, theta, freqRadius, phaseX, phaseY, octaves, lacunarity, gain) {
+  let sum = 0;
+  let amp = 1;
+  let freq = freqRadius;
+  let norm = 0;
+  for (let o = 0; o < octaves; o++) {
+    const nx = phaseX + freq * Math.cos(theta);
+    const ny = phaseY + freq * Math.sin(theta);
+    sum += amp * perlin2D(perm, nx, ny);
+    norm += amp;
+    amp *= gain;
+    freq *= lacunarity;
+  }
+  return norm > 0 ? sum / norm : 0;
+}
+
+function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength, octaves, lacunarity, gain) {
+  const n = angularFbm(perm, theta, freqRadius, phaseX, phaseY, octaves, lacunarity, gain); // roughly [-0.7, 0.7]
   // Floored well above 0 -- strength is configured (see cabinet-v3-data.js)
   // so this can't legitimately reach non-positive, but the floor is kept
   // as a hard guarantee: a non-positive scale would divide dNorm by zero
@@ -168,7 +194,7 @@ function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength) {
 // work is proportional to the sum of circle areas, not canvas area times
 // circle count.
 function buildIslandHeightmap(circles, canvasBounds, config) {
-  const { cellSize, noiseScale, octaves, lacunarity, gain, noiseAmplitude, innerFrac, outerFrac, gradientStrength, seed, waterLevel, angularStrength, angularFreqMin, angularFreqMax } = config;
+  const { cellSize, noiseScale, octaves, lacunarity, gain, noiseAmplitude, innerFrac, outerFrac, gradientStrength, seed, waterLevel, angularStrength, angularFreqMin, angularFreqMax, angularOctaves, angularLacunarity, angularGain } = config;
 
   const cols = Math.max(2, Math.ceil(canvasBounds.width / cellSize) + 1);
   const rows = Math.max(2, Math.ceil(canvasBounds.height / cellSize) + 1);
@@ -216,7 +242,7 @@ function buildIslandHeightmap(circles, canvasBounds, config) {
         const dy = wy - c.y;
 
         const theta = Math.atan2(dy, dx);
-        const radiusScale = angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, angularStrength);
+        const radiusScale = angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, angularStrength, angularOctaves, angularLacunarity, angularGain);
         const dNorm = Math.sqrt(dx * dx + dy * dy) / (c.radius * radiusScale);
         if (dNorm > outerFrac) continue;
 

@@ -172,6 +172,19 @@ export const v3Config = {
     // island -- "peninsula and bay" character, not a wavy-edged circle
     // and not a starburst either.
     angularFreqMin: 1.2,
-    angularFreqMax: 2.4
+    angularFreqMax: 2.4,
+    // v3.5.3: layers the angular modulation across multiple octaves
+    // (angularFbm() in cabinet-v3-islandshape.js) instead of one sample
+    // -- v3.5.2's single octave produced a smooth, one-wavelength
+    // deformation that still read as "a distorted circle," not a
+    // coastline, because nothing filled the medium frequencies between
+    // that broad wobble and the much finer per-pixel edge noise. Same
+    // three knobs as the edge noise's own fbm2D, applied around the loop
+    // instead of across the plane -- deliberately not reusing the exact
+    // same octaves/lacunarity/gain values above, so the angular and edge
+    // frequency bands can be tuned independently of each other.
+    angularOctaves: 3,
+    angularLacunarity: 2,
+    angularGain: 0.5
   }
 };

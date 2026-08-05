@@ -5,11 +5,11 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.5.2** (angle-modulated coastline radius -- islands
-are genuinely lobed, not just jittered circles) -- see the changelog
-for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 ->
-v3.5 -> v3.5.1 -> v3.5.2 progression and why each pass changed what it
-did.
+Currently on **v3.5.3** (angular modulation is itself multi-octave now,
+filling in the medium frequencies between broad lobing and fine edge
+texture) -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3
+-> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3
+progression and why each pass changed what it did.
 
 Kept deliberately separate from `LANDING-PAGE-NOTES.md` (which documents
 the live `docs/index.html` archipelago map, v2.0/v2.1) rather than
@@ -464,7 +464,7 @@ gradient so each entry gets its own coastline instead of one continent).
    step 6/7 in "How the layout is built" above for what each region then
    draws on top of it.
 
-### Circular vs. lobed silhouettes (v3.5.1, v3.5.2)
+### Circular vs. lobed silhouettes (v3.5.1, v3.5.2, v3.5.3)
 
 Asked directly: the coastlines read as "wibbly but essentially still
 circular" -- the per-pixel noise jitters the *edge*, but the underlying
@@ -507,6 +507,30 @@ that order, on request:
   `_verify-islandshape.mjs` (throwaway, deleted after use) that a
   radius-80 circle's traced boundary now spans 58-101px from center,
   visibly wider than the pre-v3.5.2 jittered-circle range.
+- **v3.5.3 -- multi-octave angular modulation.** Feedback on v3.5.2's
+  result: "wibbly but essentially still circular" persisted -- a single
+  noise sample around the loop is, mathematically, one smooth periodic
+  deformation (a handful of gentle bulges), and smoothness itself is
+  what reads as "distorted circle" rather than "coastline," regardless
+  of amplitude. Diagnosed as a genuine gap in frequency content: the
+  angular term operated at one broad wavelength, the edge noise at a
+  much finer one (`noiseScale: 1/26`), with nothing filling the medium
+  frequencies real coastlines get their fjord/peninsula complexity from.
+  `angularRadiusScale` now calls a new `angularFbm()` -- the same fbm
+  idea `fbm2D` already uses for edge noise, just walked around the loop
+  instead of across a plane: each octave multiplies the loop's radius by
+  `angularLacunarity` (more wiggles per revolution) at `angularGain` the
+  previous octave's amplitude. Every octave's sample point still traces
+  its own fully closed loop as `theta` sweeps 0..2*pi (only the loop
+  radius changes per octave, not whether it closes), so the sum stays
+  exactly seamless at every frequency layered in, not just the base one.
+  `angularOctaves`/`angularLacunarity`/`angularGain` are deliberately
+  separate knobs from the edge noise's own `octaves`/`lacunarity`/`gain`
+  -- same idea, independently tunable frequency bands. Verified: land-
+  area-fraction unchanged (80-84%, same range as v3.5.2's tuning), all
+  40 real circles still trace to 40 closed subpaths. Screenshot showed
+  visibly more scalloped, varied-bump-size edges -- real progress, not
+  a full fix (see v3.5.4 for what came next).
 
   **Determinism, per circle, not just per page.** Each circle draws its
   own `phaseX`/`phaseY`/`freqRadius` from a `mulberry32` RNG seeded by
@@ -801,6 +825,34 @@ combination produces a bad shape that a weight floor doesn't fix.
   #9) -- untried, since the zero-fusion result already reads fine as-is.
 
 ## Changelog
+
+### v3.5.3 -- angular modulation goes multi-octave
+
+Direct follow-up to feedback that v3.5.2's result was "definitely
+[still a] circle with distortion instead of noisy island." Asked
+whether tuning could help ("more extreme jumps, more smooth or rough
+transitions") -- diagnosed the root cause as a missing frequency band
+(one broad angular wavelength, one fine edge wavelength, nothing in
+between) and recommended two changes in sequence: layer the angular
+term across multiple octaves first (this entry), then optionally blend
+in ridged noise for sharper localized transitions (v3.5.4) -- with
+domain-warping named as a further option to consider afterward. User
+confirmed the sequence and asked for both, one after the other.
+
+**What changed.** New `angularFbm()` in `cabinet-v3-islandshape.js`,
+replacing `angularRadiusScale()`'s single `perlin2D` call -- same
+octave/lacunarity/gain layering `fbm2D` already does for edge noise,
+walked around the per-circle loop instead of across the plane. New
+`angularOctaves`/`angularLacunarity`/`angularGain` config, kept
+independent of the edge noise's own equivalents. See "Circular vs.
+lobed silhouettes" above for the full mechanism.
+
+**Verification.** Land-area-fraction re-check (80-84%, unchanged from
+v3.5.2's tuning), real-content closure check (all 40 circles still
+trace to 40 closed, finite subpaths, ~28ms). Screenshot comparison
+against v3.5.2 showed visibly more scalloped, irregular edges with
+varied bump sizes -- closer to a coastline, though not yet the full fix
+(see v3.5.4).
 
 ### v3.5.2 -- angle-modulated coastline radius (genuinely lobed islands)
 
