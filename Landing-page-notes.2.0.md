@@ -7,10 +7,11 @@ reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
 Currently on **v3.6** (domain warping, for real concave coastlines --
 bays, hooks, pinched necks -- plus an on-page dev control panel for
-tuning island-shape parameters live) -- see the changelog for the full
-v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 ->
-v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 progression and why each
-pass changed what it did.
+tuning island-shape parameters live, and a permanent standalone showcase
+page for the algorithm itself, `islands-showcase.html`) -- see the
+changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 ->
+v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
+progression and why each pass changed what it did.
 
 Screenshots of each version are kept in `landing-v3/dev-screenshots/`
 (git-tracked, named `v{version}-{what-changed}.png`) specifically to
@@ -211,6 +212,72 @@ Two further decisions from the second round of the conversation:
 | `cabinet-v3-controls.js` | Dev-only (v3.6): on-page slider panel for `v3Config.island`'s noise/warp parameters, live-updating via `retraceIslands()`. Not part of the page design being reviewed -- see "Domain warping for real concavity" below and "Known limitations" #10. |
 | `cabinet-v3-style.css` | Layout-review styling, reusing `cabinet-tokens.css`'s palette; also styles the v3.6 control panel (deliberately plain/utility, not parchment-themed). |
 | `package.json` | Declares `{ "type": "module" }` plus `playwright` as a devDependency (v3.6 -- installed once, not per screenshot round; see "Verification" below) -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
+| `islands-showcase.html` / `cabinet-v3-showcase-content.js` / `cabinet-v3-showcase-layout.js` / `cabinet-v3-showcase-controls.js` | v3.6, permanent standalone showcase for the island-generation algorithm itself -- see "Showcase page" below. Frozen content snapshot + a deliberate full duplicate of the layout/controls modules, sharing `cabinet-v3-data.js`'s config with the real page. |
+
+## Showcase page (`islands-showcase.html`, v3.6)
+
+Asked directly, after seeing v3.6's domain-warp result: "can the
+interface with slider control be a permanent page somewhere? It's a
+great showcase for island generation itself, as well as a key step in
+the creation of this page." A second, permanent entry point --
+`landing-v3/islands-showcase.html` -- rather than folding this into
+`index.html` itself, so it can exist independently of whatever
+`index.html`/`cabinet-v3-data.js` end up looking like once the real
+layout is finalized. Repo-only for now (not linked into the live `docs/`
+site, not built by MkDocs) -- deliberately deferred, since whether/how
+any of v3 ships is still an open question this showcase doesn't need to
+wait on.
+
+**Content: a frozen snapshot, not a live import.** Runs on
+`cabinet-v3-showcase-content.js` -- every real section/entry's title,
+weight, order, and status copied as-is from
+`../docs/assets/js/cabinet-generated-content.js` at the time it was
+taken (2026-08-05), but every `href` replaced with `"#"`. Two reasons
+this is a point-in-time copy rather than importing the real file
+directly (which `index.html` still does): the showcase shouldn't imply
+its circles are live navigation (readers could reasonably click a title
+expecting it to go somewhere), and it shouldn't silently change shape
+every time real content is edited -- it's meant to keep demonstrating
+today's algorithm against today's snapshot even after the real page's
+content moves on. If the snapshot ever feels too stale to be a
+representative demo, re-take it by hand (copy the real file's
+`sections`/`entries`, blank every truthy `href`) -- there's no
+build-time sync to break.
+
+**Code: a deliberate full duplicate, not a shared parameterized
+function.** `cabinet-v3-showcase-layout.js` and
+`cabinet-v3-showcase-controls.js` mirror `cabinet-v3-layout.js` /
+`cabinet-v3-controls.js` line-for-line except their content/retrace
+import paths -- not refactored into one shared render function taking a
+content parameter. Chosen because the showcase page is expected to
+diverge on its own terms over time (the user's own framing: "certain
+changes I may ask you to apply to this separate page as well if I feel
+like" -- implying not-every-change applies to both), so a shared
+abstraction would be solving a DRY problem that isn't guaranteed to stay
+true, at the cost of coupling two pages that are supposed to be free to
+drift apart. The actual algorithmic modules (`cabinet-v3-islandshape.js`,
+`cabinet-v3-circlepack.js`, `cabinet-v3-treemap.js`,
+`cabinet-v3-extras-config.js`) are NOT duplicated -- only the ~500-line
+orchestration/rendering file, which is almost entirely DOM/SVG
+plumbing, not the interesting logic.
+
+**Config: shared, not duplicated.** Both pages import the same
+`v3Config` from `cabinet-v3-data.js` -- the showcase isn't meant to have
+its own independent tuning universe, since its whole purpose is
+exploring parameters for the real page. Its panel's "Copy config" button
+is the intended bridge: tune live on the showcase, copy the resulting
+JSON, paste it into `cabinet-v3-data.js`'s `island` block, and the real
+`index.html` picks it up next load. ("...we return to this original
+page to tinker with it and figure the final landing page config" --
+i.e. this showcase is a tool for that eventual pass, not a replacement
+for it.)
+
+Verified via Playwright: zero console errors, exactly 25 `.v3-island`
+links all resolving to `href="#"` (confirms the neutralization actually
+took), and the same slider-retrace check used on the real page (drag to
+max -> path changes) passes independently here too, since this page's
+`retraceIslands()` is its own function closing over its own
+`islandLayoutState`, not a shared one.
 
 ## How the layout is built (`cabinet-v3-layout.js`'s `render()`)
 
@@ -1047,6 +1114,17 @@ the direct before/after.
 Explicitly not attempted: coastline **linearity** (straight cliff-like
 stretches) -- a distinct ask from concavity, and not something domain
 warping produces. See "Next steps".
+
+**Follow-up, same pass: `islands-showcase.html`.** Asked directly after
+seeing the panel: make it a permanent page, showcasing island generation
+itself. New standalone entry point, repo-only (not linked into the live
+site), running on a frozen content snapshot with all links neutralized
+to `"#"` -- full rationale, and why the layout/controls modules are a
+deliberate duplicate rather than a shared parameterized function, in
+"Showcase page" above. Verified via Playwright: 0 console errors, all 25
+island links resolve to `#` (confirms neutralization), independent
+slider-retrace check passes. Screenshot:
+`dev-screenshots/v3.6-islands-showcase-page.png`.
 
 ### v3.5.4 -- ridged noise for sharp inlets, bias-corrected
 
