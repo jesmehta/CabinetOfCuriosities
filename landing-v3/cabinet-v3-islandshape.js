@@ -215,6 +215,41 @@ function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength, o
   return Math.max(0.15, 1 + n * strength);
 }
 
+// v3.6 -- domain warping (Inigo Quilez's technique). angularRadiusScale
+// above can only ever produce a star-shaped boundary: radius is a
+// single-valued function of angle around one fixed center, so a ray from
+// that center crosses the coastline exactly once no matter how extreme
+// the angular signal gets. That's the structural reason v3.5.2-.4 still
+// read as "a circle with bumps" -- no amount of additional angular
+// octaves or ridging can fold the boundary back on itself.
+//
+// Domain warping sidesteps the constraint entirely by displacing the
+// *sample position* itself, in plain (x, y) world space, before anything
+// downstream (the noise lookup, and critically, the distance-to-center
+// check that angularRadiusScale's falloff is measured against) reads it.
+// A point that's geometrically well inside a circle's guaranteed-land
+// core can warp to where it effectively samples as if it were near the
+// edge or past it, while a neighbouring point (offset by only a few
+// noise-field wavelengths) doesn't -- that's a real fold: a bay that
+// curves back on itself, or a peninsula that narrows then widens again,
+// not just a radius dip. See Landing-page-notes.2.0.md for the fuller
+// writeup and the verification proxy used to confirm this actually
+// changes topology (multi-crossing rays), not just edge texture.
+//
+// Two independent low-frequency noise fields give the (x, y) displacement
+// components -- the classic trick for getting a second, decorrelated
+// signal out of one noise function is to sample it again at a large,
+// arbitrary coordinate offset (37.2, 91.7 here) rather than building a
+// whole second permutation table. Uses fbm2D (not a single perlin2D
+// octave) so the warp field itself has some texture across scales, same
+// rationale as every other noise term in this file.
+function warpOffset(perm, x, y, scale, amplitude, octaves, lacunarity, gain) {
+  if (amplitude <= 0) return [0, 0];
+  const wx = fbm2D(perm, x * scale, y * scale, octaves, lacunarity, gain);
+  const wy = fbm2D(perm, (x + 37.2) * scale, (y + 91.7) * scale, octaves, lacunarity, gain);
+  return [wx * amplitude, wy * amplitude];
+}
+
 // ---------------------------------------------------------------------
 // Heightmap: one shared grid, every circle contributes via max()
 
@@ -235,13 +270,19 @@ function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength, o
 // work is proportional to the sum of circle areas, not canvas area times
 // circle count.
 function buildIslandHeightmap(circles, canvasBounds, config) {
-  const { cellSize, noiseScale, octaves, lacunarity, gain, noiseAmplitude, innerFrac, outerFrac, gradientStrength, seed, waterLevel, angularStrength, angularFreqMin, angularFreqMax, angularOctaves, angularLacunarity, angularGain, angularRidgeMix } = config;
+  const { cellSize, noiseScale, octaves, lacunarity, gain, noiseAmplitude, innerFrac, outerFrac, gradientStrength, seed, waterLevel, angularStrength, angularFreqMin, angularFreqMax, angularOctaves, angularLacunarity, angularGain, angularRidgeMix, warpStrength, warpScale, warpOctaves, warpLacunarity, warpGain } = config;
 
   const cols = Math.max(2, Math.ceil(canvasBounds.width / cellSize) + 1);
   const rows = Math.max(2, Math.ceil(canvasBounds.height / cellSize) + 1);
   const H = new Float32Array(cols * rows).fill(waterLevel);
 
   const perm = buildPermutation(mulberry32(seedFromString(seed)));
+  // Separate permutation table (not the coastline noise's own `perm`,
+  // just offset coordinates) -- keeps the warp field visually independent
+  // of the base coastline texture rather than risking any subtle
+  // correlation between "where a point warps to" and "what the coastline
+  // noise reads there".
+  const warpPerm = buildPermutation(mulberry32(seedFromString(`${seed}:warp`)));
 
   // Bbox has to cover the *largest* a circle's angularly-scaled radius
   // could reach in any direction, not just outerFrac * radius -- a bulge
@@ -252,7 +293,12 @@ function buildIslandHeightmap(circles, canvasBounds, config) {
   // is a safe, if slightly conservative, overestimate) -- extra cells
   // this pulls in that a given angle's *actual* scale doesn't reach are
   // just skipped by the per-cell dNorm check below, same as always.
-  const maxOuterR = c => c.radius * outerFrac * (1 + angularStrength);
+  // `+ warpStrength` (v3.6): domain warp can displace a cell's effective
+  // sample position by up to warpStrength px in any direction, so a cell
+  // just outside what angular modulation alone would reach can still
+  // warp into the circle's influence -- same reasoning as the angular
+  // term's own extension just above, stacked on top of it.
+  const maxOuterR = c => c.radius * outerFrac * (1 + angularStrength) + warpStrength;
 
   circles.forEach(c => {
     if (!(c.radius > 0.5)) return;
@@ -279,15 +325,25 @@ function buildIslandHeightmap(circles, canvasBounds, config) {
       for (let gx = minGx; gx <= maxGx; gx++) {
         const wx = canvasBounds.x + gx * cellSize;
         const wy = canvasBounds.y + gy * cellSize;
-        const dx = wx - c.x;
-        const dy = wy - c.y;
+
+        // v3.6: displace the sample point itself before anything reads
+        // it -- both the distance-to-center check below (this is what
+        // actually produces concavity: see warpOffset()'s doc comment)
+        // and the per-pixel coastline noise sample use the *warped*
+        // point, not the raw grid position.
+        const [wox, woy] = warpOffset(warpPerm, wx, wy, warpScale, warpStrength, warpOctaves, warpLacunarity, warpGain);
+        const wxw = wx + wox;
+        const wyw = wy + woy;
+
+        const dx = wxw - c.x;
+        const dy = wyw - c.y;
 
         const theta = Math.atan2(dy, dx);
         const radiusScale = angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, angularStrength, angularOctaves, angularLacunarity, angularGain, angularRidgeMix);
         const dNorm = Math.sqrt(dx * dx + dy * dy) / (c.radius * radiusScale);
         if (dNorm > outerFrac) continue;
 
-        const n = fbm2D(perm, wx * noiseScale, wy * noiseScale, octaves, lacunarity, gain) * noiseAmplitude;
+        const n = fbm2D(perm, wxw * noiseScale, wyw * noiseScale, octaves, lacunarity, gain) * noiseAmplitude;
         const fall = smoothstep(innerFrac, outerFrac, dNorm) * gradientStrength;
         const h = n - fall;
 
