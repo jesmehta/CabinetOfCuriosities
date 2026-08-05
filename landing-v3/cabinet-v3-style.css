@@ -65,17 +65,26 @@ body.v3-proto {
   stroke-dasharray: 6 6;
 }
 
-.v3-island circle {
+/* v3.5: one shared noise-carved landmass for every circle on the page
+   (see cabinet-v3-islandshape.js) -- replaces what used to be a filled
+   <circle> per entry/extra. Drawn once, first, underneath every region's
+   labels/hit-circles/status rings. fill-rule: evenodd so a rare noise-
+   carved "lake" fully inside a landmass cuts a hole correctly regardless
+   of winding direction. */
+.v3-islands-land {
   fill: var(--cab-land);
   stroke: var(--cab-ink);
   stroke-width: 2;
-  transition: fill var(--cab-transition-fast), stroke-width var(--cab-transition-fast);
 }
 
-.v3-island:hover circle,
-.v3-island:focus-visible circle {
-  fill: var(--cab-land-hover);
-  stroke-width: 3;
+/* Invisible hit target at an entry's original (pre-noise) circle --
+   fused/traced coastlines mean the visible shape often isn't a clean
+   per-entry boundary any more, so the clickable region stays anchored to
+   the geometry growCircles() actually decided, not the traced outline.
+   fill: transparent (not none) so SVG hit-testing still fires on the
+   fill area, not just a stroke. */
+.v3-island-hit {
+  fill: transparent;
 }
 
 .v3-island {
@@ -85,6 +94,16 @@ body.v3-proto {
 .v3-island:focus-visible {
   outline: 2px solid var(--cab-focus-ring);
   outline-offset: 2px;
+}
+
+/* Hover/focus feedback: the shared landmass fill can't change per-entry
+   the way a separate circle's fill once could, so an accent ring on the
+   (otherwise invisible) hit circle stands in for the old whole-circle
+   fill change. */
+.v3-island:hover .v3-island-hit,
+.v3-island:focus-visible .v3-island-hit {
+  stroke: var(--cab-accent);
+  stroke-width: 2.5;
 }
 
 .v3-island-label {
@@ -99,18 +118,16 @@ body.v3-proto {
   stroke-width: 3px;
 }
 
-.v3-island--muted circle {
-  fill: var(--cab-card-bg-wip);
-  stroke-dasharray: none;
-  stroke-width: 1.5;
-  opacity: 0.85;
-}
-
-.v3-stub circle {
+/* Dashed ring marking "not fully live" -- wip entries (still a link,
+   just visually flagged) and coming-soon stubs (not a link at all)
+   share this same treatment, drawn on top of the shared landmass at
+   that item's own original circle position. */
+.v3-status-ring {
   fill: none;
-  stroke: var(--cab-ink-faint);
+  stroke: var(--cab-ink-soft);
   stroke-width: 1.5;
   stroke-dasharray: 4 4;
+  opacity: 0.85;
 }
 
 .v3-stub-label {
@@ -120,11 +137,6 @@ body.v3-proto {
   text-anchor: middle;
   dominant-baseline: middle;
   font-style: italic;
-}
-
-.v3-filler {
-  fill: var(--cab-ink-faint);
-  opacity: 0.12;
 }
 
 .v3-section-label {

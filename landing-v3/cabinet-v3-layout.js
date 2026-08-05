@@ -21,6 +21,7 @@ import { sections, entries } from "../docs/assets/js/cabinet-generated-content.j
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
 import { extrasFor, EXTRA_WEIGHT } from "./cabinet-v3-extras-config.js";
+import { traceIslandShapes } from "./cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -368,12 +369,26 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
     })
   );
 
+  // v3.5: the visible island shape itself is drawn once, globally, as a
+  // shared <path> underneath every region (see render()) -- traced from
+  // every circle's own noise-carved coastline, fused where circles sit
+  // close together. What's drawn here per-circle is only the
+  // *interactive* layer on top of that shared shape: an invisible hit
+  // circle at the entry's original (x, y, radius) so clicking/hovering
+  // still targets the right entry even where its visible coastline has
+  // merged with a neighbour's, plus a dashed status ring for anything
+  // not fully live (wip entries, coming-soon stubs) since a fused
+  // landmass can't be given two different fill colors for two different
+  // entries' statuses the way separate circles could.
   circles.forEach(c => {
     if (c.kind === "entry") {
       const isMuted = c.status === "wip";
-      const link = el("a", { class: isMuted ? "v3-island v3-island--muted" : "v3-island", href: c.href || "#" });
+      const link = el("a", { class: "v3-island", href: c.href || "#" });
       link.setAttribute("data-id", c.id);
-      link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius }));
+      link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-island-hit" }));
+      if (isMuted) {
+        link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-status-ring", "aria-hidden": "true" }));
+      }
       link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
       group.appendChild(link);
       return;
@@ -381,7 +396,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
 
     if (c.kind === "coming-soon") {
       const stub = el("g", { class: "v3-stub", "data-id": c.id });
-      stub.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius }));
+      stub.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-status-ring", "aria-hidden": "true" }));
       if (c.radius >= 18) {
         stub.appendChild(el("text", { x: c.x, y: c.y, class: "v3-stub-label" }, "coming soon"));
       }
@@ -389,10 +404,8 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       return;
     }
 
-    // filler
-    group.appendChild(
-      el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-filler", "aria-hidden": "true" })
-    );
+    // filler -- contributes to the shared island heightmap already (see
+    // render()) and needs no element of its own here.
   });
 
   const { lines, fontSize, lineHeight } = label;
@@ -491,6 +504,17 @@ function render() {
   // started out and how far any one of them is individually capped
   // (maxRadius, attached per-seed in buildSeedsForSection()).
   const grown = growCircles(allSeeds, canvasBounds, obstacles, v3Config.pack);
+
+  // v3.5: one shared noise-carved landmass for every circle from every
+  // section, traced once and drawn first so every region group (labels,
+  // hit circles, status rings) layers on top of it -- see
+  // cabinet-v3-islandshape.js and the "Fusion behaviour" decision in
+  // Landing-page-notes.2.0.md for why this is a single combined trace
+  // rather than one shape per circle.
+  const islandsD = traceIslandShapes(grown, canvasBounds, v3Config.island);
+  stage.appendChild(
+    el("path", { class: "v3-islands-land", d: islandsD, "fill-rule": "evenodd" })
+  );
 
   const grownBySection = new Map();
   grown.forEach(c => {

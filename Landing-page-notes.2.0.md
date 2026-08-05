@@ -5,10 +5,10 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.4.2** (section minimum weight, entries-first point-
-stage centering, bottom/multiline labels) -- see the changelog for the
-full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2
-progression and why each pass changed what it did.
+Currently on **v3.5** (noise-carved coastlines replace plain circles) --
+see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
+v3.4.1 -> v3.4.2 -> v3.5 progression and why each pass changed what it
+did.
 
 Kept deliberately separate from `LANDING-PAGE-NOTES.md` (which documents
 the live `docs/index.html` archipelago map, v2.0/v2.1) rather than
@@ -198,7 +198,8 @@ Two further decisions from the second round of the conversation:
 | `cabinet-v3-extras-config.js` | Per-section extras schema-extension proposal -- see above. |
 | `cabinet-v3-treemap.js` | Pure logic: `squarify()` only (the v3.0 aspect-band search, `squarifyWithAspectSearch()`, was removed -- see the changelog; it's recoverable from git history if the band comes back). No DOM -- runs under Node unchanged (see "Verification" below), same rationale as `fffx-subdivision.js`. |
 | `cabinet-v3-circlepack.js` | Pure logic: `generateScatterPoints()` (per-section, takes a cross-section `existingPoints` list), `centerPointsInRect()` (v3.4, per-section, centers bare points before growth), `sortPointsByBandReadingOrder()` (per-section), `growCircles()` (v3.3: one global call across every section's seeds, takes `obstacles` for label bands), plus `createSeededRng()`/`seedFromString()`/`safeMinSeparation()`/`insetRect()` helpers -- all used. `centerClusterInRect()` (v3.2, superseded by `centerPointsInRect()`) and `packCirclesSpiral()` are also here, currently unused (see "Known limitations"). No DOM. |
-| `cabinet-v3-layout.js` | Orchestration + SVG rendering only -- folds entries into sections, calls the treemap and pack modules, builds the actual SVG nodes, reserves and renders each region's label band. Imports real content from `../docs/assets/js/cabinet-generated-content.js`. |
+| `cabinet-v3-islandshape.js` | Pure logic (v3.5): seeded 2D noise, per-circle radial falloff, a shared heightmap combined via `max()` across every circle, and a marching-squares tracer that turns that heightmap into SVG path data -- see "How coastlines are traced" below. No DOM. |
+| `cabinet-v3-layout.js` | Orchestration + SVG rendering only -- folds entries into sections, calls the treemap, pack, and island-shape modules, builds the actual SVG nodes, reserves and renders each region's label band. Imports real content from `../docs/assets/js/cabinet-generated-content.js`. |
 | `cabinet-v3-style.css` | Layout-review styling, reusing `cabinet-tokens.css`'s palette. |
 | `package.json` | `{ "type": "module" }` only -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
 
@@ -246,14 +247,23 @@ Two further decisions from the second round of the conversation:
    corner-search.
 5. **Build each section's archipelago** (`buildSeedsForSection`, into
    the `pack` area only) -- see the dedicated section below.
-6. **Render.** Region outline, label band + title (one `<text>` per
-   wrapped line, vertically centered as a block within the band), then
-   one `<a class="v3-island">` (circle + title text) per real entry --
-   `status: "wip"` entries get `.v3-island--muted`, same visual
-   convention as the live map's own wip cards. Extras render as faint,
-   unlabeled, `aria-hidden` circles -- decoration only (v3.3: the
-   dashed/labeled "coming soon" treatment is unused now, see "Fewer,
-   plainer extras" below).
+6. **Trace one shared coastline for every circle on the page** (v3.5,
+   `traceIslandShapes()` in `cabinet-v3-islandshape.js`, called once on
+   the full `grown` list from every section together) -- see "How
+   coastlines are traced" below. Drawn first, as a single `<path
+   class="v3-islands-land">`, underneath every region.
+7. **Render each region.** Outline, label band + title (one `<text>`
+   per wrapped line, vertically centered as a block within the band),
+   then per circle: real entries get an `<a class="v3-island">` wrapping
+   an *invisible* hit circle (`.v3-island-hit`, at the entry's own
+   original `x/y/radius` -- the visible shape is the shared coastline,
+   not this circle) plus the title text; `status: "wip"` entries and
+   `coming-soon` stubs additionally get a dashed `.v3-status-ring` at
+   that same position, since a fused landmass can't be given two
+   different fill colors for two different entries' statuses the way
+   separate circles once could. Filler extras render nothing of their
+   own here at all -- they already shaped the coastline in step 6, and
+   have no label or link to draw.
 
 ## How archipelagos are packed (`cabinet-v3-circlepack.js`)
 
@@ -398,6 +408,113 @@ is left in place, just unused by any authored count -- cheap to keep
 dormant for a future section that wants to advertise a specific reserved
 slot again.
 
+## How coastlines are traced (`cabinet-v3-islandshape.js`, v3.5)
+
+Every circle `growCircles()` produces (position, radius, weight-driven
+sizing, collision-avoidance) is untouched by this step -- it only
+changes what gets *drawn* for that circle: an organic coastline instead
+of a perfect circle, ported from the classic "noise minus a radial
+gradient, then threshold" island-generation technique (see [this
+article](https://medium.com/@travall/procedural-2d-island-generation-noise-functions-13976bddeaf9)
+for the reference; that article's own approach is one big noise field
+minus one big *map-wide* gradient mask, adapted here to a *per-circle*
+gradient so each entry gets its own coastline instead of one continent).
+
+1. **One seeded 2D gradient-noise field over the whole canvas**
+   (`buildPermutation` + `perlin2D` + `fbm2D`, seeded by a fixed string
+   -- not per-section, since the heightmap spans every section's circles
+   together and there's no natural per-section key for it). Same
+   determinism rule as everywhere else in v3: `mulberry32`, not
+   `Math.random()`.
+2. **One shared heightmap, every circle contributes via `max()`**
+   (`buildIslandHeightmap`). For each circle, only the grid cells within
+   its own `outerFrac x radius` bounding box are touched (cost
+   proportional to circle areas, not canvas area x circle count); each
+   touched cell gets `noise(x,y) - radialFalloff(distance-from-circle-
+   center)`, and the *highest* value any circle contributes at that cell
+   wins. `max()` (not sum/blend) is what produces fusion: wherever two
+   circles' influence areas overlap, whichever is closer to *its own*
+   core wins regardless of the other's falloff pulling toward water --
+   see "Fusion behaviour" below. Untouched cells (outside every circle's
+   influence) stay at a hard-coded `waterLevel`, and the grid's outermost
+   ring of corners is force-set to `waterLevel` regardless of what
+   touched it, guaranteeing every contour closes within the grid even for
+   a circle grown all the way out to the canvas edge.
+3. **Threshold + marching squares** (`marchingSquaresSegments` ->
+   `chainSegmentsToPolygons`). Standard 16-case binary marching squares
+   with linearly interpolated edge crossings; segments are joined into
+   closed polygons by each endpoint's *canonical grid-edge id*
+   (`H:col:row` / `V:col:row`), not by comparing float coordinates --
+   every grid edge borders at most two cells, so an id-keyed join is
+   provably correct regardless of any floating-point coincidence. (A
+   coordinate-rounding key was tried first and produced 2 silently
+   unclosed chains out of 40 real circles -- caught by the Node
+   verification harness, not a screenshot; see the v3.5 changelog entry.)
+   Sub-cell noise speckles (an isolated grid cell or two crossing
+   threshold in open water, far from any circle) are dropped by a
+   minimum-polygon-area filter before rendering.
+4. **Render as one `<path fill-rule="evenodd">`**, drawn first, in
+   `cabinet-v3-layout.js`'s `render()`, underneath every region -- see
+   step 6/7 in "How the layout is built" above for what each region then
+   draws on top of it.
+
+### Falloff tuning: "most of the circle is the island"
+
+`innerFrac`/`outerFrac`/`gradientStrength`/`threshold`/`noiseAmplitude`
+(`cabinet-v3-data.js`'s `island` config) are tuned together, not
+independently -- inside `innerFrac x radius` the gradient is exactly 0
+(always land regardless of noise), beyond `outerFrac x radius` it's
+`gradientStrength` (always water regardless of noise), and the actual
+coastline falls somewhere in that band depending on the local noise
+sample. Verified empirically (`_verify-islandshape.mjs`, a throwaway
+Node script per this session's usual discipline -- deleted after use,
+not committed), not derived by hand: rasterize a fine grid around an
+isolated circle, measure what fraction of the *original* circle's area
+reads as land. First attempt (`innerFrac: 0.5, outerFrac: 1.2,
+gradientStrength: 1, threshold: -0.4`) landed at 62-67% -- technically a
+majority but not a strong enough read of "most of the circle." Retuned
+(`innerFrac: 0.55, outerFrac: 1.3, gradientStrength: 1.1, threshold:
+-0.5, noiseAmplitude: 0.35`) to 78-83% across circle radii from 15px to
+200px.
+
+### Fusion behaviour
+
+Explicit design decision (asked directly, before writing any code):
+when two circles are close enough that their noise-shifted coastlines
+could touch, should they be allowed to merge into one landmass? Chose
+**yes** -- matches the real archipelago look, and mirrors what the live
+v2 map's own coastline/ripple generator already does (`docs/index.html`,
+same "combined land mask, close islands fuse" idea, see
+`LANDING-PAGE-NOTES.md`). The alternative (each circle traced
+independently, confined to its own bounding box, guaranteed to never
+touch a neighbour) was considered and rejected specifically because it
+would have made the traced path double as *both* the visual shape and
+the click target with a clean 1:1 mapping -- simpler wiring, but this
+codebase already reuses the v2 map's fused-coastline aesthetic
+everywhere else, and a "some entries visually merge" archipelago reads
+truer to that than one where every entry is guaranteed a moat.
+
+Because fusion is now possible, an entry's clickable region and label
+can no longer be "the traced shape itself" the way a plain `<circle>`
+could -- see step 7 in "How the layout is built": every entry gets an
+*invisible* hit circle at its own original `(x, y, radius)`, independent
+of whatever the shared coastline actually looks like at that point.
+Verified two ways in `_verify-islandshape.mjs`: two circles with a
+30px-overlap gap traced as one closed contour (fused); two circles
+150px apart traced as two separate contours (not fused). Against the
+real 7-section/25-entry content, though, **zero fusions occurred** among
+the 40 real circles -- the closest real pairs sit right at the growth
+padding minimum (~6px edge-to-edge gap), and the current
+`outerFrac`/`gradientStrength` band isn't wide enough for noise to
+reliably bridge a gap that tight. Not a bug (the mechanism demonstrably
+works on the synthetic cases above, and the screenshot with zero fusion
+still reads as a clean, organic archipelago), but worth knowing:
+widening `outerFrac` would make fusion trigger more often with this
+specific content's spacing, at the cost of a wider/softer-looking
+falloff band on every circle, not just close pairs. Left as-is rather
+than tuned further on a hunch -- see "Next steps" if this is worth
+revisiting.
+
 ## Verification
 
 No visual/manual-only check -- ran both a headless structural check and
@@ -440,6 +557,15 @@ passes:
   Machines & Makings / Interfaces, Data & Texts seam crosses the dashed
   region outline into the neighbouring region, confirming cross-region
   growth is visually working, not just passing the Node check.
+- **v3.5 addition**: a synthetic-case Node script (isolated circle land-
+  fraction measurement, fusion-vs-separate pairs, zero-radius guard,
+  canvas-edge closure) plus a real-content Node pass (all 40 circles,
+  checking every traced subpath closes and every coordinate is finite --
+  caught the edge-id chaining bug described in "How coastlines are
+  traced" above) both run before the Chromium re-render. Screenshot
+  confirmed organic coastlines with correctly-placed dashed status rings
+  on every `wip` entry, undecorated filler islands, and zero console
+  errors.
 
 To re-run the browser check yourself: serve the repo root (`python -m
 http.server` from the repo root, not from `landing-v3/`, since the
@@ -517,6 +643,22 @@ not a finished visual pass. In priority order:
 7. **No thumbnails yet.** Brief says "eventually thumbnail and other
    details" -- circles currently render title-only, matching "for now"
    in the brief.
+8. **Visible coastline and clickable hit-circle aren't the exact same
+   shape (v3.5).** An entry's hit circle is its original, un-noised
+   `(x, y, radius)`; the coastline drawn at that position is noise-
+   shifted (per-circle land-area-fraction tuned to 78-83% of that
+   original circle, see "How coastlines are traced"), so there's a thin
+   margin where the visible land extends slightly past the hit circle,
+   or the hit circle covers a sliver the coastline actually traced as
+   water. Not observed to be a real usability problem at the tuned
+   fraction (the mismatch margin is small relative to circle size), but
+   it's a real, deliberate approximation, not an exact correspondence.
+9. **Fusion is architecturally supported but doesn't currently trigger
+   against real content (v3.5).** See "Fusion behaviour" above -- the
+   real 7-section/25-entry content's closest circle pairs sit right at
+   growth's padding minimum (~6px), tighter than the current falloff
+   band reliably bridges. Verified working on synthetic close-circle
+   cases; just not exercised by this specific content's actual spacing.
 
 ## About Me: what was going on, and what was done about it
 
@@ -580,8 +722,84 @@ combination produces a bad shape that a weight floor doesn't fix.
   extension proposal in `cabinet-v3-extras-config.js`, fold `landing-v3/`
   into `docs/` + `docs/assets/{css,js}/`, and merge this file into
   `LANDING-PAGE-NOTES.md`.
+- If a more fused, less discrete-island look is wanted: widen `island`
+  config's `outerFrac`/`gradientStrength` so close-but-not-touching real
+  pairs (currently ~6px apart at the closest) reliably bridge (limitation
+  #9) -- untried, since the zero-fusion result already reads fine as-is.
 
 ## Changelog
+
+### v3.5 -- noise-carved coastlines replace plain circles
+
+User request, given with a full 7-step spec up front (generate a noise
+map over the canvas; per circle, subtract a radial gradient from it;
+threshold so most of the circle is land; trace the land/water boundary
+with marching squares; use the traced islands instead of circles as
+entries) plus a pointer to a specific reference article on the
+technique. Two design forks were asked about explicitly before writing
+any code (see "Fusion behaviour" and the extras question above): should
+close circles' coastlines be allowed to fuse (yes -- matches the live
+v2 map's own combined-land-mask approach), and should decorative
+"extra" filler circles get the same treatment as real entries (yes, for
+visual consistency).
+
+**What changed.** New module `cabinet-v3-islandshape.js`: seeded 2D
+gradient noise (`perlin2D`/`fbm2D`), a shared heightmap combining every
+circle's `(noise - radial falloff)` via `max()` (`buildIslandHeightmap`),
+and a marching-squares tracer (`marchingSquaresSegments` ->
+`chainSegmentsToPolygons` -> `traceIslandShapes`) producing one SVG path
+`d` string covering every landmass on the page. `cabinet-v3-layout.js`
+calls this once, globally, after `growCircles()` -- growth itself is
+completely unchanged, this only replaces what gets drawn. Per-circle
+rendering changed from a filled `<circle>` to an invisible hit circle
+(`.v3-island-hit`) for click/hover targeting plus a dashed
+`.v3-status-ring` for anything not fully live (`wip` entries,
+coming-soon stubs) -- see "How coastlines are traced" and its "Falloff
+tuning"/"Fusion behaviour" subsections above for the full reasoning and
+tuning numbers.
+
+**Bug found and fixed during verification, before ever screenshotting.**
+First `chainSegmentsToPolygons()` implementation joined marching-squares
+segments into closed polygons by rounding each endpoint's float
+coordinates into a string key. Against a single isolated synthetic
+circle this worked (1 closed contour, as expected) -- but the real
+7-section/25-entry content (40 circles) produced exactly 2 silently
+unclosed chains (69 and 63 points each, `Z`-terminated in the output
+string but not actually closed loops) out of 40. Root cause: nothing
+actually guarantees two independently-computed float coordinates that
+*should* represent the same grid-edge crossing point round to the exact
+same key in every case a naive theoretical argument might miss --
+rounding-key matching is fragile in a way that isn't obvious until it's
+wrong. Fixed by keying joins on each point's *canonical grid-edge id*
+instead (`H:col:row` for a horizontal grid edge, `V:col:row` for a
+vertical one) -- an integer identity every crossing point on that
+specific edge shares exactly, regardless of which of its (at most two)
+neighbouring cells computed it, sidestepping float comparison
+altogether. Re-verified: 0 unclosed/bad subpaths across all 40 real
+circles after the fix. Caught by the Node harness's real-content pass
+(checking every traced subpath's first/last point matched exactly),
+never visible in a screenshot -- the broken chains still *looked* like
+plausible, if slightly odd, land shapes.
+
+**Verification.** A synthetic-case Node script
+(`_verify-islandshape.mjs`, throwaway, deleted after use): land-area-
+fraction measurement across 5 circle radii (15-200px, landed at
+78-83% after retuning from an initial 62-67%), single-circle trace
+closure, two-close-circles-fuse / two-far-circles-stay-separate, a
+zero-radius-circle guard (no crash), and a canvas-edge-touching circle
+still closing. A real-content Node pass (`_verify-real-content.mjs`,
+also throwaway) reproducing the actual `render()` pipeline against all
+7 sections/40 circles, confirming 0 bad/unclosed subpaths (this is what
+caught the edge-id bug above) and reporting 40 circles -> 40 landmasses
+(zero fusion with this specific content's spacing -- see "Fusion
+behaviour"). Playwright screenshot (served over a plain Node static
+server, same `http://` requirement as the existing browser-check
+convention) confirmed organic, faceted coastlines reading clearly as an
+archipelago; dashed status rings correctly aligned with every `wip`
+entry (Christie, Particle Systems, Research & Interests, Gujarati Type,
+Doors of Kutch, Lasercutting, Drawing Machines, Writings -- matching
+`content/cabinet-entries.tsv`'s `wip` rows); filler extras rendering as
+plain undecorated islands; zero console errors.
 
 ### v3.4.2 -- entries placed and centered first, extras placed after
 

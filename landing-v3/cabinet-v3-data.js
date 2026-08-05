@@ -91,5 +91,63 @@ export const v3Config = {
     // Defensive cap on growth passes -- see growCircles()'s comment for
     // why this shouldn't normally bind.
     maxIterations: 4000
+  },
+
+  // v3.5: noise-carved coastlines for the archipelago circles -- see
+  // cabinet-v3-islandshape.js. Every circle contributes (noise - radial
+  // gradient) to one shared heightmap, combined via max() so close
+  // circles' coastlines can fuse into one landmass; thresholding that
+  // heightmap and tracing it with marching squares is what replaces the
+  // plain <circle> a growCircles() output would otherwise render as.
+  island: {
+    // Grid spacing for the heightmap/marching-squares pass, in canvas
+    // px. Smaller = smoother coastline + more path points; 4px keeps
+    // contours visibly faceted (matching the v2 map's own coastline/
+    // ripple aesthetic, itself a coarse-grid marching-squares trace) at
+    // a computation cost proportional to circle areas, not canvas area.
+    cellSize: 4,
+    // Noise sample frequency -- world px per full noise period is
+    // roughly 1 / noiseScale. Tuned so a mid-sized circle's coastline
+    // shows several wobbles around its circumference, not one broad
+    // bulge or fine static.
+    noiseScale: 1 / 26,
+    octaves: 3,
+    lacunarity: 2,
+    gain: 0.5,
+    // Multiplies the raw (roughly [-1, 1]) fbm output before it's
+    // compared against the radial gradient -- the actual amplitude of
+    // the noise term relative to `threshold` and `gradientStrength`
+    // below, all three tuned together (see cabinet-v3-islandshape.js).
+    noiseAmplitude: 0.35,
+    // Normalized distance from a circle's own center (as a fraction of
+    // its radius) where the radial falloff starts (innerFrac, always
+    // land inside this) and ends (outerFrac, always water beyond this).
+    // The coastline itself lands somewhere in between, noise-shifted --
+    // tuned (with threshold/gradientStrength below) so the *average*
+    // crossing sits close to the circle's own original radius (d ~ 0.9),
+    // per "most of the circle is the island, the rest is water" --
+    // verified empirically in _verify-islandshape.mjs, not derived
+    // analytically (smoothstep's inverse against noise's actual
+    // distribution isn't worth solving by hand when the check is one
+    // Node run).
+    innerFrac: 0.55,
+    outerFrac: 1.3,
+    gradientStrength: 1.1,
+    // Height threshold separating land (> threshold) from water. Sits
+    // comfortably below noiseAmplitude's own range so the guaranteed-
+    // land core (innerFrac) is never accidentally carved into water by
+    // an unlucky noise sample, while gradientStrength is large enough
+    // relative to threshold + noiseAmplitude that outerFrac is always
+    // reliably water (also verified, not just asserted).
+    threshold: -0.5,
+    // Baseline height for every grid cell no circle's influence reaches
+    // -- far enough below `threshold` that open ocean never registers
+    // as land regardless of noise (noise is never sampled there at all,
+    // see buildIslandHeightmap's per-circle-bbox-only loop).
+    waterLevel: -1,
+    // Fixed seed for the whole shared heightmap (not per-section, unlike
+    // pack's scatter seeding -- there's no natural per-section key for a
+    // field every section's circles contribute to together).
+    seed: "cabinet-v3-islands"
   }
 };
