@@ -4,7 +4,7 @@
 // This file only holds config that isn't tied to any one section/entry.
 
 export const landingConfig = {
-  viewBox: { width: 1600, height: 1000 },
+  viewBox: { width: 1600, height: 1300 },
   title: "Cabinet of Curiosities",
   subtitle: "A map of ideas, interests & inquiries",
   legend:

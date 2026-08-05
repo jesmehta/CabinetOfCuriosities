@@ -24,10 +24,10 @@ export const sections = [
     "map": {
       "islandId": "island-bookshelf",
       "mapForm": "large-island",
-      "cx": 592,
-      "cy": 300,
-      "rx": 190,
-      "ry": 100
+      "cx": 480,
+      "cy": 370,
+      "rx": 250,
+      "ry": 135
     }
   },
   {
@@ -48,10 +48,10 @@ export const sections = [
     "map": {
       "islandId": "island-fffx",
       "mapForm": "large-island",
-      "cx": 1104,
-      "cy": 280,
-      "rx": 192,
-      "ry": 100
+      "cx": 1030,
+      "cy": 350,
+      "rx": 260,
+      "ry": 130
     },
     "notes": "fffx site_url is configured for this subdomain but no CNAME file exists in the fffx repo yet -- verify DNS is live before treating this link as production-ready."
   },
@@ -72,10 +72,10 @@ export const sections = [
     "map": {
       "islandId": "island-teaching",
       "mapForm": "medium-island",
-      "cx": 544,
-      "cy": 570,
-      "rx": 190,
-      "ry": 90
+      "cx": 460,
+      "cy": 720,
+      "rx": 245,
+      "ry": 120
     },
     "notes": "No dedicated Cabinet Teaching page yet; href is a placeholder pointing at the real student showcase until one exists."
   },
@@ -97,10 +97,10 @@ export const sections = [
     "map": {
       "islandId": "island-field-notes",
       "mapForm": "medium-island",
-      "cx": 1056,
-      "cy": 570,
-      "rx": 222,
-      "ry": 100
+      "cx": 1005,
+      "cy": 720,
+      "rx": 270,
+      "ry": 130
     },
     "notes": "Entirely new section, no built pages yet anywhere -- island renders as non-navigating (coming soon) until content exists."
   },
@@ -122,10 +122,10 @@ export const sections = [
     "map": {
       "islandId": "island-machines-makings",
       "mapForm": "medium-island",
-      "cx": 688,
-      "cy": 820,
-      "rx": 238,
-      "ry": 100
+      "cx": 420,
+      "cy": 1090,
+      "rx": 290,
+      "ry": 110
     }
   },
   {
@@ -146,10 +146,10 @@ export const sections = [
     "map": {
       "islandId": "island-interfaces",
       "mapForm": "medium-island",
-      "cx": 1280,
-      "cy": 820,
-      "rx": 206,
-      "ry": 90
+      "cx": 1005,
+      "cy": 1090,
+      "rx": 260,
+      "ry": 105
     }
   },
   {
@@ -169,10 +169,10 @@ export const sections = [
     "map": {
       "islandId": "island-about",
       "mapForm": "small-island",
-      "cx": 1464,
-      "cy": 330,
-      "rx": 100,
-      "ry": 68
+      "cx": 1470,
+      "cy": 170,
+      "rx": 115,
+      "ry": 85
     },
     "notes": "Deliberately peripheral (top-right), not central, per design brief."
   }
@@ -198,8 +198,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 30,
-      "y": 35
+      "x": 20.8,
+      "y": 33.7
     },
     "icon": "icon-rocket"
   },
@@ -223,8 +223,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 37,
-      "y": 24
+      "x": 30,
+      "y": 22.2
     },
     "icon": "icon-book"
   },
@@ -248,8 +248,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 44,
-      "y": 35
+      "x": 39.2,
+      "y": 33.7
     },
     "icon": "icon-typewriter",
     "notes": "Author page not live yet; links to Bookshelf root as placeholder."
@@ -273,8 +273,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 62,
-      "y": 33
+      "x": 54.9,
+      "y": 31.9
     },
     "icon": "icon-circles"
   },
@@ -298,8 +298,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 69,
-      "y": 22
+      "x": 64.4,
+      "y": 20.9
     },
     "icon": "icon-circles",
     "relatedLinks": [
@@ -330,8 +330,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 76,
-      "y": 33
+      "x": 73.9,
+      "y": 31.9
     },
     "icon": "icon-particles"
   },
@@ -380,8 +380,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 34,
-      "y": 51
+      "x": 28.7,
+      "y": 49.2
     },
     "icon": "icon-cap"
   },
@@ -404,8 +404,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 27,
-      "y": 61
+      "x": 19.7,
+      "y": 59.5
     },
     "icon": "icon-book",
     "notes": "No page yet -- renders as non-navigating (coming soon)."
@@ -429,8 +429,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 41,
-      "y": 61
+      "x": 37.8,
+      "y": 59.5
     },
     "icon": "icon-magnifier",
     "notes": "No page yet."
@@ -455,8 +455,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 58,
-      "y": 61
+      "x": 53.1,
+      "y": 59.4
     },
     "icon": "icon-type"
   },
@@ -480,8 +480,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 66,
-      "y": 51
+      "x": 62.8,
+      "y": 49.4
     },
     "icon": "icon-door"
   },
@@ -505,8 +505,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 74,
-      "y": 61
+      "x": 72.5,
+      "y": 59.4
     },
     "icon": "icon-boat"
   },
@@ -529,8 +529,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 43,
-      "y": 76
+      "x": 26.3,
+      "y": 78.8
     },
     "icon": "icon-layers"
   },
@@ -553,8 +553,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 35,
-      "y": 86
+      "x": 16.5,
+      "y": 87.2
     },
     "icon": "icon-origami"
   },
@@ -577,8 +577,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 51,
-      "y": 86
+      "x": 36,
+      "y": 87.2
     },
     "icon": "icon-laser"
   },
@@ -651,8 +651,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 74,
-      "y": 77
+      "x": 55.2,
+      "y": 79.4
     },
     "icon": "icon-branch"
   },
@@ -676,8 +676,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 86,
-      "y": 77
+      "x": 70.4,
+      "y": 79.4
     },
     "icon": "icon-chart",
     "notes": "Cross-listed from Bookshelf's Christie geography-of-murder dataviz page."
@@ -701,8 +701,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 74,
-      "y": 87
+      "x": 55.2,
+      "y": 88.3
     },
     "icon": "icon-quill"
   },
@@ -725,8 +725,8 @@ export const entries = [
       "placement": "land",
       "size": "medium",
       "cardType": "thumbnail-plaque",
-      "x": 86,
-      "y": 87
+      "x": 70.4,
+      "y": 88.3
     },
     "icon": "icon-code"
   },
@@ -774,8 +774,8 @@ export const entries = [
       "placement": "land",
       "size": "small",
       "cardType": "thumbnail-plaque",
-      "x": 88,
-      "y": 29
+      "x": 87.8,
+      "y": 9.2
     },
     "icon": "icon-scroll"
   },
@@ -798,8 +798,8 @@ export const entries = [
       "placement": "land",
       "size": "small",
       "cardType": "thumbnail-plaque",
-      "x": 95,
-      "y": 37
+      "x": 95.9,
+      "y": 16.9
     },
     "icon": "icon-hourglass"
   }
