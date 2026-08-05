@@ -258,6 +258,25 @@ body {
   stroke-width: 1;
 }
 
+.compass-ring-outer {
+  stroke-width: 0.8;
+}
+
+.compass-ticks {
+  stroke-width: 0.6;
+}
+
+.compass-spoke {
+  stroke-width: 0.5;
+  opacity: 0.7;
+}
+
+.compass-fleur {
+  fill: none;
+  stroke: var(--cab-ink);
+  stroke-width: 0.9;
+}
+
 .compass-star-major {
   fill: var(--cab-ink);
 }
@@ -287,7 +306,13 @@ body {
   stroke-width: 0.8;
 }
 
-.cartouche-flourish {
+.cartouche-ticks {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 0.7;
+}
+
+.cartouche-corner {
   fill: none;
   stroke: var(--cab-ink);
   stroke-width: 1.1;
@@ -297,12 +322,29 @@ body {
   fill: var(--cab-ink);
 }
 
+.cartouche-fleuron-ring {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 0.8;
+}
+
 .cartouche-title {
   font-family: var(--cab-font-heading);
   font-size: 34px;
   font-variant: small-caps;
   fill: var(--cab-ink);
   text-anchor: middle;
+}
+
+.cartouche-rule {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 1;
+}
+
+.cartouche-rule-swash {
+  fill: var(--cab-ink-soft);
+  stroke: none;
 }
 
 .cartouche-subtitle {
