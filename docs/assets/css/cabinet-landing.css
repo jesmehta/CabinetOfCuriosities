@@ -225,10 +225,31 @@ body {
 }
 
 .sea-serpent {
+  opacity: 0.85;
+}
+
+.serpent-body {
+  fill: var(--cab-ink-soft);
+  stroke: var(--cab-ink);
+  stroke-width: 0.6;
+}
+
+.serpent-eye {
+  fill: var(--cab-paper);
+  stroke: none;
+}
+
+.serpent-frill {
   fill: none;
-  stroke: var(--cab-ink-soft);
-  stroke-width: 1;
-  opacity: 0.75;
+  stroke: var(--cab-ink);
+  stroke-width: 0.7;
+}
+
+.serpent-ripple {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.5;
+  opacity: 0.6;
 }
 
 .compass {

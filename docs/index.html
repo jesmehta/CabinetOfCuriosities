@@ -174,9 +174,22 @@
         <use href="#cab-cloud" class="cloud" x="1440" y="50" width="120" height="50" />
         <use href="#cab-cloud" class="cloud" x="1360" y="400" width="90" height="38" />
       </g>
-      <g class="sea-serpent" aria-hidden="true">
-        <path d="M1500,520 q12,-20 24,0 q12,20 24,0 q12,-20 24,0" />
-        <path d="M1572,500 q6,-6 11,-2 q2,4 -2,6 q-6,2 -9,-4 Z" />
+      <!-- Sea serpent: a coiling body breaking the surface in segments
+           (head with eye, two back coils, a curling tail), not a bare
+           sine wave -- the classic "here be dragons" cartographic motif. -->
+      <g class="sea-serpent" transform="translate(1420,700)" aria-hidden="true">
+        <path class="serpent-ripple" d="M-145,10 q15,-5 30,0 q15,5 30,0" />
+        <path class="serpent-ripple" d="M-55,14 q13,-5 26,0 q13,5 26,0" />
+        <path class="serpent-ripple" d="M40,16 q13,-5 26,0 q13,5 26,0" />
+        <path class="serpent-ripple" d="M105,12 q10,-4 20,0" />
+
+        <path class="serpent-body" d="M-150,8 C-152,-14 -140,-30 -124,-32 C-112,-33 -104,-24 -108,-14 C-118,-18 -126,-10 -122,2 C-130,4 -140,6 -150,8 Z" />
+        <circle class="serpent-eye" cx="-126" cy="-20" r="1.8" />
+        <path class="serpent-frill" d="M-118,-30 C-114,-38 -106,-40 -100,-36" />
+
+        <path class="serpent-body" d="M-96,6 C-92,-18 -78,-28 -68,-26 C-60,-24 -58,-14 -64,-8 C-70,-14 -78,-12 -80,-2 C-86,2 -91,4 -96,6 Z" />
+        <path class="serpent-body" d="M-10,8 C-6,-14 8,-24 18,-21 C25,-19 27,-10 21,-5 C15,-11 8,-9 6,0 C0,4 -5,6 -10,8 Z" />
+        <path class="serpent-body" d="M70,8 C78,-6 92,-14 104,-10 C110,-8 110,-2 104,2 C98,-2 90,0 86,8 C80,9 75,9 70,8 Z" />
       </g>
 
       <!-- ---------------------------------------------------------- -->
