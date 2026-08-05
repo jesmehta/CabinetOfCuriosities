@@ -397,13 +397,9 @@ body {
   padding: 4px 6px 6px;
 }
 
-.map-card.card-type-port-card {
-  border-radius: 999px 999px 6px 6px;
-}
-
-.map-card.card-type-callout-card {
-  border-style: dashed;
-}
+/* card-type is a content classification (thumbnail-plaque / port-card /
+   callout-card), not a shape variant -- every card reads as the same
+   plaque so the map doesn't mix "tombstone" and "polaroid" silhouettes. */
 
 .map-card .card-thumb {
   width: 100%;
