@@ -111,6 +111,12 @@ export const v3Config = {
     // shows several wobbles around its circumference, not one broad
     // bulge or fine static.
     noiseScale: 1 / 26,
+    // v3.5.1 tried 6 here (up from 3) to see the effect of finer coastal
+    // detail in isolation -- reverted, since the added octaves' higher-
+    // frequency detail falls below what `cellSize` can resolve at trace
+    // time, so it cost more compute for a visually near-identical result
+    // and didn't touch the actual complaint (still fundamentally round --
+    // see the v3.5.2 angular-modulated-radius work below, which did).
     octaves: 3,
     lacunarity: 2,
     gain: 0.5,
