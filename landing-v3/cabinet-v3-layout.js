@@ -25,6 +25,14 @@ import { traceIslandShapes } from "./cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+// v3.6: caches the one expensive layout pass's output (grown circles +
+// canvasBounds) so the control panel's sliders (cabinet-v3-controls.js)
+// can re-trace island shapes on every input event without re-running
+// treemap/circle-packing -- packing only depends on content (entries/
+// weights), never on island-shape tuning, so there's nothing to redo
+// there when only v3Config.island changes.
+let islandLayoutState = null;
+
 function el(tag, attrs = {}, text) {
   const node = document.createElementNS(SVG_NS, tag);
   Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
@@ -439,6 +447,29 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   stage.appendChild(group);
 }
 
+// Traces + draws (or, on a re-call, just updates in place) the one
+// shared landmass path -- the only piece of the page that depends on
+// v3Config.island. Split out from render() so the control panel can call
+// this alone, cheaply, on every slider input.
+function drawIslandsPath(stage, canvasBounds, grown) {
+  const islandsD = traceIslandShapes(grown, canvasBounds, v3Config.island);
+  let path = stage.querySelector(".v3-islands-land");
+  if (!path) {
+    path = el("path", { class: "v3-islands-land", "fill-rule": "evenodd" });
+    stage.insertBefore(path, stage.firstChild);
+  }
+  path.setAttribute("d", islandsD);
+}
+
+// Exported for cabinet-v3-controls.js -- re-traces against the current
+// v3Config.island values using the cached layout from the last full
+// render(), a no-op if render() hasn't run yet.
+export function retraceIslands() {
+  if (!islandLayoutState) return;
+  const stage = document.querySelector("#v3-stage");
+  drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
+}
+
 function render() {
   const stage = document.querySelector("#v3-stage");
   stage.innerHTML = "";
@@ -511,10 +542,8 @@ function render() {
   // cabinet-v3-islandshape.js and the "Fusion behaviour" decision in
   // Landing-page-notes.2.0.md for why this is a single combined trace
   // rather than one shape per circle.
-  const islandsD = traceIslandShapes(grown, canvasBounds, v3Config.island);
-  stage.appendChild(
-    el("path", { class: "v3-islands-land", d: islandsD, "fill-rule": "evenodd" })
-  );
+  islandLayoutState = { grown, canvasBounds };
+  drawIslandsPath(stage, canvasBounds, grown);
 
   const grownBySection = new Map();
   grown.forEach(c => {

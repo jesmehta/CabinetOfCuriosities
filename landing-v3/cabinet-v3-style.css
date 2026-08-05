@@ -145,6 +145,86 @@ body.v3-proto {
   letter-spacing: 0.03em;
 }
 
+/* v3.6: dev-only island-shape tuning panel (cabinet-v3-controls.js) --
+   fixed to the viewport corner, above the SVG, deliberately plain/utility
+   styling (not matching the parchment aesthetic) since it's not part of
+   the page's actual design, only a tool for tuning v3Config.island. */
+.v3-controls {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 250px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 10px 12px;
+  background: rgba(20, 20, 24, 0.88);
+  color: #f0f0f0;
+  border-radius: 6px;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.v3-controls-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.v3-controls-group-label {
+  margin: 10px 0 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.65;
+}
+
+.v3-controls-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "name value" "input input";
+  align-items: center;
+  gap: 2px 6px;
+  margin-bottom: 6px;
+}
+
+.v3-controls-name {
+  grid-area: name;
+}
+
+.v3-controls-value {
+  grid-area: value;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.v3-controls-row input[type="range"] {
+  grid-area: input;
+  width: 100%;
+}
+
+.v3-controls-buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.v3-controls-btn {
+  flex: 1;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.v3-controls-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 /* Reserved header strip -- see splitLabelBand() in cabinet-v3-layout.js.
    No circle is ever packed inside this band, so it doesn't need to
    search for a gap; it's a light wash the full width of the region,
