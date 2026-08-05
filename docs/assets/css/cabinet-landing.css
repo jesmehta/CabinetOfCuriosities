@@ -87,31 +87,28 @@ body {
   opacity: 0.7;
 }
 
-.coast-ripples path {
+/* Global ripple rings -- a single distance-transform contour of the
+   combined land mask across the whole map (assets/map/source/
+   generate-cabinet-map.js), not per-island scaled copies. Closest ring is
+   darkest/heaviest, fading to the faintest, thinnest line farthest out. */
+.ripple-ring path {
   fill: none;
-  stroke: var(--cab-ink-faint);
-  stroke-width: 0.6;
+  stroke: var(--cab-ink-soft);
 }
 
-.coast-ripples path:nth-child(1) {
-  stroke-width: 0.5;
-  opacity: 0.5;
-}
-
-.coast-ripples path:nth-child(2) {
-  opacity: 0.65;
-}
-
-.coast-ripples path:nth-child(3) {
-  stroke-width: 0.8;
+.ripple-ring-1 path {
+  stroke-width: 1.1;
   opacity: 0.85;
 }
 
-.hachure {
-  fill: none;
-  stroke: var(--cab-ink-faint);
+.ripple-ring-2 path {
   stroke-width: 0.7;
-  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+.ripple-ring-3 path {
+  stroke-width: 0.4;
+  opacity: 0.28;
 }
 
 .islet {
@@ -145,11 +142,6 @@ body {
 .island-link:focus-visible .island-land {
   fill: var(--cab-land-hover);
   stroke-width: 2;
-}
-
-.island-link:hover .coast-ripples path,
-.island-link:focus-visible .coast-ripples path {
-  stroke: var(--cab-accent);
 }
 
 .island-link {
