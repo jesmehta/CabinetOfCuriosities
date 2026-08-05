@@ -1,0 +1,143 @@
+/* v3 layout prototype styling. Reuses cabinet-tokens.css (the real
+   parchment/ink palette) for continuity while the LAYOUT is what's under
+   review here -- deliberately not restyling color/type from scratch too,
+   see Landing-page-notes.2.0.md's "why reuse tokens" note. */
+
+body.v3-proto {
+  margin: 0;
+  background: var(--cab-sea);
+  color: var(--cab-ink);
+  font-family: var(--cab-font-body);
+}
+
+.v3-header {
+  padding: 24px 32px 12px;
+  max-width: 900px;
+}
+
+.v3-header h1 {
+  font-family: var(--cab-font-heading);
+  margin: 0 0 6px;
+}
+
+.v3-subtitle {
+  margin: 0;
+  color: var(--cab-ink-soft);
+  font-size: 0.95rem;
+}
+
+.v3-subtitle code {
+  background: var(--cab-card-bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.v3-warning {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  background: var(--cab-card-bg-wip);
+  border: 1px solid var(--cab-card-border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  max-width: 640px;
+}
+
+.v3-stage-wrap {
+  padding: 0 16px 40px;
+}
+
+.v3-stage {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--cab-sea-deep);
+  border-radius: 6px;
+}
+
+/* Section region outline -- faint, just enough to show the weighted
+   partition itself during layout review. Not part of the final visual
+   design; a production pass would likely drop this entirely once the
+   archipelagos read clearly enough on their own. */
+.v3-region-outline {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 6;
+}
+
+.v3-island circle {
+  fill: var(--cab-land);
+  stroke: var(--cab-ink);
+  stroke-width: 2;
+  transition: fill var(--cab-transition-fast), stroke-width var(--cab-transition-fast);
+}
+
+.v3-island:hover circle,
+.v3-island:focus-visible circle {
+  fill: var(--cab-land-hover);
+  stroke-width: 3;
+}
+
+.v3-island {
+  cursor: pointer;
+}
+
+.v3-island:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: 2px;
+}
+
+.v3-island-label {
+  font-family: var(--cab-font-body);
+  font-size: 13px;
+  fill: var(--cab-ink);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--cab-land-light);
+  stroke-width: 3px;
+}
+
+.v3-island--muted circle {
+  fill: var(--cab-card-bg-wip);
+  stroke-dasharray: none;
+  stroke-width: 1.5;
+  opacity: 0.85;
+}
+
+.v3-stub circle {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.v3-stub-label {
+  font-family: var(--cab-font-body);
+  font-size: 11px;
+  fill: var(--cab-ink-soft);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-style: italic;
+}
+
+.v3-filler {
+  fill: var(--cab-ink-faint);
+  opacity: 0.12;
+}
+
+.v3-section-label {
+  font-family: var(--cab-font-heading);
+  fill: var(--cab-ink);
+  letter-spacing: 0.03em;
+}
+
+/* Reserved header strip -- see splitLabelBand() in cabinet-v3-layout.js.
+   No circle is ever packed inside this band, so it doesn't need to
+   search for a gap; it's a light wash the full width of the region,
+   consistent across every section rather than a per-label plate. */
+.v3-section-label-band {
+  fill: var(--cab-card-bg);
+  opacity: 0.55;
+}

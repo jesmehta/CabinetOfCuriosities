@@ -1,0 +1,6 @@
+{
+  "name": "cabinet-v3-prototype",
+  "private": true,
+  "type": "module",
+  "description": "Pure layout modules (treemap/circlepack) are DOM-free by design so they can run under Node for testing or future build-time precompute, same rationale as fffx-subdivision.js."
+}
