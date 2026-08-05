@@ -5,11 +5,11 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.5.3** (angular modulation is itself multi-octave now,
-filling in the medium frequencies between broad lobing and fine edge
-texture) -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3
--> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3
-progression and why each pass changed what it did.
+Currently on **v3.5.4** (ridged noise blended into the angular
+modulation, for sharp fjord-like inlets against smoother coastline
+elsewhere) -- see the changelog for the full v3.0 -> v3.1 -> v3.2 ->
+v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3
+-> v3.5.4 progression and why each pass changed what it did.
 
 Kept deliberately separate from `LANDING-PAGE-NOTES.md` (which documents
 the live `docs/index.html` archipelago map, v2.0/v2.1) rather than
@@ -464,7 +464,7 @@ gradient so each entry gets its own coastline instead of one continent).
    step 6/7 in "How the layout is built" above for what each region then
    draws on top of it.
 
-### Circular vs. lobed silhouettes (v3.5.1, v3.5.2, v3.5.3)
+### Circular vs. lobed silhouettes (v3.5.1 - v3.5.4)
 
 Asked directly: the coastlines read as "wibbly but essentially still
 circular" -- the per-pixel noise jitters the *edge*, but the underlying
@@ -531,6 +531,40 @@ that order, on request:
   40 real circles still trace to 40 closed subpaths. Screenshot showed
   visibly more scalloped, varied-bump-size edges -- real progress, not
   a full fix (see v3.5.4 for what came next).
+- **v3.5.4 -- ridged noise blended in, for sharp inlets instead of just
+  bigger smooth bulges.** Asked directly whether tuning could help --
+  "more extreme jumps, more smooth or rough transitions" -- and
+  recommended ridged noise specifically because raising `angularStrength`
+  alone only makes v3.5.3's existing smooth bulges *bigger*, not
+  *sharper*; the smoothness itself, not the amplitude, is what still
+  reads as "distortion" rather than "coastline." `ridge(n) = (1 -
+  abs(n))*2 - 1` is the classic remap: raw Perlin spends most of its
+  range near 0 (broad, gently rolling), so ridging -- which maps "near
+  0" to ridge's own *maximum* -- turns the noise's rare excursions
+  toward its extremes into sharp, narrow features instead, while
+  everywhere else stays a smooth plateau. Fed into a radius-shrinking
+  term, that's a fjord: mostly full extent, with occasional sharp,
+  narrow cuts. New `angularFbm()` parameter `ridgeMix` blends the
+  existing smooth signal with this ridged remap of the *same* underlying
+  per-octave samples (not two independent noise fields cross-faded --
+  one signal, two different remaps of it) -- 0 is pure v3.5.3, 1 is
+  fully ridged, `angularRidgeMix: 0.6` leans toward ridged while keeping
+  some broad lobing underneath.
+
+  **Bias correction, measured not guessed.** `ridge(n)` is not zero-mean
+  the way raw Perlin is -- since "near 0" dominates Perlin's own
+  distribution and maps to ridge's ceiling, `ridge(n)` spends most of
+  its time near its own maximum. Measured empirically (a throwaway
+  ~660k-sample script, confirming raw `n`'s mean is ~0 as expected while
+  `ridge(n)`'s is +0.578): left uncorrected, blending this in pushed
+  land-area-fraction from the v3.5.3-tuned ~80% up to 95-98% in
+  practice, verified via the same land-fraction harness used for every
+  prior tuning pass -- and, as an observed side effect, silently
+  reopened fusion between real circles that were previously separate
+  (40 circles -> 33 landmasses instead of 40). `ridge()` now subtracts
+  that measured `0.578` directly, restoring land-fraction to 76-87%
+  (comparable to pre-ridge tuning) and all 40 real circles back to 40
+  closed, separate subpaths.
 
   **Determinism, per circle, not just per page.** Each circle draws its
   own `phaseX`/`phaseY`/`freqRadius` from a `mulberry32` RNG seeded by
@@ -825,6 +859,39 @@ combination produces a bad shape that a weight floor doesn't fix.
   #9) -- untried, since the zero-fusion result already reads fine as-is.
 
 ## Changelog
+
+### v3.5.4 -- ridged noise for sharp inlets, bias-corrected
+
+Direct follow-up to feedback on v3.5.3: still "definitely [a] circle
+with distortion instead of noisy island." Asked whether parameter
+changes could help, specifically "more extreme jumps, more smooth or
+rough transitions" -- recommended ridged noise over just raising
+`angularStrength`, since amplitude alone makes existing bulges bigger,
+not sharper; sharpness needs a different noise *character*, not more of
+the same one.
+
+**What changed.** `ridge()` in `cabinet-v3-islandshape.js` -- the
+classic `1 - abs(n)` remap, turning raw Perlin's rare excursions toward
+its extremes into sharp features instead of smooth ones. New
+`ridgeMix` parameter on `angularFbm()` blends smooth and ridged remaps
+of the same underlying samples; new `angularRidgeMix: 0.6` config.
+
+**Bug found and fixed during verification, before screenshotting.**
+Ridged noise isn't zero-mean the way raw Perlin is (measured
+empirically: raw `n` averages ~0 as expected, `ridge(n)` averages
++0.578) -- left uncorrected, blending it in pushed land-area-fraction
+from ~80% to 95-98% and, as a side effect, silently reopened fusion
+between real circles that v3.5's original tuning kept separate (40
+circles -> 33 landmasses). Fixed by subtracting the measured 0.578
+directly inside `ridge()`. Re-verified: land-fraction back to 76-87%,
+all 40 real circles back to 40 separate closed subpaths.
+
+**Verification.** Land-area-fraction re-check across the same 5 radii
+used throughout this file's tuning passes, real-content closure check
+(40/40 closed subpaths, ~28-32ms), single-circle radial-range check.
+Screenshot showed visibly sharper, more varied local features --
+individual islands now show a mix of rounder bulges and pointed
+notches, rather than uniformly rounded lobing.
 
 ### v3.5.3 -- angular modulation goes multi-octave
 

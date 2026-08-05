@@ -185,6 +185,17 @@ export const v3Config = {
     // frequency bands can be tuned independently of each other.
     angularOctaves: 3,
     angularLacunarity: 2,
-    angularGain: 0.5
+    angularGain: 0.5,
+    // v3.5.4: blends v3.5.3's smooth angular fbm (0) with a ridged
+    // remap of the same underlying samples (1) -- see ridge() in
+    // cabinet-v3-islandshape.js. Raw noise spends most of its range
+    // near 0 (broad, gently rolling) with only occasional excursions
+    // toward its extremes; ridging turns those rare excursions into
+    // sharp, narrow radius pinches (fjord-like inlets) while leaving
+    // everywhere else a smooth plateau -- "more extreme jumps" without
+    // just inflating angularStrength (which only makes the existing
+    // smooth bulges bigger, not sharper). 0.6 leans toward the ridged
+    // character while keeping some of v3.5.3's broad lobing underneath.
+    angularRidgeMix: 0.6
   }
 };
