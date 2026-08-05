@@ -5,11 +5,18 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.5.4** (ridged noise blended into the angular
-modulation, for sharp fjord-like inlets against smoother coastline
-elsewhere) -- see the changelog for the full v3.0 -> v3.1 -> v3.2 ->
-v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3
--> v3.5.4 progression and why each pass changed what it did.
+Currently on **v3.6** (domain warping, for real concave coastlines --
+bays, hooks, pinched necks -- plus an on-page dev control panel for
+tuning island-shape parameters live) -- see the changelog for the full
+v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 ->
+v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 progression and why each
+pass changed what it did.
+
+Screenshots of each version are kept in `landing-v3/dev-screenshots/`
+(git-tracked, named `v{version}-{what-changed}.png`) specifically to
+make this visual progression browsable without re-running anything --
+add a new one there (don't overwrite an old version's) whenever a
+change is significant enough to warrant its own changelog entry.
 
 Kept deliberately separate from `LANDING-PAGE-NOTES.md` (which documents
 the live `docs/index.html` archipelago map, v2.0/v2.1) rather than
@@ -194,15 +201,16 @@ Two further decisions from the second round of the conversation:
 
 | File | Responsibility |
 | --- | --- |
-| `index.html` | Static shell: tokens + prototype CSS, one `<svg id="v3-stage">` mount point, `<script type="module" src="cabinet-v3-layout.js">`. No content, no logic. |
-| `cabinet-v3-data.js` | Hand-edited tuning config (canvas width/area-per-weight-unit/`minSectionWeight`, pack seed radius/growth step/padding/band ratio) -- pure data, mirrors `cabinet-data.js`/`fffx-data.js`. |
+| `index.html` | Static shell: tokens + prototype CSS, one `<svg id="v3-stage">` mount point, `<script type="module" src="cabinet-v3-layout.js">` then `cabinet-v3-controls.js`. No content, no logic. |
+| `cabinet-v3-data.js` | Hand-edited tuning config (canvas width/area-per-weight-unit/`minSectionWeight`, pack seed radius/growth step/padding/band ratio, island-shape noise/warp params) -- pure data, mirrors `cabinet-data.js`/`fffx-data.js`. |
 | `cabinet-v3-extras-config.js` | Per-section extras schema-extension proposal -- see above. |
 | `cabinet-v3-treemap.js` | Pure logic: `squarify()` only (the v3.0 aspect-band search, `squarifyWithAspectSearch()`, was removed -- see the changelog; it's recoverable from git history if the band comes back). No DOM -- runs under Node unchanged (see "Verification" below), same rationale as `fffx-subdivision.js`. |
 | `cabinet-v3-circlepack.js` | Pure logic: `generateScatterPoints()` (per-section, takes a cross-section `existingPoints` list), `centerPointsInRect()` (v3.4, per-section, centers bare points before growth), `sortPointsByBandReadingOrder()` (per-section), `growCircles()` (v3.3: one global call across every section's seeds, takes `obstacles` for label bands), plus `createSeededRng()`/`seedFromString()`/`safeMinSeparation()`/`insetRect()` helpers -- all used. `centerClusterInRect()` (v3.2, superseded by `centerPointsInRect()`) and `packCirclesSpiral()` are also here, currently unused (see "Known limitations"). No DOM. |
-| `cabinet-v3-islandshape.js` | Pure logic (v3.5): seeded 2D noise, per-circle radial falloff, a shared heightmap combined via `max()` across every circle, and a marching-squares tracer that turns that heightmap into SVG path data -- see "How coastlines are traced" below. No DOM. |
-| `cabinet-v3-layout.js` | Orchestration + SVG rendering only -- folds entries into sections, calls the treemap, pack, and island-shape modules, builds the actual SVG nodes, reserves and renders each region's label band. Imports real content from `../docs/assets/js/cabinet-generated-content.js`. |
-| `cabinet-v3-style.css` | Layout-review styling, reusing `cabinet-tokens.css`'s palette. |
-| `package.json` | `{ "type": "module" }` only -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
+| `cabinet-v3-islandshape.js` | Pure logic (v3.5, domain warp added v3.6): seeded 2D noise, per-circle radial falloff, domain-warped sample positions, a shared heightmap combined via `max()` across every circle, and a marching-squares tracer that turns that heightmap into SVG path data -- see "How coastlines are traced" below. No DOM. |
+| `cabinet-v3-layout.js` | Orchestration + SVG rendering only -- folds entries into sections, calls the treemap, pack, and island-shape modules, builds the actual SVG nodes, reserves and renders each region's label band. Exports `retraceIslands()` (v3.6) for the control panel's cheap re-trace path. Imports real content from `../docs/assets/js/cabinet-generated-content.js`. |
+| `cabinet-v3-controls.js` | Dev-only (v3.6): on-page slider panel for `v3Config.island`'s noise/warp parameters, live-updating via `retraceIslands()`. Not part of the page design being reviewed -- see "Domain warping for real concavity" below and "Known limitations" #10. |
+| `cabinet-v3-style.css` | Layout-review styling, reusing `cabinet-tokens.css`'s palette; also styles the v3.6 control panel (deliberately plain/utility, not parchment-themed). |
+| `package.json` | Declares `{ "type": "module" }` plus `playwright` as a devDependency (v3.6 -- installed once, not per screenshot round; see "Verification" below) -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
 
 ## How the layout is built (`cabinet-v3-layout.js`'s `render()`)
 
@@ -589,6 +597,117 @@ that order, on request:
   as always -- purely a loop-bounds correctness fix, not a behaviour
   change.
 
+### Domain warping for real concavity (v3.6)
+
+Asked directly after v3.5.4: still "very much circle-got-distorted...
+There is effectively no concavity in the shapes at large." The reason is
+structural, not a tuning gap: `angularRadiusScale` (v3.5.2-.4, however
+many octaves or how much ridging get layered into it) computes a
+*radius* as a function of angle around one fixed center -- by
+construction that makes the traced boundary star-shaped, meaning every
+ray from that center crosses it exactly once. No amount of stacking
+angular octaves or ridge sharpness can fold the boundary back on itself
+(a real bay, a hook, a peninsula that narrows then widens) -- only
+change how that one crossing point jumps around. Confirmed this was the
+actual blocker (not just argued from first principles) before writing
+any code: the "concavity proxy" verification below shows the pre-v3.6
+baseline already sitting at a small but nonzero multi-crossing rate
+purely from *per-pixel* edge noise (`fbm2D`, step 2 in "How coastlines
+are traced"), which samples real 2D `(x, y)` space and so isn't bound by
+the star-shaped constraint the way the angular term is -- direct
+evidence the constraint is specific to the angular approach, not
+something inherent to noise-based coastlines in general.
+
+**The fix: warp the sample position, not the output radius.**
+`warpOffset()` (`cabinet-v3-islandshape.js`) is Inigo Quilez's domain-
+warping technique -- two low-frequency `fbm2D` fields (sampled at a
+large, arbitrary coordinate offset from each other, `(+37.2, +91.7)`,
+the standard cheap way to get a second decorrelated signal out of one
+noise function rather than building a whole second permutation table)
+give an `(x, y)` displacement in canvas px. Every per-cell computation in
+`buildIslandHeightmap` -- both the distance-to-center check that
+`angularRadiusScale`'s falloff is measured against, *and* the per-pixel
+coastline noise sample -- now reads the *warped* point, not the raw grid
+position. That's what breaks the constraint: a point geometrically well
+inside a circle's guaranteed-land core can warp to where it effectively
+samples as past the coastline, while a neighbouring point (a few warp-
+field wavelengths away) doesn't -- a real fold, not a radius dip. Uses
+its own permutation table (seeded `` `${seed}:warp` ``, not the
+coastline noise's own `perm`) so the warp field is visually independent
+of the base coastline texture rather than risking any correlation
+between "where a point warps to" and "what the coastline noise reads
+there."
+
+Layers on top of, not instead of, v3.5.2-.4's angular modulation and
+ridged blend -- both still contribute their own texture; nothing was
+reverted. `maxOuterR`'s bbox-widening (already extended once for
+`angularStrength`, see "Bounding-box correctness" above) gets a further
+flat `+ warpStrength` px, same reasoning stacked: a cell just outside
+what angular modulation alone could reach might still warp into a
+circle's influence.
+
+**Verified with a concrete concavity proxy, not just a screenshot.**
+"Looks concave" is subjective; a star-shaped boundary crosses any ray
+from its own center exactly once, so *counting rays with more than one
+land/water crossing* is a direct, checkable proxy for real folding
+(written as a throwaway Node script, deleted after use, same discipline
+as every prior tuning pass). A first attempt at picking `warpStrength`/
+`warpScale` values by feel showed no reliable increase over baseline --
+turned out one fixed test circle's result is idiosyncratic (the warp
+field's alignment relative to that one circle's specific position), so
+the actual sweep tested `warpStrength` in `[0, 20, 35, 50, 70, 100]` px
+x warp-field period in `[90, 140, 220]` px against **12 varied synthetic
+circles** (different positions/radii/ids) and averaged. Confirmed a
+clear, monotonic-ish increase with strength, strongest at shorter
+periods. Landed on `warpStrength: 40, warpScale: 1/100` (period 100px)
+as a starting default -- re-verified against the real 40-circle content
+specifically: average multi-crossing-ray fraction goes from 1.55% (warp
+off) to 3.40% (warp on), more than double, and every circle still closes
+cleanly (40/40 landmasses, no fragmentation, no dangling chains).
+
+**Dev control panel, so real tuning happens interactively.** Rather than
+guess a final value and iterate by screenshot-and-edit-config (the
+pattern for every parameter through v3.5.4), v3.6 ships
+`cabinet-v3-controls.js`: a plain-HTML overlay (not part of the SVG,
+deliberately un-parchment-styled since it's a dev tool, not page design)
+with sliders for `warpStrength`, `warpPeriod` (a friendlier reframing of
+`warpScale` -- period in px rather than a 1/px frequency), `warpOctaves`,
+`angularStrength`, `angularRidgeMix`, `threshold`, `noiseAmplitude`, and
+`gradientStrength`, plus Reset (restores the values `v3Config.island`
+had when the panel first loaded) and Copy config (dumps the current
+tuning as JSON, to console and clipboard) buttons. Mutates
+`v3Config.island` directly and calls `cabinet-v3-layout.js`'s exported
+`retraceIslands()` on every slider input.
+
+Made cheap enough for that by splitting `render()`: the expensive part
+(treemap + circle-packing, which never depends on island-shape tuning)
+now runs once and caches its `{ grown, canvasBounds }` output in a
+module-level `islandLayoutState`; `retraceIslands()` re-traces against
+that cache and updates the existing `<path class="v3-islands-land">`'s
+`d` attribute in place, rather than re-running the whole pipeline (or
+even re-creating the path element) on every drag tick. Verified via
+Playwright: dragging a slider to max changes the rendered path (confirms
+the live retrace actually fires) and Reset restores byte-identical
+output to the pre-slider state.
+
+Screenshot comparison (`dev-screenshots/v3.5.4-ridged-blend.png` vs.
+`v3.6-domain-warp-default.png`) shows the qualitative shift directly --
+several islands (Vera Molnar, Circle Packing Library, 100 Gradients,
+Writings) now have a genuine inward bite or pinched neck, not just a
+bumpier outline. `v3.6-domain-warp-max-strength.png` shows the slider's
+top end deliberately: some islands fragment into disconnected tendril
+pieces at `warpStrength: 150` -- expected and left in-range on purpose,
+so the panel's usable span covers "subtle" through "clearly excessive,"
+not just a narrow band around the shipped default.
+
+**Linearity -- explicitly not attempted here.** Also asked for: coastline
+segments with actual straight/linear character (real coasts have cliff
+stretches that read as straight, not just organic curves), separate from
+concavity. Domain warping doesn't produce this -- it's a smooth
+continuous displacement, structurally suited to folds and bays, not
+straight edges. Flagged as a distinct follow-up (see "Next steps"), not
+solved in this pass.
+
 ### Falloff tuning: "most of the circle is the island"
 
 `innerFrac`/`outerFrac`/`gradientStrength`/`threshold`/`noiseAmplitude`
@@ -790,6 +909,14 @@ not a finished visual pass. In priority order:
    growth's padding minimum (~6px), tighter than the current falloff
    band reliably bridges. Verified working on synthetic close-circle
    cases; just not exercised by this specific content's actual spacing.
+10. **Dev control panel overlaps page content on narrower viewports
+    (v3.6).** `cabinet-v3-controls.js`'s panel is `position: fixed` in the
+    top-right corner at a fixed 250px width -- on the 1400px-wide
+    screenshot viewport it covers part of `machines-makings`' rightmost
+    circles/labels. Not fixed, since the panel is an explicitly dev-only
+    tuning tool (see its own doc comment), not part of the page design
+    being reviewed -- scroll or resize the browser window to see anything
+    it's covering, or collapse/remove it once tuning is done.
 
 ## About Me: what was going on, and what was done about it
 
@@ -857,8 +984,69 @@ combination produces a bad shape that a weight floor doesn't fix.
   config's `outerFrac`/`gradientStrength` so close-but-not-touching real
   pairs (currently ~6px apart at the closest) reliably bridge (limitation
   #9) -- untried, since the zero-fusion result already reads fine as-is.
+- **Linearity** (v3.6): actual straight coastline stretches, distinct
+  from concavity and not something domain warping produces (see its own
+  writeup above). Two directions not yet tried: a stepped/quantized warp
+  field (flat plateaus with sharper transitions between them), or a
+  Voronoi/Worley-cell-boundary term added into the heightmap (cell edges
+  are straight lines by construction) -- the latter is a bigger structural
+  addition, closer in scope to domain warping itself than to a parameter
+  tweak.
+- Domain warp's own parameters (`warpStrength`/`warpScale`/`warpOctaves`
+  in `v3Config.island`) are a starting point tuned against a concavity
+  proxy, not a finished aesthetic pass -- the point of v3.6's control
+  panel is to let real tuning happen interactively; whatever values that
+  settles on should get copied back into `cabinet-v3-data.js` (the
+  panel's own "Copy config" button exists for exactly this) once decided.
 
 ## Changelog
+
+### v3.6 -- domain warping for real concavity + dev tuning panel
+
+Direct follow-up to feedback on v3.5.4: "still very much circle-got-
+distorted... no concavity in the shapes at large." Root cause: angular
+modulation (v3.5.2-.4, however extreme) computes a radius as a function
+of angle around one fixed center, which is structurally star-shaped --
+every ray from that center crosses the boundary exactly once, no matter
+how many octaves or how much ridging get piled on. Fixed by domain
+warping (Inigo Quilez's technique, `warpOffset()` in
+`cabinet-v3-islandshape.js`): displaces the *sample position* itself
+(via two decorrelated low-frequency `fbm2D` fields) before both the
+distance-to-center check and the per-pixel coastline noise read it --
+breaks the star-shaped constraint directly, since a warped point can
+sample as past the coastline while its geometric neighbour doesn't, a
+real fold rather than a radius dip. Layered on top of v3.5.2-.4, not a
+replacement -- angular modulation and ridging still contribute.
+
+`warpStrength: 40`/`warpScale: 1/100` picked from an empirical sweep
+(strength x period grid against 12 varied synthetic circles, not
+eyeballed) using a concrete concavity proxy: fraction of rays from a
+circle's own center crossing the coastline more than once (>1 crossing
+is direct, checkable proof of a real fold). Re-verified against the real
+40-circle content: avg multi-crossing-ray fraction 1.55% (warp off) ->
+3.40% (warp on), all 40 circles still close cleanly, no fragmentation.
+
+Also ships `cabinet-v3-controls.js`, a dev-only on-page panel (sliders
+for `warpStrength`/`warpPeriod`/`warpOctaves`/`angularStrength`/
+`angularRidgeMix`/`threshold`/`noiseAmplitude`/`gradientStrength`, plus
+Reset and Copy-config) so the real aesthetic tuning happens live against
+the rendered shapes instead of another screenshot-edit-repeat cycle --
+requested directly, after v3.5.1-.4 each took a full round-trip to test
+one guess. Made cheap by splitting `cabinet-v3-layout.js`'s `render()`:
+the expensive treemap/circle-packing pass now runs once and caches
+`{ grown, canvasBounds }`; the newly-exported `retraceIslands()` re-
+traces against that cache and updates the existing path's `d` attribute
+in place on every slider input, without re-running packing.
+
+Full technical writeup, the sweep methodology, and the concavity-proxy
+verification: see "Domain warping for real concavity (v3.6)" above.
+Screenshots: `dev-screenshots/v3.6-domain-warp-default.png` (and
+`-svg-only.png`, `-max-strength.png`) vs. `v3.5.4-ridged-blend.png` for
+the direct before/after.
+
+Explicitly not attempted: coastline **linearity** (straight cliff-like
+stretches) -- a distinct ask from concavity, and not something domain
+warping produces. See "Next steps".
 
 ### v3.5.4 -- ridged noise for sharp inlets, bias-corrected
 
