@@ -5,9 +5,10 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.5** (noise-carved coastlines replace plain circles) --
-see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
-v3.4.1 -> v3.4.2 -> v3.5 progression and why each pass changed what it
+Currently on **v3.5.2** (angle-modulated coastline radius -- islands
+are genuinely lobed, not just jittered circles) -- see the changelog
+for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 ->
+v3.5 -> v3.5.1 -> v3.5.2 progression and why each pass changed what it
 did.
 
 Kept deliberately separate from `LANDING-PAGE-NOTES.md` (which documents
@@ -453,10 +454,82 @@ gradient so each entry gets its own coastline instead of one continent).
    Sub-cell noise speckles (an isolated grid cell or two crossing
    threshold in open water, far from any circle) are dropped by a
    minimum-polygon-area filter before rendering.
-4. **Render as one `<path fill-rule="evenodd">`**, drawn first, in
+4. **Angle-modulate the falloff radius itself** (v3.5.2,
+   `angularRadiusScale`) -- see "Circular vs. lobed silhouettes" below.
+   This runs per grid cell, inside step 2's loop, before the noise/
+   gradient comparison -- it changes *where* `outerFrac` actually sits
+   in a given direction, not just what's layered on top of it.
+5. **Render as one `<path fill-rule="evenodd">`**, drawn first, in
    `cabinet-v3-layout.js`'s `render()`, underneath every region -- see
    step 6/7 in "How the layout is built" above for what each region then
    draws on top of it.
+
+### Circular vs. lobed silhouettes (v3.5.1, v3.5.2)
+
+Asked directly: the coastlines read as "wibbly but essentially still
+circular" -- the per-pixel noise jitters the *edge*, but the underlying
+gradient is perfectly radially symmetric, so the gross silhouette never
+stopped being a circle. Two candidate fixes were discussed before either
+was tried: more `fbm2D` octaves (finer edge detail), or modulating the
+falloff radius itself by angle (a genuine silhouette change). Tried in
+that order, on request:
+
+- **v3.5.1 -- more octaves (3 -> 6), tried first, reverted.** Isolated
+  the variable deliberately: `noiseScale`/`lacunarity`/`gain` all held
+  constant, only `octaves` changed. Screenshot comparison showed almost
+  no visible difference. Root cause: each added octave layers detail at
+  2x/4x/8x the base frequency, which at `noiseScale: 1/26` starts
+  producing noise features finer than `cellSize: 4` can resolve at trace
+  time -- the detail was real in the heightmap but invisible in the
+  traced output. Reverted to 3; more octaves at the current `cellSize`
+  is pure wasted compute, not a visual lever. (Raising `cellSize` down
+  further, i.e. a finer grid, would let higher octaves actually show up
+  -- not tried, since it wasn't what fixed the actual complaint anyway.)
+- **v3.5.2 -- angle-modulated radius, the actual fix.**
+  `angularRadiusScale(theta)` samples a *separate*, single-octave (not
+  `fbm2D` -- layering multiple octaves back in here would reintroduce
+  the same high-frequency wiggle this is meant to be independent of)
+  noise at a point on a small loop in noise-space: as `theta` sweeps
+  0..2*pi, the sampled point traces a full loop of radius `freqRadius`
+  in noise-space, giving smooth, seamless (no seam at the 0/2*pi wrap,
+  since it's a genuine closed loop), low-frequency angular variation --
+  a handful of broad bulges/pinches per island, not texture. That scale
+  factor (clamped >= 0.15, floor only, to guard the actual division
+  below) multiplies the circle's own radius *before* `dNorm` is computed
+  against it, so the whole radial profile stretches or compresses
+  together in that direction, not just the outer edge. `freqRadius`
+  (drawn per-circle from `angularFreqMin`..`angularFreqMax`, currently
+  1.2-2.4) controls lobe count -- roughly `2 * pi * freqRadius` "features"
+  per full revolution, tuned empirically (not derived) to land around
+  2-4 broad lobes, "peninsula and bay" character rather than a wavy
+  circle (too few) or a starburst (too many). `angularStrength` (0.4)
+  sets how far the radius swings -- verified via
+  `_verify-islandshape.mjs` (throwaway, deleted after use) that a
+  radius-80 circle's traced boundary now spans 58-101px from center,
+  visibly wider than the pre-v3.5.2 jittered-circle range.
+
+  **Determinism, per circle, not just per page.** Each circle draws its
+  own `phaseX`/`phaseY`/`freqRadius` from a `mulberry32` RNG seeded by
+  `` `${seed}:${circle.id}` `` (falling back to its rounded position for
+  ad-hoc circles without an id, e.g. in the verification harness) --
+  every island gets an independent lobing pattern (not the same bulge
+  direction repeated on every circle), reproducible across reloads
+  (same content in, same coastlines out), same rule as everywhere else
+  in v3. Verified: two circles at the identical position/radius but
+  different ids trace different shapes; the same id traced twice
+  produces byte-identical output.
+
+  **Bounding-box correctness.** The per-circle grid-cell bounding box
+  (used to limit the heightmap loop to cells that could possibly matter,
+  see step 2 above) was sized from a fixed `outerFrac x radius` before
+  this change -- with the radius itself now angle-dependent and able to
+  *exceed* that fixed value in a bulge direction, the bbox had to widen
+  to the worst case (`outerFrac x radius x (1 + angularStrength)`) to
+  avoid silently clipping a lobe's true extent. Cells the bbox now
+  over-includes that a given angle's *actual* (smaller) scale doesn't
+  reach are simply skipped by the existing per-cell `dNorm` check, same
+  as always -- purely a loop-bounds correctness fix, not a behaviour
+  change.
 
 ### Falloff tuning: "most of the circle is the island"
 
@@ -728,6 +801,43 @@ combination produces a bad shape that a weight floor doesn't fix.
   #9) -- untried, since the zero-fusion result already reads fine as-is.
 
 ## Changelog
+
+### v3.5.2 -- angle-modulated coastline radius (genuinely lobed islands)
+
+Direct follow-up to feedback on v3.5's result: "wibbly but essentially
+still circular." User proposed three candidate directions (a randomly
+rotated square gradient, more noise octaves, other gradient shapes) and
+asked which to pursue; recommended the angle-modulated-radius approach
+as the actual silhouette fix (a square gradient just substitutes one
+symmetry for another; octaves only add edge texture) with domain-
+warping named as a further option, and was asked to sequence it: try
+octaves first, then this, then optionally domain-warping later. See
+"Circular vs. lobed silhouettes" above for the full mechanism and
+tuning numbers (`angularStrength: 0.4`, `angularFreqMin/Max: 1.2/2.4`).
+
+**Verification.** A land-fraction re-check (still 80-84% across the
+same radius range as v3.5's tuning, confirming the change didn't
+regress that), a widened-radial-range check (80px circle now traces
+58-101px from center, versus a much tighter range pre-change), a
+different-id-produces-different-lobing check, and a same-id-is-
+deterministic check -- all in a throwaway `_verify-angular.mjs`, deleted
+after use. Real-content pass: all 40 circles still trace to 40 closed,
+finite-coordinate subpaths (41ms). Playwright screenshot confirmed the
+actual visual result: islands now show real peninsulas/bays/elongation,
+clearly distinct from a jittered circle, no console errors.
+
+### v3.5.1 -- more fbm octaves, tried first, reverted
+
+First of the two candidate fixes for "still essentially circular",
+tried in the order requested. `octaves: 3 -> 6`, everything else held
+constant, specifically to isolate this one variable. Screenshot
+comparison showed the result was visually near-identical to v3.5 --
+diagnosed as `cellSize: 4`'s own sampling resolution being too coarse to
+represent the extra octaves' higher-frequency detail, so the noise
+computation did more work for no visible change. Reverted to `octaves:
+3` rather than paying that cost for nothing; superseded by v3.5.2's
+angle-modulated radius, which changes the actual silhouette instead of
+edge texture. See "Circular vs. lobed silhouettes" above.
 
 ### v3.5 -- noise-carved coastlines replace plain circles
 

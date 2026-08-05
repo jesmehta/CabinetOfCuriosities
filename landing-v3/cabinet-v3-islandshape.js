@@ -123,6 +123,31 @@ function smoothstep(edge0, edge1, x) {
   return t * t * (3 - 2 * t);
 }
 
+// v3.5.2 -- angle-modulated radius, the actual silhouette fix (octaves
+// alone, tried first, only added edge texture below the grid's own
+// sampling resolution -- see Landing-page-notes.2.0.md). Rather than a
+// constant falloff radius in every direction (a jittered-edge circle no
+// matter how much noise rides on top of it), the radius itself becomes
+// a function of angle around the circle's own center: sample a SEPARATE
+// single-octave noise at a point on a small loop in noise-space (one
+// loop around the circle in world-angle = one loop around that noise-
+// space circle), which gives smooth, low-frequency, seamless (no seam
+// at theta=0/2pi, since it's a genuine closed loop in noise-space)
+// angular variation -- a few broad bulges/pinches per island, not
+// texture. Deliberately a single perlin2D call, not fbm2D -- layering
+// multiple octaves back in here would reintroduce the same high-
+// frequency wiggle this is meant to be independent of.
+function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength) {
+  const nx = phaseX + freqRadius * Math.cos(theta);
+  const ny = phaseY + freqRadius * Math.sin(theta);
+  const n = perlin2D(perm, nx, ny); // roughly [-0.7, 0.7]
+  // Floored well above 0 -- strength is configured (see cabinet-v3-data.js)
+  // so this can't legitimately reach non-positive, but the floor is kept
+  // as a hard guarantee: a non-positive scale would divide dNorm by zero
+  // or flip its sign, corrupting the whole falloff for that ray.
+  return Math.max(0.15, 1 + n * strength);
+}
+
 // ---------------------------------------------------------------------
 // Heightmap: one shared grid, every circle contributes via max()
 
@@ -143,7 +168,7 @@ function smoothstep(edge0, edge1, x) {
 // work is proportional to the sum of circle areas, not canvas area times
 // circle count.
 function buildIslandHeightmap(circles, canvasBounds, config) {
-  const { cellSize, noiseScale, octaves, lacunarity, gain, noiseAmplitude, innerFrac, outerFrac, gradientStrength, seed, waterLevel } = config;
+  const { cellSize, noiseScale, octaves, lacunarity, gain, noiseAmplitude, innerFrac, outerFrac, gradientStrength, seed, waterLevel, angularStrength, angularFreqMin, angularFreqMax } = config;
 
   const cols = Math.max(2, Math.ceil(canvasBounds.width / cellSize) + 1);
   const rows = Math.max(2, Math.ceil(canvasBounds.height / cellSize) + 1);
@@ -151,10 +176,33 @@ function buildIslandHeightmap(circles, canvasBounds, config) {
 
   const perm = buildPermutation(mulberry32(seedFromString(seed)));
 
+  // Bbox has to cover the *largest* a circle's angularly-scaled radius
+  // could reach in any direction, not just outerFrac * radius -- a bulge
+  // (radiusScale > 1) can push the true influence boundary past what a
+  // fixed-radius bbox would have covered. angularRadiusScale's own floor
+  // (0.15) only bounds it from below; the ceiling is `1 + strength`
+  // (perlin2D's practical max magnitude is comfortably under 1, so this
+  // is a safe, if slightly conservative, overestimate) -- extra cells
+  // this pulls in that a given angle's *actual* scale doesn't reach are
+  // just skipped by the per-cell dNorm check below, same as always.
+  const maxOuterR = c => c.radius * outerFrac * (1 + angularStrength);
+
   circles.forEach(c => {
     if (!(c.radius > 0.5)) return;
 
-    const outerR = c.radius * outerFrac;
+    // Seeded per-circle, not per-cell -- one phase/frequency pair per
+    // island, so its lobing pattern is fixed across every angle sampled
+    // for it (and reproducible across reloads), while two different
+    // circles get two different, independent patterns rather than an
+    // identical bulge direction repeated on every island. Keyed by the
+    // circle's own id when present (falls back to its position, e.g. for
+    // ad-hoc circles in the verification harness that don't carry one).
+    const circleRng = mulberry32(seedFromString(`${seed}:${c.id ?? `${c.x.toFixed(1)},${c.y.toFixed(1)}`}`));
+    const phaseX = circleRng() * 1000;
+    const phaseY = circleRng() * 1000;
+    const freqRadius = angularFreqMin + circleRng() * (angularFreqMax - angularFreqMin);
+
+    const outerR = maxOuterR(c);
     const minGx = Math.max(0, Math.floor((c.x - outerR - canvasBounds.x) / cellSize));
     const maxGx = Math.min(cols - 1, Math.ceil((c.x + outerR - canvasBounds.x) / cellSize));
     const minGy = Math.max(0, Math.floor((c.y - outerR - canvasBounds.y) / cellSize));
@@ -166,7 +214,10 @@ function buildIslandHeightmap(circles, canvasBounds, config) {
         const wy = canvasBounds.y + gy * cellSize;
         const dx = wx - c.x;
         const dy = wy - c.y;
-        const dNorm = Math.sqrt(dx * dx + dy * dy) / c.radius;
+
+        const theta = Math.atan2(dy, dx);
+        const radiusScale = angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, angularStrength);
+        const dNorm = Math.sqrt(dx * dx + dy * dy) / (c.radius * radiusScale);
         if (dNorm > outerFrac) continue;
 
         const n = fbm2D(perm, wx * noiseScale, wy * noiseScale, octaves, lacunarity, gain) * noiseAmplitude;

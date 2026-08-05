@@ -154,6 +154,24 @@ export const v3Config = {
     // Fixed seed for the whole shared heightmap (not per-section, unlike
     // pack's scatter seeding -- there's no natural per-section key for a
     // field every section's circles contribute to together).
-    seed: "cabinet-v3-islands"
+    seed: "cabinet-v3-islands",
+    // v3.5.2: how much the falloff radius itself bulges/pinches by angle
+    // around a circle's own center (see angularRadiusScale() in
+    // cabinet-v3-islandshape.js) -- the actual silhouette fix, after
+    // octaves alone (tried first, see the v3.5.1 changelog entry) only
+    // added edge texture too fine for `cellSize` to resolve, without
+    // changing the overall (still-circular) shape. 0.4 means the radius
+    // can range roughly 0.7x-1.3x its base value depending on direction
+    // -- noticeably lobed/elongated without a circle ever collapsing to
+    // a sliver at its narrowest angle.
+    angularStrength: 0.4,
+    // Range of "loop radius in noise-space" a circle's own angular
+    // pattern is randomly drawn from (see angularRadiusScale()'s doc
+    // comment for why a small loop gives few broad lobes rather than
+    // many small ones). ~1.2-2.4 empirically lands around 2-4 lobes per
+    // island -- "peninsula and bay" character, not a wavy-edged circle
+    // and not a starburst either.
+    angularFreqMin: 1.2,
+    angularFreqMax: 2.4
   }
 };
