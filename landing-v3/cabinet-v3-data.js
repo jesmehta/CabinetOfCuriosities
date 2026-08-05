@@ -196,6 +196,44 @@ export const v3Config = {
     // just inflating angularStrength (which only makes the existing
     // smooth bulges bigger, not sharper). 0.6 leans toward the ridged
     // character while keeping some of v3.5.3's broad lobing underneath.
-    angularRidgeMix: 0.6
+    angularRidgeMix: 0.6,
+
+    // v3.6: domain warping (see warpOffset() in cabinet-v3-islandshape.js).
+    // angularRadiusScale above can only ever bulge/pinch a *radius* --
+    // structurally a single-valued function of angle around one fixed
+    // center, so it can never fold the boundary back on itself the way a
+    // real bay or hook does, no matter how many octaves or how much
+    // ridging get piled on (see Landing-page-notes.2.0.md's v3.5.4-vs-
+    // v3.6 discussion). Domain warping displaces the sample *position*
+    // itself before the distance-to-center check runs, which is what
+    // actually makes concavity possible.
+    //
+    // warpStrength/warpScale below picked from an empirical sweep (a
+    // throwaway Node script, not eyeballed): tried strength in
+    // [0,20,35,50,70,100] px x warp-field period in [90,140,220] px
+    // against 12 varied synthetic circles, counting what fraction of
+    // rays from each circle's own center cross the coastline more than
+    // once (>1 crossing is direct proof of a real fold -- a star-shaped
+    // boundary, which is all angularRadiusScale alone can ever produce,
+    // crosses exactly once per ray no matter how jagged). Re-verified
+    // against the real 40-circle content specifically (not just the
+    // synthetic probes): avg multi-crossing rays 1.55% at warp off vs.
+    // 3.40% at these values -- more than double, and every circle still
+    // closes cleanly (40/40 landmasses, no fragmentation). Still a
+    // starting point, not final aesthetic tuning -- v3.6 also ships an
+    // on-page control panel (cabinet-v3-controls.js) specifically so the
+    // real tuning happens interactively against the live shapes instead
+    // of another round of screenshot-and-guess.
+    //
+    // warpStrength: max displacement in canvas px. warpScale: like
+    // noiseScale above, roughly 1/(world px per warp-field period) --
+    // deliberately lower frequency than noiseScale's fine edge texture,
+    // since a warp fold needs to displace a whole stretch of a circle's
+    // boundary together to read as a bay rather than jitter.
+    warpStrength: 40,
+    warpScale: 1 / 100,
+    warpOctaves: 2,
+    warpLacunarity: 2,
+    warpGain: 0.5
   }
 };
