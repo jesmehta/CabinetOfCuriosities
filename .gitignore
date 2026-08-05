@@ -11,6 +11,7 @@ docs/images/FabLoom/Fabloom-54.jpg
 site/
 _test-build/
 public/
+node_modules/
 
 # Third-party map/design reference images, local-only (unclear licensing
 # for a public repo) -- used as visual reference for the map redesign.
