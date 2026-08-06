@@ -587,6 +587,113 @@ export function traceIslandShapes(circles, canvasBounds, config) {
   return traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds, threshold);
 }
 
+// ---------------------------------------------------------------------
+// v3.6.6 -- fixed-distance wave rings. Everything above this point
+// (rippleThresholds/seaBandThresholds/etc.) traces LEVELS of the noise
+// heightmap, which is not the same thing as a fixed real-world distance
+// from the coastline -- see the field notes in cabinet-v3-data.js. This
+// is the actual distance transform that was deferred back at v3.6.4.
+
+// Exact squared Euclidean distance transform of a 1D sampled function
+// (Felzenszwalt & Huttenlocher, "Distance Transforms of Sampled
+// Functions") -- f[q] is the cost of q being its own nearest source (0
+// for a source cell, INF otherwise); returns, for every q, the min over
+// every source p of f[p] + (q-p)^2. Two passes of this (once down each
+// column, once across each row of the result) gives the exact 2D
+// squared Euclidean distance transform, not a chamfer approximation --
+// O(n) per pass, same asymptotic cost as one marching-squares trace.
+const DT_INF = 1e9;
+function distanceTransform1D(f, n) {
+  const d = new Float32Array(n);
+  const v = new Int32Array(n);
+  const z = new Float32Array(n + 1);
+  let k = 0;
+  v[0] = 0;
+  z[0] = -DT_INF;
+  z[1] = DT_INF;
+  for (let q = 1; q < n; q++) {
+    let s;
+    for (;;) {
+      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+      if (s <= z[k]) k--;
+      else break;
+    }
+    k++;
+    v[k] = q;
+    z[k] = s;
+    z[k + 1] = DT_INF;
+  }
+  k = 0;
+  for (let q = 0; q < n; q++) {
+    while (z[k + 1] < q) k++;
+    const dx = q - v[k];
+    d[q] = dx * dx + f[v[k]];
+  }
+  return d;
+}
+
+// isSeed[i] truthy -> that cell's distance is 0. Returns squared
+// distance in GRID units (not px) to the nearest seed cell, for every
+// cell -- callers take sqrt and multiply by cellSize.
+function euclideanDistanceTransform2D(isSeed, cols, rows) {
+  const colPass = new Float32Array(cols * rows);
+  const colBuf = new Float32Array(rows);
+  for (let x = 0; x < cols; x++) {
+    for (let y = 0; y < rows; y++) colBuf[y] = isSeed[y * cols + x] ? 0 : DT_INF;
+    const d = distanceTransform1D(colBuf, rows);
+    for (let y = 0; y < rows; y++) colPass[y * cols + x] = d[y];
+  }
+  const out = new Float32Array(cols * rows);
+  const rowBuf = new Float32Array(cols);
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) rowBuf[x] = colPass[y * cols + x];
+    const d = distanceTransform1D(rowBuf, cols);
+    for (let x = 0; x < cols; x++) out[y * cols + x] = d[x];
+  }
+  return out;
+}
+
+// Builds a field where every LAND cell (H > threshold) is 0 and every
+// water cell is NEGATIVE its true pixel distance to the nearest land
+// cell -- deliberately negated so it drops straight into
+// traceContourFromHeightmap() exactly like H itself: tracing this field
+// at level `-D` gives the closed polygon of every point exactly D
+// pixels from the coastline, the same "> level = land side" convention
+// traceContourFromHeightmap already uses, just with distance standing
+// in for noise height. Distance is measured to the nearest LAND CELL,
+// not the literal traced coastline curve, so it's accurate to within
+// about half a cellSize -- the same resolution every other contour in
+// this file already trades away for marching squares' speed.
+export function buildCoastlineDistanceField(H, cols, rows, cellSize, threshold) {
+  const isLand = new Uint8Array(cols * rows);
+  for (let i = 0; i < H.length; i++) isLand[i] = H[i] > threshold ? 1 : 0;
+  const sqDist = euclideanDistanceTransform2D(isLand, cols, rows);
+  const field = new Float32Array(cols * rows);
+  for (let i = 0; i < field.length; i++) field[i] = -Math.sqrt(sqDist[i]) * cellSize;
+
+  // Same reasoning as buildIslandHeightmap's own edge-forcing: without
+  // this, a wave ring near an island close to the canvas edge can reach
+  // the true grid boundary and trace as an OPEN chain -- which
+  // chainSegmentsToPolygons still pushes as if it were closed, so the
+  // SVG path's implicit final "Z" draws a straight line from wherever
+  // that chain happened to end back to wherever it started, often clear
+  // across the canvas to an unrelated contour. Forcing the border to a
+  // value no realistic waveDistances entry will ever reach guarantees
+  // every ring closes on its own, inside the grid, same as every other
+  // contour in this file already does.
+  const FAR = -1e6;
+  for (let gx = 0; gx < cols; gx++) {
+    field[gx] = FAR;
+    field[(rows - 1) * cols + gx] = FAR;
+  }
+  for (let gy = 0; gy < rows; gy++) {
+    field[gy * cols] = FAR;
+    field[gy * cols + (cols - 1)] = FAR;
+  }
+
+  return field;
+}
+
 // v3.6.4: concentric "ripple" rings echoing the coastline outward into
 // open water (same spirit as the v2 map's coast-ripples-global, see
 // Landing-page-notes.2.0.md) are built by the caller as: build H once
@@ -605,4 +712,4 @@ export function traceIslandShapes(circles, canvasBounds, config) {
 
 // Exported for the Node verification harness (land-area-fraction check,
 // contour counts) -- not used by the render path itself.
-export { buildIslandHeightmap, marchingSquaresSegments, chainSegmentsToPolygons };
+export { buildIslandHeightmap, marchingSquaresSegments, chainSegmentsToPolygons, euclideanDistanceTransform2D };

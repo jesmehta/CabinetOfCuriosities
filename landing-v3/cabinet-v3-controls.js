@@ -98,6 +98,83 @@ function buildControlPanel() {
     panel.appendChild(row);
   });
 
+  // v3.6.7 -- wave-ring distance generator: waveDistances is a derived
+  // array (d[i] = start * multiplier^i + offset), not a single scalar,
+  // so it doesn't fit the CONTROLS-array's one-slider-one-key model
+  // above. Seeded from the currently-live array (assumes it already
+  // fits start*multiplier^i+offset -- true for how every waveDistances
+  // value has been set so far) so opening the panel doesn't silently
+  // change anything until a slider actually moves.
+  const liveWaves = v3Config.island.waveDistances;
+  const waveGenDefaults = {
+    count: liveWaves.length,
+    start: liveWaves[0],
+    multiplier: liveWaves.length > 1 ? liveWaves[1] / liveWaves[0] : 3,
+    offset: 0
+  };
+  const waveGen = { ...waveGenDefaults };
+
+  const computeWaveDistances = g =>
+    Array.from({ length: g.count }, (_, i) => Math.max(0.5, g.start * Math.pow(g.multiplier, i) + g.offset));
+
+  const waveHeading = document.createElement("div");
+  waveHeading.className = "v3-controls-group-label";
+  waveHeading.textContent = "Wave rings (v3.6.6)";
+  panel.appendChild(waveHeading);
+
+  const waveInputs = {};
+  const WAVE_FIELDS = [
+    { key: "count", label: "Count", min: 2, max: 5, step: 1 },
+    { key: "start", label: "Start (px)", min: 1, max: 30, step: 1 },
+    { key: "multiplier", label: "Multiplier", min: 1, max: 5, step: 0.1 },
+    { key: "offset", label: "Offset (px)", min: -10, max: 30, step: 1 }
+  ];
+  const waveValueSpan = document.createElement("div");
+  waveValueSpan.className = "v3-controls-value";
+  waveValueSpan.style.marginBottom = "6px";
+
+  const refreshWavePreview = () => {
+    waveValueSpan.textContent = computeWaveDistances(waveGen).map(d => d.toFixed(1)).join(", ");
+  };
+
+  WAVE_FIELDS.forEach(f => {
+    const row = document.createElement("label");
+    row.className = "v3-controls-row";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "v3-controls-name";
+    nameSpan.textContent = f.label;
+
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = String(f.min);
+    input.max = String(f.max);
+    input.step = String(f.step);
+    input.value = String(waveGen[f.key]);
+
+    const valueSpan = document.createElement("span");
+    valueSpan.className = "v3-controls-value";
+    valueSpan.textContent = formatValue(waveGen[f.key], f.step);
+
+    input.addEventListener("input", () => {
+      const v = Number(input.value);
+      waveGen[f.key] = v;
+      valueSpan.textContent = formatValue(v, f.step);
+      v3Config.island.waveDistances = computeWaveDistances(waveGen);
+      refreshWavePreview();
+      retraceIslands();
+    });
+
+    waveInputs[f.key] = { input, valueSpan };
+    row.appendChild(nameSpan);
+    row.appendChild(input);
+    row.appendChild(valueSpan);
+    panel.appendChild(row);
+  });
+
+  panel.appendChild(waveValueSpan);
+  refreshWavePreview();
+
   const buttonRow = document.createElement("div");
   buttonRow.className = "v3-controls-buttons";
 
@@ -112,6 +189,13 @@ function buildControlPanel() {
       input.value = String(v);
       valueSpan.textContent = formatValue(v, ctrl.step);
     });
+    Object.assign(waveGen, waveGenDefaults);
+    WAVE_FIELDS.forEach(f => {
+      waveInputs[f.key].input.value = String(waveGen[f.key]);
+      waveInputs[f.key].valueSpan.textContent = formatValue(waveGen[f.key], f.step);
+    });
+    v3Config.island.waveDistances = computeWaveDistances(waveGen);
+    refreshWavePreview();
     retraceIslands();
   });
 

@@ -21,7 +21,7 @@ import { sections, entries } from "../docs/assets/js/cabinet-generated-content.j
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
 import { extrasFor, EXTRA_WEIGHT } from "./cabinet-v3-extras-config.js";
-import { buildIslandHeightmap, traceContourFromHeightmap } from "./cabinet-v3-islandshape.js";
+import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField } from "./cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -315,7 +315,8 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
     scatterArea,
     rng,
     safeMinSeparation(v3Config.pack),
-    allPlacedPoints
+    allPlacedPoints,
+    v3Config.pack.centerBias
   );
   const orderedEntries = sortPointsByBandReadingOrder(scatteredEntries, scatterArea, v3Config.pack.bandHeightRatio);
   const zippedEntries = entryItems.map((item, i) => ({ ...item, x: orderedEntries[i].x, y: orderedEntries[i].y }));
@@ -343,7 +344,8 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
     scatterArea,
     rng,
     safeMinSeparation(v3Config.pack),
-    allPlacedPoints
+    allPlacedPoints,
+    v3Config.pack.centerBias
   );
   const zippedExtras = extraItems.map((item, i) => ({ ...item, x: scatteredExtras[i].x, y: scatteredExtras[i].y }));
   allPlacedPoints.push(...zippedExtras);
@@ -418,15 +420,6 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
 
   const { lines, fontSize, lineHeight } = label;
   const labelGroup = el("g", { class: "v3-section-label-group" });
-  labelGroup.appendChild(
-    el("rect", {
-      class: "v3-section-label-band",
-      x: band.x,
-      y: band.y,
-      width: band.width,
-      height: band.height
-    })
-  );
   const labelX = band.x + 14;
   // Vertically centers the whole line block within the band: first
   // line's baseline sits half a block above center, each subsequent
@@ -461,9 +454,33 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
 // cabinet-v3-data.js's field notes for why nested level-sets guarantee
 // that stacking order.
 function drawIslandsPath(stage, canvasBounds, grown) {
-  const { cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds } = v3Config.island;
-  const { H, cols, rows } = buildIslandHeightmap(grown, canvasBounds, v3Config.island);
-  const trace = level => traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds, level);
+  const { cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds, waveDistances, flatColourMode, warpStrength } = v3Config.island;
+
+  // v3.6.7 -- sample the heightmap/distance-field over a PADDED area
+  // that extends past the visible canvas, not the exact visible
+  // canvasBounds. Both buildIslandHeightmap's and
+  // buildCoastlineDistanceField's own edge-forcing guarantee every
+  // contour closes by forcing the grid's true border to a "definitely
+  // water/far" value -- correct for guaranteeing closure, but for an
+  // island or wave ring near the visible edge it means the shape gets
+  // artificially flattened right at that border instead of continuing
+  // naturally past it. Padding the *sampling* grid well beyond what's
+  // visible lets those shapes close on their own, off-screen, in the
+  // padded margin -- the outer <svg> then clips anything past the real
+  // (unpadded) canvasBounds for free, standard SVG viewport behaviour,
+  // no separate clip-path needed. Sized from warpStrength (the
+  // coastline's own max outward displacement) plus the farthest wave
+  // ring plus a flat buffer, so it stays correct if either grows later.
+  const edgePadding = warpStrength + Math.max(0, ...waveDistances) + 60;
+  const paddedBounds = {
+    x: canvasBounds.x - edgePadding,
+    y: canvasBounds.y - edgePadding,
+    width: canvasBounds.width + edgePadding * 2,
+    height: canvasBounds.height + edgePadding * 2
+  };
+
+  const { H, cols, rows } = buildIslandHeightmap(grown, paddedBounds, v3Config.island);
+  const trace = level => traceContourFromHeightmap(H, cols, rows, cellSize, paddedBounds, level);
 
   const placeOne = (afterEl, className, d) => {
     let node = stage.querySelector(`.${className}`);
@@ -473,19 +490,43 @@ function drawIslandsPath(stage, canvasBounds, grown) {
     return node;
   };
 
-  const placeBand = (afterEl, prefix, levels) => {
+  const placeBand = (afterEl, prefix, levels, traceFn) => {
     let anchor = afterEl;
     levels.forEach((level, i) => {
-      anchor = placeOne(anchor, `${prefix}-${i + 1}`, trace(level));
+      anchor = placeOne(anchor, `${prefix}-${i + 1}`, traceFn(level));
       anchor.setAttribute("class", `${prefix} ${prefix}-${i + 1}`);
+    });
+    // Prunes elements left behind by a previous call with MORE levels --
+    // only matters for a live retrace (the wave-ring count slider on
+    // islands-tool.html's panel), since a full render() clears the whole
+    // stage first and this never has anything stale to find.
+    stage.querySelectorAll(`.${prefix}`).forEach(node => {
+      const idxClass = [...node.classList].find(c => c.startsWith(`${prefix}-`));
+      if (idxClass && Number(idxClass.slice(prefix.length + 1)) > levels.length) node.remove();
     });
     return anchor;
   };
 
   const coastD = trace(threshold);
-  let anchor = placeBand(null, "v3-sea-band", seaBandThresholds);
-  anchor = placeBand(anchor, "v3-sand-band", sandThresholds);
-  anchor = placeBand(anchor, "v3-veg-band", vegThresholds);
+  let anchor = flatColourMode ? null : placeBand(null, "v3-sea-band", seaBandThresholds, trace);
+
+  // Fixed-distance wave rings -- a genuine Euclidean distance transform
+  // off the same heightmap's land/water split, NOT another noise
+  // threshold (see buildCoastlineDistanceField()'s doc comment in
+  // cabinet-v3-islandshape.js). Traced on top of the sea bands (when
+  // present), still behind the land itself. Unaffected by flatColourMode
+  // -- the wave rings are the effect being compared against the bands,
+  // not one of the things flatColourMode turns off.
+  const distanceField = buildCoastlineDistanceField(H, cols, rows, cellSize, threshold);
+  const traceWave = D => traceContourFromHeightmap(distanceField, cols, rows, cellSize, paddedBounds, -D);
+  anchor = placeBand(anchor, "v3-wave-ring", waveDistances, traceWave);
+
+  if (flatColourMode) {
+    anchor = placeOne(anchor, "v3-islands-land-flat", coastD);
+  } else {
+    anchor = placeBand(anchor, "v3-sand-band", sandThresholds, trace);
+    anchor = placeBand(anchor, "v3-veg-band", vegThresholds, trace);
+  }
   placeOne(anchor, "v3-coastline-outline", coastD);
 }
 

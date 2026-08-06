@@ -90,7 +90,19 @@ export const v3Config = {
     maxRadiusRatio: 0.4,
     // Defensive cap on growth passes -- see growCircles()'s comment for
     // why this shouldn't normally bind.
-    maxIterations: 4000
+    maxIterations: 4000,
+    // v3.6.6 -- pulls scatter points toward their region's own center
+    // before min-separation rejection runs (centerBiased() in
+    // cabinet-v3-circlepack.js), so a section's islands cluster tighter
+    // together with more open water near the region edges, instead of
+    // spreading uniformly across the whole rect. 1 = untouched/uniform
+    // (the old behaviour); higher pulls harder toward center. Applied
+    // per axis, not radially, so it follows each region's own aspect
+    // ratio. A strong value can make min-separation harder to satisfy
+    // in a crowded section (more rejected attempts before falling back
+    // to the least-bad candidate) -- watch for circles reading closer
+    // together than intended if this gets pushed much higher.
+    centerBias: 1.6
   },
 
   // v3.5/v3.6: noise-carved coastlines for the archipelago circles -- see
@@ -144,7 +156,23 @@ export const v3Config = {
     // matters: each array is loose-to-tight, i.e. draw/bottom-to-top order.
     seaBandThresholds: [-0.97, -0.87, -0.77, -0.67],
     sandThresholds: [-0.6, -0.35],
-    vegThresholds: [-0.1, 0.15]
+    vegThresholds: [-0.1, 0.15],
+    // v3.6.6 -- the actual "wave" effect (see cabinet-v3-islandshape.js's
+    // buildCoastlineDistanceField()): genuine fixed pixel distances from
+    // the coastline, via a Euclidean distance transform, NOT another
+    // noise-heightmap threshold like every array above. Nearest first.
+    // count=3, start=2, multiplier=2.7, offset=4 -- tuned via
+    // islands-tool.html's "Wave rings" panel (v3.6.7).
+    waveDistances: [6, 9.4, 18.58],
+    // v3.6.7 -- the depth/beach/vegetation bands and the wave rings read
+    // as visually competing effects together, per direct comparison.
+    // true skips all seaBandThresholds/sandThresholds/vegThresholds
+    // rendering in favour of one flat land colour + the plain .v3-stage
+    // water colour, so the wave rings can be judged on their own -- see
+    // drawIslandsPath() in cabinet-v3-layout.js. Toggle back to false
+    // to compare again later; nothing about the band config above is
+    // lost by flipping this.
+    flatColourMode: true
   }
 };
 

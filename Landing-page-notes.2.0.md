@@ -5,17 +5,17 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.5** (domain warping for real concave coastlines,
+Currently on **v3.6.6** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
 `archive/v3.6/` a frozen snapshot -- plus a paste-friendly
 `cabinet-v3-data.js`, a by-editability file table below, and (new)
-stacked-alpha sea/beach/vegetation colour bands) -- see the changelog
-for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 ->
-v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1 ->
-v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 progression and why each pass
-changed what it did.
+genuine fixed-distance wave rings via a Euclidean distance transform)
+-- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4
+-> v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 ->
+v3.6 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6
+progression and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1250,6 +1250,80 @@ check passes. Screenshot: `dev-screenshots/v3.6-islands-showcase-page.png`.
 second page (`islands-tool.html`) was added for *live* tuning and it
 became clear "frozen showcase" and "ongoing tool" were two different
 needs.
+
+### v3.6.6 -- fixed-distance wave rings, centroid-pull scatter, flatColourMode
+
+Four items, same visual-polish pass.
+
+**Fixed-distance wave rings** -- the real "wave" effect deferred back at
+v3.6.4/v3.6.5: every band up to this point traces a LEVEL of the noise
+heightmap, which is not a fixed real-world distance from the coastline.
+New `buildCoastlineDistanceField()` in `cabinet-v3-islandshape.js`: an
+exact two-pass Euclidean distance transform (Felzenszwalt & Huttenlocher,
+not a chamfer approximation) off the same land/water split, negated so
+it drops straight into the existing `traceContourFromHeightmap()`
+unchanged. Verified against a brute-force nearest-seed reference on a
+synthetic grid before wiring it in (0 error). `v3Config.island.waveDistances`
+(real px now, not noise levels) renders as `.v3-wave-ring-N`, stroked,
+darker/heavier than v3.6.4's rings (`--cab-ink` not `--cab-ink-soft`,
+varying stroke-width as well as opacity so rings differentiate by both,
+not opacity alone). `islands-tool.html`'s panel gained a "Wave rings"
+section (`cabinet-v3-controls.js`) -- count (2-5) / start / multiplier /
+offset sliders driving `distance[i] = start * multiplier^i + offset`,
+since the array doesn't fit the panel's one-slider-one-key model.
+Interactively tuned to count=3, start=2, multiplier=2.7, offset=4 ->
+`[6, 9.4, 18.58]`.
+
+**Two edge bugs found and fixed against real content, not the isolated
+test grid the distance transform was first verified on:**
+1. A wave ring near an island close to the canvas edge could reach the
+   grid's true border, trace as an OPEN chain, and get silently pushed
+   as if closed -- the SVG path's implicit final `Z` then drew a
+   straight line from wherever the chain ended back to wherever it
+   started, often clear across the canvas to an unrelated contour.
+   Fixed by forcing the distance field's border to a value no realistic
+   `waveDistances` entry reaches, same pattern `buildIslandHeightmap`
+   already used for `H`.
+2. That fix traded one artifact for another: forcing the border FLAT
+   also means any shape that should naturally continue past the visible
+   edge gets artificially squared off right at it, visible as several
+   islands (and their wave rings) along the canvas edges. Real fix:
+   `drawIslandsPath()` now samples the heightmap/distance-field over a
+   PADDED area (`warpStrength` + farthest wave distance + a flat buffer,
+   currently ~139px on this canvas) extending past what's visible, so
+   shapes close naturally off-screen in the margin -- the outer `<svg>`
+   then clips anything past the real (unpadded) `canvasBounds` for free
+   (default SVG viewport behaviour), no clip-path needed. The original
+   border-forcing stays as a backstop further out; it just never
+   visually triggers now. Verified: max point-to-point gap in any
+   wave-ring path dropped from several hundred px (the bug) to 40px
+   (a normal straight-run simplification). Performance impact of the
+   larger grid (~1.6x cells) was negligible -- heightmap build cost is
+   dominated by per-circle work, not grid size, and the two full-grid
+   passes (distance transform, marching squares) were already cheap.
+
+**Centroid-pull scatter** -- direct request: islands within a section
+were spreading uniformly across the whole region rect: `centerBiased()`
+in `cabinet-v3-circlepack.js` warps `generateScatterPoints()`'s per-axis
+uniform sample toward 0.5 before min-separation rejection runs (so the
+existing overlap-safety guarantee is untouched), controlled by
+`v3Config.pack.centerBias` (1 = old uniform behaviour; shipped at 1.6).
+Verified directly: average scatter-point distance to region center
+dropped from 136.3px to 121.5px on a test set at the shipped value.
+
+**flatColourMode** -- direct comparison showed the v3.6.5 colour bands
+and the wave rings compete visually rather than combine. Rather than
+delete either, `v3Config.island.flatColourMode` (currently `true`) has
+`drawIslandsPath()` skip the sea/sand/veg bands entirely in favour of
+one flat land fill (`--v3-veg`, also lightened from the v3.6.5 value --
+`#8a9b5e` read as too dull) + the plain `.v3-stage` water colour, so the
+wave rings can be judged alone -- flip back to `false` to compare again,
+nothing about the band config is lost.
+
+Tagged `v3.6.6-wave-contours` at this commit (alongside the existing
+`v3.6.5-colour-bands` tag) -- per the same "come back to it" request,
+now that these two colour treatments are a real fork to choose between
+later rather than a straight progression.
 
 ### v3.6.5 -- stacked-alpha sea/beach/vegetation colour bands
 

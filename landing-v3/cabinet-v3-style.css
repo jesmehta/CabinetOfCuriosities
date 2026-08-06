@@ -14,7 +14,7 @@
 body.v3-proto {
   --v3-sea-deep: #5b7f93;
   --v3-sea-shallow: #9fc3d1;
-  --v3-veg: #8a9b5e;
+  --v3-veg: #a8c478;
   --v3-sand: #e8d9a0;
 
   margin: 0;
@@ -103,6 +103,49 @@ body.v3-proto {
 .v3-veg-band {
   fill: var(--v3-veg);
   fill-opacity: 0.55;
+}
+
+/* v3.6.7 -- flatColourMode's single land fill (see drawIslandsPath() in
+   cabinet-v3-layout.js) -- reuses --v3-veg opaque rather than
+   introducing a third land tone; water's single colour is just
+   .v3-stage's own background, no element of its own needed. */
+.v3-islands-land-flat {
+  fill: var(--v3-veg);
+}
+
+/* v3.6.6 -- fixed-distance wave rings, a genuine Euclidean-distance
+   offset from the coastline (see buildCoastlineDistanceField() in
+   cabinet-v3-islandshape.js), stroked rather than filled. Same stroke
+   progression the v3.6.4 noise-based rings borrowed from v2's
+   coast-ripples-global -- nearest darkest/heaviest, fading outward. */
+.v3-wave-ring {
+  fill: none;
+  stroke: var(--cab-ink);
+}
+
+.v3-wave-ring-1 {
+  stroke-width: 1.4;
+  opacity: 0.95;
+}
+
+.v3-wave-ring-2 {
+  stroke-width: 1.0;
+  opacity: 0.75;
+}
+
+.v3-wave-ring-3 {
+  stroke-width: 0.7;
+  opacity: 0.55;
+}
+
+.v3-wave-ring-4 {
+  stroke-width: 0.5;
+  opacity: 0.4;
+}
+
+.v3-wave-ring-5 {
+  stroke-width: 0.35;
+  opacity: 0.3;
 }
 
 /* Crisp ink boundary at the true coastline, drawn last (on top of every
@@ -260,13 +303,4 @@ body.v3-proto {
 
 .v3-controls-btn:hover {
   background: rgba(255, 255, 255, 0.18);
-}
-
-/* Reserved header strip -- see splitLabelBand() in cabinet-v3-layout.js.
-   No circle is ever packed inside this band, so it doesn't need to
-   search for a gap; it's a light wash the full width of the region,
-   consistent across every section rather than a per-label plate. */
-.v3-section-label-band {
-  fill: var(--cab-card-bg);
-  opacity: 0.55;
 }

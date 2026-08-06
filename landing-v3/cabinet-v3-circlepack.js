@@ -145,7 +145,18 @@ export function safeMinSeparation(config) {
 // built to prevent, just across a region seam instead of within one
 // region. Defaults to none, for callers that only ever care about one
 // self-contained point set.
-export function generateScatterPoints(count, rect, rng, minSeparation, existingPoints = []) {
+// Warps a uniform [0,1) sample toward 0.5 -- centerBias > 1 pulls the
+// result toward the middle (1 = untouched, uniform). Applied per axis
+// rather than radially: simpler, and it naturally follows the rect's
+// own aspect ratio instead of assuming a region is square.
+function centerBiased(u, centerBias) {
+  if (centerBias === 1) return u;
+  const signed = u * 2 - 1;
+  const warped = Math.sign(signed) * Math.pow(Math.abs(signed), centerBias);
+  return (warped + 1) / 2;
+}
+
+export function generateScatterPoints(count, rect, rng, minSeparation, existingPoints = [], centerBias = 1) {
   const points = [];
   const maxAttemptsPerPoint = 60;
 
@@ -157,8 +168,8 @@ export function generateScatterPoints(count, rect, rng, minSeparation, existingP
     let bestScore = -Infinity;
 
     for (let attempt = 0; attempt < maxAttemptsPerPoint && !placed; attempt++) {
-      const x = rect.x + rng() * rect.width;
-      const y = rect.y + rng() * rect.height;
+      const x = rect.x + centerBiased(rng(), centerBias) * rect.width;
+      const y = rect.y + centerBiased(rng(), centerBias) * rect.height;
 
       let minDist2 = Infinity;
       const clear = [...existingPoints, ...points].every(p => {
@@ -191,7 +202,7 @@ export function generateScatterPoints(count, rect, rng, minSeparation, existingP
       // genuinely cramped region; growCircles() stopping growth on
       // contact keeps any resulting closeness from compounding further,
       // which is what's actually load-bearing here.
-      points.push(best || { x: rect.x + rng() * rect.width, y: rect.y + rng() * rect.height });
+      points.push(best || { x: rect.x + centerBiased(rng(), centerBias) * rect.width, y: rect.y + centerBiased(rng(), centerBias) * rect.height });
     }
   }
 
