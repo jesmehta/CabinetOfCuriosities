@@ -5,13 +5,13 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6** (domain warping, for real concave coastlines --
-bays, hooks, pinched necks -- plus an on-page dev control panel for
-tuning island-shape parameters live, and a permanent standalone showcase
-page for the algorithm itself, `islands-showcase.html`) -- see the
-changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 ->
-v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
-progression and why each pass changed what it did.
+Currently on **v3.6.1** (domain warping for real concave coastlines,
+interactively tuned via an on-page control panel, now split across three
+pages -- `index.html` the evolving real prototype, `islands-tool.html`
+the permanent live tuning tool, `archive/v3.6/` a frozen snapshot) -- see
+the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
+v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
+-> v3.6.1 progression and why each pass changed what it did.
 
 Screenshots of each version are kept in `landing-v3/dev-screenshots/`
 (git-tracked, named `v{version}-{what-changed}.png`) specifically to
@@ -212,72 +212,92 @@ Two further decisions from the second round of the conversation:
 | `cabinet-v3-controls.js` | Dev-only (v3.6): on-page slider panel for `v3Config.island`'s noise/warp parameters, live-updating via `retraceIslands()`. Not part of the page design being reviewed -- see "Domain warping for real concavity" below and "Known limitations" #10. |
 | `cabinet-v3-style.css` | Layout-review styling, reusing `cabinet-tokens.css`'s palette; also styles the v3.6 control panel (deliberately plain/utility, not parchment-themed). |
 | `package.json` | Declares `{ "type": "module" }` plus `playwright` as a devDependency (v3.6 -- installed once, not per screenshot round; see "Verification" below) -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
-| `islands-showcase.html` / `cabinet-v3-showcase-content.js` / `cabinet-v3-showcase-layout.js` / `cabinet-v3-showcase-controls.js` | v3.6, permanent standalone showcase for the island-generation algorithm itself -- see "Showcase page" below. Frozen content snapshot + a deliberate full duplicate of the layout/controls modules, sharing `cabinet-v3-data.js`'s config with the real page. |
+| `islands-tool.html` | v3.6.1, permanent live tuning tool -- see "Three pages" below. Shares `cabinet-v3-layout.js`/`cabinet-v3-controls.js`/`cabinet-v3-data.js` directly with `index.html` (no duplication); exists as its own stable entry point so it can keep the panel after `index.html` eventually sheds it. |
+| `archive/v3.6/index.html` + `config.js` + `content.js` + `layout.js` + `controls.js` | v3.6.1, frozen historical snapshot -- see "Three pages" below. Content AND config pinned (own `config.js`/`content.js`, not the live files); algorithm modules (`cabinet-v3-islandshape.js` etc.) still shared/live, one directory up. |
 
-## Showcase page (`islands-showcase.html`, v3.6)
+## Three pages (`index.html`, `islands-tool.html`, `archive/`)
 
-Asked directly, after seeing v3.6's domain-warp result: "can the
+Started as one addition (v3.6: a permanent showcase page, "can the
 interface with slider control be a permanent page somewhere? It's a
 great showcase for island generation itself, as well as a key step in
-the creation of this page." A second, permanent entry point --
-`landing-v3/islands-showcase.html` -- rather than folding this into
-`index.html` itself, so it can exist independently of whatever
-`index.html`/`cabinet-v3-data.js` end up looking like once the real
-layout is finalized. Repo-only for now (not linked into the live `docs/`
-site, not built by MkDocs) -- deliberately deferred, since whether/how
-any of v3 ships is still an open question this showcase doesn't need to
-wait on.
+the creation of this page") and became three, once interactive tuning
+was actually used and it became clear ongoing fine-tuning and a frozen
+historical record are different needs that shouldn't live on the same
+page:
 
-**Content: a frozen snapshot, not a live import.** Runs on
-`cabinet-v3-showcase-content.js` -- every real section/entry's title,
-weight, order, and status copied as-is from
-`../docs/assets/js/cabinet-generated-content.js` at the time it was
-taken (2026-08-05), but every `href` replaced with `"#"`. Two reasons
-this is a point-in-time copy rather than importing the real file
-directly (which `index.html` still does): the showcase shouldn't imply
-its circles are live navigation (readers could reasonably click a title
-expecting it to go somewhere), and it shouldn't silently change shape
-every time real content is edited -- it's meant to keep demonstrating
-today's algorithm against today's snapshot even after the real page's
-content moves on. If the snapshot ever feels too stale to be a
-representative demo, re-take it by hand (copy the real file's
-`sections`/`entries`, blank every truthy `href`) -- there's no
-build-time sync to break.
+1. **`index.html`** -- the real prototype, evolving toward the finished
+   landing page. Real content (imports
+   `../docs/assets/js/cabinet-generated-content.js` directly), real
+   navigation, real `cabinet-v3-data.js`. Currently still carries the
+   v3.6 tuning panel; expected to shed it (and any other dev-only
+   trappings) once the layout direction is actually finalized -- that's
+   a future step, not done here.
+2. **`islands-tool.html`** -- byte-identical to `index.html` today (same
+   `cabinet-v3-layout.js`, same `cabinet-v3-controls.js`, same live
+   content and config), existing as its own stable entry point
+   specifically so it can keep the tuning panel *permanently*, even
+   after `index.html` eventually drops it. "The islands will need to be
+   recomputed whenever a new entry or section is added" -- true already,
+   with no extra wiring needed: `render()` re-derives the whole layout
+   (treemap, packing, coastlines) from current content and config on
+   every page load, so reloading this page after any content/config edit
+   is the entire "recompute" step.
+3. **`archive/v3.6/`** -- a frozen point-in-time snapshot, taken right
+   before interactive tuning was applied to `cabinet-v3-data.js` (see
+   the v3.6.1 changelog entry below). A dated folder rather than a flat
+   file, so a future significant version can get its own `archive/v3.7/`
+   etc. alongside this one without collision.
 
-**Code: a deliberate full duplicate, not a shared parameterized
-function.** `cabinet-v3-showcase-layout.js` and
-`cabinet-v3-showcase-controls.js` mirror `cabinet-v3-layout.js` /
-`cabinet-v3-controls.js` line-for-line except their content/retrace
-import paths -- not refactored into one shared render function taking a
-content parameter. Chosen because the showcase page is expected to
-diverge on its own terms over time (the user's own framing: "certain
-changes I may ask you to apply to this separate page as well if I feel
-like" -- implying not-every-change applies to both), so a shared
-abstraction would be solving a DRY problem that isn't guaranteed to stay
-true, at the cost of coupling two pages that are supposed to be free to
-drift apart. The actual algorithmic modules (`cabinet-v3-islandshape.js`,
-`cabinet-v3-circlepack.js`, `cabinet-v3-treemap.js`,
-`cabinet-v3-extras-config.js`) are NOT duplicated -- only the ~500-line
-orchestration/rendering file, which is almost entirely DOM/SVG
-plumbing, not the interesting logic.
+**What "frozen" means here, precisely.** Two things are pinned inside
+`archive/v3.6/`, deliberately, and one thing is NOT:
+- **Content is pinned** (`archive/v3.6/content.js`) -- a point-in-time
+  copy of `cabinet-generated-content.js`'s sections/entries, every
+  `href` neutralized to `"#"` so nothing here reads as live navigation
+  and nothing here reshapes when the real site's content changes.
+- **Config is pinned** (`archive/v3.6/config.js`) -- a literal copy of
+  the *entire* `v3Config` object (canvas/pack/island) as it stood at
+  that moment, NOT an import of `cabinet-v3-data.js`. This had to be
+  added the moment interactive tuning actually happened: the original
+  showcase page's "frozen" claim only ever covered content, not config
+  -- it still imported the live `v3Config`, so tuning `cabinet-v3-data.js`
+  would have silently changed what the "archive" displayed too, defeating
+  the whole point. Caught before it caused any real confusion, since the
+  config-tuning pass and the archive/tool split happened in the same
+  turn.
+- **The algorithm modules are NOT pinned** -- `cabinet-v3-islandshape.js`,
+  `cabinet-v3-circlepack.js`, `cabinet-v3-treemap.js`,
+  `cabinet-v3-extras-config.js` are still imported live, one directory
+  up. Deliberate scope decision: the concern this archive actually
+  guards against is data/tuning drift (which happens routinely and was
+  the concrete thing that had just started happening), not code
+  refactors (rarer, more structural) -- a bug fix to the shared algorithm
+  should still reach every page, archive included. If a future change to
+  those modules is big enough that even the archive shouldn't inherit it
+  (a genuine v3.7+ rewrite), that's the signal to cut a *new* versioned
+  archive folder, not to freeze this one further.
 
-**Config: shared, not duplicated.** Both pages import the same
-`v3Config` from `cabinet-v3-data.js` -- the showcase isn't meant to have
-its own independent tuning universe, since its whole purpose is
-exploring parameters for the real page. Its panel's "Copy config" button
-is the intended bridge: tune live on the showcase, copy the resulting
-JSON, paste it into `cabinet-v3-data.js`'s `island` block, and the real
-`index.html` picks it up next load. ("...we return to this original
-page to tinker with it and figure the final landing page config" --
-i.e. this showcase is a tool for that eventual pass, not a replacement
-for it.)
+**Code duplication: `archive/v3.6/layout.js` +
+`archive/v3.6/controls.js` vs. shared `index.html`/`islands-tool.html`
+modules.** The archive needs its own copies (importing its own
+`config.js`/`content.js` instead of the live files) since ES module
+imports are static paths, not parameters -- there's no way for one
+`cabinet-v3-layout.js` to sometimes read live data and sometimes read
+frozen data without a caller-supplied argument, and passing the content
+source as a parameter would mean `index.html` and `islands-tool.html`
+threading it through too, for no benefit (they're supposed to always use
+live data, forever). `index.html` and `islands-tool.html`, by contrast,
+share their JS files directly, unmodified -- no duplication between
+those two, since they're meant to always render identically and
+diverging would be a bug, not a feature (unlike the archive, which is
+*supposed* to diverge from here on).
 
-Verified via Playwright: zero console errors, exactly 25 `.v3-island`
-links all resolving to `href="#"` (confirms the neutralization actually
-took), and the same slider-retrace check used on the real page (drag to
-max -> path changes) passes independently here too, since this page's
-`retraceIslands()` is its own function closing over its own
-`islandLayoutState`, not a shared one.
+Verified via Playwright across all three pages: zero console errors on
+any of them; `index.html`/`islands-tool.html` both show the new tuned
+values (warp strength 60, period 85, 3 octaves) and real hrefs (25
+distinct navigation targets); `archive/v3.6/` shows the original v3.6
+defaults (strength 40, period 100, 2 octaves) and all 25 links resolve
+to `#`, unaffected by the `cabinet-v3-data.js` edit made in the same
+pass -- direct proof the freeze actually holds.
 
 ## How the layout is built (`cabinet-v3-layout.js`'s `render()`)
 
@@ -1119,12 +1139,52 @@ warping produces. See "Next steps".
 seeing the panel: make it a permanent page, showcasing island generation
 itself. New standalone entry point, repo-only (not linked into the live
 site), running on a frozen content snapshot with all links neutralized
-to `"#"` -- full rationale, and why the layout/controls modules are a
-deliberate duplicate rather than a shared parameterized function, in
-"Showcase page" above. Verified via Playwright: 0 console errors, all 25
-island links resolve to `#` (confirms neutralization), independent
-slider-retrace check passes. Screenshot:
-`dev-screenshots/v3.6-islands-showcase-page.png`.
+to `"#"`. Verified via Playwright: 0 console errors, all 25 island links
+resolve to `#` (confirms neutralization), independent slider-retrace
+check passes. Screenshot: `dev-screenshots/v3.6-islands-showcase-page.png`.
+
+**Superseded by v3.6.1, immediately after** -- see that entry below and
+"Three pages" above. `islands-showcase.html` became `archive/v3.6/`
+(gained its own frozen `config.js`, not just frozen content) once a
+second page (`islands-tool.html`) was added for *live* tuning and it
+became clear "frozen showcase" and "ongoing tool" were two different
+needs.
+
+### v3.6.1 -- three pages, first real interactive tuning pass applied
+
+Direct follow-up to using the v3.6 panel for the first time: produced a
+config worth keeping ("this is a decent config to start with") and, in
+the same message, a request to make the tool page permanent and
+distinct from an archival record of what came before it -- see "Three
+pages" above for the full architecture (`index.html` / `islands-tool.html`
+/ `archive/v3.6/`) and exactly what "frozen" does and doesn't cover in
+the archive.
+
+**Config change** (`cabinet-v3-data.js`'s `island` block, applied to
+`index.html`/`islands-tool.html` only -- `archive/v3.6/config.js` keeps
+the pre-tuning values): `warpStrength` 40 -> 60, `warpScale` 1/100 ->
+1/85 (shorter period), `warpOctaves` 2 -> 3, `angularRidgeMix` 0.6 ->
+0.36 (pulled back, since warp was now doing more of the "sharp feature"
+work), `noiseAmplitude` 0.35 -> 0.38, `gradientStrength` 1.1 -> 1.12,
+`threshold` -0.5 -> -0.62 (compensating for the extra land the stronger
+warp/noise otherwise carves away), `angularStrength` 0.4 -> 0.38. Result:
+visibly more coastline-like -- a mix of rounder bulges and genuinely
+sharp points, less uniform than v3.6's shipped defaults. Verified via
+Playwright across all three pages simultaneously (see "Three pages"):
+`index.html`/`islands-tool.html` both read the new values and keep real
+navigation (25 distinct hrefs); `archive/v3.6/` still reads the original
+v3.6 defaults and all-`#` hrefs, confirming the archive split actually
+insulates it from this edit. Screenshot:
+`dev-screenshots/v3.6.1-interactive-tuning.png`.
+
+**Caught and fixed in the same pass:** the original `islands-showcase.html`
+only ever froze *content*, not config -- it still imported the live
+`v3Config` from `cabinet-v3-data.js`. Had this config change landed
+before the archive/tool split, the "frozen" showcase would have silently
+picked up the new tuning too. Fixed by giving `archive/v3.6/` its own
+literal `config.js` (a full copy of `v3Config`, not just `island`) before
+touching `cabinet-v3-data.js` -- ordering mattered here, not just the
+end state.
 
 ### v3.5.4 -- ridged noise for sharp inlets, bias-corrected
 
