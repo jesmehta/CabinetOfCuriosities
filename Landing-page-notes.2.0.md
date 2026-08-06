@@ -1187,6 +1187,109 @@ combination produces a bad shape that a weight floor doesn't fix.
   settles on should get copied back into `cabinet-v3-data.js` (the
   panel's own "Copy config" button exists for exactly this) once decided.
 
+## To-do (visual-polish phase, ongoing)
+
+Two lists, kept separate because they came from two different sources.
+Neither is prioritized or sequenced -- pick from either freely. See
+`conversation-landing-page-v3.md` (same directory) for the design
+reasoning and back-and-forth behind the decisions already made in this
+phase (v3.6.4 through v3.6.6) -- this section is deliberately just a
+flat list, not the reasoning.
+
+### Punch list (sea serpent through colophon)
+
+1. Sea-serpent redesign -- on hold pending a hand-drawn reference (the
+   arc-based v1 attempt, `cabinet-v3-seaserpent.js` / `_test-serpent.html`,
+   is untracked in the repo, not deleted, not wired into the real page).
+2. Water wave-line texture -- on hold pending a reference image (v2's
+   own wavelines weren't visible/legible as a reference on their own).
+3. Boats sailing in smooth flows (not randomly moving) -- reverted
+   after an unresolved Chromium `<use>`/`<symbol>` rendering bug (see
+   `conversation-landing-page-v3.md` for the full account); no standing
+   instruction to resume, would need explicit direction.
+4. Flowfield stretch goal -- a precomputed noise/flow field with live,
+   cheap particle advection along it (waves, boats), obstacles/repulsion
+   around islands, optionally mouse-reactive. Discussed conceptually
+   only, nothing built.
+5. islands-tool idea (throwaway, needs discussion): a control to
+   re-roll/regenerate the circle centres and packing stage itself, not
+   just retrace the island shapes off the current layout.
+6. islands-tool idea (throwaway, needs discussion + a real cost/
+   complexity analysis before committing to it): switch or layer
+   between the wave contours, the topology noise contour bands, or
+   both -- and beyond that, other whole look-and-feel presets (e.g. a
+   "medieval map" preset combining wave contours with an illuminated-
+   manuscript-style treatment).
+7. islands-tool idea: give the topology noise contour bands
+   (`seaBandThresholds`/`sandThresholds`/`vegThresholds`) their own
+   panel section, the way wave rings got one in v3.6.6.
+8. Strengthen centroid gathering further -- `centerBias` (currently
+   1.6) is a first pass; push it harder if islands should cluster
+   tighter still.
+9. Give sections a minimum weight so small sections (About Me, etc.)
+   don't read as visually skewed/collapsed -- may already be partly
+   covered by `v3Config.canvas.minSectionWeight` (area-allocation only,
+   not per-entry sizing); needs a look at whether that's sufficient or
+   a different mechanism is needed.
+10. A real pass on fonts, colours, sizes, and readability -- explicitly
+    held back until other bells and whistles landed; that condition is
+    largely met now.
+11. Other small details -- compass rose, easter eggs, etc.
+12. Expand the canvas to full-bleed window size (currently a fixed
+    1200px-wide viewBox scaled responsively, not actually filling the
+    viewport).
+13. Fold the "Cabinet of Curiosities" heading + intro text into the map
+    itself, as part of the map's own legend/styling, rather than
+    separate HTML page-header text above the SVG.
+14. Idea: the compass rose (or similar map ornamentation) could BE the
+    About Me / Contact Me links, rather than those existing as regular
+    islands -- see item 21 below (WORLD-SYSTEMS.md's FabAcademy-is-not-
+    a-world rule) for a directly relevant constraint on what About Me
+    should even link to.
+15. Merge branches.
+16. Create a history section and place archival pages there (see item
+    20 below -- `archived-landing-pages/` already exists as a
+    filesystem convention; this is about giving it a real, linked home
+    on the site itself, not just a folder).
+17. Launch the page.
+18. Write the colophon and creation notes.
+
+### Found via documentation survey (v3.6.6 doc audit)
+
+Surfaced by reading `LANDING-PAGE-NOTES.md` (top-level, v2/production --
+distinct from this file), `README.md`, `DESIGN-SYSTEM.md`,
+`WORLD-SYSTEMS.md`, and the sibling `TheBookshelfOfCuriosities` repo,
+specifically to catch anything the punch list above had missed. Mostly
+production-page (not v3-prototype) items, included here anyway since
+they're real open items on the same overall site.
+
+19. Card/label overlap on Bookshelf, fffx, and Interfaces/Data/Texts
+    islands -- the widest cards clip the island name label.
+20. Real thumbnails owed for entries still on generated placeholder
+    tiles -- e.g. Circle Packing Library already has one sitting in the
+    fffx repo, just never copied over.
+21. CV entry's "scroll" icon reads ambiguous at card size.
+22. Verify fffx's DNS/CNAME is actually live before treating fffx links
+    from Cabinet as production (no committed `CNAME` confirmed as of
+    the v2.1 follow-up that raised this).
+23. `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
+    dashed border, leader-line to a card sitting off the island
+    entirely) is fully built and supported by the renderer but no
+    entry currently uses it -- available for future content that needs
+    it.
+24. `WORLD-SYSTEMS.md` standing rule, not currently reflected in any
+    to-do above it should touch: FabAcademy/Fabricademy documentation
+    sites are NOT Level-1 worlds and should not become Cabinet islands
+    -- link them from About Me or a relevant essay/reflection page
+    instead, if at all. Bears directly on item 14's compass-rose/
+    About-Me idea and on item 16's history-section scoping.
+25. Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
+    fffx, if accessible) sibling repos -- Bookshelf's copy is stale
+    (still describes Cabinet as having no islands of its own, and
+    carries TODOs, e.g. "stricter CI checks" for section/id validation
+    and "card component unification," that Cabinet's own build already
+    satisfies).
+
 ## Changelog
 
 ### v3.6 -- domain warping for real concavity + dev tuning panel
