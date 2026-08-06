@@ -5,15 +5,20 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.3** (domain warping for real concave coastlines,
+Currently on **v3.6.4** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
 `archive/v3.6/` a frozen snapshot -- plus a paste-friendly
-`cabinet-v3-data.js` and a by-editability file table below) -- see the
-changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 ->
-v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1
--> v3.6.2 -> v3.6.3 progression and why each pass changed what it did.
+`cabinet-v3-data.js`, a by-editability file table below, and (new)
+offset coastline ripple rings) -- see the changelog for the full
+v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 ->
+v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1 -> v3.6.2 ->
+v3.6.3 -> v3.6.4 progression and why each pass changed what it did.
+This section is now in an active visual-polish phase (colors, ripples,
+sea serpent, boats, water texture, a possible flow-field stretch goal)
+-- entries from here get a lighter documentation pass than the
+algorithm-design work above, matching the pace of the work itself.
 
 Screenshots of each version are kept in `landing-v3/dev-screenshots/`
 (git-tracked, named `v{version}-{what-changed}.png`) specifically to
@@ -1244,6 +1249,54 @@ check passes. Screenshot: `dev-screenshots/v3.6-islands-showcase-page.png`.
 second page (`islands-tool.html`) was added for *live* tuning and it
 became clear "frozen showcase" and "ongoing tool" were two different
 needs.
+
+### v3.6.4 -- offset coastline ripples
+
+First item of the visual-polish pass ("offset waves like previous
+version"). Ported the *look* of the v2 map's `coast-ripples-global`
+(concentric rings fading outward from the coastline, nearest darkest/
+heaviest -- same stroke color/width/opacity progression, `--cab-ink-
+soft` at 1.1px/0.85 opacity down to 0.4px/0.28) without porting its
+*mechanism*: v2 traces a genuine distance-transform contour from a
+separate build tool; v3 already has a scalar heightmap per island
+(`buildIslandHeightmap`), so a ring is just one more marching-squares
+pass at a threshold below the coastline's own -- height decreases
+roughly monotonically with distance from any circle's core, so a lower
+threshold sits strictly farther out, literally a distance ring, for
+free off data already in memory.
+
+Refactored `traceIslandShapes()` to share a new exported
+`traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds,
+threshold)` -- lets a caller build the heightmap once and trace N
+levels off it (coastline + `v3Config.island.rippleThresholds`, new:
+`[-0.74, -0.85, -0.94]`) instead of paying the expensive part (sampling
+noise/warp at every grid cell) N times. `cabinet-v3-layout.js`'s
+`drawIslandsPath()` now does exactly that, and inserts each ring
+directly behind the land path so later retrace calls (slider drags on
+`islands-tool.html`) only update `d` attributes, never DOM order.
+
+Same fusion behavior as the coastline itself falls out for free: close
+islands' rings merge at farther-out threshold levels exactly like their
+coastlines merge at the main one, via the heightmap's own `max()`-
+combine -- the one thing v2 had to solve specially for (its own
+comment: "islands close enough together fuse their rings... instead of
+clipping through each other") needed no extra work here.
+
+Deliberately NOT ported into `archive/v3.6/` (frozen at what v3.6
+actually looked like, new decorative features don't apply) --
+re-verified 0 ripple-ring elements there after this change, confirming
+the freeze holds for markup/features too, not just config values.
+
+Verified against real content: each successive ring's bounding box
+strictly encompasses the previous one (confirms rings expand outward,
+not just wobble in place); subpath count decreases ring-to-ring (40 ->
+36 -> 32 -> 27) as more close-island pairs fuse at farther-out levels,
+expected and correct. Static `index.html` rebuilt and re-verified with
+JavaScript entirely disabled -- all 3 ring levels present in the
+zero-JS output. "Fine tune later" per explicit request -- thresholds
+above are a first pass, not final. Screenshots:
+`dev-screenshots/v3.6.4-ripple-rings.png` (full page),
+`-closeup.png`.
 
 ### v3.6.3 -- paste-friendly config, file table grouped by editability
 
