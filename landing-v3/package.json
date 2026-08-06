@@ -2,7 +2,10 @@
   "name": "cabinet-v3-prototype",
   "private": true,
   "type": "module",
-  "description": "Pure layout modules (treemap/circlepack) are DOM-free by design so they can run under Node for testing or future build-time precompute, same rationale as fffx-subdivision.js.",
+  "description": "Pure layout modules (treemap/circlepack) are DOM-free by design so they can run under Node for testing, same rationale as fffx-subdivision.js. index.html is now build-time precompute (v3.6.2, see build-static.mjs) -- the DOM-free design is also what let that ship as a headless-browser snapshot rather than a hand-written serializer.",
+  "scripts": {
+    "build": "node build-static.mjs"
+  },
   "devDependencies": {
     "playwright": "1.62.1"
   }

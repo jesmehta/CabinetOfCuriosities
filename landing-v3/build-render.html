@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>v3 build render source -- not for humans, see build-static.mjs</title>
+  <link rel="stylesheet" href="../docs/assets/css/cabinet-tokens.css" />
+  <link rel="stylesheet" href="cabinet-v3-style.css" />
+</head>
+<body class="v3-proto">
+  <!-- No dev panel script (cabinet-v3-controls.js) on purpose -- build-static.mjs
+       only extracts #v3-stage's rendered markup, and the static output must
+       never contain the tuning panel. Loads cabinet-v3-layout.js directly, the
+       exact same module islands-tool.html and index.template.html's pre-build
+       predecessor used -- one rendering implementation, captured, not
+       reimplemented. -->
+  <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+  <script type="module" src="cabinet-v3-layout.js"></script>
+</body>
+</html>
