@@ -1325,6 +1325,14 @@ Tagged `v3.6.6-wave-contours` at this commit (alongside the existing
 now that these two colour treatments are a real fork to choose between
 later rather than a straight progression.
 
+Screenshots of all three states, captured off temporary config edits
+(`flatColourMode` toggled, `waveDistances` emptied) then reverted via
+`git checkout` so nothing in the shipped config actually moved:
+`dev-screenshots/v3.6.6-colour-bands-only.png` (bands, no wave rings),
+`v3.6.6-wave-contours.png` (the actual shipped state), and
+`v3.6.6-bands-and-waves-combined.png` (both together, the "compete
+rather than combine" case flatColourMode exists to avoid).
+
 ### v3.6.5 -- stacked-alpha sea/beach/vegetation colour bands
 
 Continuing the visual-polish pass ("better colours for land and sea").
