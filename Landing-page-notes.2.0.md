@@ -5,16 +5,17 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.4** (domain warping for real concave coastlines,
+Currently on **v3.6.5** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
 `archive/v3.6/` a frozen snapshot -- plus a paste-friendly
 `cabinet-v3-data.js`, a by-editability file table below, and (new)
-offset coastline ripple rings) -- see the changelog for the full
-v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 ->
-v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1 -> v3.6.2 ->
-v3.6.3 -> v3.6.4 progression and why each pass changed what it did.
+stacked-alpha sea/beach/vegetation colour bands) -- see the changelog
+for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 ->
+v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1 ->
+v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 progression and why each pass
+changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1249,6 +1250,50 @@ check passes. Screenshot: `dev-screenshots/v3.6-islands-showcase-page.png`.
 second page (`islands-tool.html`) was added for *live* tuning and it
 became clear "frozen showcase" and "ongoing tool" were two different
 needs.
+
+### v3.6.5 -- stacked-alpha sea/beach/vegetation colour bands
+
+Continuing the visual-polish pass ("better colours for land and sea").
+Superseded v3.6.4's ripple rings entirely: those were noise contours
+(marching squares off `buildIslandHeightmap`'s own scalar field) doing
+duty as a fixed-distance wave effect, which they aren't -- their actual
+pixel distance from the coastline varies with local noise/gradient
+steepness. Repurposed the same underlying technique (it's the right
+tool for depth/beach banding, which plausibly *should* follow the same
+terrain noise as the coastline) for two new colour features instead,
+and left the real fixed-distance "wave" effect as a separate, not-yet-
+built feature (needs an actual distance transform).
+
+Mechanism: `v3Config.island` gained `seaBandThresholds` (4 levels),
+`sandThresholds` (2), `vegThresholds` (2) -- each array traced off the
+one shared heightmap build, same colour + fixed `fill-opacity` per
+group, drawn loosest-threshold (widest reach) first. Because `{h > L}`
+is a strict superset of `{h > L'}` whenever `L < L'`, a point near the
+coastline sits under every layer in its group (most opacity stacked),
+while a point far out sits under few or none -- overlap count creates
+the gradient, not per-element hue. Land needed extra care: sea bands
+lean on `.v3-stage`'s own opaque dark background for their "far = deep"
+end, but land has no such backdrop, so the sand group's opacity is kept
+high enough on its own to keep the coastline edge from reading watery.
+New local CSS tokens (`cabinet-v3-style.css`, `body.v3-proto`):
+`--v3-sea-deep`, `--v3-sea-shallow`, `--v3-sand`, `--v3-veg` --
+deliberately not added to the shared `cabinet-tokens.css`, since the
+overall colour scheme is still on hold; this is a scoped exception for
+bands the user asked for directly.
+
+Performance check (asked directly): timed `buildIslandHeightmap` +
+all 9 contour traces directly in Node against a synthetic 25-circle
+canvas -- heightmap build ~53ms (unchanged by band count, still built
+once), all 9 traces ~48ms total (~5.4ms each, vs ~22ms for the old
+4-level setup). ~104ms total for the whole island pass; runs once per
+page load or per slider drag on `islands-tool.html`, not per frame --
+not a concern at this scale.
+
+Tagged `v3.6.5-colour-bands` at this commit, per explicit request ("hold
+this as a version... so one can come back to it") ahead of a likely
+future replacement of island colours with a thumbnail or flat fill --
+`git checkout v3.6.5-colour-bands -- landing-v3/` restores exactly this
+banding setup if that swap doesn't work out.
 
 ### v3.6.4 -- offset coastline ripples
 

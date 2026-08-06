@@ -79,7 +79,7 @@ try {
     // render()'s last act is drawing the shared islands path -- its
     // presence means the whole pipeline (treemap, packing, tracing) has
     // already completed, not just that the page loaded.
-    await page.waitForSelector(".v3-islands-land", { timeout: 10000 });
+    await page.waitForSelector(".v3-coastline-outline", { timeout: 10000 });
 
     if (consoleErrors.length) {
       throw new Error("build-render.html produced console errors:\n" + consoleErrors.join("\n"));

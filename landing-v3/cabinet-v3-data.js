@@ -137,7 +137,14 @@ export const v3Config = {
     warpOctaves: 3,
     warpLacunarity: 2,
     warpGain: 0.5,
-    rippleThresholds: [-0.74, -0.85, -0.94]
+    // v3.6.5 -- stacked translucent bands off the same heightmap, same
+    // colour per group at fixed fill-opacity, drawn loosest-threshold
+    // (widest reach) first so overlap count -- not hue -- creates the
+    // gradient (see drawIslandsPath() in cabinet-v3-layout.js). Order
+    // matters: each array is loose-to-tight, i.e. draw/bottom-to-top order.
+    seaBandThresholds: [-0.97, -0.87, -0.77, -0.67],
+    sandThresholds: [-0.6, -0.35],
+    vegThresholds: [-0.1, 0.15]
   }
 };
 
@@ -259,13 +266,25 @@ export const v3Config = {
 // config" button -- see Landing-page-notes.2.0.md's v3.6/v3.6.1
 // changelog entries for the full history of both passes.
 //
-// rippleThresholds -- v3.6.4. Extra height levels traced off the exact
-// same heightmap as the coastline (threshold above), each strictly
-// below it -- since height decreases roughly monotonically with
-// distance from any circle's core, a lower threshold sits strictly
-// farther out in open water, so this is literally a set of concentric
-// distance rings around the coastline (same visual idea as the v2 map's
-// coast-ripples-global, see cabinet-v3-islandshape.js's
-// traceContourFromHeightmap() doc comment). Not paired with a slider on
-// the tuning panel (an array, not a single number) -- edit by hand.
-// Nearest ring first; empty array or omitted disables ripples entirely.
+// seaBandThresholds / sandThresholds / vegThresholds -- v3.6.5, replaces
+// the single seaShallowThreshold/beachThreshold pair. Each array is a
+// stack of full (not ring-clipped) contours off the same heightmap,
+// same colour + fixed fill-opacity per group (see cabinet-v3-style.css),
+// drawn loose-to-tight (widest reach first/bottom). Because {h > L} is a
+// strict superset of {h > L'} whenever L < L', every tighter contour's
+// area is guaranteed nested inside every looser one regardless of
+// noise -- so a point near the coastline ends up under EVERY layer in
+// its group (most opacity stacked = most saturated), while a point far
+// out is only under the loosest one or none at all (least stacked =
+// closest to whatever's underneath: the dark sea background for water,
+// or the tighter group's colour for land). That's what makes shallow
+// water read lighter than deep, and the beach/vegetation boundary blend
+// instead of hard-cut.
+//
+// Same caveat as before: these are noise contours, not fixed-distance --
+// actual pixel distance from the coastline varies with local noise/
+// gradient steepness. Fine here (depth/beach width plausibly follow the
+// same terrain noise as the coastline itself) but NOT the same thing as
+// the "wave" ripple effect (constant real-world distance from the
+// coast) -- that still needs an actual distance transform, not built
+// yet. Values are a first guess -- edit by hand and eyeball the result.

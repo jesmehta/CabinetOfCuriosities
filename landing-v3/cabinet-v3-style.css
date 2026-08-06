@@ -3,7 +3,20 @@
    review here -- deliberately not restyling color/type from scratch too,
    see Landing-page-notes.2.0.md's "why reuse tokens" note. */
 
+/* v3.6.5 -- local colour tokens for sea-depth and beach/vegetation
+   banding (see drawIslandsPath() in cabinet-v3-layout.js). Deliberately
+   NOT added to the shared cabinet-tokens.css yet -- the overall colour
+   scheme is still on hold, this is a scoped exception for the specific
+   bands requested, not a repalette. Muted/desaturated rather than
+   saturated cartoon tones, to stay in the same register as the existing
+   parchment palette; first-guess values, meant to be eyeballed and
+   retuned directly in this file. */
 body.v3-proto {
+  --v3-sea-deep: #5b7f93;
+  --v3-sea-shallow: #9fc3d1;
+  --v3-veg: #8a9b5e;
+  --v3-sand: #e8d9a0;
+
   margin: 0;
   background: var(--cab-sea);
   color: var(--cab-ink);
@@ -50,7 +63,7 @@ body.v3-proto {
   width: 100%;
   height: auto;
   display: block;
-  background: var(--cab-sea-deep);
+  background: var(--v3-sea-deep);
   border-radius: 6px;
 }
 
@@ -65,45 +78,40 @@ body.v3-proto {
   stroke-dasharray: 6 6;
 }
 
-/* v3.5: one shared noise-carved landmass for every circle on the page
-   (see cabinet-v3-islandshape.js) -- replaces what used to be a filled
-   <circle> per entry/extra. Drawn once, first, underneath every region's
-   labels/hit-circles/status rings. fill-rule: evenodd so a rare noise-
-   carved "lake" fully inside a landmass cuts a hole correctly regardless
-   of winding direction. */
-.v3-islands-land {
-  fill: var(--cab-land);
+/* v3.6.5 -- stacked translucent colour bands (replaces the single-ring
+   evenodd approach). Each group is ONE colour at a fixed fill-opacity,
+   drawn as several full (unclipped) nested contours -- overlap count,
+   not per-element hue, is what creates the gradient (see
+   drawIslandsPath() in cabinet-v3-layout.js and the field notes in
+   cabinet-v3-data.js). Sea bands rely on .v3-stage's own opaque
+   background for their "far = darkest" end, so they can stay quite
+   translucent; land bands have no such opaque backdrop of their own, so
+   sand-band opacity is kept fairly high (their outermost contour is the
+   only thing standing between the coastline edge and the sea colour
+   showing through) -- turn it up further if the true edge still reads
+   too watery. */
+.v3-sea-band {
+  fill: var(--v3-sea-shallow);
+  fill-opacity: 0.24;
+}
+
+.v3-sand-band {
+  fill: var(--v3-sand);
+  fill-opacity: 0.6;
+}
+
+.v3-veg-band {
+  fill: var(--v3-veg);
+  fill-opacity: 0.55;
+}
+
+/* Crisp ink boundary at the true coastline, drawn last (on top of every
+   fill band) so the edge reads clearly regardless of which fill happens
+   to sit under it. */
+.v3-coastline-outline {
+  fill: none;
   stroke: var(--cab-ink);
   stroke-width: 2;
-}
-
-/* v3.6.4: concentric ripple rings echoing the coastline outward into
-   open water -- ported from the v2 map's coast-ripples-global look
-   (same stroke color/width/opacity progression), but traced off the
-   same heightmap as .v3-islands-land instead of a separate distance-
-   transform build tool (see cabinet-v3-islandshape.js's
-   traceContourFromHeightmap()). Stroke-only, no fill -- these never
-   need fill-rule to matter, kept on the element for consistency with
-   every other traced path in this file. Nearest ring darkest/heaviest,
-   fading outward, matching v2 exactly. */
-.v3-ripple-ring {
-  fill: none;
-  stroke: var(--cab-ink-soft);
-}
-
-.v3-ripple-ring-1 {
-  stroke-width: 1.1;
-  opacity: 0.85;
-}
-
-.v3-ripple-ring-2 {
-  stroke-width: 0.7;
-  opacity: 0.5;
-}
-
-.v3-ripple-ring-3 {
-  stroke-width: 0.4;
-  opacity: 0.28;
 }
 
 /* Invisible hit target at an entry's original (pre-noise) circle --
