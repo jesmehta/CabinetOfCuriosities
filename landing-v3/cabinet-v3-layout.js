@@ -21,7 +21,7 @@ import { sections, entries } from "../docs/assets/js/cabinet-generated-content.j
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
 import { extrasFor, EXTRA_WEIGHT } from "./cabinet-v3-extras-config.js";
-import { traceIslandShapes } from "./cabinet-v3-islandshape.js";
+import { buildIslandHeightmap, traceContourFromHeightmap } from "./cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -447,18 +447,43 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   stage.appendChild(group);
 }
 
-// Traces + draws (or, on a re-call, just updates in place) the one
-// shared landmass path -- the only piece of the page that depends on
-// v3Config.island. Split out from render() so the control panel can call
-// this alone, cheaply, on every slider input.
+// Traces + draws (or, on a re-call, just updates in place) the shared
+// landmass path plus its ripple rings (v3.6.4) -- the only piece of the
+// page that depends on v3Config.island. Split out from render() so the
+// control panel can call this alone, cheaply, on every slider input.
+//
+// Builds the heightmap ONCE and traces every level (coastline + each
+// ripple ring) off that single build -- the heightmap build itself
+// (sampling noise/warp at every grid cell in every circle's bbox) is
+// the expensive part; tracing an extra contour off an already-built one
+// is comparatively cheap. See traceContourFromHeightmap()'s doc comment
+// in cabinet-v3-islandshape.js.
 function drawIslandsPath(stage, canvasBounds, grown) {
-  const islandsD = traceIslandShapes(grown, canvasBounds, v3Config.island);
+  const { cellSize, threshold, rippleThresholds } = v3Config.island;
+  const { H, cols, rows } = buildIslandHeightmap(grown, canvasBounds, v3Config.island);
+
+  const islandsD = traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds, threshold);
   let path = stage.querySelector(".v3-islands-land");
   if (!path) {
     path = el("path", { class: "v3-islands-land", "fill-rule": "evenodd" });
     stage.insertBefore(path, stage.firstChild);
   }
   path.setAttribute("d", islandsD);
+
+  // Each ring is inserted directly before the (now guaranteed to exist)
+  // land path -- keeps every ring behind the land visually, and lets a
+  // later re-call (slider retrace) just update `d` in place without
+  // touching DOM order at all, since the elements already exist.
+  (rippleThresholds || []).forEach((level, i) => {
+    const ringD = traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds, level);
+    const ringClass = `v3-ripple-ring v3-ripple-ring-${i + 1}`;
+    let ring = stage.querySelector(`.v3-ripple-ring-${i + 1}`);
+    if (!ring) {
+      ring = el("path", { class: ringClass, "fill-rule": "evenodd" });
+      stage.insertBefore(ring, path);
+    }
+    ring.setAttribute("d", ringD);
+  });
 }
 
 // Exported for cabinet-v3-controls.js -- re-traces against the current

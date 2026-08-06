@@ -136,7 +136,8 @@ export const v3Config = {
     warpScale: 1 / 85,
     warpOctaves: 3,
     warpLacunarity: 2,
-    warpGain: 0.5
+    warpGain: 0.5,
+    rippleThresholds: [-0.74, -0.85, -0.94]
   }
 };
 
@@ -257,3 +258,14 @@ export const v3Config = {
 // done via islands-tool.html's panel and applied here with its "Copy
 // config" button -- see Landing-page-notes.2.0.md's v3.6/v3.6.1
 // changelog entries for the full history of both passes.
+//
+// rippleThresholds -- v3.6.4. Extra height levels traced off the exact
+// same heightmap as the coastline (threshold above), each strictly
+// below it -- since height decreases roughly monotonically with
+// distance from any circle's core, a lower threshold sits strictly
+// farther out in open water, so this is literally a set of concentric
+// distance rings around the coastline (same visual idea as the v2 map's
+// coast-ripples-global, see cabinet-v3-islandshape.js's
+// traceContourFromHeightmap() doc comment). Not paired with a slider on
+// the tuning panel (an array, not a single number) -- edit by hand.
+// Nearest ring first; empty array or omitted disables ripples entirely.

@@ -539,13 +539,16 @@ function simplifyCollinear(polygon) {
 // ---------------------------------------------------------------------
 // Public entry point
 
-// Returns one SVG path `d` string covering every traced landmass as
-// separate `M...Z` subpaths -- render with fill-rule="evenodd" so a rare
-// noise-carved "lake" fully inside a landmass (an interior contour) cuts
-// a hole correctly regardless of which way either loop happened to wind.
-export function traceIslandShapes(circles, canvasBounds, config) {
-  const { cellSize, threshold } = config;
-  const { H, cols, rows } = buildIslandHeightmap(circles, canvasBounds, config);
+// Traces one threshold level of an ALREADY-BUILT heightmap into one SVG
+// path `d` string (every closed contour as a separate `M...Z` subpath).
+// Exported (v3.6.4) so a caller that needs MULTIPLE threshold levels off
+// the same circles -- the main coastline plus one or more ripple rings,
+// see cabinet-v3-layout.js's render() -- can call buildIslandHeightmap()
+// once and this once per level, instead of paying for the heightmap
+// build (the expensive part: sampling noise/warp at every grid cell
+// within every circle's bbox) once per level. traceIslandShapes() below
+// is the convenience wrapper for callers that only want one level.
+export function traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds, threshold) {
   const segments = marchingSquaresSegments(H, cols, rows, threshold);
   // Drops sub-cell noise speckles -- an isolated grid cell or two that
   // happened to cross `threshold` in open water, far from any circle's
@@ -573,6 +576,32 @@ export function traceIslandShapes(circles, canvasBounds, config) {
     })
     .join(" ");
 }
+
+// Returns one SVG path `d` string covering every traced landmass as
+// separate `M...Z` subpaths -- render with fill-rule="evenodd" so a rare
+// noise-carved "lake" fully inside a landmass (an interior contour) cuts
+// a hole correctly regardless of which way either loop happened to wind.
+export function traceIslandShapes(circles, canvasBounds, config) {
+  const { cellSize, threshold } = config;
+  const { H, cols, rows } = buildIslandHeightmap(circles, canvasBounds, config);
+  return traceContourFromHeightmap(H, cols, rows, cellSize, canvasBounds, threshold);
+}
+
+// v3.6.4: concentric "ripple" rings echoing the coastline outward into
+// open water (same spirit as the v2 map's coast-ripples-global, see
+// Landing-page-notes.2.0.md) are built by the caller as: build H once
+// via buildIslandHeightmap(), call traceContourFromHeightmap() once for
+// config.threshold (the coastline) and once per entry in
+// config.rippleThresholds (each strictly below config.threshold, since
+// h decreases roughly monotonically with distance from any circle's
+// core once past the noise/warp perturbation -- a lower threshold sits
+// farther out, literally a distance ring). Islands close enough
+// together fuse their main coastline (via H's own max()-combine); their
+// ripple rings fuse the exact same way, for free, at every level -- the
+// one thing v2 had to solve specially for (its own comment: "islands
+// close enough together fuse their rings into one shape instead of
+// clipping through each other") falls out automatically here. See
+// cabinet-v3-layout.js's render() for the actual call site.
 
 // Exported for the Node verification harness (land-area-fraction check,
 // contour counts) -- not used by the render path itself.
