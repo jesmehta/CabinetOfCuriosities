@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cabinet Islands -- live tuning tool</title>
+  <link rel="stylesheet" href="../docs/assets/css/cabinet-tokens.css" />
+  <link rel="stylesheet" href="cabinet-v3-style.css" />
+</head>
+<body class="v3-proto">
+  <header class="v3-header">
+    <h1>Cabinet Islands -- tuning tool</h1>
+    <p class="v3-subtitle">Same live content and config as <code>index.html</code> (real
+      sections/entries, real navigation, real <code>cabinet-v3-data.js</code>) -- this page just
+      keeps the tuning panel permanently, as <code>index.html</code> evolves toward a finished
+      production page and eventually sheds it. Reload any time content or sections change: layout
+      and coastlines recompute from scratch on every load, nothing here is cached across edits.
+      "Copy config" writes straight back into <code>cabinet-v3-data.js</code>. See
+      <code>Landing-page-notes.2.0.md</code> for the full "Three pages" design conversation.</p>
+  </header>
+
+  <main class="v3-stage-wrap">
+    <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+  </main>
+
+  <script type="module" src="cabinet-v3-layout.js"></script>
+  <script type="module" src="cabinet-v3-controls.js"></script>
+</body>
+</html>
