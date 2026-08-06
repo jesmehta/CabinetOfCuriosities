@@ -5,14 +5,15 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.2** (domain warping for real concave coastlines,
+Currently on **v3.6.3** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
-`archive/v3.6/` a frozen snapshot) -- see the changelog for the full
-v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 ->
-v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1 -> v3.6.2
-progression and why each pass changed what it did.
+`archive/v3.6/` a frozen snapshot -- plus a paste-friendly
+`cabinet-v3-data.js` and a by-editability file table below) -- see the
+changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 ->
+v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1
+-> v3.6.2 -> v3.6.3 progression and why each pass changed what it did.
 
 Screenshots of each version are kept in `landing-v3/dev-screenshots/`
 (git-tracked, named `v{version}-{what-changed}.png`) specifically to
@@ -199,25 +200,50 @@ Two further decisions from the second round of the conversation:
 
 ### Split modules, fffx-shaped
 
-`landing-v3/` mirrors fffx's data/logic/render split:
+`landing-v3/` mirrors fffx's data/logic/render split. As the file count
+grew (v3.6.3), grouped below by a more practical question than
+"responsibility": **should you ever touch this file?** -- asked
+directly, since the answer wasn't visible at a glance from one flat
+list. Four groups: things you edit, things you shouldn't (the
+algorithm), build tooling, and pages/output you only ever open in a
+browser.
+
+**Edit these -- your actual inputs:**
+
+| File | What you'd change, and how |
+| --- | --- |
+| `cabinet-v3-data.js` | Tuning config (`v3Config`): canvas sizing, pack knobs, and the `island` noise/warp block. As of v3.6.3, `island`'s value block is deliberately comment-free and in the same key order `islands-tool.html`'s "Copy config" button produces -- paste its output directly over everything between `island: {` and the matching `}`, no hand-editing around comments. Field-by-field explanations live in the **ISLAND CONFIG FIELD NOTES** comment at the end of the file instead, same order. `canvas`/`pack` keep their comments inline (no copy-paste workflow touches those). |
+| `cabinet-v3-extras-config.js` | Per-section extras schema-extension proposal (how many filler/"coming soon" circles each section gets) -- see "Where entries/sections come from" note above. Mostly data (`extrasConfig`, `EXTRA_WEIGHT`) with one small fallback function (`defaultExtrasFor()`) mixed in -- kept as its own file rather than folded into `cabinet-v3-data.js` specifically so that file can stay pure data (no logic at all), which is what makes its own paste-workflow above safe. |
+| `index.template.html` | The actual hand-edited source for the built `index.html` (v3.6.2) -- header/subtitle text, stylesheet links, and a `<!-- V3_ISLANDS_SVG -->` placeholder. Edit this, never `index.html` itself -- see "Static build" below. |
+| (`content/cabinet-sections.tsv` / `cabinet-entries.tsv`, repo root) | The real content source -- not in `landing-v3/` at all, but this is where entry/section titles, weights, order, and status actually come from. Run `node tools/build-cabinet-content.js` after editing these. |
+
+**Logic -- shouldn't need to touch unless you're changing the algorithm
+itself:**
 
 | File | Responsibility |
 | --- | --- |
-| `index.html` | Static shell: tokens + prototype CSS, one `<svg id="v3-stage">` mount point, `<script type="module" src="cabinet-v3-layout.js">` then `cabinet-v3-controls.js`. No content, no logic. |
-| `cabinet-v3-data.js` | Hand-edited tuning config (canvas width/area-per-weight-unit/`minSectionWeight`, pack seed radius/growth step/padding/band ratio, island-shape noise/warp params) -- pure data, mirrors `cabinet-data.js`/`fffx-data.js`. |
-| `cabinet-v3-extras-config.js` | Per-section extras schema-extension proposal -- see above. |
 | `cabinet-v3-treemap.js` | Pure logic: `squarify()` only (the v3.0 aspect-band search, `squarifyWithAspectSearch()`, was removed -- see the changelog; it's recoverable from git history if the band comes back). No DOM -- runs under Node unchanged (see "Verification" below), same rationale as `fffx-subdivision.js`. |
 | `cabinet-v3-circlepack.js` | Pure logic: `generateScatterPoints()` (per-section, takes a cross-section `existingPoints` list), `centerPointsInRect()` (v3.4, per-section, centers bare points before growth), `sortPointsByBandReadingOrder()` (per-section), `growCircles()` (v3.3: one global call across every section's seeds, takes `obstacles` for label bands), plus `createSeededRng()`/`seedFromString()`/`safeMinSeparation()`/`insetRect()` helpers -- all used. `centerClusterInRect()` (v3.2, superseded by `centerPointsInRect()`) and `packCirclesSpiral()` are also here, currently unused (see "Known limitations"). No DOM. |
 | `cabinet-v3-islandshape.js` | Pure logic (v3.5, domain warp added v3.6): seeded 2D noise, per-circle radial falloff, domain-warped sample positions, a shared heightmap combined via `max()` across every circle, and a marching-squares tracer that turns that heightmap into SVG path data -- see "How coastlines are traced" below. No DOM. |
 | `cabinet-v3-layout.js` | Orchestration + SVG rendering only -- folds entries into sections, calls the treemap, pack, and island-shape modules, builds the actual SVG nodes, reserves and renders each region's label band. Exports `retraceIslands()` (v3.6) for the control panel's cheap re-trace path. Imports real content from `../docs/assets/js/cabinet-generated-content.js`. |
 | `cabinet-v3-controls.js` | Dev-only (v3.6): on-page slider panel for `v3Config.island`'s noise/warp parameters, live-updating via `retraceIslands()`. Not part of the page design being reviewed -- see "Domain warping for real concavity" below and "Known limitations" #10. |
 | `cabinet-v3-style.css` | Layout-review styling, reusing `cabinet-tokens.css`'s palette; also styles the v3.6 control panel (deliberately plain/utility, not parchment-themed). |
-| `package.json` | Declares `{ "type": "module" }` plus `playwright` as a devDependency (v3.6 -- installed once, not per screenshot round; see "Verification" below) -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
-| `islands-tool.html` | v3.6.1, permanent live tuning tool -- see "Three pages" below. Shares `cabinet-v3-layout.js`/`cabinet-v3-controls.js`/`cabinet-v3-data.js` directly with `index.html` (no duplication); exists as its own stable entry point so it can keep the panel after `index.html` eventually sheds it. |
-| `archive/v3.6/index.html` + `config.js` + `content.js` + `layout.js` + `controls.js` | v3.6.1, frozen historical snapshot -- see "Three pages" below. Content AND config pinned (own `config.js`/`content.js`, not the live files); algorithm modules (`cabinet-v3-islandshape.js` etc.) still shared/live, one directory up. |
-| `index.template.html` | v3.6.2, the actual hand-edited source for the built `index.html` -- header/subtitle/stylesheets plus a `<!-- V3_ISLANDS_SVG -->` placeholder. Edit this, never `index.html` directly -- see "Static build" below. |
-| `build-render.html` | v3.6.2, build-only page loaded by `build-static.mjs` -- runs the real `cabinet-v3-layout.js` `render()` with no dev panel, exists only to be snapshotted, not for humans to open. |
+
+**Build tooling:**
+
+| File | Responsibility |
+| --- | --- |
 | `build-static.mjs` | v3.6.2, the static-build script -- headless-Chromium snapshot of `build-render.html`'s rendered `#v3-stage`, injected into `index.template.html` to produce `index.html`. Run via `npm run build` or `node build-static.mjs` from `landing-v3/`; see "Static build" below for why a real browser snapshot was chosen over a hand-written serializer. |
+| `build-render.html` | v3.6.2, build-only page loaded by `build-static.mjs` -- runs the real `cabinet-v3-layout.js` `render()` with no dev panel, exists only to be snapshotted, not for humans to open. |
+| `package.json` | Declares `{ "type": "module" }`, `playwright` as a devDependency (v3.6 -- installed once, not per screenshot round; see "Verification" below), and an `npm run build` script (v3.6.2) for `build-static.mjs`. Lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
+
+**Pages -- open in a browser, generated output, or frozen:**
+
+| File | What it is |
+| --- | --- |
+| `index.html` | **Generated, v3.6.2 -- never hand-edit** (banner comment says so). Built from `index.template.html` by `build-static.mjs`; a zero-JS static page, real visitors' page loads cost nothing beyond parsing SVG. |
+| `islands-tool.html` | v3.6.1, permanent live tuning tool -- see "Three pages" below. Shares `cabinet-v3-layout.js`/`cabinet-v3-controls.js`/`cabinet-v3-data.js` directly with `index.html`'s pre-build source (no duplication); exists as its own stable entry point so it can keep the panel forever, independent of whatever `index.html` eventually becomes. |
+| `archive/v3.6/index.html` + `config.js` + `content.js` + `layout.js` + `controls.js` | v3.6.1, frozen historical snapshot -- see "Three pages" below. Content AND config pinned (own `config.js`/`content.js`, not the live files); algorithm modules (`cabinet-v3-islandshape.js` etc.) still shared/live, one directory up. |
 
 ## Three pages (`index.html`, `islands-tool.html`, `archive/`)
 
@@ -1218,6 +1244,49 @@ check passes. Screenshot: `dev-screenshots/v3.6-islands-showcase-page.png`.
 second page (`islands-tool.html`) was added for *live* tuning and it
 became clear "frozen showcase" and "ongoing tool" were two different
 needs.
+
+### v3.6.3 -- paste-friendly config, file table grouped by editability
+
+Two small, related requests after the file count grew past what a flat
+list usefully conveyed. First: "for all the files in the landing-v3
+folder... I'd prefer to... bifurcate between files that have input
+variables for me to edit vs logic files I shouldn't touch." Fixed by
+regrouping the file-responsibility table (see "Split modules, fffx-
+shaped" above) into four groups -- Edit these / Logic / Build tooling /
+Pages-generated-frozen -- instead of one flat list ordered by nothing
+in particular.
+
+Second, more concrete: `cabinet-v3-data.js`'s `island` block had a
+comment before nearly every field, which is exactly what got in the way
+of the actual intended workflow (tune on `islands-tool.html`, click
+"Copy config", paste the result back into this file) -- pasting JSON
+over a block with interleaved comments meant either destroying the
+comments or hand-picking individual lines to replace, both against the
+point of having a one-click "Copy config" button at all. Restructured
+so the `island: {...}` block itself is comment-free and in the exact
+key order the panel's `JSON.stringify(v3Config.island, null, 2)`
+produces -- the whole block can now be selected and replaced with a
+paste, in one motion, every time. All the explanatory content that used
+to sit inline was moved (not deleted) to a new **ISLAND CONFIG FIELD
+NOTES** comment block at the end of the file, same field order, so
+"what does the Nth value do" is still answerable, just not in the way
+of editing. `canvas`/`pack` keep their inline comments as before --
+neither has a paste workflow competing with them, so there was no
+reason to touch those.
+
+Considered and rejected: folding `cabinet-v3-extras-config.js` into
+`cabinet-v3-data.js` (both are v3-only tuning data, so it looked like a
+natural merge). Rejected because `extras-config.js` also carries a small
+amount of real logic (`defaultExtrasFor()`'s deterministic hash
+fallback) -- merging it in would mean `cabinet-v3-data.js` stops being
+pure data, working against the exact "which files are safe to touch"
+clarity this pass was trying to create. Left as two files, now both
+correctly labeled in the regrouped table.
+
+Verified: `cabinet-v3-data.js` still loads and produces byte-identical
+`v3Config.island` values (confirmed via Node import, and by re-running
+`build-static.mjs` -- `index.html`'s generated output diffed as
+unchanged, proving only comments moved, no values shifted).
 
 ### v3.6.2 -- index.html becomes a zero-JS static build
 
