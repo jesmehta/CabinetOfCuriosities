@@ -124,7 +124,7 @@ export const v3Config = {
     // compared against the radial gradient -- the actual amplitude of
     // the noise term relative to `threshold` and `gradientStrength`
     // below, all three tuned together (see cabinet-v3-islandshape.js).
-    noiseAmplitude: 0.35,
+    noiseAmplitude: 0.38,
     // Normalized distance from a circle's own center (as a fraction of
     // its radius) where the radial falloff starts (innerFrac, always
     // land inside this) and ends (outerFrac, always water beyond this).
@@ -138,14 +138,14 @@ export const v3Config = {
     // Node run).
     innerFrac: 0.55,
     outerFrac: 1.3,
-    gradientStrength: 1.1,
+    gradientStrength: 1.12,
     // Height threshold separating land (> threshold) from water. Sits
     // comfortably below noiseAmplitude's own range so the guaranteed-
     // land core (innerFrac) is never accidentally carved into water by
     // an unlucky noise sample, while gradientStrength is large enough
     // relative to threshold + noiseAmplitude that outerFrac is always
     // reliably water (also verified, not just asserted).
-    threshold: -0.5,
+    threshold: -0.62,
     // Baseline height for every grid cell no circle's influence reaches
     // -- far enough below `threshold` that open ocean never registers
     // as land regardless of noise (noise is never sampled there at all,
@@ -164,7 +164,7 @@ export const v3Config = {
     // can range roughly 0.7x-1.3x its base value depending on direction
     // -- noticeably lobed/elongated without a circle ever collapsing to
     // a sliver at its narrowest angle.
-    angularStrength: 0.4,
+    angularStrength: 0.38,
     // Range of "loop radius in noise-space" a circle's own angular
     // pattern is randomly drawn from (see angularRadiusScale()'s doc
     // comment for why a small loop gives few broad lobes rather than
@@ -194,9 +194,11 @@ export const v3Config = {
     // sharp, narrow radius pinches (fjord-like inlets) while leaving
     // everywhere else a smooth plateau -- "more extreme jumps" without
     // just inflating angularStrength (which only makes the existing
-    // smooth bulges bigger, not sharper). 0.6 leans toward the ridged
-    // character while keeping some of v3.5.3's broad lobing underneath.
-    angularRidgeMix: 0.6,
+    // smooth bulges bigger, not sharper). Originally shipped at 0.6
+    // (leaning ridged); interactive tuning (see below) pulled it back
+    // toward more of v3.5.3's smooth broad lobing once domain warping
+    // (v3.6) was doing more of the "sharp feature" work itself.
+    angularRidgeMix: 0.36,
 
     // v3.6: domain warping (see warpOffset() in cabinet-v3-islandshape.js).
     // angularRadiusScale above can only ever bulge/pinch a *radius* --
@@ -208,31 +210,40 @@ export const v3Config = {
     // itself before the distance-to-center check runs, which is what
     // actually makes concavity possible.
     //
-    // warpStrength/warpScale below picked from an empirical sweep (a
-    // throwaway Node script, not eyeballed): tried strength in
-    // [0,20,35,50,70,100] px x warp-field period in [90,140,220] px
-    // against 12 varied synthetic circles, counting what fraction of
-    // rays from each circle's own center cross the coastline more than
-    // once (>1 crossing is direct proof of a real fold -- a star-shaped
-    // boundary, which is all angularRadiusScale alone can ever produce,
-    // crosses exactly once per ray no matter how jagged). Re-verified
-    // against the real 40-circle content specifically (not just the
-    // synthetic probes): avg multi-crossing rays 1.55% at warp off vs.
-    // 3.40% at these values -- more than double, and every circle still
-    // closes cleanly (40/40 landmasses, no fragmentation). Still a
-    // starting point, not final aesthetic tuning -- v3.6 also ships an
-    // on-page control panel (cabinet-v3-controls.js) specifically so the
-    // real tuning happens interactively against the live shapes instead
-    // of another round of screenshot-and-guess.
+    // Original shipped values (warpStrength: 40, warpScale: 1/100,
+    // warpOctaves: 2) came from an empirical sweep (a throwaway Node
+    // script, not eyeballed): tried strength in [0,20,35,50,70,100] px x
+    // warp-field period in [90,140,220] px against 12 varied synthetic
+    // circles, counting what fraction of rays from each circle's own
+    // center cross the coastline more than once (>1 crossing is direct
+    // proof of a real fold -- a star-shaped boundary, which is all
+    // angularRadiusScale alone can ever produce, crosses exactly once
+    // per ray no matter how jagged). Re-verified against the real
+    // 40-circle content specifically: avg multi-crossing rays 1.55% at
+    // warp off vs. 3.40% at those values -- more than double, and every
+    // circle still closed cleanly. Flagged then as a starting point, not
+    // final aesthetic tuning.
+    //
+    // Values below are that real tuning pass: done interactively via the
+    // on-page control panel (`islands-tool.html`'s `cabinet-v3-
+    // controls.js`, or `archive/v3.6/`'s frozen copy for comparison
+    // against the pre-tuning baseline), copied back here via the panel's
+    // "Copy config" button. Stronger and lower-period warp (60px / ~85px
+    // period, up from 40px / 100px) with a third warp octave for finer
+    // fold detail, balanced against a pulled-back angularRidgeMix (see
+    // above) and a lower threshold (-0.62, down from -0.5, compensating
+    // for the extra land the stronger warp/noiseAmplitude otherwise
+    // carves away) -- ongoing exploration continues on the live tool
+    // page, not by editing this file by hand.
     //
     // warpStrength: max displacement in canvas px. warpScale: like
     // noiseScale above, roughly 1/(world px per warp-field period) --
     // deliberately lower frequency than noiseScale's fine edge texture,
     // since a warp fold needs to displace a whole stretch of a circle's
     // boundary together to read as a bay rather than jitter.
-    warpStrength: 40,
-    warpScale: 1 / 100,
-    warpOctaves: 2,
+    warpStrength: 60,
+    warpScale: 1 / 85,
+    warpOctaves: 3,
     warpLacunarity: 2,
     warpGain: 0.5
   }
