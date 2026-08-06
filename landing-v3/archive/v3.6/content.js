@@ -1,18 +1,16 @@
-// Frozen snapshot of ../docs/assets/js/cabinet-generated-content.js, taken
-// 2026-08-05 for the v3.6 island-generation showcase page
-// (islands-showcase.html) -- see Landing-page-notes.2.0.md's showcase-page
-// section for why this is a snapshot, not a live import: the showcase is
-// meant to demonstrate the noise/warp algorithm against realistic
-// weight/density data without being tied to (or breaking when) the real
-// site's content changes, and without implying its circles are live
-// navigation. Every entry/section's own href is replaced with "#" --
-// same titles, weights, and structure as the real page, but nothing here
-// actually links anywhere.
+// Frozen snapshot of ../../../docs/assets/js/cabinet-generated-content.js,
+// taken 2026-08-05 for this v3.6 archive folder -- see
+// Landing-page-notes.2.0.md's "Three pages" section for why this is a
+// snapshot, not a live import: this archive demonstrates the v3.6
+// noise/warp algorithm against realistic weight/density data without
+// being tied to (or breaking when) the real site's content changes, and
+// without implying its circles are live navigation. Every entry/
+// section's own href is replaced with "#" -- same titles, weights, and
+// structure as the real page, but nothing here actually links anywhere.
 //
 // NOT auto-generated, NOT re-synced -- a deliberate point-in-time copy.
-// If the real content changes enough that this snapshot feels stale,
-// re-take it by hand (same transform: copy the real file's sections/
-// entries, replace every truthy href with "#").
+// A new archive folder (v3.7, etc.) is where the next one would go, not
+// a re-take of this one.
 
 export const sections = [
   {

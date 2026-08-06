@@ -1,20 +1,22 @@
-// v3.6 -- mirror of cabinet-v3-layout.js for islands-showcase.html, the
-// permanent island-generation showcase page. A full copy rather than a
-// shared parameterized function: the only real difference is which
-// content module gets imported (frozen showcase snapshot vs. the real
-// site's live content), but the showcase page is expected to diverge
-// further over time on its own terms (explicit user request -- some
-// future changes may apply here only, not to the real prototype). See
-// Landing-page-notes.2.0.md's "Showcase page" section for the full
-// rationale. Every comment below is unchanged from cabinet-v3-layout.js
-// -- read that file for the actual design reasoning behind each step.
+// v3.6 archive -- frozen mirror of ../../cabinet-v3-layout.js, pinned to
+// this folder's own config.js and content.js (NOT the live
+// cabinet-v3-data.js / real content) so this archive keeps rendering
+// exactly as v3.6 looked regardless of later tuning. A full copy rather
+// than a shared parameterized function, same reasoning as
+// islands-tool.html vs. index.html not sharing one either -- see
+// Landing-page-notes.2.0.md's "Three pages" section. Every comment below
+// is unchanged from cabinet-v3-layout.js -- read that file for the
+// actual design reasoning behind each step. The algorithm modules below
+// (treemap/circlepack/extras-config/islandshape) are still imported live
+// from one directory up, deliberately NOT frozen -- see config.js's own
+// doc comment for why.
 
-import { v3Config } from "./cabinet-v3-data.js";
-import { sections, entries } from "./cabinet-v3-showcase-content.js";
-import { squarify } from "./cabinet-v3-treemap.js";
-import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
-import { extrasFor, EXTRA_WEIGHT } from "./cabinet-v3-extras-config.js";
-import { traceIslandShapes } from "./cabinet-v3-islandshape.js";
+import { v3Config } from "./config.js";
+import { sections, entries } from "./content.js";
+import { squarify } from "../../cabinet-v3-treemap.js";
+import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "../../cabinet-v3-circlepack.js";
+import { extrasFor, EXTRA_WEIGHT } from "../../cabinet-v3-extras-config.js";
+import { traceIslandShapes } from "../../cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 

@@ -1,16 +1,14 @@
-// v3.6 -- mirror of cabinet-v3-controls.js for islands-showcase.html, the
-// permanent island-generation showcase page. Byte-identical except the
-// retraceIslands import, which has to point at cabinet-v3-showcase-
-// layout.js's own copy (each layout module has its own module-scoped
-// islandLayoutState, so the two retraceIslands() exports are genuinely
-// different functions, not the same one re-exported). Shares the SAME
-// v3Config.island (cabinet-v3-data.js) as the real page, deliberately --
-// see Landing-page-notes.2.0.md's "Showcase page" section: this panel's
-// Copy-config button is meant to feed tuning discoveries straight back
-// into the real page's config file.
+// v3.6 archive -- mirror of ../../cabinet-v3-controls.js, pinned to this
+// folder's own frozen config.js (NOT the live cabinet-v3-data.js) so
+// dragging sliders here explores this archive's own baseline without
+// touching, or being touched by, the live pages' tuning. retraceIslands
+// points at this folder's own layout.js copy (each layout module has its
+// own module-scoped islandLayoutState, so the two retraceIslands()
+// exports are genuinely different functions, not the same one
+// re-exported). See Landing-page-notes.2.0.md's "Three pages" section.
 
-import { v3Config } from "./cabinet-v3-data.js";
-import { retraceIslands } from "./cabinet-v3-showcase-layout.js";
+import { v3Config } from "./config.js";
+import { retraceIslands } from "./layout.js";
 
 // Each entry drives one slider. `get`/`set` default to reading/writing
 // v3Config.island[key] directly; only warpPeriod overrides them, since
