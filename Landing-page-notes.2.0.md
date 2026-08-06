@@ -5,13 +5,14 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.1** (domain warping for real concave coastlines,
-interactively tuned via an on-page control panel, now split across three
-pages -- `index.html` the evolving real prototype, `islands-tool.html`
-the permanent live tuning tool, `archive/v3.6/` a frozen snapshot) -- see
-the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
-v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
--> v3.6.1 progression and why each pass changed what it did.
+Currently on **v3.6.2** (domain warping for real concave coastlines,
+interactively tuned via an on-page control panel, split across three
+pages -- `index.html` a zero-JS static build of the evolving real
+prototype, `islands-tool.html` the permanent live tuning tool,
+`archive/v3.6/` a frozen snapshot) -- see the changelog for the full
+v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 -> v3.4.2 -> v3.5 ->
+v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1 -> v3.6.2
+progression and why each pass changed what it did.
 
 Screenshots of each version are kept in `landing-v3/dev-screenshots/`
 (git-tracked, named `v{version}-{what-changed}.png`) specifically to
@@ -214,6 +215,9 @@ Two further decisions from the second round of the conversation:
 | `package.json` | Declares `{ "type": "module" }` plus `playwright` as a devDependency (v3.6 -- installed once, not per screenshot round; see "Verification" below) -- lets the pure logic files (`cabinet-v3-treemap.js`, `cabinet-v3-circlepack.js`) run under plain `node`, not just a browser, for the same reason fffx's pure modules can. |
 | `islands-tool.html` | v3.6.1, permanent live tuning tool -- see "Three pages" below. Shares `cabinet-v3-layout.js`/`cabinet-v3-controls.js`/`cabinet-v3-data.js` directly with `index.html` (no duplication); exists as its own stable entry point so it can keep the panel after `index.html` eventually sheds it. |
 | `archive/v3.6/index.html` + `config.js` + `content.js` + `layout.js` + `controls.js` | v3.6.1, frozen historical snapshot -- see "Three pages" below. Content AND config pinned (own `config.js`/`content.js`, not the live files); algorithm modules (`cabinet-v3-islandshape.js` etc.) still shared/live, one directory up. |
+| `index.template.html` | v3.6.2, the actual hand-edited source for the built `index.html` -- header/subtitle/stylesheets plus a `<!-- V3_ISLANDS_SVG -->` placeholder. Edit this, never `index.html` directly -- see "Static build" below. |
+| `build-render.html` | v3.6.2, build-only page loaded by `build-static.mjs` -- runs the real `cabinet-v3-layout.js` `render()` with no dev panel, exists only to be snapshotted, not for humans to open. |
+| `build-static.mjs` | v3.6.2, the static-build script -- headless-Chromium snapshot of `build-render.html`'s rendered `#v3-stage`, injected into `index.template.html` to produce `index.html`. Run via `npm run build` or `node build-static.mjs` from `landing-v3/`; see "Static build" below for why a real browser snapshot was chosen over a hand-written serializer. |
 
 ## Three pages (`index.html`, `islands-tool.html`, `archive/`)
 
@@ -226,12 +230,12 @@ historical record are different needs that shouldn't live on the same
 page:
 
 1. **`index.html`** -- the real prototype, evolving toward the finished
-   landing page. Real content (imports
-   `../docs/assets/js/cabinet-generated-content.js` directly), real
-   navigation, real `cabinet-v3-data.js`. Currently still carries the
-   v3.6 tuning panel; expected to shed it (and any other dev-only
-   trappings) once the layout direction is actually finalized -- that's
-   a future step, not done here.
+   landing page. Real content, real navigation, real `cabinet-v3-data.js`
+   tuning. As of v3.6.2 (see "Static build" below) this is a **build
+   artifact**, not hand-edited or live-computed: `index.template.html` is
+   the actual source, and `build-static.mjs` regenerates `index.html`
+   from it -- ships zero JavaScript, so real visitors' page loads cost
+   nothing beyond parsing static SVG.
 2. **`islands-tool.html`** -- byte-identical to `index.html` today (same
    `cabinet-v3-layout.js`, same `cabinet-v3-controls.js`, same live
    content and config), existing as its own stable entry point
@@ -298,6 +302,71 @@ distinct navigation targets); `archive/v3.6/` shows the original v3.6
 defaults (strength 40, period 100, 2 octaves) and all 25 links resolve
 to `#`, unaffected by the `cabinet-v3-data.js` edit made in the same
 pass -- direct proof the freeze actually holds.
+
+## Static build (`build-static.mjs`, v3.6.2)
+
+Asked directly, once it came up that `index.html` recomputes the entire
+pipeline (treemap, packing, noise/warp heightmap, marching-squares
+tracing) from scratch on every single page load: that's real compute
+cost for every real visitor, for a page whose content only actually
+changes when an entry or section is added -- "ease users' page-load
+times... no recomputes until a section or entry actually changes." The
+fix is standard for this kind of problem: move the computation from
+*request time* (every visitor's browser, every load) to *build time*
+(once, whenever content/config actually changes), and ship the result as
+plain static markup.
+
+**How the static markup gets produced -- a real headless browser, not a
+hand-written serializer.** `build-static.mjs` starts a local static
+file server, launches headless Chromium (Playwright, already a
+devDependency), loads `build-render.html` (a minimal page that runs
+`cabinet-v3-layout.js`'s real `render()` -- the *exact same* client-side
+code `islands-tool.html` and `archive/` use, not a reimplementation),
+waits for the shared islands path to appear (proof the whole pipeline
+finished, not just that the page loaded), then reads `#v3-stage`'s
+`outerHTML` directly out of the live DOM.
+
+The alternative considered and explicitly rejected: hand-writing a
+second, string-based SVG serializer that mirrors `cabinet-v3-layout.js`'s
+DOM-construction logic without a browser. Node-only, faster, no browser
+dependency -- but it would mean two independent implementations of "how
+an island/label/region actually gets drawn," which would need to be
+kept in sync by hand every time that logic changes (as it has in nearly
+every version so far). Rejected specifically because that hand-sync
+requirement doesn't go away even without an AI assistant available to
+do it -- a real headless-browser snapshot has exactly one rendering
+implementation, so there is nothing to keep in sync, ever, by anyone.
+
+**What gets built vs. what stays hand-written.** `index.template.html`
+is the actual source (header, subtitle, stylesheet links, and a
+`<!-- V3_ISLANDS_SVG -->` placeholder) -- edit that, never `index.html`
+directly. `build-static.mjs` reads the template, replaces the
+placeholder with the captured SVG markup, and writes the result to
+`index.html` with an `AUTO-GENERATED FILE` banner comment, the same
+convention `cabinet-generated-content.js` already uses for TSV-sourced
+content (`content/cabinet-sections.tsv`/`cabinet-entries.tsv` ->
+`node tools/build-cabinet-content.js`). `build-render.html` is a third,
+build-only page -- like `index.template.html`'s SVG stage but with no
+header/subtitle (irrelevant to what gets captured) and, critically, no
+`cabinet-v3-controls.js` script tag, so the dev tuning panel can never
+end up baked into the static output.
+
+**Trigger: a separate, explicit command, not chained onto the real
+site's build.** Regenerating requires running `node build-static.mjs`
+(or `npm run build`) from `landing-v3/` by hand, deliberately not wired
+into `tools/build-cabinet-content.js`'s existing TSV-triggered build --
+`landing-v3/` is still an isolated, unapproved prototype (see this
+file's own intro), and chaining a real-site build script into it would
+blur that boundary. Revisit this once/if v3 is actually approved to
+ship.
+
+**Verified:** loaded the built `index.html` with JavaScript entirely
+disabled (Playwright's `javaScriptEnabled: false`, not just "no console
+errors" -- an actually stricter check, since it proves nothing beyond
+static HTML/CSS parsing is required) -- all 25 island links present with
+their real hrefs, zero script tags in the output, no dev panel. Visually
+identical to the live-computed version. Screenshot:
+`dev-screenshots/v3.6.2-static-build-no-js.png`.
 
 ## How the layout is built (`cabinet-v3-layout.js`'s `render()`)
 
@@ -1149,6 +1218,54 @@ check passes. Screenshot: `dev-screenshots/v3.6-islands-showcase-page.png`.
 second page (`islands-tool.html`) was added for *live* tuning and it
 became clear "frozen showcase" and "ongoing tool" were two different
 needs.
+
+### v3.6.2 -- index.html becomes a zero-JS static build
+
+Direct follow-up to explaining how `index.html` worked: it recomputes
+the *entire* pipeline (treemap, packing, noise/warp heightmap, marching-
+squares tracing) from scratch, client-side, on every single page load.
+Asked directly to fix that -- "no recomputes until a section or entry
+actually changes" -- with the exact target architecture specified: JS
+does its work once, produces a static set of clickable SVG shapes,
+recompute only triggers when entries/sections actually change.
+
+Moved the whole pipeline from request-time (every visitor) to build-time
+(once, on demand). `build-static.mjs` runs headless Chromium against a
+new build-only page (`build-render.html` -- `cabinet-v3-layout.js`'s
+real `render()`, no dev panel), captures the rendered `#v3-stage`'s
+`outerHTML`, and injects it into `index.template.html` (the new actual
+source) to produce `index.html`, banner-marked auto-generated same as
+`cabinet-generated-content.js`.
+
+**Real headless-browser snapshot, not a hand-written serializer** --
+asked to explain the tradeoff (effort/deps/build-speed/page-load/
+maintenance) before choosing, since the difference wasn't obvious from a
+one-line "recommended" tag. The deciding factor, by the user's own
+reasoning: a hand-written string-based serializer would be a second
+independent rendering implementation, needing to be manually kept in
+sync with `cabinet-v3-layout.js`'s actual DOM-construction logic every
+time it changes (which has happened in nearly every version of this
+file) -- a maintenance burden that persists even without an AI assistant
+around to do the porting. A headless-browser snapshot has exactly one
+rendering implementation; there's nothing to keep in sync, by anyone,
+ever. The cost -- a browser dependency and a few extra seconds at build
+time -- is paid once, by whoever runs the build, never by a site
+visitor, so it wasn't a real tradeoff once laid out concretely.
+
+Trigger is a separate, explicit `npm run build` (or
+`node build-static.mjs`) from `landing-v3/`, deliberately not chained
+onto `tools/build-cabinet-content.js`'s TSV-triggered build --
+`landing-v3/` is still an unapproved, isolated prototype; wiring a
+real-site build script into it would blur that boundary prematurely.
+
+Verified: built `index.html` loaded with Playwright's
+`javaScriptEnabled: false` (JS entirely disabled, not just "no console
+errors") still shows all 25 real island links with correct hrefs, zero
+`<script>` tags in the output, no dev panel, visually identical to the
+live-computed version. `islands-tool.html` and `archive/v3.6/` re-
+verified unaffected (neither imports anything the build touched).
+Screenshot: `dev-screenshots/v3.6.2-static-build-no-js.png`. Full
+writeup: "Static build" above.
 
 ### v3.6.1 -- three pages, first real interactive tuning pass applied
 
