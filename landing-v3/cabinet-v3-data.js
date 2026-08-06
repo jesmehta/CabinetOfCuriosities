@@ -93,154 +93,45 @@ export const v3Config = {
     maxIterations: 4000
   },
 
-  // v3.5: noise-carved coastlines for the archipelago circles -- see
+  // v3.5/v3.6: noise-carved coastlines for the archipelago circles -- see
   // cabinet-v3-islandshape.js. Every circle contributes (noise - radial
-  // gradient) to one shared heightmap, combined via max() so close
-  // circles' coastlines can fuse into one landmass; thresholding that
-  // heightmap and tracing it with marching squares is what replaces the
-  // plain <circle> a growCircles() output would otherwise render as.
+  // gradient, angle-modulated, domain-warped) to one shared heightmap,
+  // combined via max() so close circles' coastlines can fuse into one
+  // landmass; thresholding that heightmap and tracing it with marching
+  // squares is what replaces the plain <circle> a growCircles() output
+  // would otherwise render as.
+  //
+  // v3.6.3: kept deliberately comment-free INSIDE the block below, in
+  // the same key order islands-tool.html's panel produces -- so the
+  // whole block can be replaced by pasting its "Copy config" output
+  // directly over everything between the { and }, no hand-editing
+  // around comments required. Field-by-field notes (what each value
+  // does, why it's set the way it is) live in the ISLAND CONFIG FIELD
+  // NOTES comment at the end of this file instead -- same order as
+  // below, so "what does the 6th value do" is just "read the 6th note".
+  // A pasted value may come back as a decimal (e.g. 0.011764705882352941
+  // instead of 1 / 85) -- numerically identical, JS doesn't care which
+  // form a number literal is written in, nothing to fix.
   island: {
-    // Grid spacing for the heightmap/marching-squares pass, in canvas
-    // px. Smaller = smoother coastline + more path points; 4px keeps
-    // contours visibly faceted (matching the v2 map's own coastline/
-    // ripple aesthetic, itself a coarse-grid marching-squares trace) at
-    // a computation cost proportional to circle areas, not canvas area.
     cellSize: 4,
-    // Noise sample frequency -- world px per full noise period is
-    // roughly 1 / noiseScale. Tuned so a mid-sized circle's coastline
-    // shows several wobbles around its circumference, not one broad
-    // bulge or fine static.
     noiseScale: 1 / 26,
-    // v3.5.1 tried 6 here (up from 3) to see the effect of finer coastal
-    // detail in isolation -- reverted, since the added octaves' higher-
-    // frequency detail falls below what `cellSize` can resolve at trace
-    // time, so it cost more compute for a visually near-identical result
-    // and didn't touch the actual complaint (still fundamentally round --
-    // see the v3.5.2 angular-modulated-radius work below, which did).
     octaves: 3,
     lacunarity: 2,
     gain: 0.5,
-    // Multiplies the raw (roughly [-1, 1]) fbm output before it's
-    // compared against the radial gradient -- the actual amplitude of
-    // the noise term relative to `threshold` and `gradientStrength`
-    // below, all three tuned together (see cabinet-v3-islandshape.js).
     noiseAmplitude: 0.38,
-    // Normalized distance from a circle's own center (as a fraction of
-    // its radius) where the radial falloff starts (innerFrac, always
-    // land inside this) and ends (outerFrac, always water beyond this).
-    // The coastline itself lands somewhere in between, noise-shifted --
-    // tuned (with threshold/gradientStrength below) so the *average*
-    // crossing sits close to the circle's own original radius (d ~ 0.9),
-    // per "most of the circle is the island, the rest is water" --
-    // verified empirically in _verify-islandshape.mjs, not derived
-    // analytically (smoothstep's inverse against noise's actual
-    // distribution isn't worth solving by hand when the check is one
-    // Node run).
     innerFrac: 0.55,
     outerFrac: 1.3,
     gradientStrength: 1.12,
-    // Height threshold separating land (> threshold) from water. Sits
-    // comfortably below noiseAmplitude's own range so the guaranteed-
-    // land core (innerFrac) is never accidentally carved into water by
-    // an unlucky noise sample, while gradientStrength is large enough
-    // relative to threshold + noiseAmplitude that outerFrac is always
-    // reliably water (also verified, not just asserted).
     threshold: -0.62,
-    // Baseline height for every grid cell no circle's influence reaches
-    // -- far enough below `threshold` that open ocean never registers
-    // as land regardless of noise (noise is never sampled there at all,
-    // see buildIslandHeightmap's per-circle-bbox-only loop).
     waterLevel: -1,
-    // Fixed seed for the whole shared heightmap (not per-section, unlike
-    // pack's scatter seeding -- there's no natural per-section key for a
-    // field every section's circles contribute to together).
     seed: "cabinet-v3-islands",
-    // v3.5.2: how much the falloff radius itself bulges/pinches by angle
-    // around a circle's own center (see angularRadiusScale() in
-    // cabinet-v3-islandshape.js) -- the actual silhouette fix, after
-    // octaves alone (tried first, see the v3.5.1 changelog entry) only
-    // added edge texture too fine for `cellSize` to resolve, without
-    // changing the overall (still-circular) shape. 0.4 means the radius
-    // can range roughly 0.7x-1.3x its base value depending on direction
-    // -- noticeably lobed/elongated without a circle ever collapsing to
-    // a sliver at its narrowest angle.
     angularStrength: 0.38,
-    // Range of "loop radius in noise-space" a circle's own angular
-    // pattern is randomly drawn from (see angularRadiusScale()'s doc
-    // comment for why a small loop gives few broad lobes rather than
-    // many small ones). ~1.2-2.4 empirically lands around 2-4 lobes per
-    // island -- "peninsula and bay" character, not a wavy-edged circle
-    // and not a starburst either.
     angularFreqMin: 1.2,
     angularFreqMax: 2.4,
-    // v3.5.3: layers the angular modulation across multiple octaves
-    // (angularFbm() in cabinet-v3-islandshape.js) instead of one sample
-    // -- v3.5.2's single octave produced a smooth, one-wavelength
-    // deformation that still read as "a distorted circle," not a
-    // coastline, because nothing filled the medium frequencies between
-    // that broad wobble and the much finer per-pixel edge noise. Same
-    // three knobs as the edge noise's own fbm2D, applied around the loop
-    // instead of across the plane -- deliberately not reusing the exact
-    // same octaves/lacunarity/gain values above, so the angular and edge
-    // frequency bands can be tuned independently of each other.
     angularOctaves: 3,
     angularLacunarity: 2,
     angularGain: 0.5,
-    // v3.5.4: blends v3.5.3's smooth angular fbm (0) with a ridged
-    // remap of the same underlying samples (1) -- see ridge() in
-    // cabinet-v3-islandshape.js. Raw noise spends most of its range
-    // near 0 (broad, gently rolling) with only occasional excursions
-    // toward its extremes; ridging turns those rare excursions into
-    // sharp, narrow radius pinches (fjord-like inlets) while leaving
-    // everywhere else a smooth plateau -- "more extreme jumps" without
-    // just inflating angularStrength (which only makes the existing
-    // smooth bulges bigger, not sharper). Originally shipped at 0.6
-    // (leaning ridged); interactive tuning (see below) pulled it back
-    // toward more of v3.5.3's smooth broad lobing once domain warping
-    // (v3.6) was doing more of the "sharp feature" work itself.
     angularRidgeMix: 0.36,
-
-    // v3.6: domain warping (see warpOffset() in cabinet-v3-islandshape.js).
-    // angularRadiusScale above can only ever bulge/pinch a *radius* --
-    // structurally a single-valued function of angle around one fixed
-    // center, so it can never fold the boundary back on itself the way a
-    // real bay or hook does, no matter how many octaves or how much
-    // ridging get piled on (see Landing-page-notes.2.0.md's v3.5.4-vs-
-    // v3.6 discussion). Domain warping displaces the sample *position*
-    // itself before the distance-to-center check runs, which is what
-    // actually makes concavity possible.
-    //
-    // Original shipped values (warpStrength: 40, warpScale: 1/100,
-    // warpOctaves: 2) came from an empirical sweep (a throwaway Node
-    // script, not eyeballed): tried strength in [0,20,35,50,70,100] px x
-    // warp-field period in [90,140,220] px against 12 varied synthetic
-    // circles, counting what fraction of rays from each circle's own
-    // center cross the coastline more than once (>1 crossing is direct
-    // proof of a real fold -- a star-shaped boundary, which is all
-    // angularRadiusScale alone can ever produce, crosses exactly once
-    // per ray no matter how jagged). Re-verified against the real
-    // 40-circle content specifically: avg multi-crossing rays 1.55% at
-    // warp off vs. 3.40% at those values -- more than double, and every
-    // circle still closed cleanly. Flagged then as a starting point, not
-    // final aesthetic tuning.
-    //
-    // Values below are that real tuning pass: done interactively via the
-    // on-page control panel (`islands-tool.html`'s `cabinet-v3-
-    // controls.js`, or `archive/v3.6/`'s frozen copy for comparison
-    // against the pre-tuning baseline), copied back here via the panel's
-    // "Copy config" button. Stronger and lower-period warp (60px / ~85px
-    // period, up from 40px / 100px) with a third warp octave for finer
-    // fold detail, balanced against a pulled-back angularRidgeMix (see
-    // above) and a lower threshold (-0.62, down from -0.5, compensating
-    // for the extra land the stronger warp/noiseAmplitude otherwise
-    // carves away) -- ongoing exploration continues on the live tool
-    // page, not by editing this file by hand.
-    //
-    // warpStrength: max displacement in canvas px. warpScale: like
-    // noiseScale above, roughly 1/(world px per warp-field period) --
-    // deliberately lower frequency than noiseScale's fine edge texture,
-    // since a warp fold needs to displace a whole stretch of a circle's
-    // boundary together to read as a bay rather than jitter.
     warpStrength: 60,
     warpScale: 1 / 85,
     warpOctaves: 3,
@@ -248,3 +139,121 @@ export const v3Config = {
     warpGain: 0.5
   }
 };
+
+// ---------------------------------------------------------------------
+// ISLAND CONFIG FIELD NOTES -- one entry per key in v3Config.island
+// above, same order. Deliberately kept OUT of the block itself (see the
+// comment just above `island: {`) so that block stays a clean paste
+// target for islands-tool.html's "Copy config" button.
+//
+// cellSize -- Grid spacing for the heightmap/marching-squares pass, in
+// canvas px. Smaller = smoother coastline + more path points; 4px keeps
+// contours visibly faceted (matching the v2 map's own coastline/ripple
+// aesthetic, itself a coarse-grid marching-squares trace) at a
+// computation cost proportional to circle areas, not canvas area.
+//
+// noiseScale -- Noise sample frequency: world px per full noise period
+// is roughly 1 / noiseScale (so 1/26 ~= a 26px period). Tuned so a
+// mid-sized circle's coastline shows several wobbles around its
+// circumference, not one broad bulge or fine static.
+//
+// octaves / lacunarity / gain -- fbm2D's octave count / per-octave
+// frequency multiplier / per-octave amplitude decay, for the per-pixel
+// edge noise. v3.5.1 tried octaves: 6 (up from 3) to see the effect of
+// finer coastal detail in isolation -- reverted, since the added
+// octaves' higher-frequency detail falls below what cellSize can
+// resolve at trace time, so it cost more compute for a visually
+// near-identical result and didn't touch the actual complaint (still
+// fundamentally round -- angularStrength/warpStrength below did).
+//
+// noiseAmplitude -- Multiplies the raw (roughly [-1, 1]) fbm output
+// before it's compared against the radial gradient -- the actual
+// amplitude of the noise term relative to threshold and
+// gradientStrength, all three tuned together (see
+// cabinet-v3-islandshape.js).
+//
+// innerFrac / outerFrac -- Normalized distance from a circle's own
+// center (as a fraction of its radius) where the radial falloff starts
+// (innerFrac, always land inside this) and ends (outerFrac, always
+// water beyond this). The coastline itself lands somewhere in between,
+// noise-shifted -- tuned (with threshold/gradientStrength) so the
+// average crossing sits close to the circle's own original radius, per
+// "most of the circle is the island, the rest is water" -- verified
+// empirically (a throwaway Node script), not derived analytically.
+//
+// gradientStrength -- How steep the radial falloff is between
+// innerFrac and outerFrac; tuned together with threshold (next) --
+// large enough relative to threshold + noiseAmplitude that outerFrac is
+// always reliably water, regardless of noise.
+//
+// threshold -- Height separating land (> threshold) from water. Sits
+// comfortably below noiseAmplitude's own range so the guaranteed-land
+// core (innerFrac) is never accidentally carved into water by an
+// unlucky noise sample.
+//
+// waterLevel -- Baseline height for every grid cell no circle's
+// influence reaches -- far enough below threshold that open ocean never
+// registers as land regardless of noise (noise is never sampled there
+// at all, see buildIslandHeightmap's per-circle-bbox-only loop).
+//
+// seed -- Fixed seed for the whole shared heightmap (not per-section,
+// unlike pack's scatter seeding -- there's no natural per-section key
+// for a field every section's circles contribute to together).
+//
+// angularStrength -- How much the falloff radius itself bulges/pinches
+// by angle around a circle's own center (angularRadiusScale() in
+// cabinet-v3-islandshape.js). 0.4 means the radius can range roughly
+// 0.7x-1.3x its base value depending on direction -- noticeably
+// lobed/elongated without a circle ever collapsing to a sliver at its
+// narrowest angle. Structurally can only ever bulge/pinch a radius,
+// never fold the boundary back on itself -- see warpStrength below for
+// what actually does that.
+//
+// angularFreqMin / angularFreqMax -- Range of "loop radius in
+// noise-space" a circle's own angular pattern is randomly drawn from
+// (see angularRadiusScale()'s doc comment for why a small loop gives
+// few broad lobes rather than many small ones). ~1.2-2.4 empirically
+// lands around 2-4 lobes per island -- "peninsula and bay" character,
+// not a wavy-edged circle and not a starburst either.
+//
+// angularOctaves / angularLacunarity / angularGain -- Same fbm idea as
+// octaves/lacunarity/gain above, just walked around the angular loop
+// instead of across the plane (angularFbm() in
+// cabinet-v3-islandshape.js) -- deliberately separate knobs, not the
+// same values reused, so the angular and edge frequency bands can be
+// tuned independently. Added in v3.5.3 because a single octave (v3.5.2)
+// produced one smooth wavelength of deformation that still read as "a
+// distorted circle," not a coastline -- nothing filled the medium
+// frequencies between that broad wobble and the much finer per-pixel
+// edge noise.
+//
+// angularRidgeMix -- Blends the smooth angular fbm (0) with a ridged
+// remap of the same underlying samples (1) -- see ridge() in
+// cabinet-v3-islandshape.js. Raw noise spends most of its range near 0
+// (broad, gently rolling), so ridging (which maps "near 0" to its own
+// maximum) turns rare excursions toward the extremes into sharp,
+// narrow radius pinches (fjord-like inlets) while leaving everywhere
+// else a smooth plateau -- "more extreme jumps" without just inflating
+// angularStrength (which only makes existing bulges bigger, not
+// sharper). Originally shipped at 0.6 (leaning ridged); interactive
+// tuning pulled it back once domain warping (below) started doing more
+// of the sharp-feature work itself.
+//
+// warpStrength / warpScale / warpOctaves / warpLacunarity / warpGain --
+// Domain warping (warpOffset() in cabinet-v3-islandshape.js): displaces
+// the sample *position* itself before the distance-to-center check
+// runs, which is what actually makes concavity (real bays/hooks, not
+// just radius bulges) possible -- angularStrength above is structurally
+// incapable of that, no matter how extreme. warpStrength: max
+// displacement in canvas px. warpScale: like noiseScale above, roughly
+// 1/(world px per warp-field period) -- deliberately lower frequency
+// than noiseScale's fine edge texture, since a warp fold needs to
+// displace a whole stretch of a circle's boundary together to read as a
+// bay rather than jitter. Original shipped values (40px / 1/100 period
+// / 2 octaves) came from an empirical sweep (strength x period against
+// 12 synthetic circles, scored by fraction of rays crossing the
+// coastline more than once -- direct proof of a real fold, not just
+// texture). Current values are the first real interactive-tuning pass,
+// done via islands-tool.html's panel and applied here with its "Copy
+// config" button -- see Landing-page-notes.2.0.md's v3.6/v3.6.1
+// changelog entries for the full history of both passes.
