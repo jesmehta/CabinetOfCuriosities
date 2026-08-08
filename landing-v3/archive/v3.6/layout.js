@@ -7,15 +7,19 @@
 // Landing-page-notes.2.0.md's "Three pages" section. Every comment below
 // is unchanged from cabinet-v3-layout.js -- read that file for the
 // actual design reasoning behind each step. The algorithm modules below
-// (treemap/circlepack/extras-config/islandshape) are still imported live
-// from one directory up, deliberately NOT frozen -- see config.js's own
-// doc comment for why.
+// (treemap/circlepack/islandshape) are still imported live from one
+// directory up, deliberately NOT frozen -- see config.js's own doc
+// comment for why. extras-config.js is the one exception (v3.6.11): the
+// live version was deleted when extraCount moved to a real
+// cabinet-sections.tsv column, so this archive now keeps its own frozen
+// copy (./extras-config.js) rather than depending on a file that no
+// longer exists -- same pinning as config.js/content.js.
 
 import { v3Config } from "./config.js";
 import { sections, entries } from "./content.js";
 import { squarify } from "../../cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "../../cabinet-v3-circlepack.js";
-import { extrasFor, EXTRA_WEIGHT } from "../../cabinet-v3-extras-config.js";
+import { extrasFor, EXTRA_WEIGHT } from "./extras-config.js";
 import { traceIslandShapes } from "../../cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";

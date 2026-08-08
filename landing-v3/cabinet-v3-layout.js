@@ -1,6 +1,6 @@
 // Orchestration + rendering only -- calls into cabinet-v3-data.js /
-// cabinet-v3-treemap.js / cabinet-v3-circlepack.js / cabinet-v3-extras-config.js,
-// builds the actual SVG, no layout math of its own. Mirrors the
+// cabinet-v3-treemap.js / cabinet-v3-circlepack.js, builds the actual
+// SVG, no layout math of its own. Mirrors the
 // data/logic/render split documented in fffx's LANDING-PAGE-NOTES.md.
 //
 // Deliberately renders ONCE, no resize listener. fffx's field
@@ -24,11 +24,10 @@
 // did -- only the INITIAL shape adapts to viewport now, not every
 // subsequent resize.
 
-import { v3Config } from "./cabinet-v3-data.js";
+import { v3Config, EXTRA_WEIGHT } from "./cabinet-v3-data.js";
 import { sections, entries } from "../docs/assets/js/cabinet-generated-content.js";
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
-import { extrasFor, EXTRA_WEIGHT } from "./cabinet-v3-extras-config.js";
 import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField } from "./cabinet-v3-islandshape.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -77,7 +76,7 @@ function buildSectionMetas() {
         .filter(e => e.section === s.id)
         .sort((a, b) => a.order - b.order);
       const weight = sectionEntries.reduce((sum, e) => sum + e.weight, 0);
-      return { id: s.id, title: s.title, order: s.order, weight, entries: sectionEntries };
+      return { id: s.id, title: s.title, order: s.order, weight, entries: sectionEntries, extraCount: s.extraCount };
     })
     .filter(s => s.weight > 0)
     .sort((a, b) => a.order - b.order);
@@ -341,21 +340,11 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
     status: e.status
   }));
 
-  const { count, comingSoon } = extrasFor(sectionMeta.id);
-  const fillerCount = Math.max(0, count - comingSoon);
-
-  const extraItems = [
-    ...Array.from({ length: comingSoon }, (_, i) => ({
-      id: `${sectionMeta.id}-extra-cs-${i}`,
-      weight: EXTRA_WEIGHT,
-      kind: "coming-soon"
-    })),
-    ...Array.from({ length: fillerCount }, (_, i) => ({
-      id: `${sectionMeta.id}-extra-filler-${i}`,
-      weight: EXTRA_WEIGHT,
-      kind: "filler"
-    }))
-  ];
+  const extraItems = Array.from({ length: sectionMeta.extraCount }, (_, i) => ({
+    id: `${sectionMeta.id}-extra-filler-${i}`,
+    weight: EXTRA_WEIGHT,
+    kind: "filler"
+  }));
 
   // Scatter into a rect pre-inset by minRadius, not the raw pack area --
   // every point is then guaranteed at least minRadius of clearance from
@@ -462,10 +451,10 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // *interactive* layer on top of that shared shape: an invisible hit
   // circle at the entry's original (x, y, radius) so clicking/hovering
   // still targets the right entry even where its visible coastline has
-  // merged with a neighbour's, plus a dashed status ring for anything
-  // not fully live (wip entries, coming-soon stubs) since a fused
-  // landmass can't be given two different fill colors for two different
-  // entries' statuses the way separate circles could.
+  // merged with a neighbour's, plus a dashed status ring for any entry
+  // not fully live (status: "wip") since a fused landmass can't be given
+  // two different fill colors for two different entries' statuses the
+  // way separate circles could.
   circles.forEach(c => {
     if (c.kind === "entry") {
       const isMuted = c.status === "wip";
@@ -477,16 +466,6 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       }
       link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
       group.appendChild(link);
-      return;
-    }
-
-    if (c.kind === "coming-soon") {
-      const stub = el("g", { class: "v3-stub", "data-id": c.id });
-      stub.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-status-ring", "aria-hidden": "true" }));
-      if (c.radius >= 18) {
-        stub.appendChild(el("text", { x: c.x, y: c.y, class: "v3-stub-label" }, "coming soon"));
-      }
-      group.appendChild(stub);
       return;
     }
 

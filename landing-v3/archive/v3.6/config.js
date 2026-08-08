@@ -12,8 +12,11 @@
 //
 // Deliberately NOT frozen: the algorithm modules this archive still
 // imports live (cabinet-v3-islandshape.js, cabinet-v3-circlepack.js,
-// cabinet-v3-treemap.js, cabinet-v3-extras-config.js, one directory up).
-// A bug fix to the actual algorithm should still reach this archive; only
+// cabinet-v3-treemap.js, one directory up). extras-config.js was moved
+// out of this list in v3.6.11 -- the live file was deleted (extraCount
+// now lives on cabinet-sections.tsv), so this archive keeps its own
+// frozen copy (layout.js's own doc comment) instead. A bug fix to the
+// actual algorithm should still reach this archive; only
 // DATA and TUNING PARAMETERS are meant to stay pinned here, not the code
 // that interprets them. If a future change is structural enough that
 // even the shared algorithm modules should stop affecting this archive

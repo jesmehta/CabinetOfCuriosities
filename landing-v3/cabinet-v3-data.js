@@ -21,6 +21,15 @@
 // "circles too small overall" and "weight not distinguishable enough"
 // can be tuned separately.
 
+// v3.6.11 -- weight assigned to every "extra" filler circle (sizing
+// only, not content). Deliberately a fixed low value, not randomized or
+// per-section, so extras read as consistently smaller/quieter than real
+// entries (whose weights run 1-4) without needing their own weight
+// field. Read live at render time (cabinet-v3-layout.js), unlike
+// extraCount itself -- which now lives on cabinet-sections.tsv and is
+// resolved once, at content-build time, by tools/build-cabinet-content.js.
+export const EXTRA_WEIGHT = 1;
+
 export const v3Config = {
   // Descriptive metadata -- not currently read by any code (the actual
   // page title/tagline live as real HTML in index.template.html/

@@ -241,24 +241,14 @@ body.v3-proto {
 }
 
 /* Dashed ring marking "not fully live" -- wip entries (still a link,
-   just visually flagged) and coming-soon stubs (not a link at all)
-   share this same treatment, drawn on top of the shared landmass at
-   that item's own original circle position. */
+   just visually flagged), drawn on top of the shared landmass at that
+   entry's own original circle position. */
 .v3-status-ring {
   fill: none;
   stroke: var(--cab-ink-soft);
   stroke-width: 1.5;
   stroke-dasharray: 4 4;
   opacity: 0.85;
-}
-
-.v3-stub-label {
-  font-family: var(--cab-font-body);
-  font-size: 11px;
-  fill: var(--cab-ink-soft);
-  text-anchor: middle;
-  dominant-baseline: middle;
-  font-style: italic;
 }
 
 .v3-section-label {

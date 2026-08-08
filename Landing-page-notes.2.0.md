@@ -5,17 +5,24 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.6** (domain warping for real concave coastlines,
+Currently on **v3.6.11** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
 `archive/v3.6/` a frozen snapshot -- plus a paste-friendly
-`cabinet-v3-data.js`, a by-editability file table below, and (new)
-genuine fixed-distance wave rings via a Euclidean distance transform)
--- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4
--> v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 ->
-v3.6 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6
-progression and why each pass changed what it did.
+`cabinet-v3-data.js`, a by-editability file table below, genuine
+fixed-distance wave rings via a Euclidean distance transform, a
+three-section collapsible tuning panel (Visuals / Island shape / Layout),
+a full-bleed canvas that solves its own shape from the real viewport at
+load, with the page's title/tagline CSS-positioned over the map's own
+corner instead of sitting above it, and (new) per-section extra-island
+counts moved onto `content/cabinet-sections.tsv` itself, replacing a
+separate hand-authored `cabinet-v3-extras-config.js`) -- see the
+changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 ->
+v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1
+-> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 -> v3.6.8 ->
+v3.6.9 -> v3.6.10 -> v3.6.11 progression and why each pass changed what
+it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -149,20 +156,39 @@ since v3 currently reads real content *around* the production TSVs
 
 The brief's "plus a random few extras -- a number between 3-8" could
 have meant "roll it fresh in the browser." Clarified: no -- the count
-*and* the split between visible "coming soon" stubs and plain
-decorative filler within that count are **authored per section**
-(`landing-v3/cabinet-v3-extras-config.js`), because the whole layout is
-meant to be stable until content actually changes, not different on
-every reload. Concretely: a section like `teaching` gets `{ count: 6,
-comingSoon: 3 }` -- 3 real entries' worth of room to grow, visibly
-marked as reserved, plus 3 that are pure atmosphere. `about` (a section
-that's realistically "done," not expecting new entries) gets `{ count:
-3, comingSoon: 0 }` -- filler only, no advertised empty slots.
+is **authored per section**, because the whole layout is meant to be
+stable until content actually changes, not different on every reload.
 
-This file is explicitly written as a **schema-extension proposal**, not
-just prototype scaffolding: its own top comment states the two new
-optional `cabinet-sections.tsv` columns it stands in for
-(`extraCount`, `extraComingSoon`), so porting this into the real
+**v3.6.11 -- moved onto the real content pipeline.** `extraCount` is
+now an optional column on `content/cabinet-sections.tsv` itself
+(resolved once, at content-build time, by
+`tools/build-cabinet-content.js` -- a blank cell falls back to a
+deterministic per-section-id hash, 1-3, same idea `defaultExtrasFor()`
+used to implement live in the browser) instead of a separate
+hand-authored `cabinet-v3-extras-config.js`, which is now deleted.
+`EXTRA_WEIGHT` (the fixed sizing weight every extra circle gets) moved
+to `cabinet-v3-data.js`'s `v3Config` instead -- it's read live at
+render time, unlike `extraCount`, so it belongs with the other render-time
+tuning knobs, not the content-build script. This was the schema
+extension this file used to propose (see the changelog entry for the
+full reasoning); `archive/v3.6/` keeps its own frozen copy of the old
+file (`archive/v3.6/extras-config.js`) so that snapshot stays
+self-contained rather than depending on something now deleted.
+
+The separate "coming soon" stub mechanism (`comingSoon` count, unlinked
+dashed circles with no real entry behind them) is gone too, not
+migrated -- it had been dormant (`comingSoon: 0` everywhere) since v3.3,
+and turned out to duplicate something that already exists and already
+matches the two production landing pages: a real entry with `status:
+"wip"` renders as a real, linked circle with the same dashed status
+ring (`isMuted` in `cabinet-v3-layout.js`), just not fully live yet.
+"Coming soon" content is expressed by adding a real WIP entry, the same
+way `docs/assets/js/cabinet-render.js` already does it -- not by a
+second, v3-only filler system.
+
+Historically, this file was explicitly written as a **schema-extension
+proposal**, not just prototype scaffolding: its own top comment stated
+the new optional `cabinet-sections.tsv` column it stood in for
 pipeline later is "delete this file, add two TSV columns," not a
 redesign. `defaultExtrasFor()` exists only as a fallback for a section
 nobody's hand-tuned yet (deterministic hash of the section id, 3-8) --
@@ -218,10 +244,9 @@ browser.
 
 | File | What you'd change, and how |
 | --- | --- |
-| `cabinet-v3-data.js` | Tuning config (`v3Config`): canvas sizing, pack knobs, and the `island` noise/warp block. As of v3.6.3, `island`'s value block is deliberately comment-free and in the same key order `islands-tool.html`'s "Copy config" button produces -- paste its output directly over everything between `island: {` and the matching `}`, no hand-editing around comments. Field-by-field explanations live in the **ISLAND CONFIG FIELD NOTES** comment at the end of the file instead, same order. `canvas`/`pack` keep their comments inline (no copy-paste workflow touches those). |
-| `cabinet-v3-extras-config.js` | Per-section extras schema-extension proposal (how many filler/"coming soon" circles each section gets) -- see "Where entries/sections come from" note above. Mostly data (`extrasConfig`, `EXTRA_WEIGHT`) with one small fallback function (`defaultExtrasFor()`) mixed in -- kept as its own file rather than folded into `cabinet-v3-data.js` specifically so that file can stay pure data (no logic at all), which is what makes its own paste-workflow above safe. |
+| `cabinet-v3-data.js` | Tuning config (`v3Config`): canvas sizing, pack knobs, and the `island` noise/warp block, plus (v3.6.11) `EXTRA_WEIGHT` -- the fixed sizing weight every extra/filler circle gets, sitting alongside `v3Config` since it's read live at render time the same way. As of v3.6.3, `island`'s value block is deliberately comment-free and in the same key order `islands-tool.html`'s "Copy config" button produces -- paste its output directly over everything between `island: {` and the matching `}`, no hand-editing around comments. Field-by-field explanations live in the **ISLAND CONFIG FIELD NOTES** comment at the end of the file instead, same order. `canvas`/`pack` keep their comments inline (no copy-paste workflow touches those). |
 | `index.template.html` | The actual hand-edited source for the built `index.html` (v3.6.2) -- header/subtitle text, stylesheet links, and a `<!-- V3_ISLANDS_SVG -->` placeholder. Edit this, never `index.html` itself -- see "Static build" below. |
-| (`content/cabinet-sections.tsv` / `cabinet-entries.tsv`, repo root) | The real content source -- not in `landing-v3/` at all, but this is where entry/section titles, weights, order, and status actually come from. Run `node tools/build-cabinet-content.js` after editing these. |
+| (`content/cabinet-sections.tsv` / `cabinet-entries.tsv`, repo root) | The real content source -- not in `landing-v3/` at all, but this is where entry/section titles, weights, order, status, and (v3.6.11) each section's `extraCount` actually come from. Run `node tools/build-cabinet-content.js` after editing these -- a blank `extraCount` cell falls back to a deterministic per-section default, resolved by that same script. |
 
 **Logic -- shouldn't need to touch unless you're changing the algorithm
 itself:**
@@ -301,9 +326,12 @@ page:
   config-tuning pass and the archive/tool split happened in the same
   turn.
 - **The algorithm modules are NOT pinned** -- `cabinet-v3-islandshape.js`,
-  `cabinet-v3-circlepack.js`, `cabinet-v3-treemap.js`,
-  `cabinet-v3-extras-config.js` are still imported live, one directory
-  up. Deliberate scope decision: the concern this archive actually
+  `cabinet-v3-circlepack.js`, `cabinet-v3-treemap.js` are still imported
+  live, one directory up. (`cabinet-v3-extras-config.js` was on this
+  list too, until v3.6.11 deleted the live file -- this archive now
+  keeps its own frozen copy, `archive/v3.6/extras-config.js`, rather
+  than depending on something that no longer exists.) Deliberate scope
+  decision: the concern this archive actually
   guards against is data/tuning drift (which happens routinely and was
   the concrete thing that had just started happening), not code
   refactors (rarer, more structural) -- a bug fix to the shared algorithm
@@ -1167,10 +1195,10 @@ combination produces a bad shape that a weight floor doesn't fix.
   `allPlacedPoints` rather than trusting the pre-centering scatter check
   (limitation #3).
 - If this direction is approved: drop `cabinet-sections.tsv`'s now-
-  redundant `weight` column, add an `extraCount` column per the schema-
-  extension proposal in `cabinet-v3-extras-config.js`, fold `landing-v3/`
-  into `docs/` + `docs/assets/{css,js}/`, and merge this file into
-  `LANDING-PAGE-NOTES.md`.
+  redundant `weight` column, fold `landing-v3/` into `docs/` +
+  `docs/assets/{css,js}/`, and merge this file into
+  `LANDING-PAGE-NOTES.md`. (The `extraCount` column itself is done --
+  see the v3.6.11 changelog entry.)
 - If a more fused, less discrete-island look is wanted: widen `island`
   config's `outerFrac`/`gradientStrength` so close-but-not-touching real
   pairs (currently ~6px apart at the closest) reliably bridge (limitation
@@ -1322,6 +1350,328 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.11 -- extraCount moves onto the TSV, coming-soon stubs removed
+
+Reviewed the flowchart put together for this codebase (see the artifact
+in this conversation) file by file; two things stood out on
+`cabinet-v3-extras-config.js` specifically. First: it was a standalone
+hand-authored JS object holding per-section data, sitting outside the
+real content pipeline (`content/*.tsv` -> `tools/build-cabinet-content.js`
+-> `docs/assets/js/cabinet-generated-content.js`) that everything else
+already goes through -- its own top comment even called this out as a
+deliberate stand-in for a real TSV column, "obviously portable to it
+later." Second: its `comingSoon` mechanism (anonymous, unlinked dashed
+stub circles) had been fully dormant (`comingSoon: 0` everywhere) since
+v3.3, and turned out to duplicate something that already exists: a real
+entry with `status: "wip"` already renders as a real, linked circle with
+the same dashed status ring (`isMuted` in `cabinet-v3-layout.js`) --
+exactly how the two production landing pages (`docs/assets/js/
+cabinet-render.js`) already express "not live yet," confirmed by reading
+that file directly rather than from memory.
+
+**Moved, not just deleted.** `extraCount` is now an optional column on
+`content/cabinet-sections.tsv` (the 7 existing sections got their
+current hand-tuned values written in explicitly; a blank cell for a
+future section falls back to a deterministic per-section-id hash, 1-3 --
+`defaultExtraCount()`, ported into `tools/build-cabinet-content.js`
+essentially unchanged from the old `defaultExtrasFor()`). `EXTRA_WEIGHT`
+(the fixed sizing weight every extra circle gets) moved to
+`cabinet-v3-data.js`'s `v3Config` instead, alongside its other render-time
+tuning knobs -- it's read live on every `render()`, unlike `extraCount`,
+which is now resolved once, at content-build time, so the two constants
+ended up in different files on purpose, not by oversight. Deciding where
+each piece belonged, and confirming `comingSoon` had a real production
+precedent rather than assuming, happened in conversation before any code
+was touched, per the standing "tell me the cost before executing"
+preference -- see `discuss_before_executing` in this assistant's own
+memory notes for why that matters here specifically.
+
+**The one consequence that wasn't part of the discussion:** deleting
+`cabinet-v3-extras-config.js` broke `archive/v3.6/layout.js`, which
+imported it live, one directory up, by that archive's own documented
+design ("algorithm modules are NOT pinned"). Caught before committing,
+not after -- `archive/v3.6/` now keeps its own frozen copy
+(`archive/v3.6/extras-config.js`, byte-identical to the deleted file)
+rather than depending on something that no longer exists, consistent
+with how that folder already pins `config.js`/`content.js`.
+
+**Verification.** `node --check` on every touched module; a throwaway
+Playwright script (`_verify-extras.mjs`, written/run/deleted, per this
+project's own convention) loaded `islands-tool.html` for real and
+confirmed zero console/page errors and zero leftover coming-soon stub
+elements; a second pass temporarily logged each section's resolved
+`extraCount` during a real `render()` and confirmed all seven values
+(`2, 2, 3, 2, 3, 2, 1`) exactly match what `cabinet-v3-extras-config.js`
+used to hand-author, before the instrumentation was removed again.
+
+### v3.6.10 -- full-bleed canvas + header overlay (punch-list items 12, 13), item 9 investigated
+
+Three things, one pass: items 12 and 13 done together (explicitly linked
+by the user -- "this may tie into 12 as well" -- since folding the header
+into the map changes how much viewport height the canvas has to fill),
+plus a direct, measured answer to item 9 (see the punch list entry
+above for the finding itself).
+
+**The canvas-expansion question, answered before building anything.**
+Asked directly what the actual mechanism/condition for "expanding" the
+canvas was, and whether it would respond to different desktop window
+shapes (4:3, a dragged/resized window) -- not guessed at. Previously:
+`v3Config.canvas.width` was a hardcoded 1200px constant; canvas HEIGHT
+was derived from total content weight; the SVG scaled via CSS
+`width:100%` to fill its container's width, with `height:auto` following
+the viewBox's own fixed aspect ratio. This meant the map already scaled
+(got bigger/smaller) as a window resized, but its SHAPE never adapted --
+a widescreen window and a tall narrow one got the identical rectangle,
+just rendered at different sizes, leaving unused space or requiring
+scroll depending on how far the window's real aspect ratio diverged from
+whatever the content happened to produce.
+
+**The fix: solve width AND height together, once, from the real
+viewport.** `resolveCanvasDimensions()` (`cabinet-v3-layout.js`) keeps
+canvas AREA exactly as before (content-weight-driven, `areaPerWeightUnit`
+untouched) but now solves for a SHAPE matching the actual available
+space's aspect ratio, measured directly from the DOM (`.v3-stage-wrap`'s
+own content width, and the viewport height remaining below wherever it
+actually starts) rather than assumed. `width * height = area` and
+`height / width = availHeight / availWidth` gives `width = sqrt(area /
+aspect)`. This reshapes the treemap's own starting rectangle to the
+window's shape BEFORE `squarify()` ever runs, so a portrait window
+genuinely gets a portrait-shaped map (verified: viewBox aspect ratio
+0.526 at 1920x1000, 0.745 at 1024x768 (4:3), 1.480 at 800x1200
+(narrow/tall) -- three distinctly different shapes from the same
+content). `v3Config.canvas.width` became `minWidth`/`minHeight` --
+safety floors only, not the actual size any more.
+
+**Still not live-resize-reactive, by design, unchanged from before.**
+This is baked ONCE at `render()` time (page load), same "no resize
+listener" principle as always (see this file's top-of-file comment on
+why, and fffx's contrasting live-field approach). Dragging the window
+narrower after load still just uniformly CSS-scales the already-baked
+shape -- only the INITIAL shape adapts to viewport now, not every
+subsequent resize. Flagged explicitly as the answer to "will it be
+responsive to a dragged window": scale, yes (always was); reshape on
+drag, no (would need a resize listener + full re-render, a bigger,
+different ask that wasn't part of this request).
+
+**Header: CSS-repositioned, not moved into SVG -- reverted an
+overcorrection mid-pass.** First attempt drew the title/tagline as
+actual SVG `<text>` elements inside `render()`'s output, removing the
+HTML `<header>` entirely. Caught before finishing: this loses real
+semantic structure (no `<h1>` in the accessibility tree) and, on
+`islands-tool.html` specifically (which has no static build, unlike
+`index.html`), makes the text dependent on JS execution to exist at all
+for a crawler. Corrected per direct clarification ("I merely imagined
+repositioning the header and text through CSS magic, not restructure
+things"): the real, unchanged `<h1>`/`<p>` stays real HTML,
+`position: absolute` over the canvas's own top-left corner (new
+`.v3-canvas-wrap` positioning context) instead of sitting in normal flow
+above it. Since the header no longer exists in the SVG's own coordinate
+system, the layout algorithm has no built-in awareness of it -- fixed by
+measuring its REAL rendered footprint (`getBoundingClientRect()`, not
+guessed) and registering it as one more growth obstacle in `render()`,
+exactly the mechanism every section's own label band already uses, so
+circles simply don't grow underneath it. Verified directly (not just
+eyeballed): a corrected AABB overlap test (first draft of the test
+itself was wrong, caught and fixed) found 0-1 stale/edge-case overlaps
+out of 37 circles across three window shapes -- confirmed visually clean
+in the screenshots, consistent with expected sub-pixel/stroke-width
+measurement noise, not a real collision.
+
+**`build-render.html` needed the header too, for a subtle reason.**
+The static build (`build-static.mjs`) captures `#v3-stage`'s markup from
+`build-render.html`, a headless page that previously had no `.v3-header`
+at all ("irrelevant to what gets captured" -- true before this pass, no
+longer true after). Since the header's footprint and the viewport's
+available height now both feed directly into what gets computed/drawn,
+capturing without a header would bake a shape and obstacle placement
+that doesn't match what `index.html` actually ships with. Added the same
+header markup there (never itself captured -- only `#v3-stage`'s own
+outerHTML is extracted) so the capture environment matches production.
+Also pinned an explicit Playwright viewport (1440x900) for the build,
+replacing an implicit default -- the baked static shape is now a
+deliberate choice, not whatever Playwright happens to default to.
+
+**Verified:** across three window shapes (1920x1000, 1024x768, 800x1200)
+via Playwright -- viewBox aspect ratio genuinely differs per shape (see
+above), zero console errors, near-zero header/circle overlap. Static
+`index.html` re-verified with JavaScript entirely disabled: viewBox
+present and shaped correctly, 25 real `<a href>` links, 0 `<script>`
+tags -- confirmed directly (not assumed) when a separate question came
+up mid-pass about whether the site's actual navigation links are
+crawler-friendly (they are -- baked as static markup at build time, same
+mechanism since v3.6.2, unrelated to and unaffected by the header
+question above). Screenshots: `dev-screenshots/v3.6.10-fullbleed-wide-
+1920x1000.png`, `-4-3-1024x768.png`, `-narrow-tall-800x1200.png`,
+`-static-index-jsdisabled.png`.
+
+### v3.6.9 -- panel restructure into collapsible sections, topological-offset sliders, a real bug fix
+
+Direct follow-up to using v3.6.8's new controls: "in the preset look,
+Wave contour shows waves and topology i.e. BOTH, Colour bands show ONLY
+sea topology but land is flat green, BOTH shows sea topology AND wave
+contours, but land is still flat" -- a real bug, not a request -- plus a
+request to restructure the whole panel now that it's "fast becoming a
+properly complex tool."
+
+**Bug: stale elements from the inactive `flatColourMode` branch never
+got removed.** `drawIslandsPath()` (`cabinet-v3-layout.js`) only ever
+created/updated the elements for whichever branch was currently active
+(flat land, or sea/sand/veg bands) -- it never removed the other
+branch's elements, so live-toggling `flatColourMode` via
+`retraceIslands()` accumulated leftovers: switch away from flat mode and
+the old opaque flat-land path stays, painted on top of the freshly-drawn
+bands, hiding them; switch back and the old bands (never removed either)
+reappear underneath the new flat fill. This never showed up before
+v3.6.8 because `flatColourMode` had only ever been a hand-edited config
+value, toggled via a full page reload (`render()`, which clears the
+whole stage first) -- the live in-place toggle path this bug lives in
+didn't exist until the preset switcher did. Fixed by giving
+`flatColourMode`'s two branches the same discipline `showWaveRings`
+already had: every group (sea-band, sand-band, veg-band) now passes
+through `placeBand()`'s existing empty-list pruning instead of being
+skipped outright, and the one non-array element (the flat-land path) is
+explicitly removed when the other branch is active, since `placeBand()`
+has no equivalent for a single element. Verified with a Playwright
+script (`_verify-controls.mjs`, throwaway, deleted after use) that
+counts each element class after cycling bands-only -> waves-only ->
+both, asserting zero stale elements at every step, not just eyeballing a
+screenshot -- 6/6 assertions pass, 0 console errors. Screenshots:
+`dev-screenshots/v3.6.9-colour-bands-only.png`,
+`v3.6.9-wave-contours-only.png`, `v3.6.9-both-checked.png`.
+
+**Panel restructure** (`cabinet-v3-controls.js`, `cabinet-v3-style.css`):
+three collapsible `<details>`/`<summary>` sections (no custom open/close
+JS -- native behaviour handles independent collapse for free), ordered
+by how deep into the pipeline each one reaches, deepest at the bottom
+per explicit direction:
+
+- **Visuals** (top, open by default) -- the shallowest section, pure
+  rendering-layer toggles. The old three fixed preset buttons (Wave
+  contours / Colour bands / Both) are replaced by two independent
+  checkboxes (`showWaveRings`, `!flatColourMode`) -- covers the same
+  three combinations plus a fourth the buttons couldn't reach (neither
+  checked: flat land, no rings at all), with no "which preset is active"
+  bookkeeping needed. Also gains **topological offset parameters**
+  (punch-list item 7): one slider per `seaBandThresholds`/
+  `sandThresholds`/`vegThresholds` element (8 total, indices read from
+  each array's live length rather than hardcoded), previously
+  hand-edit-only.
+- **Island shape** (middle, collapsed by default) -- the existing
+  warp/angular/base-coastline sliders, unchanged in content, just moved
+  into their own section.
+- **Layout** (bottom, collapsed by default) -- center-bias slider +
+  Reroll positions button (from v3.6.8) plus a new **Restore position**
+  button, pulled out of what used to be the single global Reset (does
+  exactly what that used to do: `centerBias` back to its panel-load
+  value, reroll nonce back to 0).
+
+Each section gets its own Reset (Reset visuals / Reset shape / Restore
+position), restoring only what that section can change. Each reset
+function touches state only (config fields + each widget's `.refresh()`)
+and never calls `retraceIslands()`/`render()` itself -- that's left to
+the caller, so a section's own Reset can take the cheap `retraceIslands()`
+path while the footer's Reset ALL runs all three restores back to back
+and pays for a single `render()` at the end rather than three separate
+re-renders. A shared `buildSlider()` helper
+replaced what used to be three near-duplicate slider-row-building blocks
+(the original `CONTROLS` array loop, the wave-ring generator, and now
+the band-threshold sliders) -- each returns a `refresh()` handle so
+every Reset button can pull its own widgets back in sync without
+re-deriving the DOM.
+
+One correctness note carried over from `visualsDefaults`' own snapshot:
+array-valued config fields (`seaBandThresholds` etc.) are deep-cloned at
+panel-build time, not shallow-copied -- the new band sliders replace
+their array wholesale on every input (`array.map(...)`, never an
+in-place index write), specifically so a shallow `{...v3Config.island}`
+snapshot can't end up aliasing the same array object a slider later
+mutates, which would have silently corrupted what Reset restores to.
+
+### v3.6.8 -- islands-tool packing controls (reroll, center-bias) + preset-look switcher
+
+Three items off the punch list (items 5, 6, 8), direct follow-up to
+"add the controls to reroll circle centres, to control centre-bias, as
+well as switching between preset looks -- starting with its cost
+complexity analysis." See `conversation-landing-page-v3.md` for the
+full session log.
+
+**Cost/complexity analysis (asked for explicitly, before building the
+preset switcher):** measured directly (`_time-repack.mjs`, throwaway,
+deleted after use) against the real 25-entry content, not guessed.
+Repack (treemap + scatter + global growth) costs ~1-3ms -- negligible.
+The real cost is the island retrace (heightmap build + marching
+squares), ~70-100ms, already the price every existing shape-tuning
+slider in this panel pays per `input` tick. Two tiers fell out of this:
+switching among effects that already exist (wave rings, colour bands,
+both) needs no new rendering code, just two config flags feeding the
+existing retrace path -- cheap, built now. Further look-and-feel
+presets beyond that (the punch list's own example: a "medieval map"
+preset layering an illuminated-manuscript treatment on top) would need
+genuinely new rendering code for a treatment that isn't designed yet --
+cost is unknown until that design happens, so it's scoped out of this
+pass rather than estimated blindly.
+
+**Packing controls** (`cabinet-v3-layout.js` exports `render()` and two
+new wrappers): `render()` -- previously module-private, called once at
+load -- is now exported directly, since both new controls change what
+`buildSeedsForSection()` scatters, not just island-shape tuning, so
+`retraceIslands()`'s cached-packing shortcut doesn't apply to either.
+
+- **Center bias** -- a slider (1-4, matching `v3Config.pack.centerBias`'s
+  existing range) that mutates the live config value and calls
+  `render()` on every tick.
+- **Reroll positions** -- a button (not a slider: "try a different
+  random layout" has no meaningful in-between value). New module-level
+  `rerollNonce` in `cabinet-v3-layout.js`, folded into each section's
+  scatter seed (`sectionSeed()`) only when nonzero, so `index.html` and
+  `archive/` (neither loads `cabinet-v3-controls.js`) are provably
+  unaffected. `rerollPacking()` draws a fresh `Math.random()`-derived
+  nonce (not incremented) so two consecutive rerolls can't land back on
+  the same value and look like nothing happened -- still fully
+  deterministic *after* the roll, only the moment of picking one is
+  random, same "randomness only at the one genuinely interactive edge"
+  rule `warpOffset()`'s own seed already follows.
+- The panel's Reset button now also restores `centerBias` and calls the
+  new `resetReroll()` (nonce back to 0), on top of what it already
+  restored.
+
+**Preset-look switcher** (`cabinet-v3-controls.js`, three buttons: Wave
+contours / Colour bands / Both): built entirely from config flags that
+already existed or were trivial to add -- `flatColourMode` (v3.6.6) plus
+a new `showWaveRings` boolean (`v3Config.island`, default `true`).
+`showWaveRings` exists *specifically* so a preset can turn wave rings
+off without touching `waveDistances`' own values, which stay owned by
+the Wave-rings generator panel (v3.6.7) -- clearing the array directly
+would have gone stale the moment that panel's own sliders were touched
+again. `drawIslandsPath()` (`cabinet-v3-layout.js`) passes an empty
+level list to `placeBand()` when off rather than skipping the call
+outright, so stale `.v3-wave-ring-N` elements from a previous
+rings-on retrace still get pruned by `placeBand()`'s own cleanup.
+Switching presets calls `retraceIslands()` only (no repack) -- cheap,
+per the analysis above. Buttons highlight to show which preset (if any)
+the live config currently matches.
+
+Addresses punch-list items 5 (reroll control), 8 (centerBias now has a
+live control instead of only a hand-edited config value -- actual
+tuning of how far to push it is still an open call, not resolved by
+building the control), and the *tier-1* portion of item 6 (switching
+among existing effects); the tier-2 portion (further whole-look
+presets) is carried forward as its own open item, now with the above
+cost analysis attached instead of an unknown.
+
+### v3.6.7 -- wave-ring generator panel, edge-padding fix, flatColourMode land fill
+
+Undocumented at the time (no changelog entry was written for this
+version -- caught while writing the v3.6.8 entry above, noted here so
+the version trail stays honest). Reconstructed from code comments dated
+v3.6.7: `islands-tool.html`'s "Wave rings" generator panel
+(`cabinet-v3-controls.js`, count/start/multiplier/offset sliders driving
+`distance[i] = start * multiplier^i + offset`); `drawIslandsPath()`
+(`cabinet-v3-layout.js`) sampling the heightmap/distance-field over a
+padded area past the visible canvas so shapes close naturally off-screen
+instead of flattening at the true grid border; and `.v3-islands-land-flat`
+(`cabinet-v3-style.css`), `flatColourMode`'s single opaque land fill.
 
 ### v3.6 -- domain warping for real concavity + dev tuning panel
 

@@ -46,6 +46,20 @@ function parseOptionalNumber(value) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+// Deterministic fallback for any section that leaves extraCount blank --
+// stable per section id (not random) so a section's filler-island count
+// doesn't change between builds just because it wasn't hand-tuned yet.
+// Ported from landing-v3/cabinet-v3-extras-config.js's defaultExtrasFor(),
+// now folded in here since extraCount is a real TSV column, not a
+// separate hand-authored JS object.
+function defaultExtraCount(sectionId) {
+  let hash = 0;
+  for (let i = 0; i < sectionId.length; i++) {
+    hash = (hash * 31 + sectionId.charCodeAt(i)) >>> 0;
+  }
+  return 1 + (hash % 3); // 1-3
+}
+
 function parseList(value, separator = ";") {
   if (!value) return [];
   return value.split(separator).map(item => item.trim()).filter(Boolean);
@@ -90,6 +104,8 @@ function buildSections() {
         ry: parseNumber(row.ry, "ry", `section ${row.id}`)
       }
     };
+    const explicitExtraCount = parseOptionalNumber(row.extraCount);
+    section.extraCount = explicitExtraCount !== undefined ? explicitExtraCount : defaultExtraCount(row.id);
     if (row.notes) section.notes = row.notes;
     return section;
   });

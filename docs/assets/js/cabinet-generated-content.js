@@ -28,7 +28,8 @@ export const sections = [
       "cy": 370,
       "rx": 250,
       "ry": 135
-    }
+    },
+    "extraCount": 2
   },
   {
     "id": "fffx",
@@ -53,6 +54,7 @@ export const sections = [
       "rx": 260,
       "ry": 130
     },
+    "extraCount": 2,
     "notes": "fffx site_url is configured for this subdomain but no CNAME file exists in the fffx repo yet -- verify DNS is live before treating this link as production-ready."
   },
   {
@@ -77,6 +79,7 @@ export const sections = [
       "rx": 245,
       "ry": 120
     },
+    "extraCount": 3,
     "notes": "No dedicated Cabinet Teaching page yet; href is a placeholder pointing at the real student showcase until one exists."
   },
   {
@@ -102,6 +105,7 @@ export const sections = [
       "rx": 270,
       "ry": 130
     },
+    "extraCount": 2,
     "notes": "Entirely new section, no built pages yet anywhere -- island renders as non-navigating (coming soon) until content exists."
   },
   {
@@ -126,7 +130,8 @@ export const sections = [
       "cy": 1090,
       "rx": 290,
       "ry": 110
-    }
+    },
+    "extraCount": 3
   },
   {
     "id": "interfaces-data-texts",
@@ -150,7 +155,8 @@ export const sections = [
       "cy": 1090,
       "rx": 260,
       "ry": 105
-    }
+    },
+    "extraCount": 2
   },
   {
     "id": "about",
@@ -174,6 +180,7 @@ export const sections = [
       "rx": 115,
       "ry": 85
     },
+    "extraCount": 1,
     "notes": "Deliberately peripheral (top-right), not central, per design brief."
   }
 ];

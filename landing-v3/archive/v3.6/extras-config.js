@@ -1,3 +1,13 @@
+// Frozen copy, v3.6.11 -- the live cabinet-v3-extras-config.js this was
+// copied from has been deleted (extraCount moved to a real
+// cabinet-sections.tsv column, resolved at content-build time by
+// tools/build-cabinet-content.js; see Landing-page-notes.2.0.md's
+// changelog). This archive snapshot keeps its own copy, unchanged,
+// rather than depending on a file that no longer exists -- same
+// pinning philosophy as this folder's own config.js/content.js, just
+// applied to the one "algorithm module" that turned out to actually be
+// per-section hand-tuned data, not shared logic.
+//
 // Prototype stand-in for a schema extension that doesn't exist in
 // content/cabinet-sections.tsv yet. Per the design conversation in
 // Landing-page-notes.2.0.md: the number of non-entry "extra" islands per
