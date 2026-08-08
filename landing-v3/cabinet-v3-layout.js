@@ -10,11 +10,19 @@
 // "the layout is not recomputed every time the page loads, it is
 // recomputed only when new entries (or sections) are added (or
 // removed)" (explicit design decision, see Landing-page-notes.2.0.md) --
-// so it draws to a fixed-aspect SVG viewBox and lets the browser scale
-// that viewBox responsively via CSS, the same technique the real
-// docs/index.html map already uses (see DESIGN-SYSTEM.md). Re-running
-// the layout means editing content and reloading, not resizing the
-// window.
+// so it draws to an SVG viewBox and lets the browser scale that viewBox
+// responsively via CSS, the same technique the real docs/index.html map
+// already uses (see DESIGN-SYSTEM.md). Re-running the layout means
+// editing content and reloading, not resizing the window. v3.6.10: the
+// viewBox's own SHAPE (not just its scale) is now solved once, at
+// render() time, from the real viewport -- see resolveCanvasDimensions()
+// -- so a wide window and a tall one get genuinely different-shaped maps
+// at the same overall content density, not the same fixed rectangle
+// scaled differently. This still isn't live-resize-reactive: drag the
+// window narrower after load and the baked shape just scales down via
+// CSS (still no resize listener), same as a fixed-1200px canvas always
+// did -- only the INITIAL shape adapts to viewport now, not every
+// subsequent resize.
 
 import { v3Config } from "./cabinet-v3-data.js";
 import { sections, entries } from "../docs/assets/js/cabinet-generated-content.js";
@@ -89,23 +97,78 @@ function effectiveWeightForArea(sectionMeta, config) {
   return Math.max(config.minSectionWeight, sectionMeta.weight);
 }
 
-// Canvas height from total content weight, not from an aspect search --
+// Canvas AREA from total content weight, not from an aspect search --
 // v3.1 change, see cabinet-v3-data.js's comment. Canvas area scales
-// linearly with how much is actually on the page.
-function canvasHeightFor(sectionMetas, config) {
+// linearly with how much is actually on the page; SHAPE (width vs.
+// height) is solved separately, below, from the viewport.
+function resolveCanvasArea(sectionMetas, config) {
   const totalWeight = sectionMetas.reduce((sum, s) => sum + effectiveWeightForArea(s, config), 0) || 1;
-  const area = totalWeight * config.areaPerWeightUnit;
-  return area / config.width;
+  return totalWeight * config.areaPerWeightUnit;
+}
+
+// v3.6.10 -- full-bleed sizing: width and height are solved TOGETHER from
+// two independent things -- resolveCanvasArea() above (content-driven,
+// untouched) and the actual available viewport space's own aspect ratio,
+// read once here. width * height = area (so overall density/zoom stays
+// exactly as tuned regardless of window shape) and height / width =
+// (available height / available width) -- i.e. this reshapes the
+// treemap's own starting rectangle to match the window BEFORE squarify()
+// ever runs, rather than distorting a fixed-shape result after the fact.
+// A portrait window gets a portrait map; a wide window gets a wide one.
+//
+// "Available" space comes from measuring the real DOM: .v3-stage-wrap's
+// own content width (its clientWidth minus its own left/right padding --
+// read from computed style, not hardcoded, so this can't drift out of
+// sync with cabinet-v3-style.css), and the viewport height remaining
+// below wherever that element actually starts (window.innerHeight minus
+// its top offset minus its own bottom padding) -- this is what makes the
+// same code correctly account for index.html/islands-tool.html's header
+// (whatever height that happens to render at) without needing to know
+// about it specifically. build-render.html (the build-time capture page)
+// has no .v3-stage-wrap at all -- falls back to the bare viewport size,
+// with build-static.mjs pinning an explicit browser viewport so the
+// shipped static page's baked shape is a deliberate choice, not whatever
+// Playwright's own default happens to be.
+//
+// Deliberately no attempt to account for islands-tool.html's own
+// position:fixed control panel -- cabinet-v3-controls.js hasn't run yet
+// at the point render() first executes (it's a later script tag), so
+// there's nothing in the DOM to detect even if this wanted to.
+function resolveCanvasDimensions(sectionMetas, config) {
+  const area = resolveCanvasArea(sectionMetas, config);
+
+  let availWidth = window.innerWidth;
+  let availHeight = window.innerHeight;
+  const wrap = document.querySelector(".v3-stage-wrap");
+  if (wrap) {
+    const style = getComputedStyle(wrap);
+    const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    const padBottom = parseFloat(style.paddingBottom);
+    availWidth = wrap.clientWidth - padX;
+    availHeight = window.innerHeight - wrap.getBoundingClientRect().top - padBottom;
+  }
+  availWidth = Math.max(config.minWidth, availWidth);
+  availHeight = Math.max(config.minHeight, availHeight);
+
+  const aspect = availHeight / availWidth;
+  const width = Math.sqrt(area / aspect);
+  // availWidth returned alongside width/height so render() can derive the
+  // viewBox<->CSS-pixel scale factor (canvasBounds.width / availWidth) --
+  // needed to convert the HTML header's real rendered footprint into
+  // viewBox units for the growth-obstacle reservation, see render().
+  return { width, height: width * aspect, availWidth };
 }
 
 // Step 2: weighted rectangular partition of the canvas, one region per
 // section. The aspect-band contract from v3.0 is relaxed for now (see
 // cabinet-v3-treemap.js's comment) -- squarify() still keeps rows
 // reasonably square as a side effect of its own scoring, just without a
-// hard band enforced on top.
-function buildRegions(sectionMetas) {
-  const { width, regionGap } = v3Config.canvas;
-  const height = canvasHeightFor(sectionMetas, v3Config.canvas);
+// hard band enforced on top. width/height (v3.6.10: solved from the
+// viewport by resolveCanvasDimensions(), not a fixed config constant) are
+// passed in by the caller rather than read from config directly, so this
+// function's own job stays just "partition a WxH rect," same as always.
+function buildRegions(sectionMetas, width, height) {
+  const { regionGap } = v3Config.canvas;
   const items = sectionMetas.map(s => ({ id: s.id, weight: effectiveWeightForArea(s, v3Config.canvas) }));
   const rects = squarify(items, { x: 0, y: 0, width, height });
 
@@ -583,12 +646,24 @@ export function retraceIslands() {
   drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
 }
 
-function render() {
+// Exported (v3.6.8) so cabinet-v3-controls.js's centerBias slider and
+// "Reroll positions" button can re-run the full pipeline -- unlike every
+// other control in the panel, both change buildSeedsForSection()'s
+// scatter itself (centerBias directly; a reroll via sectionSeed()'s
+// nonce), not just island-shape tuning, so retraceIslands()'s cached-
+// packing shortcut doesn't apply here. Cost measured directly (throwaway
+// _time-repack.mjs, deleted after use) against the real 25-entry content:
+// repack (treemap + scatter + growth) is ~1-3ms, negligible; a full
+// render()'s ~70-100ms is entirely the island retrace step every other
+// slider in this panel already pays per tick, so this reuses that same
+// cost rather than trying to shortcut it.
+export function render() {
   const stage = document.querySelector("#v3-stage");
   stage.innerHTML = "";
 
   const sectionMetas = buildSectionMetas();
-  const { regions, canvasWidth, canvasHeight } = buildRegions(sectionMetas);
+  const { width: targetWidth, height: targetHeight, availWidth } = resolveCanvasDimensions(sectionMetas, v3Config.canvas);
+  const { regions, canvasWidth, canvasHeight } = buildRegions(sectionMetas, targetWidth, targetHeight);
 
   // Small outer margin around the whole canvas -- not part of the
   // weight-proportional layout math (every region rect is still
@@ -638,6 +713,35 @@ function render() {
     buildSeedsForSection(sectionMeta, pack, allPlacedPoints)
   );
   const obstacles = layout.map(({ band }) => band);
+
+  // v3.6.10 -- the page's title/tagline stay real, semantic HTML
+  // (position: absolute over the canvas's own top-left corner via CSS,
+  // see cabinet-v3-style.css) rather than drawn SVG text -- see
+  // Landing-page-notes.2.0.md's "Canvas + legend" entry for why (real
+  // <h1>/<p>, not JS-dependent content, matters for crawlers/screen
+  // readers). Since it's not part of the SVG at all, the layout algorithm
+  // has no built-in awareness it exists on screen -- registered as one
+  // more growth obstacle here, exactly the mechanism every region's own
+  // label band already uses, so circles simply don't grow underneath it.
+  // Converts the header's REAL rendered footprint (measured via
+  // getBoundingClientRect(), not guessed) from CSS pixels into viewBox
+  // units using the same width ratio the responsive CSS scaling itself
+  // uses. Absent on build-render.html-without-a-header cases only if
+  // .v3-header genuinely isn't present (it now is on every real page --
+  // see index.template.html/islands-tool.html/build-render.html).
+  const headerEl = document.querySelector(".v3-header");
+  const wrapEl = document.querySelector(".v3-stage-wrap");
+  if (headerEl && wrapEl) {
+    const scale = canvasBounds.width / availWidth;
+    const headerRect = headerEl.getBoundingClientRect();
+    const wrapRect = wrapEl.getBoundingClientRect();
+    obstacles.push({
+      x: canvasBounds.x + (headerRect.left - wrapRect.left) * scale,
+      y: canvasBounds.y + (headerRect.top - wrapRect.top) * scale,
+      width: headerRect.width * scale,
+      height: headerRect.height * scale
+    });
+  }
 
   // Single global growth pass -- "bounded by the page edges... but not
   // region-region internal edges": every seed from every section grows

@@ -12,8 +12,25 @@
        never contain the tuning panel. Loads cabinet-v3-layout.js directly, the
        exact same module islands-tool.html and index.template.html's pre-build
        predecessor used -- one rendering implementation, captured, not
-       reimplemented. -->
-  <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+       reimplemented.
+
+       v3.6.10 -- .v3-header IS present here now (it wasn't before), even
+       though only #v3-stage's outerHTML ever gets extracted (build-static.mjs
+       never touches this element itself) -- render() measures the header's
+       real footprint to reserve space for it (see cabinet-v3-layout.js) and
+       to size the full-bleed canvas around the available viewport, so the
+       CAPTURED svg needs the same header/viewport conditions index.template.html
+       actually ships with, or the static build's baked shape/obstacle
+       placement would silently mismatch what real visitors see. -->
+  <div class="v3-canvas-wrap">
+    <header class="v3-header">
+      <h1>Cabinet of Curiosities</h1>
+      <p class="v3-subtitle">Weighted regions, archipelago circle-packing.</p>
+    </header>
+    <main class="v3-stage-wrap">
+      <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+    </main>
+  </div>
   <script type="module" src="cabinet-v3-layout.js"></script>
 </body>
 </html>

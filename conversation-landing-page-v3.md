@@ -402,6 +402,156 @@ Bookshelf sibling repo that should be brought up to date. All of these
 were folded into the to-do list in `Landing-page-notes.2.0.md` rather
 than left only in this log.
 
+## Packing controls + preset switcher, with the cost analysis asked for up front (v3.6.8)
+
+Picked back up from this file's own to-do list (items 5, 6, 8): "let's
+work on the island-tool. add the controls to reroll circle centres, to
+control centre-bias, as well as switching between preset looks --
+starting with its cost complexity analysis." The phrasing put the cost
+analysis first deliberately -- item 6 in the to-do list had explicitly
+flagged "needs discussion + a real cost/complexity analysis before
+committing to it," so that came before any UI code, not after.
+
+The analysis itself used the same discipline as every prior performance
+question in this project: a real measurement, not a guess (see the
+"is the compute getting expensive?" precedent from the v3.6.5 pass). A
+throwaway timing script (`_time-repack.mjs`, same convention as
+`_verify-islandshape.mjs` and the others -- written, run against the
+real 25-entry content, deleted once its numbers were in hand) split the
+pipeline into its two real cost centers: repacking (treemap + scatter +
+global growth) came back at ~1-3ms, essentially free; the island retrace
+(heightmap build + marching squares) came back at ~70-100ms -- and that
+second number was already familiar, since it's the exact cost every
+existing shape-tuning slider in the panel pays per drag tick. That
+reframed the whole question: reroll and center-bias both need a genuine
+repack (they change what gets scattered, not just how a fixed circle set
+gets traced), but since the repack itself is nearly free, reusing the
+full `render()` pipeline for both costs no more than dragging any
+existing slider already does -- no need to invent a cheaper partial-
+repack path. Preset switching, by contrast, needs no repack at all: the
+three combinations that already exist (wave rings, colour bands, both)
+are just two config flags read by the same retrace path already in use,
+so that came out even cheaper. What the analysis also clarified was
+scope: it drew a hard line between switching among effects that already
+exist (cheap, built this pass) and the to-do list's own further example
+-- a "medieval map" preset layering an illuminated-manuscript treatment
+on top -- which would need actual new rendering code for a look that
+hasn't been designed yet. That's not a cost number to estimate, it's a
+design conversation that hasn't happened, so it stayed on the to-do list
+as its own open item rather than getting folded in or guessed at.
+
+Three controls came out of this, all in `islands-tool.html`'s panel: a
+center-bias slider (mutates `v3Config.pack.centerBias` directly, same
+range as the existing config comment's own discussion of pushing it
+higher); a "Reroll positions" button, deliberately a button and not a
+slider, since trying a different random layout is a discrete action with
+no meaningful in-between value; and three preset buttons (Wave contours
+/ Colour bands / Both). The reroll needed one small addition to
+`cabinet-v3-layout.js` itself -- a module-level nonce folded into each
+section's scatter seed only when nonzero, so the production/archive
+pages (which never load the controls script) are provably unaffected,
+and a fresh `Math.random()`-drawn nonce each time rather than an
+incrementing counter, so hitting reroll twice in a row can't coincidentally
+land back on a seed that looks unchanged. This is also the point in the
+whole v3 project where a control panel introduces `Math.random()` at
+all -- everything else in this codebase's determinism story (mulberry32,
+seeded by content or a fixed string, "same content in, same layout out")
+stays intact; only the moment of choosing a reroll's seed is genuinely
+random, the layout that results from it is deterministic again the
+instant it's chosen, same principle `warpOffset()`'s own seeding already
+established for the one other place this project touches genuine
+randomness.
+
+Wiring the preset buttons surfaced one small existing-code observation
+worth recording: `waveDistances`' array is owned by the Wave-rings
+generator panel (v3.6.7, its own count/start/multiplier/offset sliders),
+so a naive "Colour bands only" preset that cleared `waveDistances`
+directly would silently desync the moment anyone touched a wave-ring
+slider afterward. A separate `showWaveRings` boolean sidesteps that --
+the array itself is never touched by a preset switch, only whether it
+gets drawn.
+
+While reading `Landing-page-notes.2.0.md`'s changelog to write this
+pass's own entry, a documentation gap turned up: several `v3.6.7`-dated
+comments already existed in the code (the wave-ring generator panel, an
+edge-padding fix, `flatColourMode`'s CSS) with no matching changelog
+entry -- the version had shipped without ever getting logged. Noted and
+backfilled with a short reconstructed entry rather than silently
+skipped, so the version trail stays honest; this pass's own work is
+`v3.6.8`, the next actually-unclaimed number.
+
+## A real bug, and "let us treat it with some sophistication" (v3.6.9)
+
+Direct follow-up to trying v3.6.8's new controls live: a precise bug
+report ("Wave contour shows waves and topology i.e. BOTH, Colour bands
+show ONLY sea topology but land is flat green, BOTH shows sea topology
+AND wave contours, but land is still flat") plus a genuine design
+question ("What does Reset restore -- does it reset to last applied /
+currently active values?") plus a restructuring request driven by the
+tool having outgrown its original shape: "island-tool is fast becoming a
+properly complex tool to generate and test parameters for the island
+map. Let us treat it with some sophistication."
+
+The bug diagnosed cleanly from the symptom description alone, before
+touching any code: three different broken-looking outputs that all
+traced back to one root cause once the pattern was visible -- switching
+`flatColourMode` at runtime kept leftovers from whichever branch had
+been active before, because `drawIslandsPath()` had only ever been
+exercised via a full page reload until v3.6.8's live checkboxes existed.
+Confirmed with a Playwright script that counts DOM elements by class
+after cycling through every combination, not just a visual re-look --
+the project's own established standard for "did the fix work," applied
+here to a rendering bug instead of a geometry one.
+
+The Reset question got a direct, honest answer rather than an assumed
+one: Reset restores a single fixed snapshot taken when the panel first
+loaded (in practice, `cabinet-v3-data.js`'s shipped values), not a
+rolling "last applied" state -- worth stating plainly since the two
+readings genuinely differ in what a user would expect clicking it to do.
+
+The restructuring request came with real structure already specified,
+not just "make it nicer": three named sections with explicit contents,
+an explicit ordering principle ("deepest effect/earliest in the workflow
+at the bottom"), collapsibility as a stated requirement (with the
+concrete motivating case -- tuning wave contours without Island shape's
+sliders visibly in the way), and a checkbox-based visuals model
+("checkbox for Wave contour look, Topological look, if both are checked,
+BOTH is fulfilled") that turned out to be a genuine simplification over
+the three-button preset switcher it replaced -- two independent booleans
+cover the same three combinations plus a fourth (neither checked) the
+buttons had no way to reach, with no "which preset is currently active"
+state to track at all. Implemented via native `<details>`/`<summary>`
+rather than custom JS toggle state, specifically because independent
+per-section collapse is what native `<details>` already does for free.
+
+Building the topological-offset sliders (punch-list item 7, carried
+since the wave-ring generator's own panel section in v3.6.7) surfaced
+one more small correctness point worth recording: the very first draft
+had each slider mutate its target array by index in place
+(`arr[i] = v`), which would have silently corrupted the Reset snapshot
+the moment any slider moved, since a shallow `{...v3Config.island}` copy
+shares array references, not array contents. Caught before it shipped,
+not after -- every array-valued slider in the panel now replaces its
+array wholesale (`.map(...)`) instead of mutating in place, and the
+snapshot itself deep-clones its array fields, so the two can never
+alias.
+
+## Full-bleed canvas, and catching an SEO/accessibility mistake mid-flight (v3.6.10)
+
+Picked back up several punch-list items at once: "8 - count as done... Check on 9... Tell me what is the necessary condition for the Canvas to actually expand? Will it be responsive to other desktop screens as well... Do 12 and 13 too." A genuinely mixed request -- one item accepted as complete on the spot, one asked to be investigated (not fixed), one asked as a direct technical question before any code, and two asked to be built.
+
+Item 9 got a real measurement before an answer, not a guess: reconstructed the actual treemap/packing pipeline in a throwaway script against real content and found `minSectionWeight` (v3.4) floors a section's AREA but not its ASPECT RATIO -- `about` squarifies to a 92x488px sliver (aspect 0.19) even with its weight floored from 2 to 5, because `squarify()` optimizes each row's aggregate squareness, not any one item's own shape. The circles inside aren't actually undersized (the sliver's just tall enough to give them room), but the region reads as a visibly cramped strip -- confirmed directly in every full-bleed screenshot taken later in this same pass, not just argued abstractly. Reported as "investigated, insufficient as-is" rather than silently fixed, since the real fix (an aspect-ratio constraint back in `squarify()`) is a scope decision, not a one-line change.
+
+The canvas-expansion question got answered with the actual mechanism before any code changed: CSS `width:100%` already made the SVG scale with the window, but the viewBox's own SHAPE was a fixed function of content weight, never the viewport -- a 4:3 window and an ultrawide one got the identical rectangle, just resized. Flagged as directly tying into item 12, per the user's own instinct.
+
+The header fold (item 13) took a wrong turn worth recording precisely, because it was caught and reversed within the same pass rather than shipped and found later. First implementation drew the title/tagline as literal SVG `<text>` inside `render()`'s own output, deleting the HTML `<header>` entirely -- a literal reading of "fold into the map's own legend." Before finishing, a direct follow-up question -- "what is the necessary condition... will it have the necessary effect, and keep the page sane for the rest of the web?" -- prompted checking the actual consequences rather than assuming they were fine: no `<h1>` in the accessibility tree any more, and on `islands-tool.html` specifically (no static build, unlike `index.html`) the text would only exist if a crawler executed JavaScript. Laid out honestly, with a recommendation (add a visually-hidden `<h1>` back) rather than silently living with the regression.
+
+The user's actual intent turned out to be much simpler than what got built: "I merely imagined repositioning the header and text through CSS magic, not restructure things." That one sentence reframed the whole approach -- keep the real, unchanged `<h1>`/`<p>`, `position: absolute` it over the canvas's own corner via CSS, and solve the one real remaining problem (map content rendering underneath it) by registering the header's measured footprint as a growth obstacle, the exact mechanism every section's own label band already uses. Simpler, and, as directly confirmed when asked, strictly better on every axis the SVG-text version had put at risk.
+
+A related but genuinely separate question came up immediately after: "does this mean the rest of my section and entry links aren't search engine friendly?" -- easy to conflate with the header issue, but structurally different, and answered by checking the actual built file rather than reasoning from the header case by analogy: `index.html`'s 25 island links are baked as real static `<a href>` tags at build time (verified: `grep`, 25 matches, 0 `<script>` tags in the shipped file) -- a mechanism that predates this session entirely (since v3.6.2) and was never at risk. The one honest nuance flagged: those links live inside `<svg>` rather than plain HTML body flow, which modern crawlers generally handle but isn't quite as universally certain as an ordinary body-level anchor -- worth an empirical check via Search Console once a real domain exists, not something to keep reasoning about in the abstract.
+
+`build-render.html` (the headless capture page for the static build) needed the same header added to it too, for a reason that wasn't obvious until the full-bleed mechanism existed: since the header's footprint and the available viewport height now both feed directly into what gets computed, a capture environment without a header would bake a shape that doesn't match what real visitors actually see. Caught while implementing, not after.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

@@ -22,16 +22,32 @@
 // can be tuned separately.
 
 export const v3Config = {
-  title: "Cabinet of Curiosities -- v3 layout prototype",
-  subtitle: "Weighted regions, archipelago circle-packing -- see Landing-page-notes.2.0.md",
+  // Descriptive metadata -- not currently read by any code (the actual
+  // page title/tagline live as real HTML in index.template.html/
+  // islands-tool.html/build-render.html's own <header>, not generated
+  // from here -- see "Canvas + legend" in Landing-page-notes.2.0.md for
+  // why that stayed real HTML, position:absolute over the map via CSS,
+  // rather than becoming SVG-drawn text).
+  title: "Cabinet of Curiosities",
+  subtitle: "Weighted regions, archipelago circle-packing",
 
   canvas: {
-    width: 1200,
-    // Canvas height = (sum of every visible section's weight) x this,
-    // divided by width -- i.e. total canvas area scales linearly with
-    // total content weight, not a fixed guess. Tuned empirically
-    // (rendered + screenshotted, then adjusted) against the real
-    // 7-section/25-entry content; revisit if entry count changes a lot.
+    // v3.6.10 -- floors only, not the canvas's actual size any more.
+    // Width/height are now solved together at render() time from the
+    // real viewport (resolveCanvasDimensions() in cabinet-v3-layout.js),
+    // so the map's own shape adapts to whatever window it loads into
+    // instead of always being a fixed 1200px-wide rectangle scaled by
+    // CSS. These only bind if the available space is implausibly small
+    // (e.g. a dev tool run inside a tiny embedded frame).
+    minWidth: 480,
+    minHeight: 360,
+    // Canvas AREA = (sum of every visible section's weight) x this --
+    // i.e. total canvas area scales linearly with total content weight,
+    // not a fixed guess; width/height are then solved from that area
+    // plus the viewport's own aspect ratio (see resolveCanvasDimensions()).
+    // Tuned empirically (rendered + screenshotted, then adjusted) against
+    // the real 7-section/25-entry content; revisit if entry count changes
+    // a lot.
     areaPerWeightUnit: 9000,
     // Gap between adjacent section regions, inset from the treemap's
     // exact tiling on every side -- purely visual breathing room, not

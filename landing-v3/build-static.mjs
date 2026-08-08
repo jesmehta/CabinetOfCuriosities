@@ -70,7 +70,14 @@ let svgMarkup;
 try {
   const browser = await chromium.launch();
   try {
-    const page = await browser.newPage();
+    // v3.6.10 -- explicit viewport, not Playwright's own implicit default:
+    // the canvas's own shape is now solved from the real available
+    // viewport at render() time (resolveCanvasDimensions(), see
+    // cabinet-v3-layout.js), so the STATIC build's baked shape depends on
+    // whatever viewport this capture runs at -- pinning it to a common
+    // desktop size makes that a deliberate choice, not an accident of
+    // whatever Playwright happens to default to.
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     const consoleErrors = [];
     page.on("pageerror", e => consoleErrors.push(e.message));
     page.on("console", msg => { if (msg.type() === "error") consoleErrors.push(msg.text()); });

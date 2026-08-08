@@ -378,10 +378,13 @@ placeholder with the captured SVG markup, and writes the result to
 convention `cabinet-generated-content.js` already uses for TSV-sourced
 content (`content/cabinet-sections.tsv`/`cabinet-entries.tsv` ->
 `node tools/build-cabinet-content.js`). `build-render.html` is a third,
-build-only page -- like `index.template.html`'s SVG stage but with no
-header/subtitle (irrelevant to what gets captured) and, critically, no
-`cabinet-v3-controls.js` script tag, so the dev tuning panel can never
-end up baked into the static output.
+build-only page -- like `index.template.html`'s canvas-wrap/header/stage
+structure (v3.6.10: the header IS needed here now, unlike earlier
+versions -- its real footprint feeds directly into the full-bleed canvas
+sizing and header-obstacle placement, see that changelog entry) but,
+critically, no `cabinet-v3-controls.js` script tag, so the dev tuning
+panel can never end up baked into the static output. Only `#v3-stage`'s
+own markup is ever extracted -- the header itself is never captured.
 
 **Trigger: a separate, explicit command, not chained onto the real
 site's build.** Regenerating requires running `node build-static.mjs`
@@ -1211,36 +1214,64 @@ flat list, not the reasoning.
    cheap particle advection along it (waves, boats), obstacles/repulsion
    around islands, optionally mouse-reactive. Discussed conceptually
    only, nothing built.
-5. islands-tool idea (throwaway, needs discussion): a control to
-   re-roll/regenerate the circle centres and packing stage itself, not
-   just retrace the island shapes off the current layout.
-6. islands-tool idea (throwaway, needs discussion + a real cost/
-   complexity analysis before committing to it): switch or layer
-   between the wave contours, the topology noise contour bands, or
-   both -- and beyond that, other whole look-and-feel presets (e.g. a
-   "medieval map" preset combining wave contours with an illuminated-
-   manuscript-style treatment).
-7. islands-tool idea: give the topology noise contour bands
+5. ~~islands-tool idea: a control to re-roll/regenerate the circle
+   centres and packing stage itself~~ -- done, v3.6.8: "Reroll
+   positions" button, now in the Layout section (v3.6.9 restructure).
+6. islands-tool idea: switch or layer between the wave contours, the
+   topology noise contour bands, or both -- **tier 1 done** (v3.6.8's
+   three preset buttons, replaced in v3.6.9 by two independent
+   checkboxes in the Visuals section -- Wave contours / Colour bands --
+   which cover the same three combinations plus a fourth the buttons
+   couldn't reach). Tier 2 still open: other whole look-and-feel presets
+   beyond those (e.g. a "medieval map" preset combining wave contours
+   with an illuminated-manuscript-style treatment) need actual new
+   rendering code for a treatment that isn't designed yet -- cost
+   unknown until that design happens, needs its own discussion before
+   estimating.
+7. ~~islands-tool idea: give the topology noise contour bands
    (`seaBandThresholds`/`sandThresholds`/`vegThresholds`) their own
-   panel section, the way wave rings got one in v3.6.6.
-8. Strengthen centroid gathering further -- `centerBias` (currently
-   1.6) is a first pass; push it harder if islands should cluster
-   tighter still.
+   panel section~~ -- done, v3.6.9: "Topological offset parameters" in
+   the Visuals section, one slider per array element.
+8. ~~Strengthen centroid gathering further -- push `centerBias` harder if
+   islands should cluster tighter still~~ -- **counted done**: a live
+   slider exists (v3.6.8, Layout section) so this is now a direct
+   try-values-and-judge action, not something blocked on more code. The
+   actual "how much tighter" call is a judgment call for whoever's
+   driving the panel, not an open engineering task.
 9. Give sections a minimum weight so small sections (About Me, etc.)
-   don't read as visually skewed/collapsed -- may already be partly
-   covered by `v3Config.canvas.minSectionWeight` (area-allocation only,
-   not per-entry sizing); needs a look at whether that's sufficient or
-   a different mechanism is needed.
+   don't read as visually skewed/collapsed -- **investigated (v3.6.10),
+   confirmed insufficient as-is.** `v3Config.canvas.minSectionWeight`
+   (v3.4) floors a section's AREA for treemap allocation (`about`'s real
+   weight 2 gets clamped to 5), but does nothing about its ASPECT RATIO --
+   measured directly against real content: `about` still squarifies to a
+   92x488px region (aspect 0.19, a genuine sliver), because squarify()
+   optimizes each ROW's aggregate squareness, not any one item's own
+   shape, and a low-weight item can still land as the thin remainder of a
+   row regardless of its floored area. The circles inside aren't
+   undersized (they reach ~31px radius, comparable to other sections --
+   the sliver is tall enough to give them room to grow into) but the
+   region SHAPE itself is a visible thin strip -- confirmed directly in
+   the v3.6.10 full-bleed screenshots (see below), where `about` reads as
+   a visibly cramped column next to its neighbours at every window shape
+   tried. A real fix needs an aspect-ratio-aware constraint back in
+   `squarify()` -- similar in spirit to (but likely narrower than) the
+   9:16-16:9 band contract relaxed back in v3.1 -- not something to build
+   without discussing scope first.
 10. A real pass on fonts, colours, sizes, and readability -- explicitly
     held back until other bells and whistles landed; that condition is
     largely met now.
 11. Other small details -- compass rose, easter eggs, etc.
-12. Expand the canvas to full-bleed window size (currently a fixed
-    1200px-wide viewBox scaled responsively, not actually filling the
-    viewport).
-13. Fold the "Cabinet of Curiosities" heading + intro text into the map
-    itself, as part of the map's own legend/styling, rather than
-    separate HTML page-header text above the SVG.
+12. ~~Expand the canvas to full-bleed window size~~ -- **done, v3.6.10.**
+    See "Full-bleed canvas + header overlay" below for the mechanism and
+    its real limits (adapts to the viewport ONCE at load, not on a live
+    drag-resize afterward).
+13. ~~Fold the "Cabinet of Curiosities" heading + intro text into the map
+    itself~~ -- **done, v3.6.10**, via CSS positioning of the real,
+    unchanged HTML `<header>` over the canvas's own corner -- NOT by
+    moving the text into SVG (tried first, reverted -- see the changelog
+    entry for why: real `<h1>`/`<p>` matters for crawlers/screen readers
+    in a way JS-drawn SVG text doesn't, especially on `islands-tool.html`
+    which has no static build).
 14. Idea: the compass rose (or similar map ornamentation) could BE the
     About Me / Contact Me links, rather than those existing as regular
     islands -- see item 21 below (WORLD-SYSTEMS.md's FabAcademy-is-not-
