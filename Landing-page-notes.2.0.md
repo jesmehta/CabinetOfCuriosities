@@ -1189,6 +1189,18 @@ combination produces a bad shape that a weight floor doesn't fix.
 
 ## Next steps (not started)
 
+- **Watch out for:** the header markup (`<header class="v3-header">`'s
+  `<h1>`/`<p class="v3-subtitle">`) is hand-duplicated across
+  `index.template.html`, `islands-tool.html`, and `build-render.html` --
+  no templating keeps them in sync, so editing the title/tagline in one
+  needs the same edit in the other two by hand. Deliberately left as-is
+  for now (see the conversation log): a lot of churn is still expected
+  across these files, and the mismatch is low-stakes/easy to spot by eye
+  in the meantime. A single-source-of-truth fix is sketched out (define
+  once in `v3Config.title`/`subtitle`, extend `build-static.mjs`'s
+  existing real-browser-capture pattern -- already used for the SVG --
+  to also capture the rendered header) but not a priority; revisit once
+  the header stabilizes.
 - Font-size-from-radius + truncation for circle labels (limitation #1).
 - If cross-region overlap is ever observed against a different content
   mix: re-validate (or re-clamp) `centerPointsInRect()`'s output against
