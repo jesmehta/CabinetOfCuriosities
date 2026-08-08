@@ -1312,6 +1312,15 @@ flat list, not the reasoning.
     entry for why: real `<h1>`/`<p>` matters for crawlers/screen readers
     in a way JS-drawn SVG text doesn't, especially on `islands-tool.html`
     which has no static build).
+13a. Refine the header itself, now that it's living on the map's corner
+    (v3.6.10) instead of above it: the title/tagline wording, its
+    typography/look-and-feel, exact position, and the space it reserves
+    as a growth obstacle in the layout algorithm. Includes the still-open
+    H1-scale-mismatch this move introduced -- resizing the window scales
+    the map's own text via the SVG viewBox, but the real HTML `<h1>`
+    doesn't scale with it, since it sits outside the SVG entirely.
+    Undecided which of three options to take: scale it with the map,
+    clamp its size within a range, or leave it fixed as-is.
 14. Idea: the compass rose (or similar map ornamentation) could BE the
     About Me / Contact Me links, rather than those existing as regular
     islands -- see item 21 below (WORLD-SYSTEMS.md's FabAcademy-is-not-
