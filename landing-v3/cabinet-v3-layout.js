@@ -33,6 +33,19 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // there when only v3Config.island changes.
 let islandLayoutState = null;
 
+// v3.6.8 -- bumped by cabinet-v3-controls.js's "Reroll positions" button,
+// folded into every section's scatter seed below (sectionSeed()) so a
+// reroll produces a genuinely different archipelago layout while staying
+// off Math.random() -- still fully deterministic (same nonce always
+// produces the same layout), it's just no longer pinned to 0. Stays 0
+// forever on index.html/archive (neither loads cabinet-v3-controls.js),
+// so this has no effect on anything but the two live-tuning pages.
+let rerollNonce = 0;
+
+function sectionSeed(sectionId) {
+  return rerollNonce ? `${sectionId}::reroll${rerollNonce}` : sectionId;
+}
+
 function el(tag, attrs = {}, text) {
   const node = document.createElementNS(SVG_NS, tag);
   Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
@@ -303,7 +316,7 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
   // -- render() calls this once per section, in sequence, sharing one
   // array across the whole pass.
   const scatterArea = insetRect(packArea, v3Config.pack.minRadius);
-  const rng = createSeededRng(sectionMeta.id);
+  const rng = createSeededRng(sectionSeed(sectionMeta.id));
 
   // Entries scatter, order, and center FIRST -- on their own, not mixed
   // with extras (v3.4.2). Order + zip happens before centering, same as
@@ -454,7 +467,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
 // cabinet-v3-data.js's field notes for why nested level-sets guarantee
 // that stacking order.
 function drawIslandsPath(stage, canvasBounds, grown) {
-  const { cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds, waveDistances, flatColourMode, warpStrength } = v3Config.island;
+  const { cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds, waveDistances, showWaveRings, flatColourMode, warpStrength } = v3Config.island;
 
   // v3.6.7 -- sample the heightmap/distance-field over a PADDED area
   // that extends past the visible canvas, not the exact visible
@@ -508,7 +521,24 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   };
 
   const coastD = trace(threshold);
-  let anchor = flatColourMode ? null : placeBand(null, "v3-sea-band", seaBandThresholds, trace);
+
+  // v3.6.9 bugfix -- flatColourMode used to skip STRAIGHT to placeOne()/
+  // the else-branch's placeBand() calls without ever touching whichever
+  // group belonged to the OTHER branch, so live-toggling it (the Preset
+  // look checkboxes) left a fully-opaque leftover from the previous
+  // branch sitting in the SVG forever -- e.g. switch away from flat mode
+  // and the old .v3-islands-land-flat path stays, painted on top of the
+  // freshly-drawn sand/veg bands, hiding them completely. This only ever
+  // surfaced once flatColourMode could change at RUNTIME via
+  // retraceIslands() (previously it was a hand-edited config value,
+  // toggled only via a full render() that clears the whole stage first,
+  // which is why this never showed up before). Fixed the same way
+  // showWaveRings already handles its own on/off switch, just above:
+  // always pass every group through placeBand()'s own empty-list pruning
+  // (sea-band, sand-band, veg-band), and explicitly remove the one
+  // non-band element (the flat-land path) that has no placeBand()
+  // equivalent to prune it automatically.
+  let anchor = placeBand(null, "v3-sea-band", flatColourMode ? [] : seaBandThresholds, trace);
 
   // Fixed-distance wave rings -- a genuine Euclidean distance transform
   // off the same heightmap's land/water split, NOT another noise
@@ -516,14 +546,28 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   // cabinet-v3-islandshape.js). Traced on top of the sea bands (when
   // present), still behind the land itself. Unaffected by flatColourMode
   // -- the wave rings are the effect being compared against the bands,
-  // not one of the things flatColourMode turns off.
+  // not one of the things flatColourMode turns off. showWaveRings (v3.6.8)
+  // is the independent kill switch for this layer -- pass an empty level
+  // list rather than skipping placeBand() entirely so any wave-ring
+  // elements left over from a previous (rings-on) retrace still get
+  // pruned by placeBand()'s own stale-element cleanup.
   const distanceField = buildCoastlineDistanceField(H, cols, rows, cellSize, threshold);
   const traceWave = D => traceContourFromHeightmap(distanceField, cols, rows, cellSize, paddedBounds, -D);
-  anchor = placeBand(anchor, "v3-wave-ring", waveDistances, traceWave);
+  anchor = placeBand(anchor, "v3-wave-ring", showWaveRings ? waveDistances : [], traceWave);
 
   if (flatColourMode) {
+    // Empty-list placeBand() calls prune any .v3-sand-band-N/.v3-veg-band-N
+    // left over from a previous non-flat retrace; neither call advances
+    // anchor (nothing to place), so it's safe to just discard the return.
+    placeBand(anchor, "v3-sand-band", [], trace);
+    placeBand(anchor, "v3-veg-band", [], trace);
     anchor = placeOne(anchor, "v3-islands-land-flat", coastD);
   } else {
+    // No placeBand() equivalent for a single non-array element -- remove
+    // the stale flat-land path directly if a previous flat-mode retrace
+    // left one behind.
+    const staleFlat = stage.querySelector(".v3-islands-land-flat");
+    if (staleFlat) staleFlat.remove();
     anchor = placeBand(anchor, "v3-sand-band", sandThresholds, trace);
     anchor = placeBand(anchor, "v3-veg-band", vegThresholds, trace);
   }
@@ -623,6 +667,23 @@ function render() {
   layout.forEach(({ sectionMeta, region, band, label }) => {
     renderRegion(stage, region, band, label, sectionMeta, grownBySection.get(sectionMeta.id) || []);
   });
+}
+
+// v3.6.8 -- reroll: pick a new nonce, re-run the whole pipeline. A fresh
+// Math.random()-derived nonce (not incremented) so hitting reroll twice
+// can't land back on nonce=1 and look like nothing happened; still
+// deterministic AFTER the roll (same nonce -> same layout), only the
+// moment of picking one is random, same "randomness only at the one
+// genuinely interactive edge" rule warpOffset()'s own seed follows.
+export function rerollPacking() {
+  rerollNonce = Math.floor(Math.random() * 1e9) + 1;
+  render();
+}
+
+// Restores the original (un-rerolled) seed -- called by the control
+// panel's Reset button alongside its existing v3Config.island restore.
+export function resetReroll() {
+  rerollNonce = 0;
 }
 
 render();

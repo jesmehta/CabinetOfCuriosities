@@ -252,6 +252,41 @@ body.v3-proto {
   margin-bottom: 8px;
 }
 
+/* v3.6.9 -- collapsible section wrapper (Visuals / Island shape / Layout).
+   Native <details>/<summary> rather than custom open/close JS -- see
+   cabinet-v3-controls.js's makeSection(). */
+.v3-controls-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin-top: 10px;
+  padding-top: 6px;
+}
+
+.v3-controls-section:first-of-type {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.v3-controls-summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 0 6px;
+  list-style: none;
+}
+
+.v3-controls-summary::-webkit-details-marker {
+  display: none;
+}
+
+.v3-controls-summary::before {
+  content: "\25b8  ";
+}
+
+.v3-controls-section[open] > .v3-controls-summary::before {
+  content: "\25be  ";
+}
+
 .v3-controls-group-label {
   margin: 10px 0 4px;
   font-size: 10px;
@@ -267,6 +302,17 @@ body.v3-proto {
   align-items: center;
   gap: 2px 6px;
   margin-bottom: 6px;
+}
+
+/* v3.6.9 -- Visuals section's Wave contours / Colour bands checkboxes --
+   deliberately not sharing .v3-controls-row's grid (no value/range
+   input to lay out, just a checkbox + label side by side). */
+.v3-controls-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
 }
 
 .v3-controls-name {
@@ -303,4 +349,14 @@ body.v3-proto {
 
 .v3-controls-btn:hover {
   background: rgba(255, 255, 255, 0.18);
+}
+
+/* v3.6.9 -- single full-width button on its own line (per-section Reset,
+   Reroll positions, Restore position) -- distinct from the default
+   .v3-controls-btn flex:1 sizing, which assumes it's sharing a row
+   (.v3-controls-buttons) with a sibling button. */
+.v3-controls-btn-block {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
 }

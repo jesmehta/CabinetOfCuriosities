@@ -5,18 +5,34 @@
 // cabinet-v3-islandshape.js's warpOffset()) can be tuned by feel against
 // the live SVG instead of another round of edit-config/screenshot/repeat.
 //
-// Mutates v3Config.island directly (the same object cabinet-v3-layout.js
-// reads on every retrace) and calls its exported retraceIslands() on
-// every slider input -- cheap, since only the island trace re-runs, not
-// the treemap/circle-packing pass (see retraceIslands()'s own comment).
+// v3.6.9 -- restructured into three collapsible <details> sections,
+// ordered by how deep into the pipeline each one reaches: Visuals (top --
+// a pure rendering-layer toggle, changes nothing upstream), Island shape
+// (middle -- feeds the coastline trace, doesn't touch circle positions),
+// Layout (bottom -- circle positions themselves, the thing everything
+// else is traced from). Explicit direction: "deepest effect/earliest in
+// the workflow at the bottom." Each section gets its own Reset (restores
+// only what that section can change); Reset ALL covers everything at
+// once. Native <details>/<summary> rather than custom show/hide JS --
+// collapsing one section (e.g. Island shape) while leaving another (e.g.
+// Visuals) open needs no extra state to manage that way.
+//
+// Mutates v3Config.island / v3Config.pack directly (the same objects
+// cabinet-v3-layout.js reads) -- most controls call the exported
+// retraceIslands() (cheap: only the island trace re-runs, see its own
+// comment in cabinet-v3-layout.js), except Layout's controls (center bias,
+// reroll), which change circle POSITIONS and so call the exported
+// render() (the full pipeline) instead -- see that function's own comment
+// for why this is no more expensive than what every other slider here
+// already costs per tick.
 
 import { v3Config } from "./cabinet-v3-data.js";
-import { retraceIslands } from "./cabinet-v3-layout.js";
+import { retraceIslands, render, rerollPacking, resetReroll } from "./cabinet-v3-layout.js";
 
-// Each entry drives one slider. `get`/`set` default to reading/writing
-// v3Config.island[key] directly; only warpPeriod overrides them, since
-// warpScale (a 1/px frequency) is a much less intuitive dial than "period
-// in px" for a human turning a knob.
+// Each entry drives one Island-shape slider. `get`/`set` default to
+// reading/writing v3Config.island[key] directly; only warpPeriod
+// overrides them, since warpScale (a 1/px frequency) is a much less
+// intuitive dial than "period in px" for a human turning a knob.
 const CONTROLS = [
   { group: "Warp (v3.6)", key: "warpStrength", label: "Strength (px)", min: 0, max: 150, step: 1 },
   {
@@ -32,79 +48,186 @@ const CONTROLS = [
   { group: "Base coastline", key: "gradientStrength", label: "Gradient strength", min: 0.3, max: 2, step: 0.02 }
 ];
 
+// Range shared by every topological-band threshold slider (sea/sand/veg)
+// -- same span as the Base coastline "Threshold" slider above, since
+// they're the same kind of value (a height in the shared noise
+// heightmap), just for a different contour group.
+const BAND_MIN = -1.5;
+const BAND_MAX = 0.5;
+const BAND_STEP = 0.02;
+
 function formatValue(v, step) {
   return step < 1 ? Number(v).toFixed(2) : String(Math.round(v));
 }
 
-function buildControlPanel() {
-  // Snapshot BEFORE any slider mutates v3Config.island -- what "Reset"
-  // restores. Deliberately not the same reference as v3Config.island
-  // itself (a plain copy), since that object is mutated in place below.
-  const defaults = { ...v3Config.island };
+// Builds one <label class="v3-controls-row"> slider row inside
+// `container`, wired to `get`/`set`. `onChange` runs after every input
+// tick (default retraceIslands(), the cheap path -- callers whose
+// control changes circle positions, not just shape/visual tuning, pass
+// render() instead, see Layout's centerBias slider below). Returns a
+// handle so callers (mainly Reset buttons) can pull the live value back
+// in sync with the slider's own display without re-deriving the DOM.
+function buildSlider(container, { label, min, max, step, get, set, onChange = retraceIslands }) {
+  const row = document.createElement("label");
+  row.className = "v3-controls-row";
 
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "v3-controls-name";
+  nameSpan.textContent = label;
+
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = String(min);
+  input.max = String(max);
+  input.step = String(step);
+  input.value = String(get());
+
+  const valueSpan = document.createElement("span");
+  valueSpan.className = "v3-controls-value";
+  valueSpan.textContent = formatValue(get(), step);
+
+  input.addEventListener("input", () => {
+    const v = Number(input.value);
+    set(v);
+    valueSpan.textContent = formatValue(v, step);
+    onChange();
+  });
+
+  row.appendChild(nameSpan);
+  row.appendChild(input);
+  row.appendChild(valueSpan);
+  container.appendChild(row);
+
+  return {
+    refresh: () => {
+      const v = get();
+      input.value = String(v);
+      valueSpan.textContent = formatValue(v, step);
+    }
+  };
+}
+
+function addGroupHeading(container, text) {
+  const heading = document.createElement("div");
+  heading.className = "v3-controls-group-label";
+  heading.textContent = text;
+  container.appendChild(heading);
+  return heading;
+}
+
+// `block: true` -- a single full-width button on its own line (Reroll,
+// Restore position, the per-section Reset buttons); omitted for buttons
+// meant to sit side-by-side in a flex row (the Reset ALL / Copy config
+// footer), which already get that from .v3-controls-buttons.
+function addButton(container, label, onClick, { block = false } = {}) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = block ? "v3-controls-btn v3-controls-btn-block" : "v3-controls-btn";
+  btn.textContent = label;
+  btn.addEventListener("click", onClick);
+  container.appendChild(btn);
+  return btn;
+}
+
+// A native <details>/<summary> collapsible -- no custom open/close JS to
+// maintain, and sections collapse/expand independently of each other for
+// free. Returns the <details> element itself as the content container
+// (append children directly to it, after its own <summary>).
+function makeSection(panel, title, open) {
+  const details = document.createElement("details");
+  details.className = "v3-controls-section";
+  details.open = open;
+
+  const summary = document.createElement("summary");
+  summary.className = "v3-controls-summary";
+  summary.textContent = title;
+  details.appendChild(summary);
+
+  panel.appendChild(details);
+  return details;
+}
+
+function buildControlPanel() {
   const panel = document.createElement("div");
   panel.className = "v3-controls";
 
   const title = document.createElement("div");
   title.className = "v3-controls-title";
-  title.textContent = "Island shape tuning (dev only)";
+  title.textContent = "Island generation tuning (dev only)";
   panel.appendChild(title);
 
-  const inputsByKey = new Map();
-  let currentGroup = null;
+  // =====================================================================
+  // VISUALS -- the shallowest section: purely which rendering layers show
+  // (wave rings, colour bands), never touches circle positions or the
+  // coastline's own noise/warp shape. Open by default -- the section
+  // this tool's own recent tuning history has touched most.
+  // =====================================================================
+  const visualsSection = makeSection(panel, "Visuals", true);
 
-  CONTROLS.forEach(ctrl => {
-    if (ctrl.group !== currentGroup) {
-      currentGroup = ctrl.group;
-      const heading = document.createElement("div");
-      heading.className = "v3-controls-group-label";
-      heading.textContent = ctrl.group;
-      panel.appendChild(heading);
-    }
+  // Deep-cloned (not just {...v3Config.island}) for the array fields --
+  // every array-valued slider below (bands, wave rings) replaces
+  // v3Config.island's array wholesale on every input tick rather than
+  // mutating one in place (see the band sliders further down), so a
+  // shallow copy here would otherwise alias the SAME array objects those
+  // setters go on to replace, silently corrupting this snapshot the
+  // first time any of those sliders moved.
+  const visualsDefaults = {
+    flatColourMode: v3Config.island.flatColourMode,
+    showWaveRings: v3Config.island.showWaveRings,
+    seaBandThresholds: [...v3Config.island.seaBandThresholds],
+    sandThresholds: [...v3Config.island.sandThresholds],
+    vegThresholds: [...v3Config.island.vegThresholds],
+    waveDistances: [...v3Config.island.waveDistances]
+  };
 
-    const getVal = ctrl.get || (() => v3Config.island[ctrl.key]);
-    const setVal = ctrl.set || (v => { v3Config.island[ctrl.key] = v; });
-
-    const row = document.createElement("label");
-    row.className = "v3-controls-row";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "v3-controls-name";
-    nameSpan.textContent = ctrl.label;
-
-    const input = document.createElement("input");
-    input.type = "range";
-    input.min = String(ctrl.min);
-    input.max = String(ctrl.max);
-    input.step = String(ctrl.step);
-    input.value = String(getVal());
-
-    const valueSpan = document.createElement("span");
-    valueSpan.className = "v3-controls-value";
-    valueSpan.textContent = formatValue(getVal(), ctrl.step);
-
-    input.addEventListener("input", () => {
-      const v = Number(input.value);
-      setVal(v);
-      valueSpan.textContent = formatValue(v, ctrl.step);
-      retraceIslands();
-    });
-
-    inputsByKey.set(ctrl.key, { input, valueSpan, ctrl });
-
-    row.appendChild(nameSpan);
-    row.appendChild(input);
-    row.appendChild(valueSpan);
-    panel.appendChild(row);
+  // -- Look checkboxes: independent on/off switches for the two effects
+  // that already exist, replacing v3.6.8's three fixed preset buttons.
+  // Two independent booleans cover all four combinations (including
+  // "neither" -- plain flat land, no rings -- which the old three-button
+  // version couldn't reach) without any bookkeeping for "which preset is
+  // active." Both flatColourMode and showWaveRings already exist purely
+  // as config flags drawIslandsPath() reads -- see its v3.6.9 bugfix
+  // comment for why toggling flatColourMode at runtime needed a fix
+  // before this could work correctly (stale elements from the inactive
+  // branch used to stay on screen).
+  const waveCheckRow = document.createElement("label");
+  waveCheckRow.className = "v3-controls-checkbox-row";
+  const waveCheck = document.createElement("input");
+  waveCheck.type = "checkbox";
+  waveCheck.checked = v3Config.island.showWaveRings;
+  waveCheck.addEventListener("change", () => {
+    v3Config.island.showWaveRings = waveCheck.checked;
+    retraceIslands();
   });
+  const waveCheckLabel = document.createElement("span");
+  waveCheckLabel.textContent = "Wave contours";
+  waveCheckRow.appendChild(waveCheck);
+  waveCheckRow.appendChild(waveCheckLabel);
+  visualsSection.appendChild(waveCheckRow);
 
-  // v3.6.7 -- wave-ring distance generator: waveDistances is a derived
-  // array (d[i] = start * multiplier^i + offset), not a single scalar,
-  // so it doesn't fit the CONTROLS-array's one-slider-one-key model
-  // above. Seeded from the currently-live array (assumes it already
-  // fits start*multiplier^i+offset -- true for how every waveDistances
-  // value has been set so far) so opening the panel doesn't silently
-  // change anything until a slider actually moves.
+  const bandCheckRow = document.createElement("label");
+  bandCheckRow.className = "v3-controls-checkbox-row";
+  const bandCheck = document.createElement("input");
+  bandCheck.type = "checkbox";
+  bandCheck.checked = !v3Config.island.flatColourMode;
+  bandCheck.addEventListener("change", () => {
+    v3Config.island.flatColourMode = !bandCheck.checked;
+    retraceIslands();
+  });
+  const bandCheckLabel = document.createElement("span");
+  bandCheckLabel.textContent = "Colour bands (topology)";
+  bandCheckRow.appendChild(bandCheck);
+  bandCheckRow.appendChild(bandCheckLabel);
+  visualsSection.appendChild(bandCheckRow);
+
+  // -- Wave ring parameters -- unchanged generator logic from v3.6.7
+  // (waveDistances is a derived array, d[i] = start * multiplier^i +
+  // offset, not a single scalar, so it doesn't fit the one-slider-one-key
+  // model the band sliders below use), rebuilt on buildSlider() so its
+  // Reset participates in the same handle-based pattern as everything
+  // else in this file instead of its own bespoke reset code.
+  addGroupHeading(visualsSection, "Wave ring parameters");
+
   const liveWaves = v3Config.island.waveDistances;
   const waveGenDefaults = {
     count: liveWaves.length,
@@ -117,93 +240,177 @@ function buildControlPanel() {
   const computeWaveDistances = g =>
     Array.from({ length: g.count }, (_, i) => Math.max(0.5, g.start * Math.pow(g.multiplier, i) + g.offset));
 
-  const waveHeading = document.createElement("div");
-  waveHeading.className = "v3-controls-group-label";
-  waveHeading.textContent = "Wave rings (v3.6.6)";
-  panel.appendChild(waveHeading);
+  const waveValueSpan = document.createElement("div");
+  waveValueSpan.className = "v3-controls-value";
+  waveValueSpan.style.margin = "2px 0 8px";
+  const refreshWavePreview = () => {
+    waveValueSpan.textContent = computeWaveDistances(waveGen).map(d => d.toFixed(1)).join(", ");
+  };
 
-  const waveInputs = {};
   const WAVE_FIELDS = [
     { key: "count", label: "Count", min: 2, max: 5, step: 1 },
     { key: "start", label: "Start (px)", min: 1, max: 30, step: 1 },
     { key: "multiplier", label: "Multiplier", min: 1, max: 5, step: 0.1 },
     { key: "offset", label: "Offset (px)", min: -10, max: 30, step: 1 }
   ];
-  const waveValueSpan = document.createElement("div");
-  waveValueSpan.className = "v3-controls-value";
-  waveValueSpan.style.marginBottom = "6px";
-
-  const refreshWavePreview = () => {
-    waveValueSpan.textContent = computeWaveDistances(waveGen).map(d => d.toFixed(1)).join(", ");
-  };
-
+  const waveFieldWidgets = {};
   WAVE_FIELDS.forEach(f => {
-    const row = document.createElement("label");
-    row.className = "v3-controls-row";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "v3-controls-name";
-    nameSpan.textContent = f.label;
-
-    const input = document.createElement("input");
-    input.type = "range";
-    input.min = String(f.min);
-    input.max = String(f.max);
-    input.step = String(f.step);
-    input.value = String(waveGen[f.key]);
-
-    const valueSpan = document.createElement("span");
-    valueSpan.className = "v3-controls-value";
-    valueSpan.textContent = formatValue(waveGen[f.key], f.step);
-
-    input.addEventListener("input", () => {
-      const v = Number(input.value);
-      waveGen[f.key] = v;
-      valueSpan.textContent = formatValue(v, f.step);
-      v3Config.island.waveDistances = computeWaveDistances(waveGen);
-      refreshWavePreview();
-      retraceIslands();
+    waveFieldWidgets[f.key] = buildSlider(visualsSection, {
+      label: f.label, min: f.min, max: f.max, step: f.step,
+      get: () => waveGen[f.key],
+      set: v => { waveGen[f.key] = v; },
+      onChange: () => {
+        v3Config.island.waveDistances = computeWaveDistances(waveGen);
+        refreshWavePreview();
+        retraceIslands();
+      }
     });
-
-    waveInputs[f.key] = { input, valueSpan };
-    row.appendChild(nameSpan);
-    row.appendChild(input);
-    row.appendChild(valueSpan);
-    panel.appendChild(row);
   });
-
-  panel.appendChild(waveValueSpan);
+  visualsSection.appendChild(waveValueSpan);
   refreshWavePreview();
 
+  // -- Topological offset parameters (v3.6.9, punch-list item 7) --
+  // seaBandThresholds/sandThresholds/vegThresholds get their own sliders
+  // for the first time -- previously hand-edit-only. One slider per
+  // array element (indices read from the arrays' CURRENT length at panel
+  // build time, not hardcoded, so this stays correct if the counts ever
+  // change in cabinet-v3-data.js). Each setter replaces the array
+  // wholesale (map(), not index assignment) rather than mutating in
+  // place -- see visualsDefaults' own comment above for why that matters:
+  // an in-place mutation would corrupt that snapshot's cloned array too,
+  // since nothing else in this file re-clones it after the initial copy.
+  addGroupHeading(visualsSection, "Topological offset parameters");
+
+  const bandSliders = [];
+  const addBandGroup = (arrayKey, label) => {
+    v3Config.island[arrayKey].forEach((_, i) => {
+      bandSliders.push(
+        buildSlider(visualsSection, {
+          label: `${label} ${i + 1}`, min: BAND_MIN, max: BAND_MAX, step: BAND_STEP,
+          get: () => v3Config.island[arrayKey][i],
+          set: v => {
+            v3Config.island[arrayKey] = v3Config.island[arrayKey].map((x, idx) => (idx === i ? v : x));
+          }
+        })
+      );
+    });
+  };
+  addBandGroup("seaBandThresholds", "Sea");
+  addBandGroup("sandThresholds", "Sand");
+  addBandGroup("vegThresholds", "Veg");
+
+  // Reset-function pattern, shared by resetVisuals/resetShape/resetLayout:
+  // each restores STATE ONLY (v3Config fields + each widget's .refresh())
+  // and deliberately never calls retraceIslands()/render() itself -- that's
+  // left to the caller. That's what lets each section's own Reset button
+  // take the cheap path while Reset ALL, below, runs all three back to
+  // back and pays for one render() at the end instead of three.
+  function resetVisuals() {
+    v3Config.island.flatColourMode = visualsDefaults.flatColourMode;
+    v3Config.island.showWaveRings = visualsDefaults.showWaveRings;
+    v3Config.island.seaBandThresholds = [...visualsDefaults.seaBandThresholds];
+    v3Config.island.sandThresholds = [...visualsDefaults.sandThresholds];
+    v3Config.island.vegThresholds = [...visualsDefaults.vegThresholds];
+    v3Config.island.waveDistances = [...visualsDefaults.waveDistances];
+    waveCheck.checked = v3Config.island.showWaveRings;
+    bandCheck.checked = !v3Config.island.flatColourMode;
+    bandSliders.forEach(s => s.refresh());
+    Object.assign(waveGen, waveGenDefaults);
+    Object.values(waveFieldWidgets).forEach(w => w.refresh());
+    refreshWavePreview();
+  }
+
+  addButton(visualsSection, "Reset visuals", () => {
+    resetVisuals();
+    retraceIslands();
+  }, { block: true });
+
+  // =====================================================================
+  // ISLAND SHAPE -- feeds the coastline trace (warp/angular/base-noise
+  // parameters); doesn't touch circle positions. Collapsed by default.
+  // =====================================================================
+  const shapeSection = makeSection(panel, "Island shape", false);
+
+  const shapeSliders = [];
+  let currentGroup = null;
+  CONTROLS.forEach(ctrl => {
+    if (ctrl.group !== currentGroup) {
+      currentGroup = ctrl.group;
+      addGroupHeading(shapeSection, ctrl.group);
+    }
+    const getVal = ctrl.get || (() => v3Config.island[ctrl.key]);
+    const setVal = ctrl.set || (v => { v3Config.island[ctrl.key] = v; });
+    const defaultVal = getVal();
+    const widget = buildSlider(shapeSection, { label: ctrl.label, min: ctrl.min, max: ctrl.max, step: ctrl.step, get: getVal, set: setVal });
+    shapeSliders.push({ ...widget, setVal, defaultVal });
+  });
+
+  function resetShape() {
+    shapeSliders.forEach(s => {
+      s.setVal(s.defaultVal);
+      s.refresh();
+    });
+  }
+
+  addButton(shapeSection, "Reset shape", () => {
+    resetShape();
+    retraceIslands();
+  }, { block: true });
+
+  // =====================================================================
+  // LAYOUT -- the deepest section: circle positions themselves, the thing
+  // island shape and visuals are traced from. Collapsed by default, at
+  // the bottom, per explicit direction ("deepest effect/earliest in the
+  // workflow at the bottom"). Both controls call render() (the full
+  // pipeline), not retraceIslands() -- see that export's own comment in
+  // cabinet-v3-layout.js for the cost measurement behind reusing it as-is.
+  // =====================================================================
+  const layoutSection = makeSection(panel, "Layout", false);
+
+  const packDefaults = { centerBias: v3Config.pack.centerBias };
+  const centerBiasWidget = buildSlider(layoutSection, {
+    label: "Center bias", min: 1, max: 4, step: 0.1,
+    get: () => v3Config.pack.centerBias,
+    set: v => { v3Config.pack.centerBias = v; },
+    onChange: render
+  });
+
+  // A button, not a slider -- "try a different random layout" is a
+  // discrete action with no meaningful in-between values.
+  addButton(layoutSection, "Reroll positions", () => rerollPacking(), { block: true });
+
+  function resetLayout() {
+    v3Config.pack.centerBias = packDefaults.centerBias;
+    centerBiasWidget.refresh();
+    resetReroll();
+  }
+
+  // "restore position" -- the Layout section's own equivalent of the
+  // other two sections' Reset buttons, named for what it visibly does
+  // (undoes both a reroll and any centerBias drag) rather than "reset,"
+  // to read clearly next to "Reroll positions" right above it.
+  addButton(layoutSection, "Restore position", () => {
+    resetLayout();
+    render();
+  }, { block: true });
+
+  // =====================================================================
+  // FOOTER -- Reset ALL (every section above, one render() at the end
+  // rather than three separate re-renders) + Copy config (unchanged from
+  // v3.6: dumps the full v3Config.island, arrays and all, including
+  // everything this pass added).
+  // =====================================================================
   const buttonRow = document.createElement("div");
   buttonRow.className = "v3-controls-buttons";
 
-  const resetBtn = document.createElement("button");
-  resetBtn.type = "button";
-  resetBtn.className = "v3-controls-btn";
-  resetBtn.textContent = "Reset";
-  resetBtn.addEventListener("click", () => {
-    Object.assign(v3Config.island, defaults);
-    inputsByKey.forEach(({ input, valueSpan, ctrl }) => {
-      const v = (ctrl.get || (() => v3Config.island[ctrl.key]))();
-      input.value = String(v);
-      valueSpan.textContent = formatValue(v, ctrl.step);
-    });
-    Object.assign(waveGen, waveGenDefaults);
-    WAVE_FIELDS.forEach(f => {
-      waveInputs[f.key].input.value = String(waveGen[f.key]);
-      waveInputs[f.key].valueSpan.textContent = formatValue(waveGen[f.key], f.step);
-    });
-    v3Config.island.waveDistances = computeWaveDistances(waveGen);
-    refreshWavePreview();
-    retraceIslands();
+  addButton(buttonRow, "Reset ALL", () => {
+    resetVisuals();
+    resetShape();
+    resetLayout();
+    render();
   });
 
-  const copyBtn = document.createElement("button");
-  copyBtn.type = "button";
-  copyBtn.className = "v3-controls-btn";
-  copyBtn.textContent = "Copy config";
-  copyBtn.addEventListener("click", () => {
+  const copyBtn = addButton(buttonRow, "Copy config", () => {
     const json = JSON.stringify(v3Config.island, null, 2);
     console.log("v3Config.island (current tuning):\n" + json);
     if (navigator.clipboard?.writeText) {
@@ -217,8 +424,6 @@ function buildControlPanel() {
     }
   });
 
-  buttonRow.appendChild(resetBtn);
-  buttonRow.appendChild(copyBtn);
   panel.appendChild(buttonRow);
 
   document.body.appendChild(panel);

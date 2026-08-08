@@ -164,6 +164,13 @@ export const v3Config = {
     // count=3, start=2, multiplier=2.7, offset=4 -- tuned via
     // islands-tool.html's "Wave rings" panel (v3.6.7).
     waveDistances: [6, 9.4, 18.58],
+    // v3.6.8 -- independent on/off switch for the wave-ring layer, so the
+    // three "preset look" combinations (waves only / bands only / both --
+    // see islands-tool.html's Preset look panel) can be reached without
+    // ever clearing waveDistances itself (which would desync from the
+    // Wave rings generator's own count/start/multiplier/offset sliders --
+    // see cabinet-v3-controls.js). true = render waveDistances as before.
+    showWaveRings: true,
     // v3.6.7 -- the depth/beach/vegetation bands and the wave rings read
     // as visually competing effects together, per direct comparison.
     // true skips all seaBandThresholds/sandThresholds/vegThresholds
@@ -316,3 +323,9 @@ export const v3Config = {
 // the "wave" ripple effect (constant real-world distance from the
 // coast) -- that still needs an actual distance transform, not built
 // yet. Values are a first guess -- edit by hand and eyeball the result.
+//
+// showWaveRings -- On/off switch for the wave-ring layer, independent of
+// waveDistances' own values (see the inline comment above) -- lets the
+// islands-tool "Preset look" buttons (cabinet-v3-controls.js) turn wave
+// rings off without touching the tuned array the Wave rings generator
+// panel maintains.
