@@ -552,6 +552,119 @@ A related but genuinely separate question came up immediately after: "does this 
 
 `build-render.html` (the headless capture page for the static build) needed the same header added to it too, for a reason that wasn't obvious until the full-bleed mechanism existed: since the header's footprint and the available viewport height now both feed directly into what gets computed, a capture environment without a header would bake a shape that doesn't match what real visitors actually see. Caught while implementing, not after.
 
+## Eight comparison colour/type schemes (this session)
+
+Picked up punch-list item 10 again with a concrete artifact this time:
+a new file, `v3-scheme-candidates.md`, laying out several complete,
+self-contained colour/font directions rather than one palette to
+critique. The opening ask was narrow and specific: "alongside the
+current 2 schemes, add these 4 more from the document above, and have
+them appear in the dropdown - I will have a look at them and then start
+eliminating and finetuning until we get to one. Check the docu and tell
+me what you think?"
+
+Reading the doc before touching anything surfaced two things worth
+flagging rather than silently resolving: the doc's own §3 only calls
+two of its three sub-directions (3a Riso, 3b Cyanotype) real
+candidates, explicitly noting the third (3c, Van Gogh) is "reference
+only, not a full token set" -- so "4 more" only cashed out to 3
+buildable schemes plus a note, not 4 dropdown entries. And the
+existing "medieval"/"satellite" theme pair already in the code
+predated this doc entirely -- built from a first guess, sharing the
+site's existing parchment/land tokens, not the doc's own hex values or
+its 3-font pairing for scheme 1. Both points got laid out plainly
+before any code changed, per the standing "discuss before executing"
+preference restated at the top of this session ("we were yet to
+discuss them... standing order not to do anything until I say Go
+Ahead").
+
+The reply resolved both ambiguities directly: "the 4 schemes are 1.
+Medieval map 2. Topology Bathymetric Satellite 3. Riso 4. Cyanotype...
+There are existing Wave Contour Map and Topology schemes existing, what
+you call placeholders, but the details are different so those and the
+new 4 can live side by side" -- i.e. don't replace, keep both
+generations, just label them so they don't read as duplicates. That
+put the count at 6. A follow-up message corrected it to 7: "Sorry, 7. 7.
+Neon Memphis as described" -- the doc's scheme 4, dropped from the
+first count by mistake, not by intent. Confirmed the final 7-item list
+back before writing anything, then got "go ahead."
+
+Implementation followed the doc closely but not blindly, judgment
+calls made and stated rather than silently guessed: Cyanotype's island
+labels were deliberately kept off the doc's suggested Caveat
+(handwriting) face, since the doc's own text warns handwriting faces
+degrade below ~14px and island labels render at 13px -- only the
+larger, sparser section labels got the script treatment. Neon
+Memphis's "neon is accent only, never a fill" constraint was honoured
+by giving the wave-ring stroke a violet accent while keeping the
+coastline outline heavy/near-black, matching the doc's own
+implementation note that the pastel land/sea sit close enough in value
+that outline weight has to carry more legibility work than in the
+other schemes. Riso's halftone texture and ink mis-registration offset
+were deliberately not built -- flagged as needing actual new SVG
+rendering logic, not a token swap, and left as a stated fast-follow
+rather than silently dropped or silently built without asking.
+
+Verification took a different shape than earlier in the project on
+purpose: rather than spinning up a local server and Playwright again
+(the exact loop flagged earlier this session -- "i can see the effect
+and I suspect you are going around in circles?" -- as a repeat of the
+boats-debugging pattern from further back), the CSS got checked
+structurally instead: a small Node script strips comments the same way
+a real CSS parser would and confirms every brace balances and every
+theme's rule block survives intact. That was specifically informed by
+how the earlier `*/`-in-a-comment bug had been found (only visible via
+inspecting the parsed stylesheet, not by reading the source or looking
+at the page) -- so the same class of failure got a repeatable, instant
+check instead of another round of load-and-look.
+
+Shortly after the 7 schemes went live, told the candidates doc had
+already been updated again and to "find the Ukiyo Woodblock scheme and
+add it to the dropdown." Re-reading the doc turned up a new scheme 5
+(Ukiyo-e woodblock, Hokusai/Hiroshige register: indigo, vermillion,
+ochre, sumi ink, Shippori Mincho + Zen Old Mincho), added as an 8th
+entry following the same pattern as the rest -- except its preset is
+the only one that turns colour bands AND wave rings on together, since
+the doc explicitly calls for the ripple contours to read as woodblock
+linework layered over the bands, rather than one effect standing in
+for the other the way every earlier scheme picked. Vermillion (the
+doc's accent for seals/route lines/key details) wasn't wired to
+anything, same reasoning as Medieval Map's unused rubric/gold tokens
+earlier -- no element on the map plays that role yet.
+
+A direct clarifying question followed once all 8 were live: "I am
+assuming each scheme has its default of wave contour or topological
+isolines checked by default when activated from the dropdown? For a
+scheme that does not default to topology but I manually turn it on
+anyway, what are the results based on?" Answered plainly: yes, each
+theme nudges both checkboxes to whatever combination it was written
+assuming, but they stay independently editable afterward -- and
+turning on the "wrong" effect for a given theme still renders using
+that same theme's own colour tokens (never a fallback palette), just
+through the alpha-banding mechanism instead of a flat fill or vice
+versa. The caveat given: those tokens were chosen for the *default*
+pairing, so e.g. Medieval Map's bands (deliberately close in value to
+each other, since that scheme's whole principle is ink-carries-shape)
+would read muted if switched on manually, where Bathymetric/Riso/
+Cyanotype's bands were tuned for exactly that contrast. Band opacities
+themselves were noted as fixed constants shared across every theme,
+not something themed per-scheme yet.
+
+Told to commit "for now" with the explicit framing that the look-and-
+feel judgment itself is still pending -- "I'll test them more
+extensively later on the look-feel, but they seem to be working and
+functional." All 8 schemes (the original 7 plus Ukiyo) went in
+together as one commit. Checking the actual commit history before
+writing the message turned up a small reversal worth recording: the
+"Co-Authored-By: Claude" trailer, explicitly removed earlier in this
+project after a direct correction ("why the co-authored by tag? it
+wasnt there so far?"), had reappeared consistently in the three most
+recent commits -- from the other-machine session's own work. Matching
+the currently observed convention rather than a remembered past
+decision, the trailer went back in this time; the underlying principle
+(follow what the repo is actually doing now, not a fixed rule) held in
+both directions.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
