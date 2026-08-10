@@ -220,6 +220,68 @@ function buildControlPanel() {
   bandCheckRow.appendChild(bandCheckLabel);
   visualsSection.appendChild(bandCheckRow);
 
+  // -- Theme (v3.6.14, expanded v3.6.15) -- seven parallel colour/type
+  // treatments, meant to be compared against each other rather than one
+  // replacing the other (see Landing-page-notes.2.0.md punch-list item 10
+  // and v3-scheme-candidates.md for the reasoning behind each one). Pure
+  // CSS switch via a data-theme attribute on <body> (cabinet-v3-style.css),
+  // same pattern as Label style below -- except this ALSO nudges the Wave
+  // contours / Colour bands checkboxes to whichever combination each
+  // theme is meant to be seen with, since each theme's colours were tuned
+  // assuming that pairing. Still just a starting point, not a lock --
+  // both checkboxes stay independently editable afterward.
+  const themeRow = document.createElement("label");
+  themeRow.className = "v3-controls-row";
+  const themeName = document.createElement("span");
+  themeName.className = "v3-controls-name";
+  themeName.textContent = "Theme";
+  const themeSelect = document.createElement("select");
+  themeSelect.style.gridArea = "input";
+  themeSelect.style.width = "100%";
+  [
+    ["", "(none -- current default)"],
+    ["medieval", "Wave Contour (draft)"],
+    ["satellite", "Topology (draft)"],
+    ["medieval-map", "Medieval Map"],
+    ["bathymetric", "Topology — Bathymetric Satellite"],
+    ["riso", "Riso"],
+    ["cyanotype", "Cyanotype"],
+    ["neon", "Neon Memphis"],
+    ["ukiyo", "Ukiyo-e Woodblock"]
+  ].forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    themeSelect.appendChild(opt);
+  });
+  themeSelect.value = document.body.dataset.theme || "";
+  const THEME_PRESETS = {
+    medieval: { flatColourMode: true, showWaveRings: true },
+    satellite: { flatColourMode: false, showWaveRings: false },
+    "medieval-map": { flatColourMode: true, showWaveRings: true },
+    bathymetric: { flatColourMode: false, showWaveRings: false },
+    riso: { flatColourMode: false, showWaveRings: false },
+    cyanotype: { flatColourMode: false, showWaveRings: false },
+    neon: { flatColourMode: true, showWaveRings: true },
+    ukiyo: { flatColourMode: false, showWaveRings: true }
+  };
+  themeSelect.addEventListener("change", () => {
+    if (themeSelect.value) document.body.dataset.theme = themeSelect.value;
+    else delete document.body.dataset.theme;
+
+    const preset = THEME_PRESETS[themeSelect.value];
+    if (preset) {
+      v3Config.island.flatColourMode = preset.flatColourMode;
+      v3Config.island.showWaveRings = preset.showWaveRings;
+      bandCheck.checked = !preset.flatColourMode;
+      waveCheck.checked = preset.showWaveRings;
+      retraceIslands();
+    }
+  });
+  themeRow.appendChild(themeName);
+  themeRow.appendChild(themeSelect);
+  visualsSection.appendChild(themeRow);
+
   // -- Label style (v3.6.12) -- picks which .v3-island-label halo
   // treatment cabinet-v3-style.css applies, via a data-label-style
   // attribute on <body>. Pure CSS switch, no retraceIslands()/render()
@@ -345,6 +407,8 @@ function buildControlPanel() {
     v3Config.island.waveDistances = [...visualsDefaults.waveDistances];
     waveCheck.checked = v3Config.island.showWaveRings;
     bandCheck.checked = !v3Config.island.flatColourMode;
+    delete document.body.dataset.theme;
+    themeSelect.value = "";
     bandSliders.forEach(s => s.refresh());
     Object.assign(waveGen, waveGenDefaults);
     Object.values(waveFieldWidgets).forEach(w => w.refresh());

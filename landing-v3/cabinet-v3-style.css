@@ -16,6 +16,13 @@ body.v3-proto {
   --v3-sea-shallow: #9fc3d1;
   --v3-veg: #a8c478;
   --v3-sand: #e8d9a0;
+  /* v3.6.15 -- ink used by wave rings/coastline outline, themeable
+     separately from the land/sea fills below. --v3-ring-ink defaults to
+     following --v3-ink, but a theme can split them (see "neon" below,
+     where the ring gets a neon accent but the coastline outline stays
+     heavy/near-black for legibility). */
+  --v3-ink: var(--cab-ink);
+  --v3-ring-ink: var(--v3-ink);
 
   margin: 0;
   /* v3.6.12 -- was var(--cab-sea) (a different, greyer tone than the
@@ -26,6 +33,216 @@ body.v3-proto {
   background: var(--v3-sea-deep);
   color: var(--cab-ink);
   font-family: var(--cab-font-body);
+}
+
+/* v3.6.14-v3.6.15 -- seven parallel colour/type treatments, explicitly
+   meant to be compared against each other rather than one replacing the
+   other (see Landing-page-notes.2.0.md's punch-list item 10 and
+   v3-scheme-candidates.md for the full reasoning behind each one) --
+   switched live via a `data-theme` attribute on <body> (dev panel:
+   Visuals > Theme, cabinet-v3-controls.js), same pattern as
+   `data-label-style`. No attribute = the original muted --v3-* values
+   above, untouched -- this is what index.html still ships until one of
+   the seven wins. Overriding the map's own tokens here only ever
+   affects descendants of body.v3-proto -- the shared cabinet-tokens.css
+   file itself, and every other page that reads those tokens, is
+   untouched.
+
+   "medieval" / "satellite" -- the original first-guess pair from
+   v3.6.14, kept side by side with their v3.6.15 doc-accurate
+   counterparts below rather than replaced, since their exact token
+   values differ (these reuse the site's existing --cab-paper/--cab-land
+   tokens; "medieval-map"/"bathymetric" below use v3-scheme-candidates.md's
+   own hex values and font pairings instead). Labelled "(draft)" in the
+   dropdown to keep the two pairs from reading as duplicates.
+   "medieval" pairs naturally with flatColourMode (wave rings only, no
+   depth/beach bands) -- a filled band gradient doesn't read as
+   parchment. "satellite" pairs naturally with colour bands on, wave
+   rings off -- the bands ARE the effect this theme is about. */
+body.v3-proto[data-theme="medieval"] {
+  --v3-sea-deep: var(--cab-paper-deep);
+  --v3-sea-shallow: var(--cab-paper);
+  --v3-veg: var(--cab-land);
+  --v3-sand: var(--cab-land-light);
+}
+
+body.v3-proto[data-theme="medieval"] .v3-header h1 {
+  font-family: "Cinzel", var(--cab-font-heading);
+  letter-spacing: 0.04em;
+}
+
+body.v3-proto[data-theme="medieval"] .v3-island-label,
+body.v3-proto[data-theme="medieval"] .v3-section-label {
+  font-family: "IM Fell English SC", var(--cab-font-body);
+}
+
+body.v3-proto[data-theme="satellite"] {
+  --v3-sea-deep: #1c5f8a;
+  --v3-sea-shallow: #43d6d6;
+  --v3-veg: #4caf3f;
+  --v3-sand: #f2c94c;
+}
+
+/* "medieval-map" -- v3-scheme-candidates.md scheme 1 (Tolkien / plain
+   engraved-map linework). Land and sea are meant to read through ink
+   contour, not colour contrast -- sea-deep/sea-shallow and sand/veg are
+   all kept close in value on purpose, narrower than any other scheme
+   here. Three-tier type: Cinzel for the title, IM Fell English italic
+   (not the SC face "medieval" above uses) for section labels, EB
+   Garamond for the small dense island labels. */
+body.v3-proto[data-theme="medieval-map"] {
+  --v3-sea-deep: #cfc7ab;
+  --v3-sea-shallow: #d9d2b9;
+  --v3-veg: #e8dcc0;
+  --v3-sand: #e2d5b0;
+  --v3-ink: #1c1712;
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-header h1 {
+  font-family: "Cinzel", var(--cab-font-heading);
+  letter-spacing: 0.04em;
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-section-label {
+  font-family: "IM Fell English", var(--cab-font-body);
+  font-style: italic;
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-island-label {
+  font-family: "EB Garamond", var(--cab-font-body);
+}
+
+/* "bathymetric" -- v3-scheme-candidates.md scheme 2 (satellite/bathymetric,
+   brighter than "satellite" above). Shape reads through the colour
+   bands; ink stays cool navy rather than black to stay in the water
+   hues' family. Doc specifies two vegetation tiers (low/forest) but our
+   band system has one veg slot (alpha-stacked, same mechanism as every
+   other scheme here) -- using the forest tone as the base since it's
+   the dominant colour once bands stack. */
+body.v3-proto[data-theme="bathymetric"] {
+  --v3-sea-deep: #14588a;
+  --v3-sea-shallow: #7ec8e3;
+  --v3-veg: #4f7942;
+  --v3-sand: #f0dfa8;
+  --v3-ink: #16324a;
+}
+
+body.v3-proto[data-theme="bathymetric"] .v3-header h1 {
+  font-family: "Fraunces", var(--cab-font-heading);
+  font-weight: 600;
+}
+
+body.v3-proto[data-theme="bathymetric"] .v3-island-label,
+body.v3-proto[data-theme="bathymetric"] .v3-section-label {
+  font-family: "Space Grotesk", var(--cab-font-body);
+}
+
+/* "riso" -- v3-scheme-candidates.md scheme 3a. Colours only for now --
+   the doc's halftone dot pattern and mis-registration ink offset are
+   print-process texture, not just token swaps, and need their own SVG
+   rendering pass. Flagged here rather than silently skipped: a fast-
+   follow once the colour direction itself is confirmed as a contender,
+   not part of this comparison-ready pass. */
+body.v3-proto[data-theme="riso"] {
+  --v3-sea-deep: #0078bf;
+  --v3-sea-shallow: #46bdb1;
+  --v3-veg: #ff48b0;
+  --v3-sand: #ffe800;
+  --v3-ink: #131313;
+}
+
+body.v3-proto[data-theme="riso"] .v3-header h1 {
+  font-family: "Archivo Black", var(--cab-font-heading);
+}
+
+body.v3-proto[data-theme="riso"] .v3-island-label,
+body.v3-proto[data-theme="riso"] .v3-section-label {
+  font-family: "Space Mono", var(--cab-font-body);
+}
+
+/* "cyanotype" -- v3-scheme-candidates.md scheme 3b. Every tier below is
+   the same pigment (#003153, Prussian blue) at reduced alpha over the
+   paper tone (#f2ead9), precomposited by hand into flat hexes since
+   --v3-sea-deep etc feed solid backgrounds, not translucent fills -- see
+   the doc's own revision history for why a fully-saturated pigment (not
+   just a dark one) is what's needed for the dilution to hold its hue
+   instead of drifting grey. Island labels stay on the shared body font
+   rather than Caveat -- the doc's own caveat (its word) is that
+   handwriting faces degrade below ~14px, and island labels render at
+   13px, so only the larger, sparser section labels get the script face. */
+body.v3-proto[data-theme="cyanotype"] {
+  --v3-sea-deep: #0c3a5a;
+  --v3-sea-shallow: #4d6c7e;
+  --v3-veg: #b8beb9;
+  --v3-sand: #8c9ca1;
+  --v3-ink: #003153;
+}
+
+body.v3-proto[data-theme="cyanotype"] .v3-header h1 {
+  font-family: "Cormorant", var(--cab-font-heading);
+  font-weight: 600;
+}
+
+body.v3-proto[data-theme="cyanotype"] .v3-section-label {
+  font-family: "Caveat", var(--cab-font-body);
+}
+
+/* "neon" -- v3-scheme-candidates.md scheme 4 (Memphis-Milano). Pastel
+   base carries every fill; neon is accent-only per the doc ("never a
+   fill") -- here that's the wave-ring stroke alone (--v3-ring-ink), not
+   the coastline outline, which stays heavy/near-black. The doc's own
+   "Open implementation note" flags that the pastel land/sea sit close
+   enough in value that outline weight has to do the work colour
+   contrast does in the other schemes -- stroke-width bumped below for
+   the same reason. */
+body.v3-proto[data-theme="neon"] {
+  --v3-sea-deep: #c8e8f5;
+  --v3-sea-shallow: #c9f2e0;
+  --v3-veg: #ffd9b3;
+  --v3-sand: #fff3b0;
+  --v3-ink: #201c18;
+  --v3-ring-ink: #7c3aed;
+}
+
+body.v3-proto[data-theme="neon"] .v3-coastline-outline {
+  stroke-width: 3;
+}
+
+body.v3-proto[data-theme="neon"] .v3-header h1 {
+  font-family: "Poppins", var(--cab-font-heading);
+  font-weight: 700;
+}
+
+body.v3-proto[data-theme="neon"] .v3-island-label,
+body.v3-proto[data-theme="neon"] .v3-section-label {
+  font-family: "Space Mono", var(--cab-font-body);
+}
+
+/* "ukiyo" -- v3-scheme-candidates.md scheme 5 (added after the other six,
+   woodblock-print register: Hokusai/Hiroshige). Shape reads through
+   colour bands AND ink outline together -- unlike every other scheme
+   here, the doc explicitly wants wave rings layered on top of the bands
+   too ("wave-ring contours would read naturally as woodblock linework
+   here"), so this is the only preset with both bands and rings on at
+   once. Vermillion (--ukiyo-vermillion in the doc) is called out for
+   seals/route lines/key details only -- nothing on the map plays that
+   role yet (same situation as medieval-map's unused rubric/gold), so it
+   isn't wired to a token here. */
+body.v3-proto[data-theme="ukiyo"] {
+  --v3-sea-deep: #1e4d6b;
+  --v3-sea-shallow: #4f7f96;
+  --v3-veg: #f0e6d2;
+  --v3-sand: #e8a33d;
+  --v3-ink: #2b2620;
+}
+
+body.v3-proto[data-theme="ukiyo"] .v3-header h1 {
+  font-family: "Shippori Mincho", var(--cab-font-heading);
+}
+
+body.v3-proto[data-theme="ukiyo"] .v3-island-label,
+body.v3-proto[data-theme="ukiyo"] .v3-section-label {
+  font-family: "Zen Old Mincho", var(--cab-font-body);
 }
 
 /* v3.6.12 -- header reverted to a normal top-of-flow row (was: absolute
@@ -163,7 +380,7 @@ body.v3-proto {
    coast-ripples-global -- nearest darkest/heaviest, fading outward. */
 .v3-wave-ring {
   fill: none;
-  stroke: var(--cab-ink);
+  stroke: var(--v3-ring-ink);
 }
 
 .v3-wave-ring-1 {
@@ -196,7 +413,7 @@ body.v3-proto {
    to sit under it. */
 .v3-coastline-outline {
   fill: none;
-  stroke: var(--cab-ink);
+  stroke: var(--v3-ink);
   stroke-width: 2;
 }
 

@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.13** (domain warping for real concave coastlines,
+Currently on **v3.6.15** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -24,7 +24,8 @@ blurred glow standing in for hover feedback instead of a hard shape) --
 see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
-v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 progression
+v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
+v3.6.15 progression
 and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
@@ -1389,6 +1390,55 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.14-v3.6.15 -- eight comparison colour/type schemes wired into the Theme dropdown
+
+Punch-list item 10 (fonts/colours/sizes pass), scoped per direct
+instruction: build several complete, self-contained schemes side by
+side rather than converging on one -- "pick one that has more potential
+and looks better, while leaving the other in the notes." Switched live
+via a `data-theme` attribute on `<body>` (dev panel: Visuals > Theme,
+`cabinet-v3-controls.js`), same pattern `data-label-style` already used.
+
+- **medieval** / **satellite** (v3.6.14) -- first-guess pair, reusing
+  the site's existing `--cab-paper`/`--cab-land` tokens. Kept as-is,
+  relabelled "(draft)" in the dropdown once the doc-accurate versions
+  below were added, rather than replaced -- their exact token values
+  differ.
+- **medieval-map**, **bathymetric**, **riso**, **cyanotype**, **neon**,
+  **ukiyo** (v3.6.15) -- built from `v3-scheme-candidates.md` (new file
+  this pass, the source of truth for each scheme's palette/type
+  reasoning -- kept separate from this changelog rather than duplicated
+  into it). Selecting a theme nudges the existing Wave contours / Colour
+  bands checkboxes to whichever combination that scheme was written
+  assuming (`THEME_PRESETS` in `cabinet-v3-controls.js`), but both stay
+  independently editable afterward -- picking the "wrong" combination for
+  a given theme still renders using that theme's own colour tokens, just
+  through the band-alpha mechanism instead of a flat fill (or vice
+  versa), which can look under- or over-tuned since the tokens were
+  chosen for the default pairing.
+- Added two new theme-scoped custom properties, `--v3-ink` and
+  `--v3-ring-ink` (defaults to following `--v3-ink`), so wave-ring/
+  coastline stroke colour can be themed too -- previously both hardcoded
+  `var(--cab-ink)`. Used to give Neon Memphis a neon accent on the wave
+  rings specifically while keeping the coastline outline heavy/near-black
+  (the doc's own note: pastel land/sea sit close in value, so outline
+  weight has to do more legibility work than in the other schemes).
+- Riso's halftone texture and ink mis-registration offset are **not**
+  built -- colours/fonts only for now, flagged in a CSS comment as a
+  fast-follow once/if that scheme is a real contender, not silently
+  dropped.
+- Nine additional Google Fonts families loaded on `islands-tool.html`
+  only (never `index.html`/`index.template.html` -- nothing here has been
+  chosen as final).
+- Verified structurally after each edit (comment-stripping + brace-
+  balance check via a small Node script) rather than a live-browser
+  reload each time, after v3.6.14's own theme work was slowed by a CSS
+  comment accidentally containing a literal `*/` (`--v3-*/--cab-*`),
+  which silently truncated the comment and dropped the whole next rule --
+  found via `document.styleSheets[].cssRules` inspection, not visual
+  review. The same class of bug is what the Node check now catches
+  up front.
 
 ### v3.6.13 -- islands and sections both link out; hover feedback becomes a blurred glow
 
