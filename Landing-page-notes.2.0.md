@@ -5,24 +5,27 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.11** (domain warping for real concave coastlines,
+Currently on **v3.6.13** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
 `archive/v3.6/` a frozen snapshot -- plus a paste-friendly
 `cabinet-v3-data.js`, a by-editability file table below, genuine
 fixed-distance wave rings via a Euclidean distance transform, a
-three-section collapsible tuning panel (Visuals / Island shape / Layout),
-a full-bleed canvas that solves its own shape from the real viewport at
-load, with the page's title/tagline CSS-positioned over the map's own
-corner instead of sitting above it, and (new) per-section extra-island
-counts moved onto `content/cabinet-sections.tsv` itself, replacing a
-separate hand-authored `cabinet-v3-extras-config.js`) -- see the
-changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 -> v3.4.1 ->
-v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6 -> v3.6.1
--> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 -> v3.6.8 ->
-v3.6.9 -> v3.6.10 -> v3.6.11 progression and why each pass changed what
-it did.
+three-section collapsible tuning panel (Visuals / Island shape / Layout,
+now including a live Label style switcher), a full-bleed canvas that
+solves its own shape from the real viewport at load, with the page's
+title/tagline back in a normal top-of-page row (v3.6.12 reverted
+v3.6.10's map-corner overlay) sitting on the same sea colour as the
+canvas itself, per-section extra-island counts on
+`content/cabinet-sections.tsv` itself, and (new) both islands AND their
+whole section are click-through links to their own pages, with a soft
+blurred glow standing in for hover feedback instead of a hard shape) --
+see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
+v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
+-> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
+v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 progression
+and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -406,10 +409,12 @@ placeholder with the captured SVG markup, and writes the result to
 convention `cabinet-generated-content.js` already uses for TSV-sourced
 content (`content/cabinet-sections.tsv`/`cabinet-entries.tsv` ->
 `node tools/build-cabinet-content.js`). `build-render.html` is a third,
-build-only page -- like `index.template.html`'s canvas-wrap/header/stage
-structure (v3.6.10: the header IS needed here now, unlike earlier
-versions -- its real footprint feeds directly into the full-bleed canvas
-sizing and header-obstacle placement, see that changelog entry) but,
+build-only page -- like `index.template.html`'s header/stage structure
+(v3.6.10: the header IS needed here now, unlike earlier versions --
+render() reads wherever `.v3-stage-wrap` actually starts to size the
+full-bleed canvas, which depends on the header's real rendered height;
+v3.6.12 moved the header back to a normal top-of-flow row above the
+canvas instead of overlaying it, see that changelog entry) but,
 critically, no `cabinet-v3-controls.js` script tag, so the dev tuning
 panel can never end up baked into the static output. Only `#v3-stage`'s
 own markup is ever extracted -- the header itself is never captured.
@@ -1299,28 +1304,41 @@ flat list, not the reasoning.
    without discussing scope first.
 10. A real pass on fonts, colours, sizes, and readability -- explicitly
     held back until other bells and whistles landed; that condition is
-    largely met now.
+    largely met now. **Partially done, v3.6.12-v3.6.13**: header
+    type/size, section-label size, and island-label legibility (now a
+    live-switchable choice, see item 13a) are addressed. The map's
+    overall colour scheme itself (sea/sand/veg band hues, ink tones) is
+    still the original first-guess palette from v3.6.5 -- untouched,
+    still on hold.
 11. Other small details -- compass rose, easter eggs, etc.
 12. ~~Expand the canvas to full-bleed window size~~ -- **done, v3.6.10.**
     See "Full-bleed canvas + header overlay" below for the mechanism and
     its real limits (adapts to the viewport ONCE at load, not on a live
     drag-resize afterward).
 13. ~~Fold the "Cabinet of Curiosities" heading + intro text into the map
-    itself~~ -- **done, v3.6.10**, via CSS positioning of the real,
-    unchanged HTML `<header>` over the canvas's own corner -- NOT by
-    moving the text into SVG (tried first, reverted -- see the changelog
-    entry for why: real `<h1>`/`<p>` matters for crawlers/screen readers
-    in a way JS-drawn SVG text doesn't, especially on `islands-tool.html`
-    which has no static build).
-13a. Refine the header itself, now that it's living on the map's corner
-    (v3.6.10) instead of above it: the title/tagline wording, its
-    typography/look-and-feel, exact position, and the space it reserves
-    as a growth obstacle in the layout algorithm. Includes the still-open
-    H1-scale-mismatch this move introduced -- resizing the window scales
-    the map's own text via the SVG viewBox, but the real HTML `<h1>`
-    doesn't scale with it, since it sits outside the SVG entirely.
-    Undecided which of three options to take: scale it with the map,
-    clamp its size within a range, or leave it fixed as-is.
+    itself~~ -- **done, v3.6.10, reverted v3.6.12.** Was CSS-positioned
+    over the canvas's own corner (NOT moved into SVG -- tried first,
+    reverted -- see the v3.6.10 changelog entry for why: real `<h1>`/`<p>`
+    matters for crawlers/screen readers in a way JS-drawn SVG text
+    doesn't). v3.6.12 put it back in a normal top-of-page row instead --
+    see that changelog entry for why (bigger H1, and the corner overlay
+    was crowding the map more than it was worth). Still real, unchanged
+    HTML either way.
+13a. ~~Refine the header itself~~ -- **done, v3.6.12**: title/tagline
+    wording (new descriptive tagline), typography/look-and-feel (larger
+    H1, sits directly on the now-matching full-bleed sea colour instead
+    of a card), and position (back to a top row -- see item 13). Space
+    reservation is simpler now too: a normal top-of-flow row reserves
+    itself for free, so the growth-obstacle code that measuring the old
+    corner overlay needed is gone (see the changelog entry). The
+    H1-scale-mismatch sub-question moves to 13b, unresolved either way by
+    this move.
+13b. Still open from 13a: resizing the window scales the map's own text
+    via the SVG viewBox, but the real HTML `<h1>`/tagline don't scale
+    with it, since they sit outside the SVG entirely. Undecided which of
+    three options to take: scale it with the map, clamp its size within a
+    range, or leave it fixed as-is (current behaviour, by default rather
+    than decision).
 14. Idea: the compass rose (or similar map ornamentation) could BE the
     About Me / Contact Me links, rather than those existing as regular
     islands -- see item 21 below (WORLD-SYSTEMS.md's FabAcademy-is-not-
@@ -1371,6 +1389,75 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.13 -- islands and sections both link out; hover feedback becomes a blurred glow
+
+Entries already linked to their own pages (`c.href`); sections didn't --
+there was no way to reach a section's own landing page except through
+one of its entries. Section data already carries an `href`
+(`content/cabinet-sections.tsv` -> `buildSections()`), just not wired
+into the SVG. `renderRegion()` now wraps the whole region (`region.inner`
+-- both the label band and the circle-pack area) in its own `<a>`,
+rendered before the entries so they still win hit-testing (and stay
+visually on top) wherever they overlap it.
+
+Separately, the hover feedback on both islands and sections was a
+stroked ring/rect -- a hard, obviously-artificial shape popping up
+against an organic coastline, called out directly as not wanted. Both
+replaced with a blurred, low-opacity glow instead (fill only, no stroke,
+`filter: blur(...)`): a bright circle a few px larger than the entry's
+own radius for islands (bleeds a little past the coastline rather than
+stopping dead at it), a much softer, dimmer version across the whole
+region for sections (avoids competing with the islands sitting inside
+it). `.v3-island-label`/`.v3-section-label` both have `pointer-events:
+none` so hovering the label text itself doesn't block the link/glow
+underneath.
+
+Verified with Playwright: 25 real entry hrefs plus 7 section hrefs (one
+still blank in the TSV -- `visual-field-notes` -- falls back to `#` the
+same way an entry with no href already does), glow opacity transitions
+correctly on both island and section hover, zero console errors.
+
+Screenshots: `v3.6.13-island-hover-glow.png`,
+`v3.6.13-section-hover-glow.png`.
+
+### v3.6.12 -- header back to a top row, full-bleed sea fixed, smaller section labels, live label-style switcher
+
+v3.6.10's header-overlay experiment (folding the title into the map's
+own corner) didn't hold up under actual use: the H1 read too small next
+to the map, and the "full-bleed" canvas wasn't actually full-bleed --
+`.v3-stage`'s own background (`--v3-sea-deep`, a blue) and the page's
+background (`--cab-sea`, a different grey-green) had always been two
+different colours, going back to before v3.6.10 even, so the map still
+read as a box floating on a mismatched page rather than one continuous
+sea.
+
+Reverted the header to a normal top-of-flow row, sized up (2.1rem), with
+a new descriptive tagline; matched the page background to
+`--v3-sea-deep` so the canvas edge actually disappears into the page.
+Reverting the overlay let the growth-obstacle mechanism v3.6.10 added
+specifically to keep the map from growing underneath the overlaid header
+come back out of `cabinet-v3-layout.js` entirely -- a header back in
+normal document flow just pushes `.v3-stage-wrap` down, and
+`resolveCanvasDimensions()` already reads wherever that element actually
+starts, so no bookkeeping is needed for it any more.
+
+Also: section-name labels (`computeSectionLabel()`) were sized for a
+different, larger role than they ended up playing next to the entry
+islands' own 13px labels -- dropped base/floor from 22/12px to 16/10px.
+
+Island-label legibility (the halo behind each label, needed because the
+land under it isn't one flat colour) got a live-switchable "Label style"
+control in the dev panel instead of a single guessed CSS value -- three
+additional pure-CSS variants (thin stroke / soft glow / plain) alongside
+the original hard 3px stroke, toggled via a `data-label-style` attribute
+on `<body>`, no re-render needed. Built this way specifically because
+rendered artifacts in this prototype can't be judged by feel from the
+code alone -- no default has been chosen yet; "halo" ships as the
+fallback only because it was first, not because it's the pick.
+
+Screenshots: `v3.6.12-header-top-fullbleed.png`,
+`v3.6.12-label-style-glow.png`.
 
 ### v3.6.11 -- extraCount moves onto the TSV, coming-soon stubs removed
 

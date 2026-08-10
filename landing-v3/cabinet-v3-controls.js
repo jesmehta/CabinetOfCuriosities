@@ -220,6 +220,37 @@ function buildControlPanel() {
   bandCheckRow.appendChild(bandCheckLabel);
   visualsSection.appendChild(bandCheckRow);
 
+  // -- Label style (v3.6.12) -- picks which .v3-island-label halo
+  // treatment cabinet-v3-style.css applies, via a data-label-style
+  // attribute on <body>. Pure CSS switch, no retraceIslands()/render()
+  // needed -- see that file's own comment for what each option does.
+  const labelStyleRow = document.createElement("label");
+  labelStyleRow.className = "v3-controls-row";
+  const labelStyleName = document.createElement("span");
+  labelStyleName.className = "v3-controls-name";
+  labelStyleName.textContent = "Label style";
+  const labelStyleSelect = document.createElement("select");
+  labelStyleSelect.style.gridArea = "input";
+  labelStyleSelect.style.width = "100%";
+  [
+    ["halo", "Halo (thick stroke)"],
+    ["thin", "Thin stroke"],
+    ["glow", "Soft glow"],
+    ["plain", "Plain (no treatment)"]
+  ].forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    labelStyleSelect.appendChild(opt);
+  });
+  labelStyleSelect.value = document.body.dataset.labelStyle || "halo";
+  labelStyleSelect.addEventListener("change", () => {
+    document.body.dataset.labelStyle = labelStyleSelect.value;
+  });
+  labelStyleRow.appendChild(labelStyleName);
+  labelStyleRow.appendChild(labelStyleSelect);
+  visualsSection.appendChild(labelStyleRow);
+
   // -- Wave ring parameters -- unchanged generator logic from v3.6.7
   // (waveDistances is a derived array, d[i] = start * multiplier^i +
   // offset, not a single scalar, so it doesn't fit the one-slider-one-key

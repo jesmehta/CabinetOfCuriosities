@@ -76,7 +76,7 @@ function buildSectionMetas() {
         .filter(e => e.section === s.id)
         .sort((a, b) => a.order - b.order);
       const weight = sectionEntries.reduce((sum, e) => sum + e.weight, 0);
-      return { id: s.id, title: s.title, order: s.order, weight, entries: sectionEntries, extraCount: s.extraCount };
+      return { id: s.id, title: s.title, href: s.href, order: s.order, weight, entries: sectionEntries, extraCount: s.extraCount };
     })
     .filter(s => s.weight > 0)
     .sort((a, b) => a.order - b.order);
@@ -151,11 +151,7 @@ function resolveCanvasDimensions(sectionMetas, config) {
 
   const aspect = availHeight / availWidth;
   const width = Math.sqrt(area / aspect);
-  // availWidth returned alongside width/height so render() can derive the
-  // viewBox<->CSS-pixel scale factor (canvasBounds.width / availWidth) --
-  // needed to convert the HTML header's real rendered footprint into
-  // viewBox units for the growth-obstacle reservation, see render().
-  return { width, height: width * aspect, availWidth };
+  return { width, height: width * aspect };
 }
 
 // Step 2: weighted rectangular partition of the canvas, one region per
@@ -230,8 +226,11 @@ function wrapTitleToLines(title, fontSize, maxWidth, charWidthFactor) {
 // can be sized to the label instead of the label being squeezed into a
 // band height decided without knowing what the label needed.
 function computeSectionLabel(title, innerRect) {
-  const basePx = 22;
-  const minPx = 12;
+  // v3.6.12 -- was 22/12: read as oversized next to the entry-island
+  // labels (13px, cabinet-v3-style.css's .v3-island-label) and the
+  // region titles themselves, not the map's content.
+  const basePx = 16;
+  const minPx = 10;
   const charWidthFactor = 0.56;
   const paddingX = 14;
   const paddingY = 8;
@@ -444,6 +443,36 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
     })
   );
 
+  // v3.6.13 -- the section's own landing page link. Covers the WHOLE
+  // region.inner rect (label band + pack area both), so hovering/
+  // clicking anywhere in that section's "water" reaches its page, not
+  // just the label text -- rendered before the entry islands below, so
+  // they paint (and hit-test) on top of it wherever they overlap, and a
+  // hover over an island never also lights up the section underneath.
+  // Hover feedback is a blurred glow, not a stroked/hard-edged shape --
+  // see .v3-section-glow in cabinet-v3-style.css for why (same reasoning
+  // as .v3-island-glow below).
+  const sectionLink = el("a", { class: "v3-section-link", href: sectionMeta.href || "#" });
+  sectionLink.appendChild(
+    el("rect", {
+      class: "v3-section-hit",
+      x: region.inner.x,
+      y: region.inner.y,
+      width: region.inner.width,
+      height: region.inner.height
+    })
+  );
+  sectionLink.appendChild(
+    el("rect", {
+      class: "v3-section-glow",
+      x: region.inner.x,
+      y: region.inner.y,
+      width: region.inner.width,
+      height: region.inner.height
+    })
+  );
+  group.appendChild(sectionLink);
+
   // v3.5: the visible island shape itself is drawn once, globally, as a
   // shared <path> underneath every region (see render()) -- traced from
   // every circle's own noise-carved coastline, fused where circles sit
@@ -455,11 +484,19 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // not fully live (status: "wip") since a fused landmass can't be given
   // two different fill colors for two different entries' statuses the
   // way separate circles could.
+  //
+  // v3.6.13 -- hover used to ring the hit circle with a stroke; that
+  // read as a hard, obviously-artificial circle popping up over an
+  // organic coastline. Replaced with a blurred glow circle, slightly
+  // larger than the entry's own radius so it bleeds a little past the
+  // coastline edge instead of stopping dead at it -- see
+  // .v3-island-glow in cabinet-v3-style.css.
   circles.forEach(c => {
     if (c.kind === "entry") {
       const isMuted = c.status === "wip";
       const link = el("a", { class: "v3-island", href: c.href || "#" });
       link.setAttribute("data-id", c.id);
+      link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius + 8, class: "v3-island-glow" }));
       link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-island-hit" }));
       if (isMuted) {
         link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-status-ring", "aria-hidden": "true" }));
@@ -641,7 +678,7 @@ export function render() {
   stage.innerHTML = "";
 
   const sectionMetas = buildSectionMetas();
-  const { width: targetWidth, height: targetHeight, availWidth } = resolveCanvasDimensions(sectionMetas, v3Config.canvas);
+  const { width: targetWidth, height: targetHeight } = resolveCanvasDimensions(sectionMetas, v3Config.canvas);
   const { regions, canvasWidth, canvasHeight } = buildRegions(sectionMetas, targetWidth, targetHeight);
 
   // Small outer margin around the whole canvas -- not part of the
@@ -693,34 +730,15 @@ export function render() {
   );
   const obstacles = layout.map(({ band }) => band);
 
-  // v3.6.10 -- the page's title/tagline stay real, semantic HTML
-  // (position: absolute over the canvas's own top-left corner via CSS,
-  // see cabinet-v3-style.css) rather than drawn SVG text -- see
-  // Landing-page-notes.2.0.md's "Canvas + legend" entry for why (real
-  // <h1>/<p>, not JS-dependent content, matters for crawlers/screen
-  // readers). Since it's not part of the SVG at all, the layout algorithm
-  // has no built-in awareness it exists on screen -- registered as one
-  // more growth obstacle here, exactly the mechanism every region's own
-  // label band already uses, so circles simply don't grow underneath it.
-  // Converts the header's REAL rendered footprint (measured via
-  // getBoundingClientRect(), not guessed) from CSS pixels into viewBox
-  // units using the same width ratio the responsive CSS scaling itself
-  // uses. Absent on build-render.html-without-a-header cases only if
-  // .v3-header genuinely isn't present (it now is on every real page --
-  // see index.template.html/islands-tool.html/build-render.html).
-  const headerEl = document.querySelector(".v3-header");
-  const wrapEl = document.querySelector(".v3-stage-wrap");
-  if (headerEl && wrapEl) {
-    const scale = canvasBounds.width / availWidth;
-    const headerRect = headerEl.getBoundingClientRect();
-    const wrapRect = wrapEl.getBoundingClientRect();
-    obstacles.push({
-      x: canvasBounds.x + (headerRect.left - wrapRect.left) * scale,
-      y: canvasBounds.y + (headerRect.top - wrapRect.top) * scale,
-      width: headerRect.width * scale,
-      height: headerRect.height * scale
-    });
-  }
+  // v3.6.10 registered the page's title/tagline (real HTML, not SVG --
+  // see Landing-page-notes.2.0.md's "Canvas + legend" entry for why) as
+  // a growth obstacle here, since that version overlaid it directly on
+  // top of the canvas's own corner. v3.6.12 moved the header back to a
+  // normal top-of-flow row above .v3-stage-wrap, so it no longer
+  // overlaps the canvas at all -- resolveCanvasDimensions() already
+  // shrinks the canvas to whatever space is left below the header (it
+  // reads .v3-stage-wrap's real top offset), so no obstacle bookkeeping
+  // is needed here any more.
 
   // Single global growth pass -- "bounded by the page edges... but not
   // region-region internal edges": every seed from every section grows

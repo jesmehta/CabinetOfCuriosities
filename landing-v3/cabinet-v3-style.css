@@ -18,50 +18,45 @@ body.v3-proto {
   --v3-sand: #e8d9a0;
 
   margin: 0;
-  background: var(--cab-sea);
+  /* v3.6.12 -- was var(--cab-sea) (a different, greyer tone than the
+     map's own sea fill below), which is why the page never actually
+     read as full-bleed: .v3-stage's opaque backdrop and the body around
+     it were two visibly different colours. Matching them here is what
+     makes the canvas's edge disappear into the page. */
+  background: var(--v3-sea-deep);
   color: var(--cab-ink);
   font-family: var(--cab-font-body);
 }
 
-/* v3.6.10 -- positioning context for .v3-header's overlay (below) --
-   punch-list item 13, "fold the heading into the map itself." Real,
-   static HTML (<h1>/<p>, unchanged semantically -- see
-   Landing-page-notes.2.0.md's "Canvas + legend" entry for why this
-   stayed HTML rather than becoming SVG-drawn text: crawlers/screen
-   readers see a real heading either way, only its ON-SCREEN position
-   changes), CSS-positioned over the canvas's own top-left corner rather
-   than pushing it down the page. cabinet-v3-layout.js's render()
-   measures .v3-header's real rendered footprint and reserves that exact
-   space as a growth obstacle (same mechanism every section's own label
-   band already uses), so map content never renders underneath it.
-   Present on every page that draws the map (including build-render.html,
-   build-only -- needed there too so the STATIC build's baked layout
-   already accounts for the header the same way the live pages do). */
-.v3-canvas-wrap {
-  position: relative;
-}
-
+/* v3.6.12 -- header reverted to a normal top-of-flow row (was: absolute
+   overlay on the canvas's own corner, v3.6.10-v3.6.11 -- see the
+   changelog entry for why). Back in normal document flow, the header
+   simply pushes .v3-stage-wrap down the page; cabinet-v3-layout.js's
+   resolveCanvasDimensions() already measures wherever .v3-stage-wrap
+   actually starts to size the canvas, so this alone reserves the whole
+   top row for the header with no separate obstacle-registration code
+   needed (that mechanism, specific to the overlay approach, is removed
+   in cabinet-v3-layout.js). No background/card styling any more either
+   -- it sits directly on the full-bleed sea colour above. */
 .v3-header {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-  max-width: min(46%, 420px);
-  padding: 8px 14px;
-  background: var(--cab-card-bg);
-  border-radius: 6px;
+  padding: 28px 24px 14px;
+  max-width: 640px;
 }
 
 .v3-header h1 {
   font-family: var(--cab-font-heading);
-  font-size: 1.3rem;
-  margin: 0 0 2px;
+  font-size: 2.1rem;
+  margin: 0 0 6px;
+  color: var(--cab-land-light);
 }
 
 .v3-subtitle {
   margin: 0;
-  color: var(--cab-ink-soft);
-  font-size: 0.85rem;
+  max-width: 60ch;
+  color: var(--cab-land-light);
+  opacity: 0.85;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 .v3-subtitle code {
@@ -89,22 +84,28 @@ body.v3-proto {
   height: auto;
   display: block;
   background: var(--v3-sea-deep);
-  border-radius: 6px;
 }
 
 /* v3.6.10 -- dev/build notes that don't belong in the map's own legend
    (build-script pointers, "this page recomputes on every load," etc.) --
    moved below the map instead of sitting above it in a large header
-   block, out of the way of the full-bleed canvas. */
+   block, out of the way of the full-bleed canvas.
+   v3.6.12 -- colour switched from --cab-ink-soft to the light land tone:
+   this text sits directly on the page's own sea background (now
+   var(--v3-sea-deep), notably darker than the old var(--cab-sea)), not
+   on parchment, so the dark-ink colour it inherited from the rest of
+   the site's palette lost contrast here. */
 .v3-footnote {
   max-width: 900px;
   margin: 12px 16px 0;
-  color: var(--cab-ink-soft);
+  color: var(--cab-land-light);
+  opacity: 0.75;
   font-size: 0.85rem;
 }
 
 .v3-footnote code {
   background: var(--cab-card-bg);
+  color: var(--cab-ink);
   padding: 1px 5px;
   border-radius: 3px;
 }
@@ -218,14 +219,23 @@ body.v3-proto {
   outline-offset: 2px;
 }
 
-/* Hover/focus feedback: the shared landmass fill can't change per-entry
-   the way a separate circle's fill once could, so an accent ring on the
-   (otherwise invisible) hit circle stands in for the old whole-circle
-   fill change. */
-.v3-island:hover .v3-island-hit,
-.v3-island:focus-visible .v3-island-hit {
-  stroke: var(--cab-accent);
-  stroke-width: 2.5;
+/* v3.6.13 -- was a stroked ring on .v3-island-hit: a hard, obviously
+   artificial circle popping up over an organic coastline. Replaced with
+   a blurred glow circle (cabinet-v3-layout.js sizes it a few px larger
+   than the entry's own radius so it bleeds a little past the coastline
+   edge rather than stopping dead at it) -- fill only, no stroke, blurred
+   so it fades out rather than presenting a crisp boundary. */
+.v3-island-glow {
+  fill: var(--cab-land-hover);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(6px);
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-glow,
+.v3-island:focus-visible .v3-island-glow {
+  opacity: 0.65;
 }
 
 .v3-island-label {
@@ -235,10 +245,37 @@ body.v3-proto {
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
+}
+
+/* v3.6.12 -- legibility treatment behind each label, needed because the
+   land under it isn't one flat colour (sea/sand/veg bands, wave rings --
+   see drawIslandsPath()). Four variants, switched live via a
+   data-label-style attribute on <body> (dev panel: Visuals > Label
+   style, cabinet-v3-controls.js) -- pure CSS, no re-render, so they can
+   be compared directly against the real map. "halo" (the original hard
+   3px stroke) stays the default only because it shipped first, not
+   because it's the chosen look -- see Landing-page-notes.2.0.md punch-
+   list item 13a. */
+body:not([data-label-style]) .v3-island-label,
+body[data-label-style="halo"] .v3-island-label {
   paint-order: stroke;
   stroke: var(--cab-land-light);
   stroke-width: 3px;
 }
+
+body[data-label-style="thin"] .v3-island-label {
+  paint-order: stroke;
+  stroke: var(--cab-land-light);
+  stroke-width: 1.5px;
+  stroke-opacity: 0.85;
+}
+
+body[data-label-style="glow"] .v3-island-label {
+  filter: drop-shadow(0 0 1.5px var(--cab-land-light)) drop-shadow(0 0 1.5px var(--cab-land-light));
+}
+
+/* "plain" intentionally adds nothing -- a no-halo baseline to judge the
+   others against. */
 
 /* Dashed ring marking "not fully live" -- wip entries (still a link,
    just visually flagged), drawn on top of the shared landmass at that
@@ -255,6 +292,45 @@ body.v3-proto {
   font-family: var(--cab-font-heading);
   fill: var(--cab-ink);
   letter-spacing: 0.03em;
+  /* v3.6.13 -- sits visually on top of .v3-section-link's hit rect
+     (see cabinet-v3-layout.js) but shouldn't steal the click/hover away
+     from it -- let pointer events pass straight through to the rect
+     underneath, same reasoning as .v3-island-label. */
+  pointer-events: none;
+}
+
+/* v3.6.13 -- the section's own landing-page link, covering the whole
+   region (see renderRegion() in cabinet-v3-layout.js). fill: transparent
+   (not none) so hit-testing fires across the full rect, not just where
+   islands or the label happen to sit. */
+.v3-section-hit {
+  fill: transparent;
+}
+
+.v3-section-link {
+  cursor: pointer;
+}
+
+.v3-section-link:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: -2px;
+}
+
+/* Same blurred-glow treatment as .v3-island-glow, just softer/dimmer --
+   this covers a much bigger area (the whole section), so a strong wash
+   would compete with the islands sitting inside it rather than reading
+   as "this whole area is one clickable section." */
+.v3-section-glow {
+  fill: var(--cab-land-hover);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(14px);
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-glow,
+.v3-section-link:focus-visible .v3-section-glow {
+  opacity: 0.22;
 }
 
 /* v3.6: dev-only island-shape tuning panel (cabinet-v3-controls.js) --

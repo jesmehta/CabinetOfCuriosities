@@ -8,19 +8,17 @@
   <link rel="stylesheet" href="cabinet-v3-style.css" />
 </head>
 <body class="v3-proto">
-  <!-- v3.6.10 -- header positioned over the canvas via CSS, same as
-       index.html (see that file's own comment) -- real HTML, not SVG-
-       drawn text. Tool-specific notes that don't apply to index.html
-       moved to a footnote below the map. -->
-  <div class="v3-canvas-wrap">
-    <header class="v3-header">
-      <h1>Cabinet of Curiosities</h1>
-      <p class="v3-subtitle">Weighted regions, archipelago circle-packing.</p>
-    </header>
-    <main class="v3-stage-wrap">
-      <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
-    </main>
-  </div>
+  <!-- v3.6.12 -- header reverted to a normal top-of-flow row, same as
+       index.template.html (see that file's own comment) -- real HTML,
+       not SVG-drawn text. Tool-specific notes that don't apply to
+       index.html moved to a footnote below the map. -->
+  <header class="v3-header">
+    <h1>Cabinet of Curiosities</h1>
+    <p class="v3-subtitle">A map of worlds, of explorations across them, of curiosities followed, and the rabbitholes at the end of the rainbow.</p>
+  </header>
+  <main class="v3-stage-wrap">
+    <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+  </main>
 
   <p class="v3-footnote">Same live content and config as <code>index.html</code> -- this page
     just keeps the tuning panel permanently. Reload any time content or sections change: layout

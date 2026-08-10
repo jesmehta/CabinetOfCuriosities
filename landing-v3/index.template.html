@@ -8,22 +8,21 @@
   <link rel="stylesheet" href="cabinet-v3-style.css" />
 </head>
 <body class="v3-proto">
-  <!-- v3.6.10 -- the header stays real, semantic HTML (punch-list item
-       13's "fold into the map" is done with CSS positioning, not by
-       moving text into SVG -- see Landing-page-notes.2.0.md's "Canvas +
-       legend" entry) -- position: absolute places it over the canvas's
-       own top-left corner instead of pushing the map down the page;
-       cabinet-v3-layout.js's render() measures its real footprint and
-       reserves that space so map content never renders underneath it. -->
-  <div class="v3-canvas-wrap">
-    <header class="v3-header">
-      <h1>Cabinet of Curiosities</h1>
-      <p class="v3-subtitle">Weighted regions, archipelago circle-packing.</p>
-    </header>
-    <main class="v3-stage-wrap">
-      <!-- V3_ISLANDS_SVG -->
-    </main>
-  </div>
+  <!-- v3.6.12 -- header reverted to a normal top-of-flow row (v3.6.10
+       had briefly overlaid it on the canvas's own corner -- see
+       Landing-page-notes.2.0.md's changelog for why that was undone).
+       Real, semantic HTML either way (not SVG-drawn text -- see that
+       same doc's "Canvas + legend" entry for why that matters for
+       crawlers/screen readers); cabinet-v3-layout.js's render() just
+       reads wherever .v3-stage-wrap actually starts, so this alone
+       reserves the header's full-width row with no extra bookkeeping. -->
+  <header class="v3-header">
+    <h1>Cabinet of Curiosities</h1>
+    <p class="v3-subtitle">A map of worlds, of explorations across them, of curiosities followed, and the rabbitholes at the end of the rainbow.</p>
+  </header>
+  <main class="v3-stage-wrap">
+    <!-- V3_ISLANDS_SVG -->
+  </main>
 
   <p class="v3-footnote">Static build -- see <code>build-static.mjs</code>. Same island tuning as
     <code>islands-tool.html</code> (live tuning panel, recomputes on every load);
