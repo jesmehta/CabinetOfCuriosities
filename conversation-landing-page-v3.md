@@ -963,6 +963,146 @@ reasoning above (option 1's divergence needs travel time to become
 visible), kept as a live, undecided demo rather than picking a default
 yet.
 
+## Sea dragons: an independent wanderer, three rounds of feedback
+
+A new mini-feature, prompted by a user-supplied `dragon.svg` dropped into
+the repo root: "add that to the map as well. Let it be 2-3x the size of
+the boats, and bob around on its own. It should appear randomly on page
+reload in the sea, then move around from there." First cut: one dragon,
+random fill from a light palette (golden brown/pale blue/violet) with
+darker outlines and a horizontal baseline line, riding the same current
+field the particles do.
+
+Three rounds of direct feedback followed, each correcting a specific
+wrong assumption made in the first cut:
+
+- **Orientation**: "the svg has the dragon facing left, so orient it
+  accordingly... it does nt drift in the currents, it makes its own
+  way... it is always horizontal, it's drawn that way, should be
+  rendered that way" -- three separate corrections at once: mirror
+  left/right based on travel direction rather than rotating to face it
+  (the artwork is never meant to tilt), and stop sampling the shared
+  flow field entirely -- "randomwalk based on noise is fine, i just dont
+  want it drifting with the boats." Also: "maybe have 2-3 dragons,
+  slightly different sizes and different colours... has to be non
+  zero," and "2x bigger than what you currently have."
+- **Sizing/spawn geometry**: "slightly smaller is better... currently
+  too big" (48px target width pulled back to 36), "dragons spawn only in
+  open sea not near the coast," "dragons may disappear by diving down
+  and respawning in another open sea area... that horizontal line needs
+  to be shorter or gone" (removed entirely, not shortened).
+- **Coast behaviour and the "disappear" effect**: "apart from spawn/
+  respawn, dragons shouldnt move too close to a coast either... dont
+  shrink and disappear... can the svg drop out of it's own 'viewing
+  box' so it looks like it scrolled down or sank into the sea?... this
+  need not be every 30 sec or so, it can be when the dragon approaches a
+  coast." Landed on: a shared `isNearLand()` ring-check used both for
+  picking spawn/resurface points AND live, every wander step (one
+  mechanism satisfying both "avoid at spawn" and "avoid while moving");
+  dive/resurface swapped from a periodic timer to purely event-triggered
+  by that same check; the "disappear" visual rebuilt as a real SVG
+  `<clipPath>` with a fixed rect matching the artwork's own viewBox,
+  wrapping an inner group whose Y-translate slides the art down past the
+  clip's bottom edge -- genuinely reveals real background rather than a
+  shrink/fade, verified by Playwright screenshot comparison specifically
+  because this project has hit an unrelated-but-similar "DOM looks right,
+  nothing paints" SVG bug before and wasn't willing to assume a clip
+  effect was real without a pixel check.
+
+Implementation notes worth keeping: `dragon.svg`'s path `d` was copied
+in as a literal JS string constant rather than `fetch()`'d at runtime
+(sidesteps `file://` CORS, already a recurring nuisance this session) or
+referenced via `<use>`/`<symbol>` (a previously-confirmed, never-resolved
+Chromium painting bug in this exact codebase) -- inlined as a raw
+`<path>` instead, the same pattern the particle ellipses already use.
+Heading comes from `fbm2D` (the same primitive `cabinet-v3-flowfield.js`
+uses for the current) sampled over time only, not a per-frame random
+increment -- flagged explicitly as the same "naive jitter reads as
+vibration, not organic drift" anti-pattern already rejected once this
+session for particle personalities.
+
+### The bobbing bug: measured, not guessed
+
+Shipped behaviour read as "keeps bobbing in one place far more than
+move." First attempt treated it as a raw speed problem (10 -> 15 px/s)
+plus a heading-amplitude problem (the noise-to-heading mapping assumed
+the noise ranged roughly +/-1 to +/-1.75, so scaling it down to `PI`
+"should" have stopped a suspected over-rotation). Neither fixed it --
+follow-up: "still mostly bobbing up and down."
+
+Rather than guess a third number, ran the actual `fbm2D` function
+standalone in Node and sampled its real output over a minute: it only
+ranges about +/-0.3 to +/-0.5 for this heading stream, nowhere near the
+assumed +/-1.75. Mapped through any fixed scale, that narrow range
+confines heading to one ~90-120 degree arc, where `sin(heading)` (the
+vertical component) routinely exceeds `cos(heading)` (horizontal) --
+i.e. genuinely mostly-vertical motion, not a perception problem. Root
+cause identified this way rather than by further trial and error, per
+this project's established "measure a real number, don't guess"
+convention.
+
+Fix: stopped mapping noise to an absolute heading at all. Heading is now
+an *integrated angular velocity* -- `heading += noise * turnRate * dt`
+-- so the noise drives how fast the dragon turns, not where it's
+pointed. This lets heading do a genuine slow walk around the full circle
+over time (simulated: ~100-150 degrees/minute at `turnRate` 0.6),
+independent of whatever range the raw noise happens to occupy, while
+staying smooth (still a continuous function of time, not a per-frame
+random nudge).
+
+Even after that fix: "still mostly bobbing, then takeoff on their own,
+then respawn and bob. Some are stuck bobbing but some move fine." Also
+simulated rather than guessed at: a pure random-walk heading has no
+restoring bias, so long streaks stuck near a vertical heading (10-19
+seconds at `turnRate` 0.6, measured across several seeded runs) are an
+expected property of the model, not a bug -- some dragons draw a noise
+trajectory that lingers near-vertical, others don't, purely by luck of
+their own permutation seed. Bumped `turnRate` to 0.9 (measured to trim
+worst-case stuck streaks to roughly 9-12s without turning the wander
+into a visible spin) as a partial, low-risk mitigation, explicitly
+flagged as such rather than presented as a full fix -- a real fix (a
+mild bias pulling heading back toward horizontal) would change the
+character of the wander enough to deserve its own before/after look
+first. Left as "ok for now" per direct instruction ("if theres a quick
+fix then do so else let it be").
+
+### The coast bug: instrumented and screenshotted, not reasoned about blind
+
+Two more complaints landed together: "not really respecting the coast
+always, and sometimes disappearing even when far from the coast." Static
+reading of `isNearLand()`/`pickOpenSeaPoint()` didn't turn up an obvious
+logic error -- both looked correct on paper. Rather than keep
+reasoning abstractly, added temporary console instrumentation (logged
+every dive trigger's exact position plus a brute-force scan for the
+true nearest land distance at that moment) and ran the live page
+headless for real wall-clock time via Playwright, then screenshotted
+several dive triggers with the check radius drawn as a circle overlay.
+
+That surfaced the real cause immediately, visually: this map is a dense
+archipelago -- dozens of separate small islands, not one landmass -- and
+the dive check (`minCoastDistance` 90px, checked in *all* directions
+around the dragon) was firing because some unrelated island's corner
+happened to sit within 90px in some other direction entirely, even while
+the dragon sat in the middle of a visibly wide-open channel. Worse: with
+land this dense, `pickOpenSeaPoint()`'s 80-attempt rejection sampling
+for a genuinely-90px-clear point was failing often enough to regularly
+fall through to its weak fallback (`pickWaterPoint()`, which only
+guarantees "not literally on land," no distance margin at all) -- which
+is what produced dives within the first couple of frames after page
+load, right next to a coast. Fixed by dropping `minCoastDistance` to 40
+(close to the dragon's own rendered size plus a small buffer) --
+re-verified with the same instrumentation that the fallback no longer
+fires and every observed dive now has real land within the check radius,
+confirmed visually against a fresh set of screenshots.
+
+### Also this pass
+
+The dev-tuning panel (`islands-tool.html`'s "Island generation tuning"
+box) opened fully expanded by default, covering a chunk of the canvas on
+every reload. Converted the outer panel itself into a native
+`<details>`/`<summary>`, closed by default -- same collapsible pattern
+already used for its three inner sections, just one level up.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

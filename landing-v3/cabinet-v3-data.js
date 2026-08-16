@@ -414,6 +414,112 @@ export const v3Config = {
     // every particle reading as the identical stamped shape.
     sizeMin: 0.6,
     sizeMax: 1.8
+  },
+
+  // v3.6.24 -- 1-3 independent sea-dragons (dragon.svg's artwork, inlined
+  // directly -- see cabinet-v3-layout.js's DRAGON_PATH_D comment for why
+  // not <use>/<symbol>), not part of the particle system at all. Each
+  // appears once per page load somewhere in open water and wanders from
+  // there on its own noise-driven heading, explicitly NOT reading the
+  // current field boats ride -- see cabinet-v3-dragon.js. Only ever
+  // created by islands-tool.html, same scoping as the particle system.
+  dragon: {
+    // Target on-canvas WIDTH in px (dragon.svg's own viewBox is
+    // 644.68x310.88, ~2.07:1 -- height follows that ratio), for a dragon
+    // at sizeMult 1.0. Went 24->48 ("2x bigger"), then pulled back to 36
+    // -- "too big" at 48.
+    targetWidth: 36,
+    // v3.6.24 -- each dragon (1-3, ensureDragon() in cabinet-v3-layout.js
+    // picks the count fresh every spawn, never 0) gets its own size
+    // multiplier in this range -- direct request: "slightly different
+    // sizes."
+    sizeMultMin: 0.85,
+    sizeMultMax: 1.25,
+    // world px/sec -- went 10 -> 15 -> 22. No built-in clamp on this value
+    // (unlike particles.maxSpeed) -- raising it further is always possible,
+    // but see turnRate below: at 15 it still read as "bobbing in place,"
+    // and the real bottleneck turned out to be the heading formula, not
+    // the speed scalar itself. Now exceeds particles.baseSpeed (13) --
+    // fine, it no longer needs to visually read as slower than the boats,
+    // just as clearly traveling.
+    speed: 22,
+    // v3.6.25 -- heading is a SMOOTH noise stream sampled over time only
+    // (fbm2D, see stepDragon()'s own comment in cabinet-v3-dragon.js), not
+    // the shared current -- but it now drives an ANGULAR VELOCITY, not an
+    // absolute angle. headingNoiseSpeed is how fast the underlying noise
+    // stream itself evolves; turnRate scales that noise into rad/sec of
+    // turning. Earlier versions mapped noise directly to an absolute
+    // heading (headingSwing), which empirically confined the dragon to a
+    // narrow ~90-120 degree arc (see stepDragon()'s comment) and read as
+    // bobbing in place. Integrating a rate instead lets heading do a slow,
+    // smooth walk around the full circle over time.
+    //
+    // v3.6.25 -- was 0.6, bumped to 0.9. Feedback after the integration
+    // fix: some dragons still bob in place for a long stretch, then take
+    // off, then bob again after a dive/resurface -- some wander fine,
+    // others get stuck. Simulated it (a pure random walk in heading has
+    // no restoring bias, so long streaks near a vertical heading -- where
+    // sin dominates cos, i.e. mostly-vertical motion -- are an expected,
+    // not-fully-avoidable property of this model): at 0.6, a dragon could
+    // sit near-vertical for 10-19 seconds before wandering out of it; 0.9
+    // trims the worst case to roughly 9-12s without turning the wander
+    // into a visible spin. This is a partial mitigation, not a fix -- the
+    // "stuck vs. fine" variance across dragons is inherent to how a
+    // random-walk heading works, not a bug; a real fix (e.g. a mild
+    // restoring bias back toward horizontal) would change the character
+    // of the wander enough that it deserves its own before/after look
+    // rather than a blind tune.
+    headingNoiseSpeed: 0.08,
+    turnRate: 0.9,
+    // Vertical bob -- render-only (cabinet-v3-layout.js adds
+    // sin(bobPhase)*bobAmplitude to the drawn y each frame), never
+    // affects the logical wander position/land checks. bobFreq in Hz.
+    bobFreq: 0.35,
+    bobAmplitude: 4,
+    // px kept clear of canvasBounds' edge before a step gets rejected --
+    // see stepDragon()'s own comment.
+    edgeMargin: 30,
+    // v3.6.24/25 -- world px: a spawn/resurface point (and, live, a
+    // dragon's own next step) is rejected if land exists within this
+    // radius in ANY direction (checked at 8/16 points around a ring, same
+    // technique cabinet-v3-particles.js's pickCoastalSpawnPoint() uses,
+    // just inverted -- reject NEAR coast instead of requiring it).
+    // v3.6.25 -- was 90, dropped to 40. This map is a dense archipelago
+    // (dozens of separate small islands, not one landmass), so a 90px
+    // OMNIDIRECTIONAL clearance was frequently unsatisfiable -- diagnosed
+    // via temporary instrumentation + screenshots: dragons were diving in
+    // the middle of visibly wide-open channels because some unrelated
+    // island's corner happened to sit within 90px in some other
+    // direction, and pickOpenSeaPoint()'s 80-attempt rejection sampling
+    // was failing often enough to regularly fall back to pickWaterPoint()
+    // (which only guarantees "not literally on land," no distance margin
+    // at all) -- that fallback is what caused dives within the first
+    // couple frames of page load, right next to a coast. 40 -- close to
+    // the dragon's own rendered footprint (targetWidth 36-45px) plus a
+    // small buffer -- lets the rejection sampling actually succeed in
+    // this map's real channel widths while still keeping dives feeling
+    // proportionate to genuine visual proximity.
+    minCoastDistance: 40,
+    // v3.6.24 -- the dive/resurface cycle is EVENT-triggered (whenever a
+    // dragon's wander would bring it within minCoastDistance of a coast,
+    // see stepDragon()'s own comment), not on a timer -- direct
+    // feedback: "this need not be every 30 sec or so, it can be when the
+    // dragon approaches a coast." diveDuration is how long it takes to
+    // slide down out of view at the point it turned back from; a fresh
+    // pickOpenSeaPoint() is rolled at the bottom of that dive; then it
+    // slides back into view over surfaceDuration at the new point.
+    diveDuration: 0.6,
+    surfaceDuration: 0.6,
+    // v3.6.24 -- light fill colours; ensureDragon() shuffles this list
+    // and hands each dragon a different one in turn (never repeats,
+    // since there are always <= fillColors.length dragons) -- direct
+    // request: golden brown, pale blue, violet, "different colours."
+    // Outline stays a single fixed dark ink for every dragon regardless
+    // of fill -- dragon.svg's own original stroke colour (#2B2A29),
+    // reused rather than picked fresh, so the inlined artwork's own line
+    // weight/tone carries over.
+    fillColors: ["#d9b98a", "#aecbdb", "#c9b3d9"],
+    strokeColor: "#2b2a29"
   }
 };
 

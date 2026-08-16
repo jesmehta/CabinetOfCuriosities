@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.23** (domain warping for real concave coastlines,
+Currently on **v3.6.25** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -31,15 +31,21 @@ click on open water adds a boat), a wider/coastal-aware spawn system
 (130 ambient particles, capped at 150, half of every spawn landing at a
 coastline and pushing off it) tuned live via dev-panel controls that now
 also cover particle counts and both collapsible and nested-collapsible
-panel sections, and (new) an opt-in per-particle "personality" demo mode
+panel sections, and an opt-in per-particle "personality" demo mode
 addressing dense pools reading as one shared drift rather than
-individual boats
+individual boats, plus (new) 1-3 independent sea-dragon wanderers (from
+a user-supplied `dragon.svg`, own noise-driven movement not tied to the
+current field, coastal avoidance at spawn and while wandering, and an
+event-triggered dive/resurface via a real SVG clip-path "sink beneath
+the surface" effect) and the whole dev-tuning panel now closed by
+default
 -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
--> v3.6.22 -> v3.6.23 progression and why each pass changed what it did.
+-> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 progression and why each pass
+changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1420,6 +1426,119 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.25 -- dragon movement fixes: measured (not guessed) bobbing fix, archipelago-scale coast tuning, panel collapsed by default
+
+Follow-up to v3.6.24, all three items diagnosed with real measurements
+rather than another round of guessed constants:
+
+**Bobbing.** Reported as "still mostly bobbing up and down" after a
+first-pass speed bump (10->15) and a heading-amplitude guess (headingSwing
+2*PI->PI) neither of which addressed the real cause. Ran `fbm2D` standalone
+in Node and sampled its actual output: only +/-0.3 to +/-0.5 over a
+minute for this heading stream, nowhere near the +/-1 to +/-1.75 the
+original code assumed -- mapped through any fixed scale onto an absolute
+heading, that narrow range confines movement to one ~90-120 degree arc
+where the vertical component (`sin`) routinely exceeds the horizontal
+one (`cos`), i.e. genuinely mostly-vertical motion, not a perception
+issue. Fixed by making heading an INTEGRATED angular velocity instead of
+an absolute angle -- `heading += noise * turnRate * dt`
+(`cabinet-v3-dragon.js`'s `stepDragon()`) -- which lets it do a proper
+slow walk around the full circle over time regardless of the noise's own
+range. `speed` also raised 15->22 (no longer needs to stay under
+particles' 13, since it no longer needs to read as slower than the
+boats, just as clearly traveling). `headingSwing` config field removed,
+replaced by `turnRate` (0.9, see below).
+
+Even with that fix: "some are stuck bobbing but some move fine." A pure
+random-walk heading has no restoring bias, so long streaks stuck near a
+vertical heading are an expected property of the model (simulated:
+10-19s at `turnRate` 0.6 across several seeded runs), not a bug -- some
+dragons' own noise permutation happens to linger near-vertical, others
+don't. `turnRate` bumped 0.6->0.9 (simulated to trim worst-case stuck
+streaks to ~9-12s without becoming a visible spin) as a partial, flagged
+mitigation, not a full fix -- a genuine fix (a mild bias back toward
+horizontal) would change the wander's character enough to want its own
+before/after look first.
+
+**Coast avoidance.** "Not really respecting the coast always, and
+sometimes disappearing even when far from the coast." Diagnosed with
+temporary console instrumentation (every dive trigger's position + a
+brute-force nearest-land scan) run live via Playwright for real
+wall-clock time, plus screenshots with the check radius drawn as an
+overlay -- this map turned out to be a dense archipelago (dozens of
+separate small islands), and `minCoastDistance` (90px, checked
+omnidirectionally) was frequently unsatisfiable: dragons dove in visibly
+open channels because some unrelated island's corner sat within 90px in
+some other direction, and `pickOpenSeaPoint()`'s 80-attempt rejection
+sampling was failing often enough to regularly fall back to
+`pickWaterPoint()` (no distance guarantee at all) -- the actual cause of
+dives within the first couple of frames after page load, right next to
+a coast. Fixed by dropping `minCoastDistance` 90->40 (close to the
+dragon's own rendered footprint plus a small buffer); re-verified with
+the same instrumentation that the fallback no longer fires and every
+dive now has real land within the check radius.
+
+**Dev panel.** The tuning panel opened fully expanded on every load,
+covering part of the canvas. The outer panel (`cabinet-v3-controls.js`'s
+`buildControlPanel()`) is now itself a native `<details>`/`<summary>`,
+closed by default -- same pattern its three inner sections already used,
+one level up.
+
+### v3.6.24 -- independent sea-dragon wanderers, from a user-supplied `dragon.svg`
+
+New mini-feature: 1-3 dragons (never 0, `ensureDragon()` in
+`cabinet-v3-layout.js`) spawn at random open-sea points on every page
+load, each with its own size (`sizeMultMin/Max`) and a shuffled,
+non-repeating fill colour from a light palette (`fillColors`). Pure
+logic split into its own module, `cabinet-v3-dragon.js` (`spawnDragon()`/
+`stepDragon()`), same rationale as `cabinet-v3-particles.js` --
+`cabinet-v3-layout.js` owns the DOM/RAF loop, this module only decides
+where a dragon IS.
+
+Deliberately NOT part of the particle/current system -- `vectorAt()` is
+never called. Heading comes from `fbm2D` sampled over time only (reused
+from `cabinet-v3-islandshape.js`, the same primitive the current's own
+potential field uses), explicitly not a per-frame random increment --
+same "jitter reads as vibration, not organic drift" reasoning already
+applied to particle personalities in v3.6.23. Never rotates to face its
+heading -- the artwork is fixed horizontal by construction (`dragon.svg`
+draws it that way) -- only ever mirrors left/right via the scale
+transform's sign, since the native art faces left.
+
+`DRAGON_PATH_D`: the SVG's path `d` attribute copied in as a literal JS
+string constant, not `fetch()`'d at runtime (`file://` CORS, a recurring
+issue this session) and not referenced via `<use>`/`<symbol>` (a
+previously-confirmed, unresolved Chromium painting bug in this
+codebase) -- inlined as a raw `<path>`, same pattern the particle
+ellipses already use.
+
+**Coast avoidance**, both at spawn and live: `isNearLand()`
+(`cabinet-v3-dragon.js`) rejection-samples/checks a ring around a point
+for nearby land, shared by `pickOpenSeaPoint()` (spawn and post-dive
+resurface point selection) AND a live check inside `stepDragon()`'s
+"swim" branch on every candidate next step -- one mechanism handles both
+"don't spawn on the coast" and "don't wander close to the coast either."
+
+**Dive/resurface**: event-triggered, not on a timer -- whenever a swim
+step's candidate next position would be near land, the step is held and
+a dive starts instead. The "disappear" visual is a real SVG `<clipPath>`
+(a fixed rect matching the artwork's own viewBox) wrapping an inner
+group whose Y-translate is animated -- sliding the art down past the
+clip's bottom edge makes it progressively vanish as if sinking beneath
+the surface, revealing whatever's actually behind it, rather than a
+shrink-to-zero-scale or opacity fade. Verified with a Playwright pixel
+comparison (not just DOM/`getBBox()`, which doesn't reflect clipping) --
+this codebase has hit an unrelated "DOM looks right, nothing paints" SVG
+bug before, so a visual effect built on `<clipPath>` got the same
+skepticism until a screenshot confirmed it.
+
+Three rounds of direct feedback shaped the above from a rougher first
+cut (orientation now fixed/mirror-only not rotate; sizing went
+24->48->36px target width; a horizontal baseline line was tried, then
+removed entirely rather than shortened; dive/resurface went from a
+periodic ~30s timer to purely event-triggered). See the conversation log
+for the full back-and-forth.
 
 ### v3.6.23 -- per-particle "personality" demo mode (bias / offset / both), for "one giant trash drift"
 

@@ -169,10 +169,16 @@ function makeSection(panel, title, open) {
 }
 
 function buildControlPanel() {
-  const panel = document.createElement("div");
+  // v3.6.25 -- the whole panel is itself a <details>, closed by default
+  // (direct request: it was covering too much of the canvas on load) --
+  // same native collapsible pattern as the sections it contains, just one
+  // level up. The title bar is the <summary>; everything else (sections,
+  // footer buttons) only exists in the DOM tree once expanded is clicked.
+  const panel = document.createElement("details");
   panel.className = "v3-controls";
+  panel.open = false;
 
-  const title = document.createElement("div");
+  const title = document.createElement("summary");
   title.className = "v3-controls-title";
   title.textContent = "Island generation tuning (dev only)";
   panel.appendChild(title);

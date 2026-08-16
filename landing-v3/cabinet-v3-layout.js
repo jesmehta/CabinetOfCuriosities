@@ -31,8 +31,24 @@ import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, creat
 import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField } from "./cabinet-v3-islandshape.js";
 import { buildFlowField, createFlowSampler } from "./cabinet-v3-flowfield.js";
 import { createParticlePool, stepParticle } from "./cabinet-v3-particles.js";
+import { spawnDragon, stepDragon } from "./cabinet-v3-dragon.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
+
+// v3.6.24 -- dragon.svg's own path data, copied directly rather than
+// loaded via <use>/<symbol> (that hit a genuine, never-resolved Chromium
+// painting bug earlier in this project -- see the "Boats attempt"
+// section in conversation-landing-page-v3.md -- an SVG <use> referencing
+// a <symbol> with a closed bezier path would silently fail to paint when
+// created during initial synchronous render; two targeted fixes didn't
+// resolve it, and it was reverted rather than chased further) and rather
+// than a runtime fetch() (would hit the same file:// CORS wall this
+// session's own Playwright testing already ran into). A plain inlined
+// <path>, same "just build DOM elements directly" approach the particle
+// boats already use -- see buildDragonElement() below. Source viewBox:
+// "0 0 644.68 310.88".
+const DRAGON_PATH_D = "M70.71 49.9c-9.32,2.19 -18.17,23.97 -33.8,31.22 -6.92,2.53 -23.83,8.18 -32.3,5.25 -4.66,2.95 -5.22,7.9 -3.64,15.6 1.2,5.86 51.59,2.81 59.27,0.33 37.57,10.28 55.58,-5.31 95.21,31.26l0.53 0.52c32.93,31.03 44.2,80.32 28.21,122.67 -11.12,29.46 -24.76,38.45 -39.71,53.96l53.08 0c30.39,-37.59 41.63,-89.03 30.53,-136.2 -13.79,-58.61 -59.19,-103.05 -115.13,-118.73 6.68,-12.36 15.1,-14.55 20.69,-25.01 2.8,-5.23 7.66,-20.74 4.47,-30.29 -13.36,30.41 -33.8,46.32 -67.41,49.42zm211.03 78.69c-36.74,40.06 -47.01,99.14 -25.21,149.12 6.61,15.14 12.62,24.08 20.16,33l49.3 0c-3.35,-4.41 -6.84,-8.54 -9.93,-12.29 -41.1,-43.74 -28.95,-113.76 24.75,-140.64 16.36,-8.19 34.39,-10.92 52.5,-9.19 17.38,1.67 34.16,9 47.68,19.97 22.49,18.24 34.68,47.01 32.43,75.84 -2.57,33.08 -18.94,47.94 -35.63,66.3l51.01 0c16.03,-19.73 26.5,-44.09 29.93,-69.19 7,-51.11 -14.15,-99.25 -54.62,-130.34 -24.6,-18.9 -56.19,-27.95 -86.99,-26.93 -36.11,1.19 -71.04,17.79 -95.39,44.35zm260.84 139.35c2.21,13.55 8.67,30.04 17.62,42.76l46 0c-6.32,-4.73 -12.7,-8.61 -16.65,-11.82 -9.06,-7.38 -17.54,-22.98 -20.9,-34.07 -16.01,-52.78 22.96,-103.43 75.86,-109.37l0 -0.91c-63.58,-6.85 -112.01,51.62 -101.93,113.42z";
+const DRAGON_VIEWBOX = { width: 644.68, height: 310.88 };
 
 // v3.6: caches the one expensive layout pass's output (grown circles +
 // canvasBounds) so the control panel's sliders (cabinet-v3-controls.js)
@@ -767,6 +783,12 @@ function drawFlowFieldDebug(stage, canvasBounds, field) {
 // nothing for it.
 let particlesActive = false;
 let particleState = null; // { particles, canvasBounds, padding, sampler, els }
+// v3.6.24 -- same lifecycle as particleState, kept separate since
+// dragons are independent entities with their own movement, not part of
+// the particle pool (see cabinet-v3-dragon.js's own module comment for
+// why). `dragons` is 1-3 small { d, group, slide } entries -- see
+// ensureDragon() and buildDragonElement() for what `slide` is.
+let dragonState = null; // { dragons: [{ d, group, slide }], canvasBounds, sampler }
 let lastFrameTime = null;
 // v3.6.18 -- elapsed-seconds epoch for the current's time-drift (see
 // createFlowSampler()'s doc comment in cabinet-v3-flowfield.js). Set
@@ -927,6 +949,139 @@ function tickParticles(dt, t) {
   }
 }
 
+// v3.6.24 -- assigns each dragon's <clipPath> a unique id (SVG ids must
+// be unique document-wide) -- see buildDragonElement()'s own comment.
+let nextDragonClipId = 0;
+
+// v3.6.24 -- builds one dragon's <g>: an outer group tickDragon() below
+// repositions/scales every frame, wrapping an inner group that only ever
+// needs building once (centres DRAGON_VIEWBOX's own coordinate space on
+// local (0, 0), same "local-coordinates child, transform-only parent"
+// split the particle boats already use).
+//
+// Inside that: a <clipPath> (a plain rect matching DRAGON_VIEWBOX's own
+// bounds -- literally "its own viewing box") wraps a SEPARATE inner
+// "slide" group that holds the actual path. tickDragon() only ever moves
+// the slide group's own Y translate, never resizes/hides the clip rect
+// itself -- sliding the artwork down past the clip rect's fixed bottom
+// edge makes it progressively disappear as if sinking beneath the
+// surface, revealing whatever's actually behind it (real background,
+// not a painted-over mask) rather than a uniform shrink/fade. Direct
+// request: "can the svg drop out of its own viewing box so it looks
+// like it scrolled down or sank into the sea?"
+//
+// vector-effect="non-scaling-stroke" on the path keeps its stroke width
+// constant in screen px regardless of the outer group's scale --
+// otherwise the path's own dragon.svg-authored 0.35 stroke-width, scaled
+// down to targetWidth's much smaller size, would be all but invisible.
+// `fill` is passed in (not picked here) so ensureDragon() can hand out a
+// shuffled, non-repeating colour per dragon rather than each one rolling
+// independently. (v3.6.24 originally also drew a horizontal baseline
+// along the bottom of the artwork, and shrank the whole shape to 0 scale
+// to "dive" -- both removed per direct feedback.)
+function buildDragonElement(fill) {
+  const { strokeColor } = v3Config.dragon;
+  const clipId = `v3-dragon-clip-${nextDragonClipId++}`;
+
+  const outer = el("g", { class: "v3-dragon" });
+  const inner = el("g", {
+    transform: `translate(${-DRAGON_VIEWBOX.width / 2} ${-DRAGON_VIEWBOX.height / 2})`
+  });
+
+  const defs = el("defs");
+  const clipPath = el("clipPath", { id: clipId });
+  clipPath.appendChild(el("rect", { x: 0, y: 0, width: DRAGON_VIEWBOX.width, height: DRAGON_VIEWBOX.height }));
+  defs.appendChild(clipPath);
+
+  const clipped = el("g", { "clip-path": `url(#${clipId})` });
+  const slide = el("g", { class: "v3-dragon-slide" });
+  const path = el("path", {
+    class: "v3-dragon-path",
+    d: DRAGON_PATH_D,
+    "fill-rule": "evenodd",
+    style: `fill:${fill};stroke:${strokeColor}`
+  });
+
+  slide.appendChild(path);
+  clipped.appendChild(slide);
+  inner.appendChild(defs);
+  inner.appendChild(clipped);
+  outer.appendChild(inner);
+  return { outer, slide };
+}
+
+// Full (re)build -- called wherever ensureParticles() also is (a fresh
+// layout invalidates the old dragons' canvasBounds same as it does
+// particles'). v3.6.24 -- 1-3 dragons (never 0), fresh spawn points/
+// headings/sizes every time, same as a page reload -- direct request:
+// "appear randomly on page reload," "randomly pick 1-3 for number of
+// dragons, has to be non zero." Colours come from a SHUFFLED copy of
+// fillColors so up to 3 dragons never repeat one (there are always
+// <= fillColors.length of them) -- direct request, "different colours."
+function ensureDragon(stage, canvasBounds, sampler, t) {
+  const { fillColors, sizeMultMin, sizeMultMax } = v3Config.dragon;
+  const count = 1 + Math.floor(Math.random() * 3);
+
+  const colors = [...fillColors];
+  for (let i = colors.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [colors[i], colors[j]] = [colors[j], colors[i]];
+  }
+
+  const dragons = Array.from({ length: count }, (_, i) => {
+    const d = spawnDragon(canvasBounds, sampler.isLand, Math.random, v3Config.dragon);
+    d.sizeMult = sizeMultMin + Math.random() * (sizeMultMax - sizeMultMin);
+    const { outer, slide } = buildDragonElement(colors[i % colors.length]);
+    stage.appendChild(outer);
+    return { d, group: outer, slide };
+  });
+
+  dragonState = { dragons, canvasBounds, sampler };
+}
+
+// Cheap path for a retrace -- mirrors updateParticleSampler() below:
+// keeps every dragon's current position/heading, just refreshes which
+// sampler.isLand() they check against (the heightmap changed).
+function updateDragonSampler(sampler) {
+  if (dragonState) dragonState.sampler = sampler;
+}
+
+// v3.6.24 -- NEVER rotates the artwork to face its heading -- direct
+// requirement: "the dragon is always horizontal, it's drawn that way,
+// should be rendered that way." Only ever mirrors left/right (scale's
+// sign) depending on which way it's currently travelling -- dragon.svg's
+// own artwork faces LEFT natively ("orient it accordingly"), so moving
+// right (cos(heading) >= 0) flips it, moving left doesn't.
+//
+// d.diveScale (stepDragon()'s dive/resurface cycle) drives the `slide`
+// group's own Y offset, not the outer scale -- 1 = natural position
+// (fully visible inside its clip rect), 0 = pushed a full DRAGON_VIEWBOX
+// height down, entirely past the clip rect's bottom edge (fully hidden).
+// The SAME formula works for both directions: dive shrinks diveScale
+// 1->0 (slides down and out), surface grows it 0->1 (slides up and back
+// in) -- see buildDragonElement()'s own comment for why this reads as
+// "sinking" rather than a shrink/fade.
+function tickDragon(dt, t) {
+  if (!dragonState) return;
+  const { dragons, canvasBounds, sampler } = dragonState;
+  const config = v3Config.dragon;
+
+  dragons.forEach(({ d, group, slide }) => {
+    stepDragon(d, sampler.isLand, canvasBounds, t, dt, config, Math.random);
+
+    const scale = (config.targetWidth * d.sizeMult) / DRAGON_VIEWBOX.width;
+    const bobY = Math.sin(d.bobPhase) * config.bobAmplitude;
+    const flip = Math.cos(d.heading) >= 0 ? -1 : 1;
+    group.setAttribute(
+      "transform",
+      `translate(${d.x.toFixed(1)} ${(d.y + bobY).toFixed(1)}) scale(${(flip * scale).toFixed(4)} ${scale.toFixed(4)})`
+    );
+
+    const slideY = DRAGON_VIEWBOX.height * (1 - d.diveScale);
+    slide.setAttribute("transform", `translate(0 ${slideY.toFixed(2)})`);
+  });
+}
+
 function animationFrame(timestamp) {
   if (animStartTime === null) animStartTime = timestamp;
   const t = (timestamp - animStartTime) / 1000;
@@ -935,6 +1090,7 @@ function animationFrame(timestamp) {
     // advect every particle in one huge jump.
     const dt = Math.min(0.05, (timestamp - lastFrameTime) / 1000);
     tickParticles(dt, t);
+    tickDragon(dt, t);
   }
   lastFrameTime = timestamp;
 
@@ -1034,6 +1190,7 @@ export function startCurrentAnimation() {
     const stage = document.querySelector("#v3-stage");
     const sampler = buildCurrentSampler(islandLayoutState.canvasBounds, lastIslandTrace);
     ensureParticles(stage, islandLayoutState.canvasBounds, sampler, 0);
+    ensureDragon(stage, islandLayoutState.canvasBounds, sampler, 0);
     if (v3Config.flow.showPotential || v3Config.flow.showVectors) {
       const field = buildCurrentFlowField(islandLayoutState.canvasBounds, lastIslandTrace, currentAnimTime());
       drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, field);
@@ -1092,7 +1249,9 @@ export function retraceIslands() {
   }
 
   if (particlesActive) {
-    updateParticleSampler(buildCurrentSampler(islandLayoutState.canvasBounds, islandTrace));
+    const freshSampler = buildCurrentSampler(islandLayoutState.canvasBounds, islandTrace);
+    updateParticleSampler(freshSampler);
+    updateDragonSampler(freshSampler);
   }
 }
 
@@ -1213,6 +1372,7 @@ export function render() {
     const sampler = buildCurrentSampler(canvasBounds, islandTrace);
     const t = animStartTime === null ? 0 : (performance.now() - animStartTime) / 1000;
     ensureParticles(stage, canvasBounds, sampler, t);
+    ensureDragon(stage, canvasBounds, sampler, t);
   }
 
   const grownBySection = new Map();
