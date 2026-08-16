@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.22** (domain warping for real concave coastlines,
+Currently on **v3.6.23** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -31,13 +31,15 @@ click on open water adds a boat), a wider/coastal-aware spawn system
 (130 ambient particles, capped at 150, half of every spawn landing at a
 coastline and pushing off it) tuned live via dev-panel controls that now
 also cover particle counts and both collapsible and nested-collapsible
-panel sections
+panel sections, and (new) an opt-in per-particle "personality" demo mode
+addressing dense pools reading as one shared drift rather than
+individual boats
 -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
--> v3.6.22 progression and why each pass changed what it did.
+-> v3.6.22 -> v3.6.23 progression and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1418,6 +1420,66 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.23 -- per-particle "personality" demo mode (bias / offset / both), for "one giant trash drift"
+
+At high particle counts (surfaced while testing v3.6.22's raised
+count/maxCount sliders), every particle samples the exact same
+deterministic field, so density alone doesn't add variety -- position is
+the only differentiator, and a spatially smooth field means nearby
+particles look near-identical: "it looks like a giant trash drift rather
+[than] individual boats." Three options, each with the logic and a
+concise for/against:
+
+1. **Bias** -- a constant personal `speedMult` + `dirRotate` (fixed
+   heading offset), rolled once per spawn, applied every step on top of
+   the shared field.
+   - For: cheapest, easiest to reason about ("this boat's faster/veers
+     a bit").
+   - Against: divergence only builds up over travel time -- particles
+     spawned close together still look identical for a beat before
+     fanning out, so it doesn't fix the worst case (dense fresh clumps)
+     immediately. Confirmed weaker live: "I dont think 1 is having too
+     much of an effect."
+
+2. **Naive per-frame jitter** -- fresh randomness added to the sampled
+   vector every tick (considered, never built).
+   - For: cheap, instant per-particle difference from frame one.
+   - Against: uncorrelated frame-to-frame noise reads as vibration, not
+     a sustained personal drift -- rejected on visual grounds before
+     writing any code.
+
+3. **Offset** -- a constant personal `(offsetX, offsetY)` shifts only
+   WHERE a particle reads the current's own noise field (`vectorAt()`'s
+   new optional offset params, `cabinet-v3-flowfield.js`); the coast/
+   repulsion gradient and the `isLand()` hard backstop always stay at the
+   particle's true position, untouched.
+   - For: zero extra noise evaluations (reuses the same `fbm2D` calls),
+     smooth/continuous like the shared field itself (not jittery), and
+     diverges from frame one. Measured directly: average heading
+     difference between particles within 40px of each other rose from
+     25deg (off) to 44deg (offset) vs 31deg (bias).
+   - Against: only varies the current's own local texture, not the
+     large-scale shared drift (`offsetRange` deliberately well under
+     `potentialScale`'s ~300px wavelength) -- the fleet still visibly
+     belongs to one current, just with real per-boat texture underneath.
+
+Personalities are assigned via a low-discrepancy (Weyl/golden-ratio)
+sequence keyed to an incrementing spawn id, not independent
+`Math.random()` calls -- random offsets can cluster/collide purely by
+chance (birthday paradox in 2D), which would specifically fail to
+decorrelate the near-each-other particles that matter most; a
+low-discrepancy sequence spreads evenly by construction, and gets
+better-spaced as particle count grows rather than worse.
+
+New `v3Config.particles.personalityMode` (`"off"` default / `"bias"` /
+`"offset"` / `"both"`) plus first-guess range constants
+(`personalityOffsetRange`, `personalitySpeedMultMin/Max`,
+`personalityDirRotateMaxDeg`, not yet tuned by feel), and a dev-panel
+"Particle personality (demo)" select that forces an instant full pool
+rebuild on change for a clean, immediate before/after rather than a
+gradual phase-in. Demo/comparison build -- shipped default stays `"off"`,
+not decided yet, still being evaluated.
 
 ### v3.6.22 -- coastal spawn, wider entry arc, spawn stagger, dev-panel controls for all of it, live-tuned defaults
 

@@ -360,6 +360,26 @@ export const v3Config = {
     // than blended, but not by much" -- kept as the default since it's
     // still the better of the two, not because the gap was decisive.
     coastSpawnDirMode: "repulsion",
+    // v3.6.23 -- demo/comparison build for the "one giant trash drift"
+    // discussion (conversation-landing-page-v3.md): every particle
+    // otherwise samples the exact same deterministic field, so density
+    // alone can't add variety. "off" (default, no change to shipped
+    // behaviour) / "bias" (constant personal speed+heading, see
+    // personalityFor()'s own comment in cabinet-v3-particles.js) /
+    // "offset" (constant personal read-position into the SAME shared
+    // current field, never the coast/repulsion half) / "both". Not
+    // decided yet -- built specifically to be compared live via the dev
+    // panel, same as coastSpawnDirMode above.
+    personalityMode: "off",
+    // Ranges personalityFor() maps its low-discrepancy sequence into --
+    // first-guess demo values, not yet tuned by feel. offsetRange in
+    // world px (potentialScale's own wavelength is ~300px, so this stays
+    // well under it -- meant to vary WHICH local structure a particle
+    // reads, not which large-scale current pattern it's part of).
+    personalityOffsetRange: 120,
+    personalitySpeedMultMin: 0.75,
+    personalitySpeedMultMax: 1.35,
+    personalityDirRotateMaxDeg: 25,
     // v3.6.20 -- pulled back across the board (20->13, 1200->800,
     // 110->70): direct feedback was "particles feel too fast," alongside
     // skipping over/through narrow land -- less distance covered per

@@ -120,9 +120,20 @@ export function createFlowSampler(H, hCols, hRows, hCellSize, heightmapBounds, c
     return fbm2D(perm, (x + dx) * potentialScale, (y + dy) * potentialScale, octaves, lacunarity, gain);
   }
 
-  function vectorAt(x, y, t = 0) {
+  // v3.6.23 -- offsetX/offsetY (default 0, so every existing caller is
+  // unaffected): shifts ONLY the current's own sampling position, never
+  // the coast/repulsion gradient below, which always reads the
+  // particle's TRUE (x, y) regardless. Lets cabinet-v3-particles.js give
+  // each particle a small constant personal offset into the SAME shared
+  // noise field -- reuses these exact fbm2D calls, no extra evaluation
+  // -- so two particles standing at the same real point can genuinely
+  // read different local current structure, without ever touching the
+  // safety-critical "is there land here" half of the field. Demo/cost
+  // discussion in conversation-landing-page-v3.md's "one giant trash
+  // drift" section.
+  function vectorAt(x, y, t = 0, offsetX = 0, offsetY = 0) {
     const potentialFn = (px, py) => potentialAt(px, py, t);
-    const [px, py] = gradientOf(potentialFn, x, y, potentialEps);
+    const [px, py] = gradientOf(potentialFn, x + offsetX, y + offsetY, potentialEps);
     // Curl = gradient rotated -90deg -- divergence-free by construction.
     // currentGain is a pure magnitude multiplier (not folded into
     // potentialScale/octaves, which shape frequency/texture, not overall

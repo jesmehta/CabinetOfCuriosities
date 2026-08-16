@@ -14,6 +14,66 @@
 // Landing-page-notes.2.0.md's "Flow field" entries for the design
 // conversation.
 
+// v3.6.23 -- demo/comparison build for the "one giant trash drift"
+// discussion (conversation-landing-page-v3.md): every particle otherwise
+// samples the exact same deterministic field, so the only thing telling
+// two particles apart is position, and a smooth field means nearby
+// particles look identical. Assigns each particle a small personal
+// "character" via a low-discrepancy (Weyl/golden-ratio) sequence keyed
+// to an incrementing id, NOT independent Math.random() calls -- random
+// offsets can collide/cluster (two nearby particles drawing similar
+// personalities purely by chance, especially as particle count grows --
+// the birthday paradox in 2D), which would fail to decorrelate exactly
+// the clumps this exists to fix. A low-discrepancy sequence spreads
+// personalities evenly by construction, no luck involved, and gets
+// BETTER spaced as id grows, not worse.
+//
+// v3Config.particles.personalityMode: "off" (default), "bias", "offset",
+// or "both".
+// - "bias": a constant personal speedMult and a constant personal
+//   dirRotate (radians) applied every step -- same path, different pace/
+//   heading, like a boat with a slightly different engine or keel.
+//   Divergence between two nearby particles builds up over their
+//   travel time, not instant.
+// - "offset": a constant personal (offsetX, offsetY) added to the
+//   CURRENT's own sampling position only (see vectorAt()'s own comment
+//   in cabinet-v3-flowfield.js -- never touches the coast/repulsion
+//   gradient, so this can't affect land-avoidance accuracy). Same
+//   general current, different local weather -- two particles standing
+//   at the same point can genuinely curl differently, from frame one,
+//   since they're reading different structure in the same noise field.
+// - "both": both of the above together.
+let nextPersonalityId = 0;
+
+function personalityFor(id, config) {
+  const mode = config.personalityMode;
+  if (!mode || mode === "off") return { offsetX: 0, offsetY: 0, speedMult: 1, dirRotate: 0 };
+
+  // Four independent-looking [0,1) sequences off ONE incrementing id,
+  // via four different irrational multipliers (mod 1) -- the standard
+  // low-discrepancy trick, cheap (a multiply + mod each), no lookup
+  // table, no RNG state to manage.
+  const t1 = (id * 0.6180339887498949) % 1; // golden ratio conjugate
+  const t2 = (id * 0.4142135623730951) % 1; // sqrt(2) - 1
+  const t3 = (id * 0.3027756377319946) % 1; // (sqrt(13) - 3) / 2
+  const t4 = (id * 0.2360679774997896) % 1; // (sqrt(5) - 2)
+
+  const offsetRange = config.personalityOffsetRange ?? 120; // world px
+  const speedMultMin = config.personalitySpeedMultMin ?? 0.75;
+  const speedMultMax = config.personalitySpeedMultMax ?? 1.35;
+  const dirRotateMaxDeg = config.personalityDirRotateMaxDeg ?? 25;
+
+  const useOffset = mode === "offset" || mode === "both";
+  const useBias = mode === "bias" || mode === "both";
+
+  return {
+    offsetX: useOffset ? (t1 - 0.5) * 2 * offsetRange : 0,
+    offsetY: useOffset ? (t2 - 0.5) * 2 * offsetRange : 0,
+    speedMult: useBias ? speedMultMin + t3 * (speedMultMax - speedMultMin) : 1,
+    dirRotate: useBias ? (t4 - 0.5) * 2 * dirRotateMaxDeg * (Math.PI / 180) : 0
+  };
+}
+
 // Walks a perimeter-distance `d` (0..2*(w+h)) around canvasBounds
 // expanded by `padding` into a world (x, y) point -- corners land at
 // d=0 (top-left), d=w (top-right), d=w+h (bottom-right), d=2w+h
@@ -157,6 +217,10 @@ function initialDirection(x, y, t, canvasBounds, sampleFn) {
 // anything else (the normal blended-field initialDirection(), same as
 // every other spawn) -- kept switchable, not decided yet, so both can be
 // compared live via the dev panel.
+// personality (v3.6.23, see personalityFor() above): assigned here, once
+// per spawn, off a fresh incrementing id -- covers both mid-simulation
+// respawns and every particle in a batch (createParticlePool() below
+// doesn't need its own logic for this, unlike activeAt's stagger).
 export function spawnParticle(canvasBounds, padding, sampleFn, isLandFn, repulsionFn, t, rng, config) {
   const wantsCoastal = isLandFn && rng() < (config.coastSpawnFraction ?? 0);
   const coastalPoint = wantsCoastal ? pickCoastalSpawnPoint(canvasBounds, isLandFn, rng) : null;
@@ -166,7 +230,9 @@ export function spawnParticle(canvasBounds, padding, sampleFn, isLandFn, repulsi
     ? repulsionFn(x, y)
     : initialDirection(x, y, t, canvasBounds, sampleFn);
 
-  return { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t, activeAt: t, coastal: !!coastalPoint };
+  const personality = personalityFor(nextPersonalityId++, config);
+
+  return { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t, activeAt: t, coastal: !!coastalPoint, ...personality };
 }
 
 // v3.6.22 -- direct feedback: spawning the whole pool at once made every
@@ -241,14 +307,31 @@ export function stepParticle(p, sampleFn, isLandFn, repulsionFn, t, canvasBounds
   // efficiency win when a big batch is staggered at once.
   if (t < p.activeAt) return false;
 
-  const [vx, vy] = sampleFn(p.x, p.y, t);
+  // v3.6.23 -- p.offsetX/Y (personalityFor(), "offset"/"both" modes):
+  // shifts only the current's own sampling position (see vectorAt()'s
+  // own comment in cabinet-v3-flowfield.js) -- 0/0 when personality mode
+  // is off or "bias" only, so this is a no-op call shape otherwise.
+  let [vx, vy] = sampleFn(p.x, p.y, t, p.offsetX || 0, p.offsetY || 0);
+  // p.dirRotate ("bias"/"both" modes): a small constant personal
+  // rotation applied to the sampled direction every step, before
+  // normalizing -- same field, this particle just consistently veers a
+  // little off it, like a boat with a slightly different heading.
+  if (p.dirRotate) {
+    const cos = Math.cos(p.dirRotate), sin = Math.sin(p.dirRotate);
+    const rvx = vx * cos - vy * sin;
+    const rvy = vx * sin + vy * cos;
+    vx = rvx;
+    vy = rvy;
+  }
   const mag = Math.hypot(vx, vy);
   if (mag > 1e-9) {
     p.dirX = vx / mag;
     p.dirY = vy / mag;
   } // else: keep drifting in whatever direction it was already going
 
-  const speed = Math.min(config.maxSpeed, config.baseSpeed + config.speedGain * mag);
+  // p.speedMult ("bias"/"both" modes, default 1): a constant personal
+  // pace, same "slightly different engine" idea as dirRotate above.
+  const speed = Math.min(config.maxSpeed, (config.baseSpeed + config.speedGain * mag) * (p.speedMult || 1));
   const prevX = p.x, prevY = p.y;
   p.x += p.dirX * speed * dt;
   p.y += p.dirY * speed * dt;
@@ -282,6 +365,10 @@ export function stepParticle(p, sampleFn, isLandFn, repulsionFn, t, canvasBounds
     p.checkT = fresh.checkT;
     p.activeAt = fresh.activeAt;
     p.coastal = fresh.coastal;
+    p.offsetX = fresh.offsetX;
+    p.offsetY = fresh.offsetY;
+    p.speedMult = fresh.speedMult;
+    p.dirRotate = fresh.dirRotate;
   }
   return false;
 }

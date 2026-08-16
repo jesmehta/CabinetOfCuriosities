@@ -926,8 +926,42 @@ costing out the two given:
 
 Recommended #3 as the best of the three: same "sustained, not jittery"
 quality as a proper per-particle noise stream, at the same compute cost
-as the system already pays today, not double it. Not implemented this
-pass -- explicitly a future todo, discussed for its cost/tradeoffs only.
+as the system already pays today, not double it.
+
+Follow-up question raised a real gap in #3's naive form: could two
+particles just draw similar offsets by chance (or similar offsets near
+each other produce similar-looking effects), especially at high particle
+counts? Yes -- the failure mode that actually matters isn't any two
+particles anywhere sharing an offset, it's particles already close in
+real space ALSO drawing similar offsets, which is exactly the birthday
+paradox in 2D and gets more likely as particle count grows against a
+fixed offset domain. Fix: assign offsets deterministically via a
+low-discrepancy (Weyl/golden-ratio) sequence keyed to spawn order instead
+of independent `Math.random()` calls -- guarantees even spread by
+construction, same cost, and improves with particle count instead of
+degrading.
+
+Asked next what #1 and #3 would actually look like in motion (still
+discussion, no code): #1 as "same path, different pace/heading" --
+divergence has to build up over travel time, like a wake slowly fanning
+out, so freshly-spawned clusters stay clumped-looking for a beat. #3 as
+"same general current, different local weather" -- two boats side by
+side can genuinely curl differently AT THE SAME MOMENT, since they're
+reading different structure in the same noise texture, with no
+build-up delay.
+
+That reasoning was convincing enough to ask for a live demo rather than
+keep discussing: "what's a fast good way for me to see a demo of one or
+both?" Built directly into the dev panel as a mode toggle (off/bias/
+offset/both, v3.6.23) rather than a one-off throwaway script, matching
+this project's established "let the user look themselves" pattern --
+switching modes forces an instant full pool rebuild so the before/after
+reads as a clean cut, not a gradual phase-in. Verdict after trying it:
+"looks great... I dont think 1 is having too much of an effect though.
+I'll look at it a bit more nonetheless" -- matches the for/against
+reasoning above (option 1's divergence needs travel time to become
+visible), kept as a live, undecided demo rather than picking a default
+yet.
 
 ## This handoff
 

@@ -204,7 +204,8 @@ function buildControlPanel() {
     particleCount: v3Config.particles.count,
     particleMaxCount: v3Config.particles.maxCount,
     coastSpawnFraction: v3Config.particles.coastSpawnFraction,
-    coastSpawnDirMode: v3Config.particles.coastSpawnDirMode
+    coastSpawnDirMode: v3Config.particles.coastSpawnDirMode,
+    personalityMode: v3Config.particles.personalityMode
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -436,6 +437,41 @@ function buildControlPanel() {
   coastDirRow.appendChild(coastDirSelect);
   visualsSection.appendChild(coastDirRow);
 
+  // -- Particle personality (v3.6.23, demo/comparison build) -- direct
+  // ask: "what's a fast good way for me to see a demo of one or both?"
+  // See personalityFor()'s own comment in cabinet-v3-particles.js for
+  // what each mode actually does. onChange forces a full pool rebuild
+  // (refreshParticleCount()) rather than letting it phase in via natural
+  // respawns -- the whole point of a demo toggle is an immediate,
+  // unambiguous before/after, not a gradual one.
+  const personalityRow = document.createElement("label");
+  personalityRow.className = "v3-controls-row";
+  const personalityName = document.createElement("span");
+  personalityName.className = "v3-controls-name";
+  personalityName.textContent = "Particle personality (demo)";
+  const personalitySelect = document.createElement("select");
+  personalitySelect.style.gridArea = "input";
+  personalitySelect.style.width = "100%";
+  [
+    ["off", "Off (shared field only)"],
+    ["bias", "Bias (constant personal speed/heading)"],
+    ["offset", "Offset (personal read into the current)"],
+    ["both", "Both"]
+  ].forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    personalitySelect.appendChild(opt);
+  });
+  personalitySelect.value = v3Config.particles.personalityMode;
+  personalitySelect.addEventListener("change", () => {
+    v3Config.particles.personalityMode = personalitySelect.value;
+    refreshParticleCount();
+  });
+  personalityRow.appendChild(personalityName);
+  personalityRow.appendChild(personalitySelect);
+  visualsSection.appendChild(personalityRow);
+
   // -- Wave ring parameters -- unchanged generator logic from v3.6.7
   // (waveDistances is a derived array, d[i] = start * multiplier^i +
   // offset, not a single scalar, so it doesn't fit the one-slider-one-key
@@ -548,6 +584,8 @@ function buildControlPanel() {
     v3Config.particles.coastSpawnDirMode = visualsDefaults.coastSpawnDirMode;
     coastSpawnFractionWidget.refresh();
     coastDirSelect.value = v3Config.particles.coastSpawnDirMode;
+    v3Config.particles.personalityMode = visualsDefaults.personalityMode;
+    personalitySelect.value = v3Config.particles.personalityMode;
     refreshParticleCount();
     bandSliders.forEach(s => s.refresh());
     Object.assign(waveGen, waveGenDefaults);
