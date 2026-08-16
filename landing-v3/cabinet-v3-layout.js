@@ -455,6 +455,64 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
   }));
 }
 
+// v3.6.26 -- traces the real coastline (or, with extraDistance > 0, a
+// fixed-distance buffer past it) for just the given SUBSET of circles,
+// not the whole map. Two callers, below: one circle at a time (an
+// entry's own hover/click shape), or a whole section's circles at once
+// with extraDistance set (the section's own "coastal zone" shape) --
+// same underlying technique either way, just a different circle list
+// and distance.
+//
+// Isolating a SINGLE circle this way is safe even where circles fuse:
+// buildIslandHeightmap combines circles via a per-cell max() (see its
+// own doc comment), so tracing one circle alone reproduces exactly the
+// portion of a (possibly fused) shared landmass that circle is itself
+// responsible for -- the union of every entry's own isolated trace
+// reconstructs the fused blob exactly, with no seam-splitting logic
+// needed. Direct request: "the hover halo for each island has to be
+// that island entirely, not a circle approximation."
+//
+// Traced over a LOCAL bounding box sized to just these circles' own
+// influence radius (+ extraDistance + a flat closure margin), not the
+// full canvas -- buildIslandHeightmap's compute cost already only
+// touches a circle's own influence box regardless of the bounds passed
+// in (see its own doc comment), but its ALLOCATION cost (one
+// Float32Array sized to cols*rows) does scale with the bounds. Calling
+// this once per entry (~25 times a layout) plus once per section against
+// the full canvas would mean ~25+ full-canvas-sized allocations on every
+// render()/retrace, almost all of it wasted on cells nowhere near the
+// circle(s) in question.
+function traceIsolatedShape(circles, islandConfig, extraDistance = 0) {
+  if (!circles.length) return "";
+
+  const { cellSize, threshold, warpStrength, outerFrac, angularStrength } = islandConfig;
+  // Same formula as buildIslandHeightmap's own (private) maxOuterR --
+  // reproduced here since this needs it before calling in, to size the
+  // local grid; see that function's doc comment in
+  // cabinet-v3-islandshape.js for why each term is there.
+  const influenceRadius = c => c.radius * outerFrac * (1 + angularStrength) + warpStrength;
+  // 40 (vs. drawIslandsPath's own +60 for the full-canvas trace): these
+  // grids are already tightly cropped to just the circle(s) in question,
+  // not the whole canvas, so a contour has less far to travel to close
+  // cleanly off-grid -- see buildCoastlineDistanceField's edge-forcing
+  // comment for what this margin is protecting against.
+  const edgePadding = Math.max(0, extraDistance) + 40;
+
+  const minX = Math.min(...circles.map(c => c.x - influenceRadius(c))) - edgePadding;
+  const maxX = Math.max(...circles.map(c => c.x + influenceRadius(c))) + edgePadding;
+  const minY = Math.min(...circles.map(c => c.y - influenceRadius(c))) - edgePadding;
+  const maxY = Math.max(...circles.map(c => c.y + influenceRadius(c))) + edgePadding;
+  const localBounds = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+
+  const { H, cols, rows } = buildIslandHeightmap(circles, localBounds, islandConfig);
+
+  if (extraDistance <= 0) {
+    return traceContourFromHeightmap(H, cols, rows, cellSize, localBounds, threshold);
+  }
+  const distanceField = buildCoastlineDistanceField(H, cols, rows, cellSize, threshold);
+  return traceContourFromHeightmap(distanceField, cols, rows, cellSize, localBounds, -extraDistance);
+}
+
 function renderRegion(stage, region, band, label, sectionMeta, circles) {
   const group = el("g", { class: "v3-region", "data-section": sectionMeta.id });
 
@@ -468,34 +526,60 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
     })
   );
 
-  // v3.6.13 -- the section's own landing page link. Covers the WHOLE
-  // region.inner rect (label band + pack area both), so hovering/
-  // clicking anywhere in that section's "water" reaches its page, not
-  // just the label text -- rendered before the entry islands below, so
-  // they paint (and hit-test) on top of it wherever they overlap, and a
-  // hover over an island never also lights up the section underneath.
-  // Hover feedback is a blurred glow, not a stroked/hard-edged shape --
-  // see .v3-section-glow in cabinet-v3-style.css for why (same reasoning
-  // as .v3-island-glow below).
+  // v3.6.26 -- the section's own landing-page link. Shape is the label
+  // band + a single traced contour covering every circle in this section
+  // (entry and filler alike) dilated by the wave-ring outer distance --
+  // filler islands' full body, entry islands' full interior (a fallback
+  // layer; an entry's own link, rendered after this and so on top of it
+  // in paint/hit-test order, still wins wherever the two overlap), and a
+  // coastal-zone buffer around every island, all from one
+  // traceIsolatedShape() call. Direct request: "union of the section
+  // label + unused islands + the coastal zone of all the islands of that
+  // section." No boolean union needed -- the band rect and the traced
+  // shape are separate sibling elements inside the same <a>; SVG
+  // hit-testing across overlapping siblings of one interactive element
+  // already behaves as a union.
+  //
+  // coastalZoneWidth reuses v3Config.island.waveDistances' own outermost
+  // ring rather than a new hand-tuned number -- "just past the last
+  // visible ripple" is already an established distance in this design.
+  const coastalZoneWidth = v3Config.island.waveDistances.length
+    ? v3Config.island.waveDistances[v3Config.island.waveDistances.length - 1]
+    : 0;
+  const sectionShapeD = traceIsolatedShape(circles, v3Config.island, coastalZoneWidth);
+
+  // v3.6.26 -- clipPath restricted to this section's own region.inner:
+  // "if an island or its coastal zone intrude into another section, ...
+  // the active clickable area is limited to the section rectangle."
+  // Applied ONLY to the hit shapes, not the glow -- the glow renders
+  // full/unclipped so an intruding coastline still reads as one
+  // continuous shape visually, even past the region seam. Every section
+  // only ever clips to its OWN rect and only ever draws its OWN content,
+  // so two neighbouring sections' hit areas can never both claim the
+  // same pixel; a patch neither section's real content reaches (e.g. a
+  // rect corner far from any island) is simply unclickable for both --
+  // a dead zone, with no cross-section subtraction logic required.
+  const clipId = `v3-section-clip-${sectionMeta.id}`;
+  const defs = el("defs");
+  const clipPath = el("clipPath", { id: clipId });
+  clipPath.appendChild(
+    el("rect", { x: region.inner.x, y: region.inner.y, width: region.inner.width, height: region.inner.height })
+  );
+  defs.appendChild(clipPath);
+  group.appendChild(defs);
+
   const sectionLink = el("a", { class: "v3-section-link", href: sectionMeta.href || "#" });
-  sectionLink.appendChild(
-    el("rect", {
-      class: "v3-section-hit",
-      x: region.inner.x,
-      y: region.inner.y,
-      width: region.inner.width,
-      height: region.inner.height
-    })
-  );
-  sectionLink.appendChild(
-    el("rect", {
-      class: "v3-section-glow",
-      x: region.inner.x,
-      y: region.inner.y,
-      width: region.inner.width,
-      height: region.inner.height
-    })
-  );
+
+  const hitGroup = el("g", { "clip-path": `url(#${clipId})` });
+  hitGroup.appendChild(el("rect", { class: "v3-section-hit", x: band.x, y: band.y, width: band.width, height: band.height }));
+  if (sectionShapeD) hitGroup.appendChild(el("path", { class: "v3-section-hit", d: sectionShapeD, "fill-rule": "evenodd" }));
+  sectionLink.appendChild(hitGroup);
+
+  const glowGroup = el("g", { class: "v3-section-glow-group" });
+  glowGroup.appendChild(el("rect", { class: "v3-section-glow", x: band.x, y: band.y, width: band.width, height: band.height }));
+  if (sectionShapeD) glowGroup.appendChild(el("path", { class: "v3-section-glow", d: sectionShapeD, "fill-rule": "evenodd" }));
+  sectionLink.appendChild(glowGroup);
+
   group.appendChild(sectionLink);
 
   // v3.5: the visible island shape itself is drawn once, globally, as a
@@ -512,17 +596,24 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   //
   // v3.6.13 -- hover used to ring the hit circle with a stroke; that
   // read as a hard, obviously-artificial circle popping up over an
-  // organic coastline. Replaced with a blurred glow circle, slightly
-  // larger than the entry's own radius so it bleeds a little past the
-  // coastline edge instead of stopping dead at it -- see
-  // .v3-island-glow in cabinet-v3-style.css.
+  // organic coastline. Replaced with a blurred glow, sized to the
+  // entry's own hit circle -- see .v3-island-glow in cabinet-v3-style.css.
+  //
+  // v3.6.26 -- that hit circle itself is now the entry's REAL traced
+  // shape (traceIsolatedShape() on just this one circle), not an
+  // approximating circle -- direct request: "the hover halo for each
+  // island has to be that island entirely, not a circle approximation."
+  // Glow and hit both reuse the exact SAME path -- no separate enlarged
+  // geometry for the glow; .v3-island-glow's existing blur(6px) filter
+  // already produces the soft bleed past the coastline edge on its own.
   circles.forEach(c => {
     if (c.kind === "entry") {
       const isMuted = c.status === "wip";
       const link = el("a", { class: "v3-island", href: c.href || "#" });
       link.setAttribute("data-id", c.id);
-      link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius + 8, class: "v3-island-glow" }));
-      link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-island-hit" }));
+      const islandD = traceIsolatedShape([c], v3Config.island, 0);
+      link.appendChild(el("path", { d: islandD, class: "v3-island-glow", "fill-rule": "evenodd" }));
+      link.appendChild(el("path", { d: islandD, class: "v3-island-hit", "fill-rule": "evenodd" }));
       if (isMuted) {
         link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-status-ring", "aria-hidden": "true" }));
       }
@@ -552,7 +643,14 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       )
     );
   });
-  group.appendChild(labelGroup);
+  // v3.6.27 -- appended to sectionLink itself, not group -- .v3-section-
+  // label needs to be a DOM descendant of .v3-section-link for its own
+  // hover-colour rule (cabinet-v3-style.css) to reach it via a plain
+  // descendant selector, same relationship .v3-island-label already has
+  // with its own <a> above. Purely a structural move: pointer-events:
+  // none (already set) means this still can't steal the hover/click away
+  // from sectionLink's own hit shape underneath.
+  sectionLink.appendChild(labelGroup);
 
   stage.appendChild(group);
 }

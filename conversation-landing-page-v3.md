@@ -1103,6 +1103,102 @@ every reload. Converted the outer panel itself into a native
 `<details>`/`<summary>`, closed by default -- same collapsible pattern
 already used for its three inner sections, just one level up.
 
+## Real-shape hover halos: four questions asked before writing any code
+
+New request, stated as a single dense spec up front: "the hover halo for
+each island has to be that island entirely not a circle approximation of
+the island... the hover halo and active clicking area for each section
+needs to be the union of the section label + unused islands + the
+coastal zone of all the islands of that section... if an island or its
+coastal zone intrude into another section, the glow is uniform but the
+active clickable area is limited to the section rectangle" -- closed
+with an explicit instruction: "ask the questions necessary."
+
+Before asking anything, checked what was actually feasible: confirmed
+`buildIslandHeightmap` combines circles via a per-cell `max()`, which
+means tracing a single circle in isolation reproduces exactly the
+portion of a (possibly fused) shared landmass that circle is responsible
+for -- the union of every entry's own isolated trace reconstructs the
+fused blob exactly, no seam-splitting needed for the "island entirely"
+part of the ask. That let the actual questions stay scoped to genuine
+product/design decisions rather than implementation feasibility:
+
+1. **Scope** -- `islands-tool.html` only, or also `index.html` (the
+   "zero-JS static build")? Checked how `index.html` actually gets built
+   first (`build-static.mjs` snapshots a real headless-Chromium render of
+   the SAME `cabinet-v3-layout.js` `render()` output) -- since hover/
+   click are pure CSS + real `<a href>`, no runtime JS needed either way,
+   this made "also index.html" a much lower-cost answer than it first
+   sounded (no separate baking logic needed, just rebuild after). Chosen:
+   **also index.html**.
+2. **Coastal-zone width** -- how far past an island's coastline should a
+   section's own halo extend? Offered three options, flagging that
+   `v3Config.island.waveDistances`' own outermost ring (~18.5px) was
+   already an established "just past the last ripple" distance rather
+   than inventing a new number. Chosen: **match the wave-ring distance**.
+3. **Cross-section overlap** -- click behaviour where an island's
+   coastal zone visually crosses into a neighbouring section's rectangle:
+   fall through to the neighbour's own link, or a dead zone (unclickable
+   for both)? Chosen: **dead zone** -- which, worked through during
+   implementation, turned out to need no special cross-section logic at
+   all: since each section only ever computes and clips its OWN hit
+   shape from its OWN content, a patch neither section's real content
+   reaches is a dead zone automatically.
+4. **Section shape composition** -- does an entry island's own interior
+   count toward the section's shape as a fallback layer (in case the
+   precise per-entry polygon ever gaps), or only its coastal-zone buffer,
+   leaving the interior solely to the entry's own dedicated link? Chosen:
+   **interior too, as fallback** -- simplifying the implementation
+   slightly, since it meant every circle in a section (entry or filler)
+   feeds the same single dilated trace, with z-order (the entry's own
+   link paints after the section link) deciding which one wins where
+   they overlap, rather than needing to exclude entries from the
+   section's own shape computation.
+
+Implementation followed directly from the four answers -- see the
+changelog (v3.6.26) for the technical detail. Verification leaned on the
+same "measure, don't guess" convention already established this session:
+a 20x30-point hit-test sweep of the whole canvas via
+`elementFromPoint()`, classified per point (island / section / dead),
+confirming dead zones actually existed and landed at a plausible 43% of
+canvas area, clustered exactly where expected -- not just "the code
+looks right." The render-cost question got the same treatment: measured
+`render()` before and after via `git stash` (82.5ms -> 193.9ms) rather
+than assuming the added tracing was cheap or expensive, then explained
+why the real number was acceptable (only runs on discrete actions, and
+costs the production page's BUILD, never a real visitor) rather than
+either silently absorbing it or over-optimizing preemptively.
+
+## Label hover colours: a quick, precisely-scoped follow-up
+
+Immediate follow-up, four short instructions in one message: section
+labels should turn "the solid version of the halo colour" on hover;
+entry labels should INVERT their halo/glow treatment on hover (dark
+fill/light halo becomes light fill/dark halo); the same inversion for
+soft-glow mode; and remove the "thin stroke" label-style option
+entirely.
+
+Implemented directly (no further questions needed -- each instruction
+was concrete enough to act on) and verified with `getComputedStyle`
+diffs (hovered vs. not, for all three remaining label styles) rather
+than trusting a screenshot -- worth doing here specifically because two
+of the three styles (glow especially) are subtle enough that a
+screenshot comparison alone, on an island whose base fill already reads
+light, genuinely couldn't distinguish "inverted" from "not inverted" by
+eye. The computed-style check caught this immediately and cleanly:
+`fill`/`stroke` swapped exactly, `plain` mode's styles stayed identical
+hovered vs. not, as intended.
+
+One real bug found in the process, not by inspection but because the
+FIRST hover-colour attempt silently failed the section-label case: it
+turned out `.v3-section-label` was never actually a DOM descendant of
+`.v3-section-link` (a sibling under the same region `<g>` instead, an
+artifact of how `renderRegion()` happened to append things), so a plain
+descendant-selector hover rule could never have matched it. Fixed at the
+DOM-structure level -- nesting the label inside the link, the same
+relationship island labels already had with their own `<a>` -- rather
+than reaching for a sibling-combinator selector to work around it.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

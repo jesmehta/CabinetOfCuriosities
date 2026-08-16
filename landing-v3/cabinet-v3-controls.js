@@ -330,7 +330,6 @@ function buildControlPanel() {
   labelStyleSelect.style.width = "100%";
   [
     ["halo", "Halo (thick stroke)"],
-    ["thin", "Thin stroke"],
     ["glow", "Soft glow"],
     ["plain", "Plain (no treatment)"]
   ].forEach(([value, label]) => {

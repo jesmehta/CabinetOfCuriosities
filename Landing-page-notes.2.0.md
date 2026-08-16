@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.25** (domain warping for real concave coastlines,
+Currently on **v3.6.27** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -33,19 +33,27 @@ coastline and pushing off it) tuned live via dev-panel controls that now
 also cover particle counts and both collapsible and nested-collapsible
 panel sections, and an opt-in per-particle "personality" demo mode
 addressing dense pools reading as one shared drift rather than
-individual boats, plus (new) 1-3 independent sea-dragon wanderers (from
-a user-supplied `dragon.svg`, own noise-driven movement not tied to the
+individual boats, plus 1-3 independent sea-dragon wanderers (from a
+user-supplied `dragon.svg`, own noise-driven movement not tied to the
 current field, coastal avoidance at spawn and while wandering, and an
 event-triggered dive/resurface via a real SVG clip-path "sink beneath
-the surface" effect) and the whole dev-tuning panel now closed by
-default
+the surface" effect), the whole dev-tuning panel now closed by default,
+and (new) both islands' AND sections' hover halo/click area now traced
+from the real coastline geometry instead of a circle/rectangle
+approximation -- a section's own shape is its label plus every one of
+its islands (entry and filler alike) dilated by the same distance the
+outermost wave ring already sits at, clipped to that section's own
+rectangle so an intruding neighbour's glow can spill across a region
+seam visually without ever being clickable there -- plus inverted
+hover-colour label treatments (light-on-dark becomes dark-on-light) and
+one fewer label-style option (thin stroke, removed)
 -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
--> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 progression and why each pass
-changed what it did.
+-> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 -> v3.6.26 -> v3.6.27
+progression and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1426,6 +1434,115 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.27 -- hover label colours invert on hover; "thin stroke" label style removed
+
+Two small follow-ups to v3.6.26's hover rework, both direct requests:
+
+**Colour inversion on hover.** A section's own label now fills the SOLID
+version of its glow colour on hover (`--cab-land-hover`, already a fully
+opaque hex -- the glow itself just uses it at low opacity for the wash,
+see `.v3-section-glow`) instead of staying the default ink colour. An
+entry's own label, in both the "halo" (thick stroke) and "glow" (soft
+drop-shadow) styles, now INVERTS on hover -- dark-fill/light-halo becomes
+light-fill/dark-halo -- confirmed via computed styles (`getComputedStyle`
+diffed hovered vs. not, not just eyeballed), not just for `islands-
+tool.html` but for the zero-JS static `index.html` too, since this is
+pure CSS (`.v3-island:hover .v3-island-label` etc.) -- no JS involved at
+all. "Plain" (no treatment) is deliberately untouched -- nothing to
+invert there.
+
+Bug found along the way: `.v3-section-label` wasn't actually a DOM
+descendant of `.v3-section-link` (it was a sibling, both children of the
+region's own `<g>` -- see v3.6.26's own note on `renderRegion()`'s
+structure), so a plain `.v3-section-link:hover .v3-section-label`
+selector could never have matched. Fixed by appending the label group to
+`sectionLink` itself instead of `group` -- the same relationship
+`.v3-island-label` already had with its own `<a>` -- rather than reaching
+for a sibling-combinator workaround; `pointer-events: none` (already set)
+still keeps it from stealing hover/click away from the link's own hit
+shape underneath.
+
+**"Thin stroke" removed** from both `cabinet-v3-style.css` and the
+dev-panel's Label style select (`cabinet-v3-controls.js`) -- three
+remaining options (halo/glow/plain) already span the range it sat
+between.
+
+### v3.6.26 -- real-shape hover halos and click areas for islands and sections
+
+Direct request, with its own set of clarifying questions asked and
+answered before writing any code (see the conversation log): island
+hover halos were a circle approximation (`r = entry radius + 8`) over
+the real, noise-carved coastline, and a section's whole `region.inner`
+rectangle was both its hover glow and its click target, regardless of
+how little of that rectangle its actual content (label + islands)
+occupied.
+
+**Per-island shape.** `traceIsolatedShape()` (new, `cabinet-v3-
+layout.js`) traces one circle's own real coastline the same way the
+shared map coastline is traced (`buildIslandHeightmap` +
+`traceContourFromHeightmap`, same threshold), just scoped to that one
+circle and a tightly-cropped LOCAL bounding box (not the full canvas) --
+`buildIslandHeightmap`'s own compute cost already only touches a
+circle's influence box regardless of the bounds passed in, but its
+allocation cost (one `Float32Array` sized to the grid) does scale with
+those bounds, and this now runs ~25+ times a layout. Isolating a single
+circle this way is safe even where two entries' coastlines visually fuse
+into one landmass: `buildIslandHeightmap` combines circles via a per-cell
+`max()`, so tracing one circle alone reproduces exactly the portion of a
+fused blob that circle is itself responsible for -- the union of every
+entry's own isolated trace reconstructs the fused shape exactly, no
+seam-splitting logic needed. Glow and hit both reuse the identical
+path -- no separate enlarged geometry for the glow; the existing
+`blur(6px)` filter already produces the soft bleed past the coastline
+edge on its own.
+
+**Per-section shape**, three components, decided via direct questions
+(scope, coastal-zone width, cross-section-overlap behaviour, whether an
+entry's own interior counts): the label band (a plain rect, already
+computed by `splitLabelBand()`) plus one `traceIsolatedShape()` call over
+EVERY circle in that section (entry and filler alike) with
+`extraDistance` set to `v3Config.island.waveDistances`' own outermost
+ring (~18.5px) -- reusing an already-established "just past the last
+visible ripple" distance rather than a new hand-tuned number. That single
+dilated trace covers filler islands' full body, entry islands' full
+interior (a deliberate fallback layer -- an entry's own link, painted
+after the section link and so on top of it in hit-test order, still wins
+wherever the two overlap), and the requested coastal-zone buffer, all at
+once -- reusing the exact distance-field technique the wave rings already
+use (`buildCoastlineDistanceField`, trace at level `-D`), just over a
+per-section circle subset instead of the whole map. No boolean union
+needed anywhere: the label rect and the traced shape are separate sibling
+elements inside one `<a>`, and SVG hit-testing across overlapping
+siblings of one interactive element already behaves as a union.
+
+**Cross-section overlap -> dead zone, not fallthrough.** A `<clipPath>`
+scoped to that section's own `region.inner` rect is applied ONLY to the
+hit shapes, never the glow -- so an island (or its coastal zone) that
+visually crosses into a neighbouring section's rectangle still reads as
+one continuous coastline, but stops being clickable right at the seam.
+Chosen over "falls through to the neighbour's own link" specifically:
+since every section computes and clips its hit shape independently, from
+only its OWN content, a patch neither section's real content reaches
+(most of any region's open corners) is simply unclickable for both --
+verified with a 20x30-point hit-test sweep of the whole canvas
+(`elementFromPoint()` at every grid point, classified island/section/
+dead), landing at 43% dead-zone coverage, visibly clustered exactly where
+expected (region gaps, corners far from any island) -- not a guess.
+
+**Verification, beyond the sweep above**: zero-console-error check;
+confirmed island-vs-section precedence directly (`elementFromPoint()` at
+an island center resolves to that island's own `<a>`, not the section
+underneath); measured `render()` cost before/after via `git stash`
+(82.5ms -> 193.9ms average) -- flagged as a real number rather than
+silently absorbed, though not optimized further since `renderRegion()`
+only runs on discrete actions (page load, Reroll/Restore-position), never
+on live slider drags, and the production page (`index.html`) pays this
+cost at BUILD time only, not per real visitor. Rebuilt `index.html` via
+the existing `build-static.mjs` pipeline and re-verified **with
+JavaScript entirely disabled** -- hover/click both work via pure CSS +
+real `<a href>`, confirming this reaches production the same
+zero-runtime-JS way `islands-tool.html`'s own DOM already does.
 
 ### v3.6.25 -- dragon movement fixes: measured (not guessed) bobbing fix, archipelago-scale coast tuning, panel collapsed by default
 

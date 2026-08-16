@@ -538,17 +538,18 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
+  transition: fill var(--cab-transition-fast), stroke var(--cab-transition-fast), filter var(--cab-transition-fast);
 }
 
 /* v3.6.12 -- legibility treatment behind each label, needed because the
    land under it isn't one flat colour (sea/sand/veg bands, wave rings --
-   see drawIslandsPath()). Four variants, switched live via a
-   data-label-style attribute on <body> (dev panel: Visuals > Label
-   style, cabinet-v3-controls.js) -- pure CSS, no re-render, so they can
-   be compared directly against the real map. "halo" (the original hard
-   3px stroke) stays the default only because it shipped first, not
-   because it's the chosen look -- see Landing-page-notes.2.0.md punch-
-   list item 13a. */
+   see drawIslandsPath()). Three variants (v3.6.27 -- "thin" removed, see
+   below), switched live via a data-label-style attribute on <body> (dev
+   panel: Visuals > Label style, cabinet-v3-controls.js) -- pure CSS, no
+   re-render, so they can be compared directly against the real map.
+   "halo" (the original hard 3px stroke) stays the default only because
+   it shipped first, not because it's the chosen look -- see
+   Landing-page-notes.2.0.md punch-list item 13a. */
 body:not([data-label-style]) .v3-island-label,
 body[data-label-style="halo"] .v3-island-label {
   paint-order: stroke;
@@ -556,12 +557,9 @@ body[data-label-style="halo"] .v3-island-label {
   stroke-width: 3px;
 }
 
-body[data-label-style="thin"] .v3-island-label {
-  paint-order: stroke;
-  stroke: var(--cab-land-light);
-  stroke-width: 1.5px;
-  stroke-opacity: 0.85;
-}
+/* v3.6.27 -- "thin stroke" removed per direct feedback -- three
+   remaining variants (halo/glow/plain) already span the range this one
+   sat between. */
 
 body[data-label-style="glow"] .v3-island-label {
   filter: drop-shadow(0 0 1.5px var(--cab-land-light)) drop-shadow(0 0 1.5px var(--cab-land-light));
@@ -569,6 +567,27 @@ body[data-label-style="glow"] .v3-island-label {
 
 /* "plain" intentionally adds nothing -- a no-halo baseline to judge the
    others against. */
+
+/* v3.6.27 -- entry hover: invert halo/glow's dark-fill/light-halo to
+   light-fill/dark-halo, direct request ("invert the label style thick
+   stroke halo... dark fill light halo to have the dark halo and light
+   fill"). Not scoped to "plain" -- there's no halo/glow color there to
+   invert. .v3-island-label has pointer-events: none (see above), so the
+   hover state has to key off .v3-island (the actual <a>), same pattern
+   .v3-island-glow's own opacity toggle already uses. */
+body:not([data-label-style]) .v3-island:hover .v3-island-label,
+body:not([data-label-style]) .v3-island:focus-visible .v3-island-label,
+body[data-label-style="halo"] .v3-island:hover .v3-island-label,
+body[data-label-style="halo"] .v3-island:focus-visible .v3-island-label {
+  fill: var(--cab-land-light);
+  stroke: var(--cab-ink);
+}
+
+body[data-label-style="glow"] .v3-island:hover .v3-island-label,
+body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
+  fill: var(--cab-land-light);
+  filter: drop-shadow(0 0 1.5px var(--cab-ink)) drop-shadow(0 0 1.5px var(--cab-ink));
+}
 
 /* Dashed ring marking "not fully live" -- wip entries (still a link,
    just visually flagged), drawn on top of the shared landmass at that
@@ -590,6 +609,18 @@ body[data-label-style="glow"] .v3-island-label {
      from it -- let pointer events pass straight through to the rect
      underneath, same reasoning as .v3-island-label. */
   pointer-events: none;
+  transition: fill var(--cab-transition-fast);
+}
+
+/* v3.6.27 -- section hover: label turns the SOLID version of its own
+   glow colour (--cab-land-hover is already a fully-opaque hex, just
+   used at low opacity -- .v3-section-glow below -- for the wash; this
+   is the same token at full strength). Direct request: "section hover
+   highlight should turn the section name the solid version of the halo
+   colour." */
+.v3-section-link:hover .v3-section-label,
+.v3-section-link:focus-visible .v3-section-label {
+  fill: var(--cab-land-hover);
 }
 
 /* v3.6.13 -- the section's own landing-page link, covering the whole
