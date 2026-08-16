@@ -27,7 +27,7 @@
 // already costs per tick.
 
 import { v3Config } from "./cabinet-v3-data.js";
-import { retraceIslands, render, rerollPacking, resetReroll, startCurrentAnimation } from "./cabinet-v3-layout.js";
+import { retraceIslands, render, rerollPacking, resetReroll, startCurrentAnimation, refreshParticleCount } from "./cabinet-v3-layout.js";
 
 // Each entry drives one Island-shape slider. `get`/`set` default to
 // reading/writing v3Config.island[key] directly; only warpPeriod
@@ -115,6 +115,27 @@ function addGroupHeading(container, text) {
   return heading;
 }
 
+// v3.6.22 -- a nested collapsible group, one level deeper than
+// makeSection() below (native <details>/<summary> nests fine, no extra
+// state to manage). Direct request: Wave ring parameters/Topological
+// offset parameters were taking up a lot of the Visuals section's space
+// even when not being actively tuned. Returns the <details> element
+// itself, same contract as makeSection() -- append children directly to
+// it, after its own <summary>.
+function makeSubsection(container, title, open) {
+  const details = document.createElement("details");
+  details.className = "v3-controls-subsection";
+  details.open = open;
+
+  const summary = document.createElement("summary");
+  summary.className = "v3-controls-subsection-summary";
+  summary.textContent = title;
+  details.appendChild(summary);
+
+  container.appendChild(details);
+  return details;
+}
+
 // `block: true` -- a single full-width button on its own line (Reroll,
 // Restore position, the per-section Reset buttons); omitted for buttons
 // meant to sit side-by-side in a flex row (the Reset ALL / Copy config
@@ -179,7 +200,11 @@ function buildControlPanel() {
     vegThresholds: [...v3Config.island.vegThresholds],
     waveDistances: [...v3Config.island.waveDistances],
     showFlowPotential: v3Config.flow.showPotential,
-    showFlowVectors: v3Config.flow.showVectors
+    showFlowVectors: v3Config.flow.showVectors,
+    particleCount: v3Config.particles.count,
+    particleMaxCount: v3Config.particles.maxCount,
+    coastSpawnFraction: v3Config.particles.coastSpawnFraction,
+    coastSpawnDirMode: v3Config.particles.coastSpawnDirMode
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -343,13 +368,82 @@ function buildControlPanel() {
   const flowPotentialCheck = addFlowCheckbox("showPotential", "Flow potential (noise field)");
   const flowVectorsCheck = addFlowCheckbox("showVectors", "Flow vectors (directions)");
 
+  // -- Particle counts (v3.6.22) -- direct request: "I want to try out
+  // the look and feel of more and less particles." Base count is the
+  // ambient baseline (always present, refilled by the field's own
+  // respawn logic -- see stepParticle()'s own comment in
+  // cabinet-v3-particles.js); Max cap is click-to-launch's hard ceiling
+  // (launchBoatAt(), cabinet-v3-layout.js). Base count needs a pool
+  // rebuild to actually take effect (refreshParticleCount(), fresh
+  // off-canvas spawn positions -- same as a Reroll would give
+  // particles); Max cap is read fresh on every click, so its onChange is
+  // a no-op. No enforced relationship between the two sliders -- this is
+  // a tuning tool, setting the cap below the base count just means
+  // click-to-launch can never add anything, which is a harmless (if
+  // slightly odd) state to leave it in.
+  addGroupHeading(visualsSection, "Particle counts");
+  const particleCountWidget = buildSlider(visualsSection, {
+    label: "Base count", min: 10, max: 1000, step: 10,
+    get: () => v3Config.particles.count,
+    set: v => { v3Config.particles.count = v; },
+    onChange: refreshParticleCount
+  });
+  const particleMaxWidget = buildSlider(visualsSection, {
+    label: "Max cap (click-to-launch)", min: 10, max: 1000, step: 10,
+    get: () => v3Config.particles.maxCount,
+    set: v => { v3Config.particles.maxCount = v; },
+    onChange: () => {}
+  });
+
+  // -- Coastal spawn (v3.6.22) -- direct idea: "coast-killed particles,
+  // or any other, can respawn on a coast as well... shore repulsion
+  // takes them out." Both read live on every spawn/respawn
+  // (pickCoastalSpawnPoint()/spawnParticle(), cabinet-v3-particles.js),
+  // so neither needs a pool rebuild -- onChange is a no-op for both, same
+  // as Max cap above. Direction mode deliberately left as a live A/B --
+  // "repulsion" (push straight off the shore) vs "blended" (the normal
+  // current+coast blend every other spawn uses) hadn't been decided,
+  // meant to be compared by feel rather than guessed.
+  const coastSpawnFractionWidget = buildSlider(visualsSection, {
+    label: "Coastal spawn %", min: 0, max: 1, step: 0.05,
+    get: () => v3Config.particles.coastSpawnFraction,
+    set: v => { v3Config.particles.coastSpawnFraction = v; },
+    onChange: () => {}
+  });
+
+  const coastDirRow = document.createElement("label");
+  coastDirRow.className = "v3-controls-row";
+  const coastDirName = document.createElement("span");
+  coastDirName.className = "v3-controls-name";
+  coastDirName.textContent = "Coastal spawn direction";
+  const coastDirSelect = document.createElement("select");
+  coastDirSelect.style.gridArea = "input";
+  coastDirSelect.style.width = "100%";
+  [
+    ["repulsion", "Repulsion (push off the shore)"],
+    ["blended", "Blended field (normal spawn direction)"]
+  ].forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    coastDirSelect.appendChild(opt);
+  });
+  coastDirSelect.value = v3Config.particles.coastSpawnDirMode;
+  coastDirSelect.addEventListener("change", () => {
+    v3Config.particles.coastSpawnDirMode = coastDirSelect.value;
+  });
+  coastDirRow.appendChild(coastDirName);
+  coastDirRow.appendChild(coastDirSelect);
+  visualsSection.appendChild(coastDirRow);
+
   // -- Wave ring parameters -- unchanged generator logic from v3.6.7
   // (waveDistances is a derived array, d[i] = start * multiplier^i +
   // offset, not a single scalar, so it doesn't fit the one-slider-one-key
   // model the band sliders below use), rebuilt on buildSlider() so its
   // Reset participates in the same handle-based pattern as everything
-  // else in this file instead of its own bespoke reset code.
-  addGroupHeading(visualsSection, "Wave ring parameters");
+  // else in this file instead of its own bespoke reset code. Nested
+  // collapsible (v3.6.22), closed by default -- see makeSubsection().
+  const waveSubsection = makeSubsection(visualsSection, "Wave ring parameters", false);
 
   const liveWaves = v3Config.island.waveDistances;
   const waveGenDefaults = {
@@ -378,7 +472,7 @@ function buildControlPanel() {
   ];
   const waveFieldWidgets = {};
   WAVE_FIELDS.forEach(f => {
-    waveFieldWidgets[f.key] = buildSlider(visualsSection, {
+    waveFieldWidgets[f.key] = buildSlider(waveSubsection, {
       label: f.label, min: f.min, max: f.max, step: f.step,
       get: () => waveGen[f.key],
       set: v => { waveGen[f.key] = v; },
@@ -389,7 +483,7 @@ function buildControlPanel() {
       }
     });
   });
-  visualsSection.appendChild(waveValueSpan);
+  waveSubsection.appendChild(waveValueSpan);
   refreshWavePreview();
 
   // -- Topological offset parameters (v3.6.9, punch-list item 7) --
@@ -402,13 +496,16 @@ function buildControlPanel() {
   // place -- see visualsDefaults' own comment above for why that matters:
   // an in-place mutation would corrupt that snapshot's cloned array too,
   // since nothing else in this file re-clones it after the initial copy.
-  addGroupHeading(visualsSection, "Topological offset parameters");
+  // Nested collapsible (v3.6.22), closed by default -- see
+  // makeSubsection() -- this one in particular can get long (one slider
+  // per array element across all three bands).
+  const topoSubsection = makeSubsection(visualsSection, "Topological offset parameters", false);
 
   const bandSliders = [];
   const addBandGroup = (arrayKey, label) => {
     v3Config.island[arrayKey].forEach((_, i) => {
       bandSliders.push(
-        buildSlider(visualsSection, {
+        buildSlider(topoSubsection, {
           label: `${label} ${i + 1}`, min: BAND_MIN, max: BAND_MAX, step: BAND_STEP,
           get: () => v3Config.island[arrayKey][i],
           set: v => {
@@ -443,6 +540,15 @@ function buildControlPanel() {
     v3Config.flow.showVectors = visualsDefaults.showFlowVectors;
     flowPotentialCheck.checked = v3Config.flow.showPotential;
     flowVectorsCheck.checked = v3Config.flow.showVectors;
+    v3Config.particles.count = visualsDefaults.particleCount;
+    v3Config.particles.maxCount = visualsDefaults.particleMaxCount;
+    particleCountWidget.refresh();
+    particleMaxWidget.refresh();
+    v3Config.particles.coastSpawnFraction = visualsDefaults.coastSpawnFraction;
+    v3Config.particles.coastSpawnDirMode = visualsDefaults.coastSpawnDirMode;
+    coastSpawnFractionWidget.refresh();
+    coastDirSelect.value = v3Config.particles.coastSpawnDirMode;
+    refreshParticleCount();
     bandSliders.forEach(s => s.refresh());
     Object.assign(waveGen, waveGenDefaults);
     Object.values(waveFieldWidgets).forEach(w => w.refresh());

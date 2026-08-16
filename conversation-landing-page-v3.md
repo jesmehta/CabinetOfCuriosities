@@ -846,6 +846,89 @@ under sustained clicking, not a memory-driven crash at any particular
 particle count. Confirmed the cap, not the exact growth mechanic, was
 the load-bearing decision.
 
+## Spawn distribution, coastal launches, and "one giant trash drift" (this session, v3.6.22)
+
+Follow-up round on the particle system: SW-corner pileup ("the SW corner
+is showing a lot of activity but little gets through the central and NE
+side... I don't want a uniform spread, but I think the off screen
+generation needs to be wider") got a wider `spawnArcFraction`. A
+follow-up observation in the same message -- "especially since
+coastal-stuck particles simply respawn, not much manages to go ahead
+till the NE corner" -- led to a genuinely different idea rather than
+tuning the existing mechanism further: "coast-killed particles, or any
+other, can respawn on a coast as well - is that possible? 70% particles
+respawn in the arc, 30% on the coasts and then the shore repulsion takes
+them out? let me know before executing." Answered with a feasibility
+readout (yes, cheap -- rejection sampling against the already-existing
+`isLand()`) and two open design questions (does the split apply to the
+initial pool too, and what should a coastal spawn's initial direction
+be) before writing anything, per the explicit "let me know before
+executing." Second question got "i'd like to see both, honestly, before
+deciding" -- built as a live dev-panel A/B (a `coastSpawnDirMode` select,
+"repulsion" vs "blended") rather than picking one and moving on, so the
+comparison could happen by feel. Verdict once tried: "repulsion is
+marginally better than blended, but not by much."
+
+Base/max particle-count sliders (added earlier this pass so "look and
+feel of more and less particles" could be tried directly) got pushed to
+their full range on request -- "raise the max on both to 1000" -- which
+is what actually surfaced the deeper issue underneath all the spawn-
+distribution tuning:
+
+> Because all the particles are following the same current and speed, it
+> looks like a giant trash drift rather an individual boats.
+
+At the shipped default (130) this isn't obvious enough to matter -- "I
+can live with this" -- but it's a real, correctly-diagnosed structural
+property of the current design: every particle samples the exact SAME
+deterministic field at its own position, so the only source of
+difference between two particles is where they happen to be, and a smooth
+noise field means nearby particles see nearly-identical vectors. More
+particles doesn't add variety, it just makes the shared-motion property
+more visually obvious.
+
+### Cost of fixing it (asked directly, not executed)
+
+Two ideas offered: a persistent per-particle personality (a constant
+speed/direction bias) added on top of the shared field, or per-particle
+randomness injected during the flow computation itself -- with the
+user's own caveat that pure per-frame jitter "may be more jittery than
+sustained." Answered with three concrete options and honest relative
+cost, favouring a third one found during the analysis rather than just
+costing out the two given:
+
+1. **A constant per-particle bias** (rolled once at spawn, e.g. a small
+   personal speed multiplier and/or direction offset, applied every
+   frame): a few extra flops/particle/frame, effectively free next to
+   the existing noise-evaluation cost.
+2. **Naive per-frame jitter** (a fresh random nudge added every tick,
+   the "may be jittery" option): equally cheap computationally, but
+   confirmed as the visually risky one -- true frame-to-frame white
+   noise reads as vibration, not a sustained personal drift, exactly the
+   concern raised.
+3. **Per-particle sample-coordinate OFFSET on the current only**
+   (found while reasoning through the request, not one of the two
+   originally proposed): give each particle a small constant personal
+   offset, and have it sample the SAME shared noise field at
+   `(x + offsetX, y + offsetY, t)` instead of its literal position --
+   reuses the exact same `fbm2D` calls already being made (zero
+   additional noise evaluations), stays smooth and continuous over time
+   (still riding a coherent noise field, not per-frame randomness), and
+   two particles standing at the same real point would now see genuinely
+   different current vectors, exactly the "individual boats" feel being
+   asked for. Critically: this offset would only ever apply to the
+   CURRENT's sampling, never the coast/repulsion gradient or the
+   `isLand()` hard backstop -- both of those stay tied to the particle's
+   TRUE position always, so it can't reintroduce the class of bug this
+   session already hit twice (a drift/offset applied somewhere that
+   quietly corrupted spatial accuracy -- see v3.6.20's linear-drift
+   regression above).
+
+Recommended #3 as the best of the three: same "sustained, not jittery"
+quality as a proper per-particle noise stream, at the same compute cost
+as the system already pays today, not double it. Not implemented this
+pass -- explicitly a future todo, discussed for its cost/tradeoffs only.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

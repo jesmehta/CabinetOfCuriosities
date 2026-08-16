@@ -675,6 +675,40 @@ body[data-label-style="glow"] .v3-island-label {
   opacity: 0.65;
 }
 
+/* v3.6.22 -- nested collapsible groups (Wave ring parameters,
+   Topological offset parameters), one level deeper than
+   .v3-controls-section -- same native <details>/<summary> pattern, see
+   makeSubsection() in cabinet-v3-controls.js. Direct request: these two
+   were taking up a lot of the Visuals section's space even when not
+   being tuned. Typography matches .v3-controls-group-label (the flat
+   heading style this replaces for these two groups) so collapsing them
+   doesn't change how the panel reads when they're closed. */
+.v3-controls-subsection {
+  margin: 10px 0 4px;
+}
+
+.v3-controls-subsection-summary {
+  cursor: pointer;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.65;
+  list-style: none;
+  padding-bottom: 4px;
+}
+
+.v3-controls-subsection-summary::-webkit-details-marker {
+  display: none;
+}
+
+.v3-controls-subsection-summary::before {
+  content: "\25b8  ";
+}
+
+.v3-controls-subsection[open] > .v3-controls-subsection-summary::before {
+  content: "\25be  ";
+}
+
 .v3-controls-row {
   display: grid;
   grid-template-columns: 1fr auto;

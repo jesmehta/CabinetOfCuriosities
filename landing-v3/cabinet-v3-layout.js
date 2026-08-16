@@ -793,7 +793,7 @@ let lastDebugFieldTime = null;
 // moved).
 function ensureParticles(stage, canvasBounds, sampler, t) {
   const { count, padding } = v3Config.particles;
-  const particles = createParticlePool(count, canvasBounds, padding, sampler.vectorAt, t, Math.random, v3Config.particles);
+  const particles = createParticlePool(count, canvasBounds, padding, sampler.vectorAt, sampler.isLand, sampler.repulsionAt, t, Math.random, v3Config.particles);
 
   let group = stage.querySelector(".v3-particles");
   if (!group) group = el("g", { class: "v3-particles", "aria-hidden": "true" });
@@ -867,6 +867,24 @@ function buildParticleElement() {
   return pg;
 }
 
+// v3.6.22 -- exported for cabinet-v3-controls.js's "Base count" slider
+// (direct request: "I want to try out the look and feel of more and
+// less particles"). v3Config.particles.count is only ever read at pool-
+// BUILD time (createParticlePool()), not per-frame, so changing it alone
+// does nothing to a pool that's already running -- this rebuilds it at
+// the new size via ensureParticles(), the same full rebuild a Reroll
+// already gives particles (fresh off-canvas spawn positions, in-flight
+// positions not preserved -- there's no meaningful way to "smoothly"
+// resize a running pool). No-op if particles aren't running yet.
+// v3Config.particles.maxCount (the click-to-launch cap) needs no
+// equivalent: launchBoatAt() reads it fresh on every click, nothing to
+// rebuild.
+export function refreshParticleCount() {
+  if (!particleState || !islandLayoutState) return;
+  const stage = document.querySelector("#v3-stage");
+  ensureParticles(stage, particleState.canvasBounds, particleState.sampler, currentAnimTime());
+}
+
 // Cheap path for a retrace (slider tick): the underlying heightmap
 // changed (island shape tuning), so the coast-vector half of the
 // sampler needs to be fresh, but existing particles keep their
@@ -895,7 +913,7 @@ function tickParticles(dt, t) {
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     const allowRespawn = particles.length <= baseCount;
-    const remove = stepParticle(p, sampler.vectorAt, sampler.isLand, t, canvasBounds, padding, dt, stepConfig, Math.random, allowRespawn);
+    const remove = stepParticle(p, sampler.vectorAt, sampler.isLand, sampler.repulsionAt, t, canvasBounds, padding, dt, stepConfig, Math.random, allowRespawn);
     if (remove) {
       els[i].remove();
       particles.splice(i, 1);
@@ -959,7 +977,12 @@ function launchBoatAt(x, y, t) {
   const mag = Math.hypot(vx, vy);
   const dirX = mag > 1e-9 ? vx / mag : 1;
   const dirY = mag > 1e-9 ? vy / mag : 0;
-  const p = { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t };
+  // activeAt: t (immediately active, never staggered -- a click should
+  // feel instant, see createParticlePool()'s own comment on why staggering
+  // only ever applies to off-canvas spawns). coastal: false -- a
+  // click-launched boat isn't a coastal-origin spawn even if the click
+  // happened to land near a shore, it's a direct user placement.
+  const p = { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t, activeAt: t, coastal: false };
   particles.push(p);
 
   const pg = buildParticleElement();

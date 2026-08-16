@@ -295,23 +295,71 @@ export const v3Config = {
   // so this costs them nothing, not even the DOM elements. See the
   // field-notes block below for how these numbers were picked.
   particles: {
-    count: 60,
+    // v3.6.22 -- 60->130, dialled in live via the dev panel's Base count
+    // slider (added this pass specifically so this could be tried by
+    // feel rather than guessed) once spawn stagger, the wider spawn arc,
+    // and coastal spawn were all in place to support a denser pool
+    // without everything reading as more synchronised/uniform.
+    count: 130,
     // v3.6.21 -- hard ceiling on click-to-launch growth (see
     // launchBoatAt() in cabinet-v3-layout.js): a click beyond this total
     // is simply ignored. Not a serious/core feature per direct
     // feedback -- priority is bounded, predictable cost over any
-    // particular click behaviour. 90 = count * 1.5, picked as "clearly
-    // more boats without turning into visual/compute noise."
-    maxCount: 90,
+    // particular click behaviour. v3.6.22 -- 90->150 alongside the base
+    // count bump above (dialled in live the same way, no longer simply
+    // count*1.5).
+    maxCount: 150,
+    // v3.6.22 -- max random delay (seconds) before a freshly-batch-
+    // spawned particle starts moving (see createParticlePool()'s own
+    // comment in cabinet-v3-particles.js) -- 0 disables staggering
+    // entirely. Direct feedback: spawning the whole pool at once made
+    // every particle share the same field-phase, reading as a
+    // synchronised wave rather than ambient traffic. Harmless to raise/
+    // lower by feel -- particles are off-canvas and invisible for the
+    // whole delay regardless of its length.
+    spawnStaggerMax: 4,
     padding: 40,
     // v3.6.19 -- particles enter from one offscreen arc (south-west,
     // matching flow.biasDirX/Y reversed -- upstream of the prevailing
     // current) instead of scattering uniformly around all 4 sides, then
     // spread out as they cross the canvas. spawnArcFraction is how wide
-    // that entry arc is, as a fraction of the whole ring's perimeter.
+    // that entry arc is, as a fraction of the whole ring's perimeter --
+    // pickSpawnPoint() (cabinet-v3-particles.js) picks UNIFORMLY within
+    // it (no extra taper/weighting toward the centre), so this fraction
+    // is the whole story on how wide the entry region reads.
+    //
+    // v3.6.22 -- widened 0.35->0.55. Direct feedback: activity was
+    // piling up right at the SW corner, with little reaching the centre/
+    // NE and the SE side reading as quiet -- explicitly NOT asking for a
+    // uniform spread (still want the SW lean), just a wider one. At this
+    // canvas's proportions (wider than tall), 0.55 covers roughly the
+    // whole bottom edge, the whole left edge, and a bit of the top edge
+    // nearest the NW corner -- the far NE corner and most of the right
+    // edge stay clear, keeping the directional lean the request wanted
+    // to keep.
     spawnDirX: -0.7071,
     spawnDirY: 0.7071,
-    spawnArcFraction: 0.35,
+    spawnArcFraction: 0.55,
+    // v3.6.22 -- fraction of EVERY spawn (initial pool and mid-simulation
+    // respawns alike) that lands at a coastal water point instead of the
+    // usual off-canvas arc point -- direct request/idea: "coast-killed
+    // particles, or any other, can respawn on a coast as well... shore
+    // repulsion takes them out." 0 disables it entirely. Picked via
+    // pickCoastalSpawnPoint() in cabinet-v3-particles.js (rejection-
+    // sampling against isLand(), cheap). Deliberate side benefit: coastal
+    // points land wherever islands actually ARE, not funnelled through
+    // the SW arc, so this also helps the central/NE-quiet complaint the
+    // wider spawnArcFraction above was already addressing. Raised
+    // 0.3->0.5 after live comparison via the dev panel.
+    coastSpawnFraction: 0.5,
+    // v3.6.22 -- initial direction for a coastal spawn: "repulsion" (the
+    // exact push straight off the shore, ignoring the current/tangent
+    // blend for just that first moment) or anything else (the normal
+    // blended-field initialDirection(), same as every other spawn).
+    // Compared live via the dev panel: "repulsion is marginally better
+    // than blended, but not by much" -- kept as the default since it's
+    // still the better of the two, not because the gap was decisive.
+    coastSpawnDirMode: "repulsion",
     // v3.6.20 -- pulled back across the board (20->13, 1200->800,
     // 110->70): direct feedback was "particles feel too fast," alongside
     // skipping over/through narrow land -- less distance covered per

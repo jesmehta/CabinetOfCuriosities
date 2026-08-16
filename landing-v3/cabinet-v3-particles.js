@@ -79,6 +79,33 @@ function pickSpawnPoint(canvasBounds, padding, config, rng) {
   return pointAtPerimeterOffset(canvasBounds, padding, d);
 }
 
+// v3.6.22 -- rejection-samples random points inside canvasBounds
+// looking for one that's water but has land within ringRadius (checked
+// at 8 points around a circle -- cheap, isLandFn is just a bilinear
+// heightmap lookup, no noise evaluation). Returns null if nothing found
+// within `attempts` tries (a large landless stretch of open canvas, or
+// bad luck) -- caller falls back to a normal off-canvas spawn rather
+// than looping forever or accepting a bad point.
+function pickCoastalSpawnPoint(canvasBounds, isLandFn, rng, attempts = 40) {
+  const ringOffsets = 8;
+  const ringRadius = 18;
+  for (let i = 0; i < attempts; i++) {
+    const x = canvasBounds.x + rng() * canvasBounds.width;
+    const y = canvasBounds.y + rng() * canvasBounds.height;
+    if (isLandFn(x, y)) continue; // must itself be water
+    let nearLand = false;
+    for (let k = 0; k < ringOffsets; k++) {
+      const a = (k / ringOffsets) * Math.PI * 2;
+      if (isLandFn(x + Math.cos(a) * ringRadius, y + Math.sin(a) * ringRadius)) {
+        nearLand = true;
+        break;
+      }
+    }
+    if (nearLand) return [x, y];
+  }
+  return null;
+}
+
 // Direction a fresh particle should start moving: the field's own
 // sampled direction at that point, falling back to "toward the canvas
 // centre" on the rare chance the field is ~0 there (curl noise can
@@ -106,14 +133,63 @@ function initialDirection(x, y, t, canvasBounds, sampleFn) {
 // checkX/checkY/checkT (v3.6.19): a fresh reference point/time for the
 // stuck-safety-net in stepParticle() below -- every newly spawned
 // particle starts its own stuck-check window from scratch.
-export function spawnParticle(canvasBounds, padding, sampleFn, t, rng, config) {
-  const [x, y] = pickSpawnPoint(canvasBounds, padding, config, rng);
-  const [dirX, dirY] = initialDirection(x, y, t, canvasBounds, sampleFn);
-  return { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t };
+//
+// activeAt (v3.6.22, defaults to `t` -- immediately active): the
+// elapsed-time mark before which stepParticle() below leaves this
+// particle untouched. spawnParticle() itself always spawns immediately
+// active -- respawns mid-simulation are already naturally staggered by
+// whatever caused them, so there's nothing to spread out. Only
+// createParticlePool() (a whole batch appearing at once -- initial page
+// load, or a live pool resize) overrides this, see its own comment.
+//
+// isLandFn/repulsionFn (v3.6.22, both optional -- null/omitted disables
+// coastal spawning entirely, same "just don't pass it" pattern as
+// isLandFn elsewhere in this module): config.coastSpawnFraction chance
+// of spawning at a coastal water point (pickCoastalSpawnPoint() above)
+// instead of the usual off-canvas arc/ring point -- direct request, "can
+// respawn on a coast as well... shore repulsion takes them out." Applies
+// to EVERY spawn, not just mid-simulation respawns (an explicit choice --
+// also softens the very issue that prompted the wider spawn arc, v3.6.22
+// above, since coastal points land wherever islands actually are, not
+// funnelled through the SW entry). If a coastal point is found,
+// config.coastSpawnDirMode picks the initial direction: "repulsion" (the
+// exact, un-blended push straight off the shore, repulsionFn) or
+// anything else (the normal blended-field initialDirection(), same as
+// every other spawn) -- kept switchable, not decided yet, so both can be
+// compared live via the dev panel.
+export function spawnParticle(canvasBounds, padding, sampleFn, isLandFn, repulsionFn, t, rng, config) {
+  const wantsCoastal = isLandFn && rng() < (config.coastSpawnFraction ?? 0);
+  const coastalPoint = wantsCoastal ? pickCoastalSpawnPoint(canvasBounds, isLandFn, rng) : null;
+  const [x, y] = coastalPoint || pickSpawnPoint(canvasBounds, padding, config, rng);
+
+  const [dirX, dirY] = coastalPoint && config.coastSpawnDirMode === "repulsion" && repulsionFn
+    ? repulsionFn(x, y)
+    : initialDirection(x, y, t, canvasBounds, sampleFn);
+
+  return { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t, activeAt: t, coastal: !!coastalPoint };
 }
 
-export function createParticlePool(count, canvasBounds, padding, sampleFn, t, rng, config) {
-  return Array.from({ length: count }, () => spawnParticle(canvasBounds, padding, sampleFn, t, rng, config));
+// v3.6.22 -- direct feedback: spawning the whole pool at once made every
+// particle share the exact same clock phase, reading as a synchronised
+// "wave" rather than organic ambient traffic (all sharing the current's
+// own driftSpeedX/Y phase, the coast tangent's coastTangentDrift phase,
+// etc, until enough individual exits/respawns desynchronised them by
+// chance). Each particle in a fresh batch gets a random activeAt within
+// [t, t + spawnStaggerMax] -- stepParticle() leaves it sitting at its
+// spawn point until then. Applies to ANY fresh batch, not just the very
+// first page load (a live pool resize via the dev panel's Base count
+// slider is exactly the same situation).
+//
+// Only staggers ARC/off-canvas spawns (p.coastal === false) -- a coastal
+// spawn sits INSIDE the visible canvas, so freezing it there for up to
+// spawnStaggerMax seconds would be a visible stuck-looking boat, not the
+// invisible-because-off-canvas wait the stagger relies on elsewhere.
+export function createParticlePool(count, canvasBounds, padding, sampleFn, isLandFn, repulsionFn, t, rng, config) {
+  return Array.from({ length: count }, () => {
+    const p = spawnParticle(canvasBounds, padding, sampleFn, isLandFn, repulsionFn, t, rng, config);
+    if (!p.coastal) p.activeAt = t + rng() * (config.spawnStaggerMax ?? 0);
+    return p;
+  });
 }
 
 // Advances one particle by `dt` seconds in place (mutates `p`), then
@@ -152,7 +228,19 @@ export function createParticlePool(count, canvasBounds, padding, sampleFn, t, rn
 // grow the pool above its base count (click-to-launch) and let it drain
 // back down on its own -- see that function's own comment -- without
 // this module knowing anything about pool size or DOM at all.
-export function stepParticle(p, sampleFn, isLandFn, t, canvasBounds, padding, dt, config, rng, allowRespawn = true) {
+//
+// repulsionFn(x, y) (v3.6.22, optional -- omitted just disables the
+// "repulsion" coastSpawnDirMode option, see spawnParticle()'s own
+// comment): threaded through to the respawn-in-place spawnParticle()
+// call below, same as isLandFn already was.
+export function stepParticle(p, sampleFn, isLandFn, repulsionFn, t, canvasBounds, padding, dt, config, rng, allowRespawn = true) {
+  // v3.6.22 -- spawn-stagger gate (see createParticlePool()'s own
+  // comment): left completely untouched (no field sample, no movement)
+  // until its own activeAt -- it's sitting off-canvas already, so this
+  // is invisible, and skipping the sample entirely is a small free
+  // efficiency win when a big batch is staggered at once.
+  if (t < p.activeAt) return false;
+
   const [vx, vy] = sampleFn(p.x, p.y, t);
   const mag = Math.hypot(vx, vy);
   if (mag > 1e-9) {
@@ -184,7 +272,7 @@ export function stepParticle(p, sampleFn, isLandFn, t, canvasBounds, padding, dt
 
   if (stuck || offCanvas) {
     if (!allowRespawn) return true;
-    const fresh = spawnParticle(canvasBounds, padding, sampleFn, t, rng, config);
+    const fresh = spawnParticle(canvasBounds, padding, sampleFn, isLandFn, repulsionFn, t, rng, config);
     p.x = fresh.x;
     p.y = fresh.y;
     p.dirX = fresh.dirX;
@@ -192,6 +280,8 @@ export function stepParticle(p, sampleFn, isLandFn, t, canvasBounds, padding, dt
     p.checkX = fresh.checkX;
     p.checkY = fresh.checkY;
     p.checkT = fresh.checkT;
+    p.activeAt = fresh.activeAt;
+    p.coastal = fresh.coastal;
   }
   return false;
 }

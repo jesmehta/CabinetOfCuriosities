@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.21** (domain warping for real concave coastlines,
+Currently on **v3.6.22** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -26,15 +26,18 @@ particle system riding it on `islands-tool.html` only (small
 dark-outlined cream ellipses, `cabinet-v3-particles.js`), island
 avoidance and a prevailing current direction both working through
 narrow channels and bays without trapping particles, a hard land-crossing
-backstop independent of the field's own soft push, and click-to-launch (a
-click on open water adds a boat, capped at 1.5x the base count so it
-can't run away with page performance)
+backstop independent of the field's own soft push, click-to-launch (a
+click on open water adds a boat), a wider/coastal-aware spawn system
+(130 ambient particles, capped at 150, half of every spawn landing at a
+coastline and pushing off it) tuned live via dev-panel controls that now
+also cover particle counts and both collapsible and nested-collapsible
+panel sections
 -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
-progression and why each pass changed what it did.
+-> v3.6.22 progression and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1415,6 +1418,69 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.22 -- coastal spawn, wider entry arc, spawn stagger, dev-panel controls for all of it, live-tuned defaults
+
+Follow-up to the SW-corner-pileup report: `spawnArcFraction` widened
+0.35->0.55 -- at this canvas's proportions (wider than tall), that covers
+roughly the whole bottom edge, the whole left edge, and a bit of the top
+edge near NW, while the far NE corner and most of the right edge stay
+clear -- kept the directional lean, per direct feedback ("Variation is
+good, i dont want a uniform spread... but wider").
+
+Second report, after that: "coastal-stuck particles simply respawn, not
+much manages to go ahead till the NE corner." Rather than loosen the
+stuck-detector (would let real traps clear more slowly again, working
+against v3.6.20's own fix), added a genuinely new spawn origin instead of
+just widening the old one: `coastSpawnFraction` (default 0.5) of EVERY
+spawn -- initial pool and mid-simulation respawns alike -- now lands at a
+coastal water point via `pickCoastalSpawnPoint()` (`cabinet-v3-
+particles.js`, rejection-sampling against `isLand()`, cheap -- no noise
+evaluation, just bilinear heightmap lookups) instead of the usual
+off-canvas arc point. `coastSpawnDirMode` picks the initial direction:
+"repulsion" (a new `repulsionAt()` export on the flow sampler -- the
+exact, un-blended push straight off the shore) or "blended" (the normal
+current+coast field direction every other spawn already used). Both
+options were built as a live dev-panel A/B specifically so this could be
+compared by feel rather than guessed -- verdict after trying both:
+"repulsion is marginally better than blended, but not by much," kept as
+the default on that basis. Deliberate side effect: coastal points land
+wherever islands actually ARE, not funnelled through the SW arc, so this
+directly helps the same central/NE-quiet complaint the wider spawn arc
+was already addressing, from a different angle.
+
+Also: spawning a whole batch at once (initial page load, or a dev-panel
+pool resize) made every particle share the exact same field-phase,
+reading as a synchronised "wave" rather than ambient traffic. Fixed with
+`spawnStaggerMax` (default 4s) -- each particle in a fresh batch gets a
+random activation delay and sits inert at its spawn point until then,
+invisible for arc spawns (off-canvas) but explicitly SKIPPED for coastal
+spawns (`p.coastal`), since those are inside the visible canvas and would
+otherwise read as a boat frozen at the shore.
+
+**Dev panel**: Base count / Max cap sliders for `v3Config.particles.
+count`/`maxCount` (range raised to 1000 on request, specifically to let
+the "individual boats vs. one uniform drift" question below be felt
+directly), plus Coastal spawn % and Coastal spawn direction controls for
+the above -- all live-tunable without a reload, base count triggers a
+full pool rebuild (`refreshParticleCount()`, new export), everything else
+reads fresh on the next spawn/click with no rebuild needed. Wave ring
+parameters and Topological offset parameters (previously flat headings
+inside Visuals) are now their own nested collapsible `<details>`
+(`makeSubsection()`), closed by default -- direct request, they were
+taking up a lot of the section's space even when not being tuned.
+
+**Defaults, after live tuning through the above**: `count` 60->130,
+`maxCount` 90->150 (no longer simply `count * 1.5` -- both dialled in by
+feel, independently). Direct observation while comparing at the high end
+of the new 1000-particle slider range: since every particle follows the
+literal same current/speed field, a genuinely large pool reads as "one
+giant trash drift" rather than individual boats -- the coastal-repulsion
+launches help some (they don't start from the same shared trajectory),
+but don't fully solve it. Not an issue at the shipped 130 -- noted as a
+real limitation of the current "one shared field, no per-particle
+character" design, not fixed this pass; see the conversation log for the
+cost analysis of a per-particle-personality follow-up.
 
 ### v3.6.21 -- hard land-crossing backstop, click-to-launch with a governed particle pool
 

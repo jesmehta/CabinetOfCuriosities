@@ -212,7 +212,20 @@ export function createFlowSampler(H, hCols, hRows, hCellSize, heightmapBounds, c
     return heightAt(x, y) > landThreshold;
   }
 
-  return { vectorAt, potentialAt, isLand };
+  // v3.6.22 -- the true, exact (never-drifted) repulsion direction at a
+  // point -- the same `-gradient` vectorAt() blends into the coast
+  // vector above, just exposed on its own. For coastal particle spawns
+  // (cabinet-v3-particles.js's pickCoastalSpawnPoint()): a particle
+  // launched "off the beach" wants to start moving straight away from
+  // shore, not already blended with the current the way an ordinary
+  // spawn's initialDirection() would give it.
+  function repulsionAt(x, y) {
+    const [hx, hy] = gradientOf(heightAt, x, y, heightEps);
+    const m = Math.hypot(hx, hy) || 1;
+    return [-hx / m, -hy / m];
+  }
+
+  return { vectorAt, potentialAt, isLand, repulsionAt };
 }
 
 // Grid snapshot of the field at a given moment `t`, for the dev-panel
