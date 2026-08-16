@@ -361,6 +361,38 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
   opacity: 0.85;
 }
 
+/* v3.6.17 -- particles drifting along the flow field (islands-tool.html
+   only -- see startCurrentAnimation()'s comment in cabinet-v3-layout.js).
+   Small ellipses, per the design conversation's own "start simple"
+   direction -- rotated per-particle (cabinet-v3-layout.js's
+   tickParticles()) to lean along its direction of travel, a cheap
+   directional cue without a trail. pointer-events: none -- decorative
+   only, never blocks an island/section hover underneath. */
+.v3-particles {
+  pointer-events: none;
+}
+
+/* v3.6.20 -- STROKE set per-particle inline (a random pick off a small
+   dark palette, see PARTICLE_COLORS in cabinet-v3-layout.js's
+   ensureParticles()) -- inline style wins the cascade over this class
+   rule for that property. FILL stays fixed here, a light cream/parchment
+   tone (the map's own --cab-land-light) so a dark outline actually
+   reads as an outline instead of vanishing into a same-colour body. */
+.v3-particle {
+  fill: var(--cab-land-light);
+  stroke-width: 1.1;
+  opacity: 0.6;
+}
+
+/* 2-3 short strokes per particle, parallel to the ellipse's minor axis
+   (i.e. crossing its width, perpendicular to travel), placed in
+   ensureParticles(). Same per-particle colour as the body outline so
+   they read as texture, not a second competing shape. */
+.v3-particle-rib {
+  stroke-width: 0.8;
+  opacity: 0.55;
+}
+
 /* v3.6.5 -- stacked translucent colour bands (replaces the single-ring
    evenodd approach). Each group is ONE colour at a fixed fill-opacity,
    drawn as several full (unclipped) nested contours -- overlap count,

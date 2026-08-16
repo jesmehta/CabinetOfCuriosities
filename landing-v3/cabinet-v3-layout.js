@@ -29,7 +29,8 @@ import { sections, entries } from "../docs/assets/js/cabinet-generated-content.j
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
 import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField } from "./cabinet-v3-islandshape.js";
-import { buildFlowField } from "./cabinet-v3-flowfield.js";
+import { buildFlowField, createFlowSampler } from "./cabinet-v3-flowfield.js";
+import { createParticlePool, stepParticle } from "./cabinet-v3-particles.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -40,6 +41,13 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // weights), never on island-shape tuning, so there's nothing to redo
 // there when only v3Config.island changes.
 let islandLayoutState = null;
+
+// v3.6.16 -- caches the last heightmap drawIslandsPath() built (H/cols/
+// rows/paddedBounds), set on every render()/retraceIslands() call --
+// lets startCurrentAnimation() (cabinet-v3-controls.js, called once on
+// page load) build a flow field immediately without re-running the
+// heightmap trace itself.
+let lastIslandTrace = null;
 
 // v3.6.8 -- bumped by cabinet-v3-controls.js's "Reroll positions" button,
 // folded into every section's scatter seed below (sectionSeed()) so a
@@ -659,16 +667,23 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   return { H, cols, rows, paddedBounds };
 }
 
-// v3.6.16 -- dev-only debug view of the flow field (no particles built
-// yet -- see cabinet-v3-flowfield.js and Landing-page-notes.2.0.md's
-// "Flow field" entry): showPotential tints a grid by the base current's
-// scalar potential ("the noise field"), showVectors draws the full
-// composite field as arrows ("vector directions"). Both off by default
-// -- cheap no-op (just removes any stale debug layer) when neither is
-// on, same pattern flatColourMode's own toggle bugfix established: a
-// full innerHTML clear + rebuild on every call, never a stale leftover
-// from a previous branch.
-function drawFlowFieldDebug(stage, canvasBounds, islandTrace) {
+// v3.6.16 -- dev-only debug view of the flow field: showPotential tints
+// a grid by the base current's scalar potential ("the noise field"),
+// showVectors draws the full composite field as arrows ("vector
+// directions"). Takes an ALREADY-BUILT grid rather than building its own
+// -- see buildCurrentFlowField() below (particles use a separate
+// analytic sampler instead, buildCurrentSampler() -- the two aren't
+// shared, since the grid only needs rebuilding when the debug view
+// actually redraws, not once per particle per frame). v3.6.20 -- that
+// grid is no longer frozen at t=0 forever: animationFrame() rebuilds it
+// periodically at the live elapsed time (throttled -- see its own
+// comment) so this view stays correlated with what particles are
+// actually doing once the field itself is time-varying. Both toggles
+// off by default -- cheap no-op (just removes any stale debug layer)
+// when neither is on, same pattern flatColourMode's own toggle bugfix
+// established: a full innerHTML clear + rebuild on every call, never a
+// stale leftover from a previous branch.
+function drawFlowFieldDebug(stage, canvasBounds, field) {
   const { showPotential, showVectors } = v3Config.flow;
   let group = stage.querySelector(".v3-flow-debug");
 
@@ -683,9 +698,6 @@ function drawFlowFieldDebug(stage, canvasBounds, islandTrace) {
     group.innerHTML = "";
   }
   stage.appendChild(group);
-
-  const { H, cols: hCols, rows: hRows, paddedBounds } = islandTrace;
-  const field = buildFlowField(H, hCols, hRows, v3Config.island.cellSize, paddedBounds, canvasBounds, v3Config.flow);
 
   if (showPotential) {
     let min = Infinity, max = -Infinity;
@@ -720,7 +732,11 @@ function drawFlowFieldDebug(stage, canvasBounds, islandTrace) {
     // all, maxLen keeps near-coast ones from overrunning neighbouring
     // grid cells. Both first-guess render constants, not part of
     // v3Config.flow itself -- this is a debug view, not the field.
-    const arrowScale = 6000;
+    // (arrowScale lowered at v3.6.18 alongside currentGain -- raw
+    // magnitudes roughly doubled, so the old value made most arrows hit
+    // maxLen immediately, losing the open-water-vs-coast length contrast
+    // this view exists to show.)
+    const arrowScale = 250;
     const maxLen = field.cellSize * 0.85;
     for (let gy = 0; gy < field.rows; gy++) {
       for (let gx = 0; gx < field.cols; gx++) {
@@ -742,6 +758,300 @@ function drawFlowFieldDebug(stage, canvasBounds, islandTrace) {
   }
 }
 
+// v3.6.17 -- particle animation state. Deliberately NOT part of
+// islandLayoutState -- that cache exists for cheap slider retraces, this
+// exists for the separate concern of a running requestAnimationFrame
+// loop, and only islands-tool.html (via cabinet-v3-controls.js's
+// startCurrentAnimation() call) ever sets particlesActive true. Static
+// pages (index.html, build-render.html) never touch this, so they pay
+// nothing for it.
+let particlesActive = false;
+let particleState = null; // { particles, canvasBounds, padding, sampler, els }
+let lastFrameTime = null;
+// v3.6.18 -- elapsed-seconds epoch for the current's time-drift (see
+// createFlowSampler()'s doc comment in cabinet-v3-flowfield.js). Set
+// ONCE, the first animation frame -- deliberately NOT reset when a
+// retrace rebuilds the sampler (a slider tick shouldn't undo however far
+// the current has already drifted), only ever advances forward.
+let animStartTime = null;
+// v3.6.20 -- dark, saturated palette for particle colour (direct
+// request: darker than the previous single light sand tone). Rolled
+// once per particle slot in ensureParticles(), same as size/ribs below
+// -- ink/pigment tones, not the site's own light --cab-* palette, since
+// these read as small distinct specks against open water rather than
+// blending into the coastline/label colours.
+const PARTICLE_COLORS = ["#3b2416", "#1c1a17", "#4a2f5e", "#1f2b4a"]; // dark brown, black, violet, navy
+// v3.6.20 -- elapsed-seconds mark of the last debug-grid rebuild (see
+// animationFrame()'s throttled refresh below); null means "never yet."
+let lastDebugFieldTime = null;
+
+// (Re)builds the particle pool and its backing SVG <ellipse> elements
+// from scratch -- called on a full render() (fresh layout, e.g. Reroll)
+// while particlesActive, never on a cheap retrace (see
+// updateParticleSampler() below, which keeps existing particles'
+// in-flight positions instead of resetting them just because a slider
+// moved).
+function ensureParticles(stage, canvasBounds, sampler, t) {
+  const { count, padding } = v3Config.particles;
+  const particles = createParticlePool(count, canvasBounds, padding, sampler.vectorAt, t, Math.random, v3Config.particles);
+
+  let group = stage.querySelector(".v3-particles");
+  if (!group) group = el("g", { class: "v3-particles", "aria-hidden": "true" });
+  else group.innerHTML = "";
+  stage.appendChild(group);
+
+  const els = particles.map(() => {
+    const pg = buildParticleElement();
+    group.appendChild(pg);
+    return pg;
+  });
+
+  particleState = { particles, canvasBounds, padding, sampler, els, group };
+}
+
+// v3.6.21 -- factored out of ensureParticles() so launchBoatAt() (the
+// click-to-launch feature) can build an identical-looking element for a
+// particle added at runtime, not just the initial pool.
+//
+// v3.6.20 -- scale (and the rib lines below) rolled once per element
+// here (not in cabinet-v3-particles.js, and not re-rolled on respawn --
+// size/decoration is a DOM/drawing concern, position/recycling isn't),
+// so each particle keeps a consistent look for its on-screen lifetime
+// even as it recycles to a fresh spawn point. Ellipse + ribs sit in
+// LOCAL coordinates (centred on 0,0) inside their own <g>, so
+// tickParticles() only ever has to set ONE transform (translate+rotate)
+// per particle per frame, not reposition each child separately.
+function buildParticleElement() {
+  const { sizeMin, sizeMax } = v3Config.particles;
+  const scale = sizeMin + Math.random() * (sizeMax - sizeMin);
+  const rx = 3.2 * scale, ry = 1.3 * scale;
+  const color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+
+  const pg = el("g", { class: "v3-particle-group" });
+  const ellipse = el("ellipse", {
+    class: "v3-particle", cx: 0, cy: 0, rx: rx.toFixed(2), ry: ry.toFixed(2),
+    style: `stroke:${color}`
+  });
+  pg.appendChild(ellipse);
+
+  // 2-3 ribs, parallel to the minor axis (i.e. crossing the ellipse's
+  // width), at randomised offsets along the major axis -- spaced apart
+  // (min 0.28 of rx between any two) so they don't overlap into one
+  // smudge, and each trimmed to the ellipse's own local half-height at
+  // that offset (x = u*rx -> half-height = ry*sqrt(1-u^2)) so a rib near
+  // either tip is short, one through the middle is nearly the full ry --
+  // reads as following the ellipse's actual curve rather than a row of
+  // identical ticks.
+  const ribCount = 2 + Math.floor(Math.random() * 2);
+  const usedU = [];
+  for (let i = 0; i < ribCount; i++) {
+    let u;
+    let attempts = 0;
+    do {
+      u = (Math.random() * 2 - 1) * 0.7;
+      attempts++;
+    } while (usedU.some(o => Math.abs(o - u) < 0.28) && attempts < 10);
+    usedU.push(u);
+
+    const localX = u * rx;
+    const halfH = ry * Math.sqrt(Math.max(0, 1 - u * u)) * 0.85;
+    const rib = el("line", {
+      class: "v3-particle-rib",
+      x1: localX.toFixed(2), y1: (-halfH).toFixed(2),
+      x2: localX.toFixed(2), y2: halfH.toFixed(2),
+      style: `stroke:${color}`
+    });
+    pg.appendChild(rib);
+  }
+
+  return pg;
+}
+
+// Cheap path for a retrace (slider tick): the underlying heightmap
+// changed (island shape tuning), so the coast-vector half of the
+// sampler needs to be fresh, but existing particles keep their
+// in-flight positions -- resetting them on every slider nudge would
+// look like a glitch, not a tuning aid.
+function updateParticleSampler(sampler) {
+  if (particleState) particleState.sampler = sampler;
+}
+
+// v3.6.21 -- particles array is no longer fixed-length: click-to-launch
+// (launchBoatAt() below) can grow it up to maxCount, and while it's
+// above the base count, respawn-on-exit is suspended (allowRespawn
+// below) so the pool drains back toward baseCount on its own as boats
+// naturally exit/get stuck, rather than staying inflated forever. Direct
+// request: "as the number of particles go above 60, stop respawning
+// until we're back to 60" -- deliberately applies to every particle
+// while over-capacity, not just the clicked ones, since that's simpler
+// and self-limiting (no separate "which ones are extra" bookkeeping).
+// Iterated backwards so a mid-loop splice() never skips the next index.
+function tickParticles(dt, t) {
+  if (!particleState) return;
+  const { particles, canvasBounds, padding, sampler, els } = particleState;
+  const stepConfig = v3Config.particles;
+  const baseCount = stepConfig.count;
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    const allowRespawn = particles.length <= baseCount;
+    const remove = stepParticle(p, sampler.vectorAt, sampler.isLand, t, canvasBounds, padding, dt, stepConfig, Math.random, allowRespawn);
+    if (remove) {
+      els[i].remove();
+      particles.splice(i, 1);
+      els.splice(i, 1);
+      continue;
+    }
+    const angle = (Math.atan2(p.dirY, p.dirX) * 180) / Math.PI;
+    const x = p.x.toFixed(1);
+    const y = p.y.toFixed(1);
+    els[i].setAttribute("transform", `translate(${x} ${y}) rotate(${angle.toFixed(1)})`);
+  }
+}
+
+function animationFrame(timestamp) {
+  if (animStartTime === null) animStartTime = timestamp;
+  const t = (timestamp - animStartTime) / 1000;
+  if (lastFrameTime !== null) {
+    // Clamped to 50ms so resuming a backgrounded/throttled tab doesn't
+    // advect every particle in one huge jump.
+    const dt = Math.min(0.05, (timestamp - lastFrameTime) / 1000);
+    tickParticles(dt, t);
+  }
+  lastFrameTime = timestamp;
+
+  // v3.6.20 -- direct request: see the field correlate with particle
+  // behaviour live, not just its t=0 starting picture. Throttled to
+  // every 0.4s (not every frame) -- a full grid rebuild is cols*rows
+  // sampler calls, each several gradient evals; the debug view doesn't
+  // need 60fps to read as "live," particle motion already provides that.
+  if (
+    (v3Config.flow.showPotential || v3Config.flow.showVectors) &&
+    islandLayoutState && lastIslandTrace &&
+    (lastDebugFieldTime === null || t - lastDebugFieldTime > 0.4)
+  ) {
+    lastDebugFieldTime = t;
+    const stage = document.querySelector("#v3-stage");
+    const field = buildCurrentFlowField(islandLayoutState.canvasBounds, lastIslandTrace, t);
+    drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, field);
+  }
+
+  requestAnimationFrame(animationFrame);
+}
+
+// v3.6.21 -- click-to-launch: ADDS a genuinely new particle at the
+// clicked point (not a real feature per the user -- flexible on exact
+// behaviour, priority is staying cheap and not risking page performance
+// over it), capped at v3Config.particles.maxCount total. Above that, a
+// click is just ignored -- no queueing, no bumping an existing boat,
+// nothing clever. Growth only ever happens here; every particle
+// (clicked or original) drains back out through the SAME exit path in
+// tickParticles()/stepParticle() -- once the pool is over its base
+// count, exits stop being replaced (see tickParticles()'s own comment),
+// so extras naturally die off over time without any separate "is this
+// one an extra" bookkeeping.
+function launchBoatAt(x, y, t) {
+  if (!particleState) return;
+  const { particles, sampler, els, group } = particleState;
+  if (particles.length >= v3Config.particles.maxCount) return;
+
+  const [vx, vy] = sampler.vectorAt(x, y, t);
+  const mag = Math.hypot(vx, vy);
+  const dirX = mag > 1e-9 ? vx / mag : 1;
+  const dirY = mag > 1e-9 ? vy / mag : 0;
+  const p = { x, y, dirX, dirY, checkX: x, checkY: y, checkT: t };
+  particles.push(p);
+
+  const pg = buildParticleElement();
+  group.appendChild(pg);
+  els.push(pg);
+
+  // Positioned immediately rather than waiting up to one frame for
+  // tickParticles() -- a click should feel instant.
+  const angle = (Math.atan2(dirY, dirX) * 180) / Math.PI;
+  pg.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})`);
+}
+
+// Converts a click's screen coordinates into the stage <svg>'s own
+// user-space (accounting for the viewBox's scale/offset -- see
+// render()'s own viewBox comment) via the standard SVG technique, then
+// only launches a boat if the point is both inside canvasBounds and NOT
+// land -- reuses sampler.isLand() (v3.6.21, see createFlowSampler()'s
+// own comment in cabinet-v3-flowfield.js), the exact same land test the
+// particle sim itself now enforces as a hard backstop, so "open ocean"
+// here means the same thing it means everywhere else in this system.
+function onStageClick(evt) {
+  if (!particleState) return;
+  const stage = document.querySelector("#v3-stage");
+  const pt = stage.createSVGPoint();
+  pt.x = evt.clientX;
+  pt.y = evt.clientY;
+  const svgP = pt.matrixTransform(stage.getScreenCTM().inverse());
+
+  const { canvasBounds, sampler } = particleState;
+  if (
+    svgP.x < canvasBounds.x || svgP.x > canvasBounds.x + canvasBounds.width ||
+    svgP.y < canvasBounds.y || svgP.y > canvasBounds.y + canvasBounds.height
+  ) return;
+  if (sampler.isLand(svgP.x, svgP.y)) return;
+
+  launchBoatAt(svgP.x, svgP.y, currentAnimTime());
+}
+
+// Exported for cabinet-v3-controls.js -- islands-tool.html is the ONLY
+// caller (see the module doc comment above). Idempotent: calling it
+// again (shouldn't normally happen, no pause/stop control exists yet)
+// doesn't start a second RAF loop, and doesn't attach a second click
+// listener either (guarded by the same particlesActive check).
+export function startCurrentAnimation() {
+  if (particlesActive) return;
+  particlesActive = true;
+  document.querySelector("#v3-stage").addEventListener("click", onStageClick);
+  if (islandLayoutState && lastIslandTrace) {
+    const stage = document.querySelector("#v3-stage");
+    const sampler = buildCurrentSampler(islandLayoutState.canvasBounds, lastIslandTrace);
+    ensureParticles(stage, islandLayoutState.canvasBounds, sampler, 0);
+    if (v3Config.flow.showPotential || v3Config.flow.showVectors) {
+      const field = buildCurrentFlowField(islandLayoutState.canvasBounds, lastIslandTrace, currentAnimTime());
+      drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, field);
+    }
+  }
+  requestAnimationFrame(animationFrame);
+}
+
+// Shared by render()/retraceIslands()/animationFrame() -- builds against
+// whatever heightmap drawIslandsPath() just produced. Two flavours: the
+// grid SNAPSHOT drawFlowFieldDebug() renders (buildCurrentFlowField --
+// re-sampled at a given instant `t`, not itself continuously animated),
+// and the live analytic sampler particles advect against
+// (buildCurrentSampler, see createFlowSampler()'s own doc comment for
+// why particles use per-point sampling every frame rather than a grid --
+// cost scales with particle count, not grid resolution).
+function buildCurrentFlowField(canvasBounds, islandTrace, t = 0) {
+  const { H, cols, rows, paddedBounds } = islandTrace;
+  return buildFlowField(H, cols, rows, v3Config.island.cellSize, paddedBounds, canvasBounds, v3Config.flow, t);
+}
+
+// v3.6.20 -- shared by every debug-field call site so they all read the
+// SAME live clock the particles themselves advect against, rather than
+// each re-deriving it (or worse, silently defaulting to 0 and showing a
+// rewound field). Mirrors ensureParticles()'s own inline version in
+// render() (kept there too, unchanged, since it already existed).
+function currentAnimTime() {
+  return animStartTime === null ? 0 : (performance.now() - animStartTime) / 1000;
+}
+
+function buildCurrentSampler(canvasBounds, islandTrace) {
+  const { H, cols, rows, paddedBounds } = islandTrace;
+  // v3.6.21 -- landThreshold isn't part of v3Config.flow's own shape;
+  // merged in here from v3Config.island.threshold (the SAME value the
+  // coastline is traced at) so the sampler's isLand() can never disagree
+  // with what's actually drawn as land. See createFlowSampler()'s own
+  // comment for why isLand() exists at all.
+  const flowConfig = { ...v3Config.flow, landThreshold: v3Config.island.threshold };
+  return createFlowSampler(H, cols, rows, v3Config.island.cellSize, paddedBounds, flowConfig);
+}
+
 // Exported for cabinet-v3-controls.js -- re-traces against the current
 // v3Config.island values using the cached layout from the last full
 // render(), a no-op if render() hasn't run yet.
@@ -749,7 +1059,18 @@ export function retraceIslands() {
   if (!islandLayoutState) return;
   const stage = document.querySelector("#v3-stage");
   const islandTrace = drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
-  drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, islandTrace);
+  lastIslandTrace = islandTrace;
+
+  if (v3Config.flow.showPotential || v3Config.flow.showVectors) {
+    const field = buildCurrentFlowField(islandLayoutState.canvasBounds, islandTrace, currentAnimTime());
+    drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, field);
+  } else {
+    drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, null);
+  }
+
+  if (particlesActive) {
+    updateParticleSampler(buildCurrentSampler(islandLayoutState.canvasBounds, islandTrace));
+  }
 }
 
 // Exported (v3.6.8) so cabinet-v3-controls.js's centerBias slider and
@@ -848,7 +1169,28 @@ export function render() {
   // rather than one shape per circle.
   islandLayoutState = { grown, canvasBounds };
   const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
-  drawFlowFieldDebug(stage, canvasBounds, islandTrace);
+  lastIslandTrace = islandTrace;
+
+  if (v3Config.flow.showPotential || v3Config.flow.showVectors) {
+    const field = buildCurrentFlowField(canvasBounds, islandTrace, currentAnimTime());
+    drawFlowFieldDebug(stage, canvasBounds, field);
+  } else {
+    drawFlowFieldDebug(stage, canvasBounds, null);
+  }
+
+  // particlesActive can already be true here (e.g. Reroll/Restore
+  // position while the animation is running) -- a full render() means a
+  // fresh layout, so particles get fresh positions too, not just a
+  // sampler update (see updateParticleSampler()'s own comment for why a
+  // cheap retrace does the opposite). `t` reads the real elapsed
+  // animation time (not 0) so freshly-spawned particles' initial
+  // direction is sampled from the current's actual current drift state,
+  // not a rewound one.
+  if (particlesActive) {
+    const sampler = buildCurrentSampler(canvasBounds, islandTrace);
+    const t = animStartTime === null ? 0 : (performance.now() - animStartTime) / 1000;
+    ensureParticles(stage, canvasBounds, sampler, t);
+  }
 
   const grownBySection = new Map();
   grown.forEach(c => {

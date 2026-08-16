@@ -27,7 +27,7 @@
 // already costs per tick.
 
 import { v3Config } from "./cabinet-v3-data.js";
-import { retraceIslands, render, rerollPacking, resetReroll } from "./cabinet-v3-layout.js";
+import { retraceIslands, render, rerollPacking, resetReroll, startCurrentAnimation } from "./cabinet-v3-layout.js";
 
 // Each entry drives one Island-shape slider. `get`/`set` default to
 // reading/writing v3Config.island[key] directly; only warpPeriod
@@ -559,3 +559,10 @@ function buildControlPanel() {
 }
 
 buildControlPanel();
+
+// v3.6.17 -- islands-tool.html is the only page that ever starts the
+// current/particle animation (see startCurrentAnimation()'s own comment
+// in cabinet-v3-layout.js) -- this file itself never loads on
+// index.template.html/build-render.html/archive, so that scoping is
+// automatic, no page-detection logic needed here.
+startCurrentAnimation();

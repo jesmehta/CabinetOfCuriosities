@@ -220,16 +220,132 @@ export const v3Config = {
   flow: {
     cellSize: 24,
     seed: "cabinet-v3-flow",
-    potentialScale: 1 / 420,
-    octaves: 2,
+    potentialScale: 1 / 300,
+    octaves: 3,
     lacunarity: 2,
     gain: 0.5,
-    coastMix: 0.65,
+    // v3.6.18 -- magnitude-only multiplier on the current (not folded
+    // into potentialScale/octaves, which shape frequency/texture, not
+    // overall energy) -- see currentGain's field notes below for why
+    // open water needed this, not just a higher particle speed floor.
+    currentGain: 16,
+    // v3.6.18 -- world px/sec the current's own sample position drifts
+    // over real time; the coast vector never drifts (islands don't
+    // move). See createFlowSampler()'s doc comment in
+    // cabinet-v3-flowfield.js for why this exists at all: without it, a
+    // particle that wanders near a curl-noise vortex centre orbits it
+    // forever in a perfectly static field.
+    driftSpeedX: 5,
+    driftSpeedY: 4,
+    // v3.6.19 -- constant (never time-varying) prevailing-current term --
+    // "the general current goes somewhere, with local variation on top."
+    // biasDirX/Y is a direction (not required to be unit length --
+    // 1/sqrt(2) each here for northeast in screen space: +x is east, -y
+    // is north). Also the tie-breaker for coastMix's tangent handedness
+    // below -- see that field's own note for why.
+    biasDirX: 0.7071,
+    biasDirY: -0.7071,
+    // v3.6.20 -- pulled back 0.05->0.03: direct feedback was the NE lean
+    // read as "migrating" rather than "wandering," having flattened out
+    // the swirl's own local variation at the larger scale. Only the
+    // MAGNITUDE moved; biasDirX/Y itself (the actual direction) is
+    // unchanged, and that's the only part coastMix's tangent-handedness
+    // tie-breaker below reads -- so the narrow-channel fix is untouched
+    // by this change, structurally, not just by luck.
+    biasStrength: 0.03,
+    // v3.6.20 -- pulled back 0.65->0.55 (more repulsion, less tangential
+    // slide): direct feedback was particles "intruding along coastlines
+    // in parallel" and crossing narrow fingers of land, i.e. riding too
+    // close to the edge instead of standing off it.
+    coastMix: 0.55,
     coastStrength: 3,
+    // v3.6.20 -- how far (world px) and how fast (rad/sec) the TANGENT
+    // half of the coast vector's own heightmap sample orbits around the
+    // particle's true position (repulsion never moves -- see the long
+    // comment in createFlowSampler()'s vectorAt() for why). Fixes
+    // persistent trapping in narrow pinches/bays: rot90(gradient) is
+    // divergence-free like curl noise, so a purely static tangent has
+    // its own permanent vortices in tight/concave geometry, same
+    // mechanism as driftSpeedX/Y's own bug just on the static half of
+    // the field. BOUNDED (sin/cos), not a linear t*speed ramp -- a first
+    // attempt used a linear drift and it was a real bug: t only grows
+    // for the page's whole lifetime, so the sample position drifted
+    // arbitrarily far given enough time, at some point landing well
+    // inside the same landmass and reading a "coastline direction" that
+    // had nothing to do with the real local edge (reported directly:
+    // particles going over more land than before, worse the longer the
+    // page had been open). Small relative to heightEps/typical channel
+    // width, and the two axes use different frequencies on purpose (not
+    // a shared period) so the sample traces an open path, not a fixed
+    // loop of its own.
+    coastTangentDriftAmpX: 7,
+    coastTangentDriftAmpY: 5,
+    coastTangentDriftFreqX: 0.29,
+    coastTangentDriftFreqY: 0.37,
     // Dev-panel debug toggles (Visuals section) -- off by default, this
     // is a tuning aid, not part of the shipped visual.
     showPotential: false,
     showVectors: false
+  },
+
+  // v3.6.17 -- particle advection along v3Config.flow (see
+  // cabinet-v3-particles.js). Only ever created/animated by
+  // islands-tool.html (cabinet-v3-controls.js starts it) -- static pages
+  // (index.html, build-render.html) never call startCurrentAnimation(),
+  // so this costs them nothing, not even the DOM elements. See the
+  // field-notes block below for how these numbers were picked.
+  particles: {
+    count: 60,
+    // v3.6.21 -- hard ceiling on click-to-launch growth (see
+    // launchBoatAt() in cabinet-v3-layout.js): a click beyond this total
+    // is simply ignored. Not a serious/core feature per direct
+    // feedback -- priority is bounded, predictable cost over any
+    // particular click behaviour. 90 = count * 1.5, picked as "clearly
+    // more boats without turning into visual/compute noise."
+    maxCount: 90,
+    padding: 40,
+    // v3.6.19 -- particles enter from one offscreen arc (south-west,
+    // matching flow.biasDirX/Y reversed -- upstream of the prevailing
+    // current) instead of scattering uniformly around all 4 sides, then
+    // spread out as they cross the canvas. spawnArcFraction is how wide
+    // that entry arc is, as a fraction of the whole ring's perimeter.
+    spawnDirX: -0.7071,
+    spawnDirY: 0.7071,
+    spawnArcFraction: 0.35,
+    // v3.6.20 -- pulled back across the board (20->13, 1200->800,
+    // 110->70): direct feedback was "particles feel too fast," alongside
+    // skipping over/through narrow land -- less distance covered per
+    // frame gives the coast vector more room to actually turn a particle
+    // before it's already past the obstacle. See the field-notes block
+    // below for the resulting speed ranges.
+    baseSpeed: 13,
+    speedGain: 800,
+    maxSpeed: 70,
+    // v3.6.19 -- cheap safety net: if a particle's net displacement over
+    // the last stuckCheckInterval seconds is under stuckThreshold px, it
+    // respawns regardless of why it stalled. Backstop for whatever the
+    // field-level fixes (coastMix tangent handedness, current time-
+    // drift) don't happen to catch -- one distance check per particle
+    // per interval, no neighbour/density queries (deliberately not the
+    // "close to a bunch of other particles" version of this idea --
+    // flagged directly as the expensive one).
+    // v3.6.20 -- tightened 2.5->1.8s / 15->12px: a faster backstop for
+    // whatever the coastTangentDriftX/Y fix (flow block above) doesn't
+    // happen to dissolve fast enough on its own. Still safely clear of a
+    // genuinely-moving particle -- even sitting on baseSpeed's 13px/s
+    // floor in a straight line, that's ~23px net over 1.8s, well above
+    // the 12px trigger.
+    stuckCheckInterval: 1.8,
+    stuckThreshold: 12,
+    // v3.6.20 -- size scale range, multiplying the base rx/ry set in
+    // ensureParticles() (cabinet-v3-layout.js). Rolled once per pool
+    // SLOT when its <ellipse> is created, not re-rolled on respawn (a
+    // DOM-only concern -- position/recycling stays entirely in
+    // cabinet-v3-particles.js, this only ever touches attributes layout.js
+    // already owns). Direct request: some visual variation instead of
+    // every particle reading as the identical stamped shape.
+    sizeMin: 0.6,
+    sizeMax: 1.8
   }
 };
 
@@ -395,35 +511,123 @@ export const v3Config = {
 //
 // potentialScale -- Noise sample frequency for the current's underlying
 // scalar potential: world px per period is roughly 1 / potentialScale
-// (so 1/420 ~= a 420px period). Deliberately much lower frequency than
+// (so 1/300 ~= a 300px period). Deliberately much lower frequency than
 // island.noiseScale's fine coastline texture -- "lazy," broad
-// undulation across the whole canvas, not fine detail.
+// undulation across the whole canvas, not fine detail. Tightened from
+// 1/420 at v3.6.18 (more variation across the visible canvas, per
+// direct feedback that open water read as too uniform) -- still well
+// above island.noiseScale's fine texture, "more varied" is not the same
+// ask as "turbulent."
 //
 // octaves / lacunarity / gain -- Same fbm2D idea as island's own
-// octaves/lacunarity/gain. Kept low (2) on purpose -- "not very
-// turbulent," per the design conversation; the coast vector below is
-// what's meant to supply the visual interest, not current texture.
+// octaves/lacunarity/gain. Raised octaves 2->3 at v3.6.18 alongside
+// potentialScale, same "more variation" reasoning -- still deliberately
+// modest (island's own coastline noise uses the same 3), not "very
+// turbulent," per the original design conversation.
+//
+// currentGain -- v3.6.18. Pure magnitude multiplier on the current's
+// curl vector, applied AFTER the gradient/rotation (so it changes
+// overall energy without changing potentialScale/octaves' frequency
+// shape). Added because open water read as barely-moving: raw current
+// magnitude there is tiny (~0.002-0.004) relative to a coastline's
+// coast-vector-dominated magnitude (~0.05-0.1), so particles were
+// almost entirely riding particles.baseSpeed's own floor, not the
+// field's actual variation. Empirically checked (throwaway Node script,
+// same method as coastStrength): 16 brings open-water speed to roughly
+// 50-70px/s (was ~18-20, i.e. essentially just the floor) while a
+// coastline/channel still comes out faster (70-110px/s, maxSpeed-capped)
+// -- open water now clearly moving and varying, without erasing the
+// "faster near an island" contrast the design conversation asked for.
+//
+// driftSpeedX / driftSpeedY -- v3.6.18. World px/sec the current's
+// potential sampling position drifts over real elapsed time (the coast
+// vector never drifts -- see createFlowSampler()'s doc comment in
+// cabinet-v3-flowfield.js). Fixes a reported failure mode: "particles go
+// into and are trapped... rotating on themselves." Root cause is
+// structural, not a bug in the usual sense -- curl noise is
+// divergence-free EVERYWHERE, which means it has permanent vortex
+// centres around any local extremum of the potential, and a static
+// field's vortices trap a particle in a closed orbit forever (confirmed
+// directly: sampling the SAME point 20 simulated seconds apart in the
+// old, driftless field returned the literal same vector, 0.0 degrees of
+// change). Drifting the sample position slowly means any given vortex
+// itself drifts and dissolves/reforms elsewhere -- checked at a
+// deliberately adversarial point (the exact midpoint between two close
+// circles, i.e. a narrow channel) that the vector there rotates ~20-30
+// degrees over 20 simulated seconds at these values, i.e. a trap
+// dissolves within under a minute rather than persisting indefinitely.
+// 5 / 4 (asymmetric on purpose, so the drift itself isn't perfectly
+// axis-aligned/diagonal) are both slow relative to potentialScale's own
+// ~300px wavelength -- a gentle, ambient "breathing" of the current
+// pattern, not a visible scroll.
+//
+// biasDirX / biasDirY / biasStrength -- v3.6.19. A CONSTANT (never
+// time-varying, unlike the curl swirl) prevailing-current term -- "the
+// general current goes somewhere, with local variation on top," not a
+// directionless eddy field. Direction is northeast in screen space
+// (+x east, -y north); magnitude picked empirically (throwaway Node
+// script): 0.05 gives open water a real, visible net northeast lean
+// while still letting local curl variation show through -- much higher
+// and the current starts reading as a straight conveyor belt, which
+// isn't what was asked for ("not a straight line but a general
+// direction, with lots of local variation"). Also doubles as the
+// tie-breaker for coastMix's tangent handedness, next -- it's the one
+// direction that's genuinely constant everywhere, which turned out to
+// matter.
+//
+// v3.6.20 -- biasStrength pulled back 0.05->0.03. Direct feedback: the
+// NE lean had gotten strong enough that the field read as "migrating"
+// rather than "wandering," flattening the local curl variation at the
+// larger scale. Only the magnitude changed -- biasDirX/Y (the direction
+// itself) is untouched, and that's the only part coastMix's tangent
+// tie-breaker below actually reads (a dot-product sign, not a
+// magnitude), so the narrow-channel cooperation fix holds at ANY
+// biasStrength > 0, structurally, not just at the value it happened to
+// be tuned at.
 //
 // coastMix -- Blends the coast vector between pure repulsion (0, push
 // straight off the coast) and pure tangential flow (1, slide along the
 // edge instead of just bouncing off it) -- both are rotations of the
 // SAME heightmap gradient (see cabinet-v3-flowfield.js), so this is one
-// continuous dial, not a choice between two different mechanisms.
-// 0.65 leans toward edge-following since a particle just bouncing
-// straight off every island it nears reads as mechanical/repetitive;
-// mostly-tangential motion (with enough repulsion mixed in to still
-// actually clear the coast) reads more like a real current deflecting
-// around an obstacle.
+// continuous dial, not a choice between two different mechanisms. Which
+// of the two possible 90deg rotations counts as "tangential" is chosen
+// per-point to align with biasDirX/Y (v3.6.19) -- see the long comment
+// in createFlowSampler()'s vectorAt() for why it has to be the constant
+// bias and not the local current: at a narrow channel between two
+// islands, a fixed rotation gives the two facing coastlines OPPOSING
+// along-channel tangents (confirmed as the direct cause of a reported
+// bug -- particles clumping specifically in narrow bays), and aligning
+// to the local current instead of the constant bias was tried first and
+// didn't fix it either -- the swirl's own higher octaves vary enough
+// over a channel's width to still disagree between its two walls.
+// 0.65 (now 0.55, see below) leans toward edge-following since a
+// particle just bouncing straight off every island it nears reads as
+// mechanical/repetitive; mostly-tangential motion (with enough
+// repulsion mixed in to still actually clear the coast) reads more like
+// a real current deflecting around an obstacle.
 //
-// coastStrength -- Multiplier on the coast vector, relative to the base
-// current's own raw magnitude. Empirically checked (a throwaway Node
-// script against real heightmap output, not guessed): at 3, the coast
-// vector runs roughly 20-25x the base current's magnitude right at a
-// coastline, fading to ~0 by open water -- clearly dominant near an
-// island (so avoidance actually reads as strong, per the design
-// conversation) without needing a separate falloff-shaping function,
-// since the underlying gradient it's built from already vanishes far
-// from any coast on its own.
+// v3.6.20 -- pulled back 0.65->0.55 (more repulsion, less tangential
+// slide). Direct feedback: particles were "intruding along coastlines
+// in parallel" and skipping across narrow fingers of land -- i.e. riding
+// close enough alongside the edge (0.65's tangential lean) that the
+// remaining repulsion share wasn't consistently enough to stand them
+// off it, especially where a finger's own width is narrow relative to
+// heightEps's smoothing radius. Tuned together with the speed pullback
+// below, not in isolation -- slower particles also give whatever
+// repulsion IS present more frames to act before a particle's already
+// past the obstacle.
+//
+// coastStrength -- Multiplier on the coast vector itself (independent of
+// currentGain, which only scales the current -- see its own note above).
+// Empirically checked (a throwaway Node script against real heightmap
+// output, not guessed): at 3, the coast vector's own magnitude fades
+// from ~0.05-0.1 right at a coastline to ~0 by open water, on its own --
+// clearly present near an island without needing a separate falloff-
+// shaping function, since the underlying gradient it's built from
+// already vanishes far from any coast. How dominant that reads relative
+// to the CURRENT depends on currentGain too (v3.6.18 raised the
+// current's own baseline a lot, see that note) -- the two are tuned
+// together, not coastStrength alone.
 //
 // showPotential / showVectors -- Dev-panel-only debug toggles (Visuals
 // section, cabinet-v3-controls.js): showPotential renders the base
@@ -432,3 +636,83 @@ export const v3Config = {
 // directions") -- see drawFlowFieldDebug() in cabinet-v3-layout.js. Both
 // off by default; this is how the field gets judged/tuned before any
 // particle animation is built on top of it, not a shipped visual.
+
+// ---------------------------------------------------------------------
+// PARTICLE CONFIG FIELD NOTES -- one entry per key in v3Config.particles
+// above (cabinet-v3-particles.js).
+//
+// count -- Pool size, fixed for the page's lifetime (particles reset in
+// place when recycled, never created/destroyed -- see
+// ensureParticles()/tickParticles() in cabinet-v3-layout.js, avoids DOM
+// churn). 60 is a first-guess density: enough to read as an ambient
+// current across the whole canvas without turning into visual noise
+// competing with the islands/labels. Retune by eye.
+//
+// padding -- How far outside canvasBounds a particle spawns/despawns, in
+// canvas px. Independent of drawIslandsPath()'s own edgePadding (a
+// different concept -- that one sizes the marching-squares sampling
+// grid so contours close cleanly off-screen); this one is purely about
+// where "off-canvas" starts for entry/exit staging. Small on purpose --
+// just enough that a particle's pop-in/pop-out isn't visible at the
+// canvas edge, not a large buffer.
+//
+// spawnDirX / spawnDirY / spawnArcFraction -- v3.6.19. Direct request:
+// "particles need to start from one offscreen area and spread out"
+// rather than scattering uniformly around all 4 sides. spawnDirX/Y
+// points south-west -- upstream of flow.biasDirX/Y (the prevailing
+// current), reversed, so particles enter from where the current is
+// coming FROM and drift out roughly where it's headed. spawnArcFraction
+// (0.35) is how wide the entry zone is as a fraction of the whole ring's
+// perimeter -- wide enough to read as "an area," not a single pinhole,
+// while still clearly clustered on one side rather than uniform.
+//
+// baseSpeed / speedGain / maxSpeed -- Speed (px/sec) is direction-
+// independent: a particle always moves exactly where the flow field
+// points, but how FAST is a clamped function of the field's raw
+// magnitude at that point, not directly proportional to it. baseSpeed is
+// a floor (a particle never goes fully still, even where the field
+// briefly near-cancels); speedGain scales the magnitude into a visible
+// speed-up; maxSpeed caps it -- direct proportionality would make
+// coastal/channel particles look like they're darting at jet speed
+// relative to open water.
+//
+// v3.6.18 -- retuned alongside currentGain (see that note in the flow
+// block above): baseSpeed 15->20, speedGain 2000->1200, maxSpeed 90->110.
+// Direct feedback was that open water read as basically dead and
+// particles could get stuck orbiting in place indefinitely (the second
+// part fixed structurally by driftSpeedX/Y, not by these numbers) --
+// once currentGain made open water's own raw magnitude meaningfully
+// bigger, speedGain got PULLED BACK (2000->1200) so that larger raw
+// magnitude doesn't overshoot into coastal-speed territory out in open
+// water too; the net effect (checked against the same throwaway Node
+// script): open water now averages ~50-70px/s (was ~18-20, i.e.
+// essentially just sitting on the old floor), a coastline/narrow channel
+// still comes out faster (~90-110px/s, maxSpeed-capped) -- both
+// genuinely moving now, with the coastal contrast preserved rather than
+// erased.
+//
+// v3.6.20 -- pulled back again, this time all three together (20->13,
+// 1200->800, 110->70): direct feedback was "particles feel too fast."
+// Computed off the same magnitude ranges the v3.6.18 pass already
+// measured (currentGain/coastStrength didn't change this pass, only how
+// magnitude maps to speed did): open water now ~40-65px/s (was ~50-70),
+// coastline/channel ~55-70px/s, maxSpeed-capped (was ~90-110) -- roughly
+// a third slower everywhere, coastal-vs-open contrast preserved. Also
+// directly addresses "skip over/through narrow land": less distance
+// covered per frame gives the coast vector (see coastMix's own v3.6.20
+// note above) more room to actually deflect a particle before it's
+// already past a thin finger of land.
+//
+// stuckCheckInterval / stuckThreshold -- v3.6.19. Cheap safety net, not
+// the primary fix: every stuckCheckInterval seconds, a particle whose
+// NET displacement since the last check is under stuckThreshold px gets
+// force-respawned, regardless of why it stalled. 2.5s / 15px means
+// roughly under 6px/s net movement over a real few-second window
+// triggers it -- well below even baseSpeed's own 20px/s floor, so this
+// shouldn't ever fire on a genuinely-moving particle, only a stalled
+// one. Deliberately just a per-particle position check, not the
+// density/neighbour-based version of this idea ("close to a bunch of
+// other particles") -- flagged directly as the expensive one, and not
+// needed if the field-level fixes (coastMix tangent handedness aligned
+// to the constant bias, current time-drift) are doing their job; this
+// exists to catch whatever residual case they don't.

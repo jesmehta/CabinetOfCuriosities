@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.16** (domain warping for real concave coastlines,
+Currently on **v3.6.21** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -21,14 +21,20 @@ canvas itself, per-section extra-island counts on
 `content/cabinet-sections.tsv` itself, both islands AND their whole
 section are click-through links to their own pages with a soft blurred
 glow standing in for hover feedback instead of a hard shape, and (new) a
-precomputed vector flow field -- `cabinet-v3-flowfield.js`, field math
-and two dev-panel debug toggles only so far, no particles riding it yet)
+precomputed vector flow field -- `cabinet-v3-flowfield.js` -- with a live
+particle system riding it on `islands-tool.html` only (small
+dark-outlined cream ellipses, `cabinet-v3-particles.js`), island
+avoidance and a prevailing current direction both working through
+narrow channels and bays without trapping particles, a hard land-crossing
+backstop independent of the field's own soft push, and click-to-launch (a
+click on open water adds a boat, capped at 1.5x the base count so it
+can't run away with page performance)
 -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
-v3.6.15 -> v3.6.16 progression
-and why each pass changed what it did.
+v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
+progression and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1254,19 +1260,31 @@ flat list, not the reasoning.
    is untracked in the repo, not deleted, not wired into the real page).
 2. Water wave-line texture -- on hold pending a reference image (v2's
    own wavelines weren't visible/legible as a reference on their own).
-3. Boats sailing in smooth flows (not randomly moving) -- reverted
-   after an unresolved Chromium `<use>`/`<symbol>` rendering bug (see
-   `conversation-landing-page-v3.md` for the full account); no standing
-   instruction to resume, would need explicit direction.
+3. Boats sailing in smooth flows (not randomly moving) -- the original
+   attempt was reverted after an unresolved Chromium `<use>`/`<symbol>`
+   rendering bug (see `conversation-landing-page-v3.md` for that
+   account). **Done, v3.6.17-v3.6.21**, via a different mechanism that
+   sidesteps that bug entirely: plain `<ellipse>`+`<line>` particles (no
+   `<use>`/`<symbol>`), advected along the flow field below. See item 4.
 4. Flowfield stretch goal -- a precomputed noise/flow field with live,
    cheap particle advection along it (waves, boats), obstacles/repulsion
-   around islands, optionally mouse-reactive. **In progress, v3.6.16**:
-   the field itself (base current + island avoidance) is built and
-   tuned, with a dev-panel debug view to check it -- see that changelog
-   entry and `cabinet-v3-flowfield.js`. Still open: the actual particle
-   system (spawn/advect/recycle off-canvas), particle rendering, and the
-   mouse-reactive idea (cost still unresolved, per the original
-   conversation).
+   around islands, optionally mouse-reactive. **Done, v3.6.16-v3.6.21**
+   (`islands-tool.html` only -- `cabinet-v3-flowfield.js` +
+   `cabinet-v3-particles.js`): curl-noise current + island-avoidance
+   field (v3.6.16), particle pool with off-canvas spawn/recycle
+   (v3.6.17), a fix for curl noise's structural permanent-vortex trapping
+   via time-drift (v3.6.18), a separate fix for the SAME structural
+   property on the static coastal-tangent half of the field causing
+   narrow-channel/bay trapping, via a bounded (not linear -- see that
+   changelog entry for why the first attempt at this was a real
+   regression) oscillating drift (v3.6.19-v3.6.20), a prevailing
+   SW-NE current direction with local variation preserved (v3.6.19), and
+   a HARD land-crossing backstop independent of the field's own soft
+   push, since that push alone still occasionally lost to the current
+   (v3.6.21). Mouse-reactive is done too, just not the originally-scoped
+   idea: click-to-launch adds a boat at the clicked point rather than
+   perturbing the field itself, capped at 1.5x the base particle count
+   (v3.6.21).
 5. ~~islands-tool idea: a control to re-roll/regenerate the circle
    centres and packing stage itself~~ -- done, v3.6.8: "Reroll
    positions" button, now in the Layout section (v3.6.9 restructure).
@@ -1397,6 +1415,189 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.21 -- hard land-crossing backstop, click-to-launch with a governed particle pool
+
+The coast vector (v3.6.16) is a SOFT, additive force -- summed with the
+current, not a wall -- so at points where the current's own local
+direction happened to point toward the coast with a magnitude close to
+the coast vector's, the two could partly cancel, letting a slow particle
+drift onto land over many frames even with an otherwise-correct field.
+Reported directly, and confirmed distinct from the v3.6.20 drift-bug fix
+(persisted after that fix landed). Added a genuine hard backstop,
+separate from the smooth force: `createFlowSampler()` now also returns
+`isLand(x, y)`, reading the SAME `v3Config.island.threshold` the
+coastline itself is traced at (merged into the flow sampler's config only
+at the `buildCurrentSampler()` call site, so it can never disagree with
+what's actually drawn as land); `stepParticle()` rejects outright any
+step that would end on land, holding the particle at its pre-step
+position instead.
+
+Click-to-launch: clicking open water (`sampler.isLand()` gates it, so a
+click on land or off-canvas is silently ignored) adds a genuinely new
+particle at that point, not a recycled slot. `v3Config.particles.maxCount`
+(90, 1.5x the base 60) hard-caps growth -- direct feedback flagged this
+explicitly as "not a serious feature," priority on bounded, predictable
+cost over any particular click behaviour, so a click past the cap just
+does nothing. Growth only happens via a click; every particle (clicked or
+original) drains back out through the same exit path in
+`stepParticle()`/`tickParticles()` -- while the pool is above its base
+count, exits stop being replaced (`allowRespawn`, threaded through as a
+parameter, `stepParticle()` returns `true` to signal "remove me" instead
+of respawning in place), so extras die off naturally as they exit or get
+stuck, with no separate "is this one an extra" bookkeeping needed.
+Per-particle DOM construction (ellipse + 2-3 ribs + colour) was factored
+out of `ensureParticles()` into `buildParticleElement()` so a
+click-launched boat looks identical to an original one.
+
+Cost check (asked directly): at the 90-particle cap, per-frame noise cost
+is ~65,000 raw lattice evaluations/sec, still trivial; the actual risk
+without a cap was unbounded growth outpacing the slow natural drain
+(15-20s canvas transit time) under sustained/rapid clicking, degrading
+toward real jank on weaker hardware well before any memory-driven crash
+-- confirms the cap was the right lever, not overcaution.
+
+Boat outline `stroke-width` raised (0.6 -> 1.1 body, 0.5 -> 0.8 ribs) --
+too thin to read the per-particle colour clearly at the shapes' small
+size.
+
+### v3.6.20 -- speed/current retune, live debug field, boat styling, and a second structural trapping fix (this time on the STATIC half of the field)
+
+Direct feedback after v3.6.19 landed: particles felt too fast, the NE
+current bias read as "migrating" rather than "wandering" (flattening
+local variation), and particles were intruding along coastlines/crossing
+narrow fingers of land. Retuned together: `particles.baseSpeed` 20->13,
+`speedGain` 1200->800, `maxSpeed` 110->70 (~35% slower everywhere, same
+coastal-vs-open contrast); `flow.biasStrength` 0.05->0.03 (magnitude
+only -- the channel-cooperation fix from v3.6.19 reads only
+`biasDirX/Y`'s sign, untouched by this); `flow.coastMix` 0.65->0.55, more
+repulsion relative to edge-following.
+
+**Second trapping bug, distinct from v3.6.18's**: two more reports (a
+specific channel that reliably trapped particles; a bay that did the
+same) traced to a property of the coastal TANGENT vector, not the
+current -- `rot90(gradient)` is divergence-free by construction, the
+exact same structural fact that gave curl noise its permanent vortices,
+except this half of the field was deliberately kept static (islands
+don't move), so any closed loop it formed in tight/concave geometry never
+dissolved. First fix attempt drifted the tangent's heightmap sample
+LINEARLY (`t * driftSpeed`) and shipped a real regression, reported
+directly ("going over more land than before... worse the longer the page
+had been open"): `t` only grows for the page's lifetime, so a linear
+offset grows unboundedly too, eventually sampling the gradient from well
+inside the same landmass. Corrected to a BOUNDED sin/cos oscillation
+(`coastTangentDriftAmpX/Y: 7/5`, `coastTangentDriftFreqX/Y: 0.29/0.37`,
+mismatched frequencies so the sample traces an open path rather than its
+own fixed loop) -- verified via a throwaway Node script against a
+synthetic narrow-gap heightmap that the offset never exceeds its ~8.6px
+amplitude cap even over a simulated 30-minute session, while the field's
+direction at a fixed channel point still visibly rotates rather than
+freezing. Repulsion itself never drifts, only the tangent -- "is there
+land here" has to stay exact always, sliding direction is a soft,
+aesthetic choice a little temporal wobble doesn't hurt.
+
+Also: `showPotential`/`showVectors` debug grid no longer freezes at t=0
+forever -- `animationFrame()` rebuilds it every ~0.4s at the live
+elapsed time (throttled, not every frame -- a full grid rebuild is real
+work), so the debug view stays correlated with what particles are
+actually doing, direct request ("so I can visually correlate particle
+behaviour with the underlying field"). Particle styling: random
+0.6x-1.8x size variation per slot (`sizeMin`/`sizeMax`), a dark outline
+colour randomised per particle off a small palette (sepia brown,
+near-black, deep violet, navy) against a fixed light cream fill
+(`--cab-land-light`, so the outline doesn't vanish into a same-colour
+body), and 2-3 short ribs crossing each ellipse's width at randomised,
+non-overlapping offsets, each trimmed to the ellipse's own local
+half-height so they read as following its curve.
+
+### v3.6.19 -- narrow-channel clumping fix, prevailing SW-NE current, spawn-arc entry, stuck-particle safety net
+
+Reported: particles clumping specifically in narrow bays/channels, more
+than open water. Root cause: the coastal tangent (v3.6.16) is a fixed
+90deg rotation of the local gradient, and two facing coastlines across a
+narrow gap rotate in OPPOSING directions right in the middle -- each
+island's own boundary is locally consistent, but two separate islands
+facing each other fight. Confirmed via a throwaway Node script against a
+real narrow-channel heightmap (had to first scan the heightmap directly
+to find the TRUE water gap rather than trust nominal circle radii). First
+fix attempt -- aligning tangent handedness to the LOCAL current direction
+-- was tried and rejected: the current's own higher octaves have
+wavelengths short enough (~75px) to disagree with themselves across a
+40-50px channel, just relocating the fight. Fixed instead by aligning
+handedness to `biasDirX/Y`, a new CONSTANT prevailing-current term
+(screen-space NE, tuned to `biasStrength: 0.05`) added alongside the
+swirl -- direct request, "I want the general overall current to go
+southwest-northeast... lots of local variations" -- since it's the one
+reference that's genuinely identical everywhere, both channel walls now
+agree. Verified: the two walls' tangent dot product flipped from
+negative ("fight") to positive ("cooperate") at every bias strength
+tested.
+
+Particles now enter from one biased SW arc (`spawnDirX/Y`,
+`spawnArcFraction: 0.35`, matching the current bias reversed -- upstream)
+rather than scattering around the whole off-canvas ring, direct request
+("particles need to start from one offscreen area and spread out").
+Added a cheap stuck-particle safety net (`stuckCheckInterval: 2.5s`,
+`stuckThreshold: 15px`): net displacement under the threshold force-
+respawns a particle regardless of cause -- deliberately NOT the
+density/neighbour-based version of this idea, flagged directly as the
+expensive one.
+
+### v3.6.18 -- fixes particles trapped in closed orbits; open water gets real speed and variation
+
+Reported directly: "particles go into and are trapped and stay there
+rotating on themselves... atleast up the base noisefield variations and
+the open sea should also have some speed." Root cause: curl noise (the
+current) is divergence-free EVERYWHERE by construction, which means it
+has permanent vortex centres around any local extremum of its potential
+in a perfectly STATIC field -- not a bug in the usual sense, a known
+structural property -- confirmed directly (sampling the same point 20
+simulated seconds apart in the pre-fix field returned the literal
+identical vector, 0.0deg of change). Fixed by drifting the potential's
+own sample position over real elapsed time (`driftSpeedX/Y: 5/4` world
+px/sec, asymmetric on purpose so the drift itself isn't axis-aligned) --
+any given vortex now drifts and dissolves/reforms elsewhere rather than
+trapping a particle forever; the coast vector, tied to real static
+geometry, deliberately does NOT drift (that gap is what v3.6.20 later
+closed). Verified: the same adversarial test point (the midpoint of a
+narrow channel) now rotates ~20-30deg over 20 simulated seconds instead
+of sitting frozen.
+
+Also added `currentGain: 16`, a pure magnitude multiplier on the current
+(decoupled from `potentialScale`/`octaves`, which shape frequency/texture
+not overall energy) -- open water's raw current magnitude was tiny
+(~0.002-0.004) next to a coastline's coast-vector-dominated magnitude
+(~0.05-0.1), so particles were essentially just riding `baseSpeed`'s own
+floor out at sea. Retuned `potentialScale` 1/420->1/300, `octaves` 2->3
+for more local variation, and pulled particle speed constants back
+(`baseSpeed` 15->20, `speedGain` 2000->1200, `maxSpeed` 90->110) since
+raising current magnitude meant the old `speedGain` would overshoot.
+
+### v3.6.17 -- the particle system: pool, off-canvas spawn/recycle, small rotated ellipses
+
+Punch-list item 4's remaining half, built on the v3.6.16 field. New
+module `cabinet-v3-particles.js` (pure logic/no DOM, same split rationale
+as its siblings): particles spawn on a padded ring outside
+`canvasBounds`, advect via the field's own direction each step (speed a
+clamped function of the field's local magnitude, never directly
+proportional -- otherwise a coastline/channel would look like it's
+darting at jet speed relative to open water), and recycle to a fresh
+off-canvas point once they wander back outside that same ring -- one
+mechanism handles both entry and exit, since it's the same rect test
+either way. Rendered as small `<ellipse>` shapes (`rx: 3.2, ry: 1.3`,
+`--cab-land-light` fill) rotated to lean along their direction of travel,
+a cheap directional cue without a real trail.
+
+Scoped entirely to `islands-tool.html`: `startCurrentAnimation()` is
+exported from `cabinet-v3-layout.js` but the ONLY call site is the very
+end of `cabinet-v3-controls.js`, which itself only ever loads on the tool
+page -- so `index.html`/`build-render.html` pay nothing for this, not
+even the DOM elements, with no separate page-detection logic needed. The
+static debug-grid snapshot (`buildFlowField()`, used by the
+`showPotential`/`showVectors` toggles) and the live per-particle sampler
+(`createFlowSampler().vectorAt(x, y, t)`) are deliberately separate code
+paths off the same underlying field math -- particle-stepping cost scales
+with particle COUNT (~60) only, independent of canvas or grid resolution.
 
 ### v3.6.16 -- flow field: math + debug view, no particles yet (first slice of the Flowfield stretch goal)
 

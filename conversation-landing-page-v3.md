@@ -746,6 +746,106 @@ first, the user had. Going forward: functional checks stay automated;
 anything about how something *looks* gets a "here's what to reload and
 look at," not a description of a screenshot.
 
+## Particles: two structural trapping bugs, a real regression, and "you could have just asked me" (this session, v3.6.17-v3.6.21)
+
+Picking the flowfield stretch goal back up from where "use me" left off:
+approval to move from the field-only debug view to an actual particle
+system came as "looks good but actual behaviour will be seen only on the
+particles, go ahead with that." Built in v3.6.17 -- pool, off-canvas
+spawn/recycle, small rotated ellipses, scoped entirely to
+`islands-tool.html` via the same "only file that loads
+`cabinet-v3-controls.js`" mechanism already used elsewhere.
+
+### Two separate structural trapping bugs, not one
+
+First report: "particles go into and are trapped and stay there rotating
+on themselves... a lot more flow in general." Root cause: curl noise
+(the current) is divergence-free everywhere by construction, which means
+it has permanent vortex centres in a perfectly static field -- confirmed
+directly (the same point sampled 20 seconds apart returned the literal
+identical vector). Fixed by drifting the current's own noise-sample
+position over real elapsed time (v3.6.18) -- a vortex now drifts and
+dissolves rather than trapping anything forever.
+
+Second report, after that fix: clumping specifically in narrow
+bays/channels, not open water. Different mechanism entirely: the
+coastal tangent vector is ALSO a rotated gradient (divergence-free, same
+structural property as curl noise), and a fixed rotation direction gives
+two facing coastlines OPPOSING along-channel tangents -- each island's
+own boundary is locally consistent, but two islands facing each other
+across a gap fight. First attempted fix (align tangent handedness to the
+LOCAL current direction) was tried, tested via a throwaway Node script,
+and found NOT to work -- the current's own higher-frequency octaves
+disagree with themselves across a channel that narrow, just relocating
+the fight. Fixed instead by aligning to a new constant prevailing-current
+direction (v3.6.19) -- the one reference that's genuinely identical
+everywhere.
+
+Third report, after v3.6.19's speed/bias tuning: the SAME bay/channel
+trapping was back, plus land-crossing had gotten WORSE, "did I catch the
+page mid update?" It wasn't a mid-update artifact -- it was a real
+regression. The v3.6.20 fix for the coastal tangent's own version of the
+divergence-free-vortex problem had drifted its heightmap sample
+LINEARLY (`t * driftSpeed`), and `t` only ever grows for the page's
+lifetime, so the offset grew unboundedly the longer the page stayed
+open, eventually sampling the gradient from well inside the same
+landmass. Caught, diagnosed, and corrected to a bounded sin/cos
+oscillation in the same turn -- worth recording as a real mistake made
+and fixed, not just a clean success, since the failure mode (an
+ever-growing `t`-based offset) is a general trap worth remembering for
+any future "drift something over real elapsed time" fix.
+
+Even after that correction, land-crossing persisted at a reduced but
+nonzero rate -- a genuinely different, more fundamental gap: the coast
+vector is a SOFT force, additively summed with the current, not a wall,
+so at any point where the current happened to point toward the coast
+with comparable magnitude, the two could still partially cancel. Fixed
+with an actual hard backstop (v3.6.21) -- `isLand()`, reading the exact
+same threshold the coastline itself is traced at, rejecting any step
+that would end on land outright, independent of the soft force entirely.
+
+### "You could have just asked me"
+
+Building click-to-launch (v3.6.21), verifying the click mechanics (exact
+landing position, land clicks correctly ignored, no console errors)
+turned into a ~15-20 minute Playwright-plus-local-static-server detour,
+including some real friction (`file://` ESM imports blocked by CORS,
+requiring a throwaway static server; a first test click accidentally
+triggered a section's real navigation link; positions checked too late,
+after several animation frames had already carried the boat onward).
+Response once reported:
+
+> you could have just asked me, I've been playin with it for the past 15
+> mins
+
+The user had been live-testing the exact feature, in their own browser,
+in parallel, the entire time. Extends the existing "use me" lesson (see
+above): the line isn't really "visual judgment -> ask, functional
+correctness -> verify myself" -- it's "is the user already in a position
+to answer this in five seconds." If they're actively on the page, which
+on this project is often true, a quick question beats independently
+re-deriving the answer, even for a check that's legitimately automatable
+in isolation.
+
+### Particle governance, discussed before building
+
+Click-to-launch's first cut simply recycled one of the fixed 60 pool
+slots per click -- zero pool-size change, zero compute-risk by
+construction. Once live-tested, the ask shifted: let a click genuinely
+ADD a boat (up to 90, 1.5x the base count), pause the normal
+respawn-on-exit behaviour while over that base count so the pool drains
+back down on its own, and let extras simply die off rather than being
+carefully recycled -- explicitly flagged as "not a Serious feature...
+Compute power and the user's experience need to be cool" over any
+particular mechanic. Asked directly afterward whether growable-vs-fixed
+was the right, optimum choice: answered with real numbers rather than a
+guess -- ~65,000 raw noise evals/sec at the 90-particle cap (still
+trivial), and the actual risk without a hard cap being unbounded growth
+outpacing the pool's naturally slow drain (15-20s canvas transit time)
+under sustained clicking, not a memory-driven crash at any particular
+particle count. Confirmed the cap, not the exact growth mechanic, was
+the load-bearing decision.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
