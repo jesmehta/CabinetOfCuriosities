@@ -177,7 +177,9 @@ function buildControlPanel() {
     seaBandThresholds: [...v3Config.island.seaBandThresholds],
     sandThresholds: [...v3Config.island.sandThresholds],
     vegThresholds: [...v3Config.island.vegThresholds],
-    waveDistances: [...v3Config.island.waveDistances]
+    waveDistances: [...v3Config.island.waveDistances],
+    showFlowPotential: v3Config.flow.showPotential,
+    showFlowVectors: v3Config.flow.showVectors
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -313,6 +315,34 @@ function buildControlPanel() {
   labelStyleRow.appendChild(labelStyleSelect);
   visualsSection.appendChild(labelStyleRow);
 
+  // -- Flow field debug (v3.6.16) -- see drawFlowFieldDebug() in
+  // cabinet-v3-layout.js and the field notes in cabinet-v3-data.js.
+  // Dev-only visualisation of the (not-yet-animated) flow field: Flow
+  // potential tints a grid by the base current's own scalar potential
+  // ("the noise field" itself, before curl is taken), Flow vectors draws
+  // the full composite field (current + coast avoidance) as arrows.
+  // Both cheap retraceIslands() toggles, same as Wave contours/Colour
+  // bands above.
+  const addFlowCheckbox = (key, label) => {
+    const row = document.createElement("label");
+    row.className = "v3-controls-checkbox-row";
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = v3Config.flow[key];
+    check.addEventListener("change", () => {
+      v3Config.flow[key] = check.checked;
+      retraceIslands();
+    });
+    const span = document.createElement("span");
+    span.textContent = label;
+    row.appendChild(check);
+    row.appendChild(span);
+    visualsSection.appendChild(row);
+    return check;
+  };
+  const flowPotentialCheck = addFlowCheckbox("showPotential", "Flow potential (noise field)");
+  const flowVectorsCheck = addFlowCheckbox("showVectors", "Flow vectors (directions)");
+
   // -- Wave ring parameters -- unchanged generator logic from v3.6.7
   // (waveDistances is a derived array, d[i] = start * multiplier^i +
   // offset, not a single scalar, so it doesn't fit the one-slider-one-key
@@ -409,6 +439,10 @@ function buildControlPanel() {
     bandCheck.checked = !v3Config.island.flatColourMode;
     delete document.body.dataset.theme;
     themeSelect.value = "";
+    v3Config.flow.showPotential = visualsDefaults.showFlowPotential;
+    v3Config.flow.showVectors = visualsDefaults.showFlowVectors;
+    flowPotentialCheck.checked = v3Config.flow.showPotential;
+    flowVectorsCheck.checked = v3Config.flow.showVectors;
     bandSliders.forEach(s => s.refresh());
     Object.assign(waveGen, waveGenDefaults);
     Object.values(waveFieldWidgets).forEach(w => w.refresh());

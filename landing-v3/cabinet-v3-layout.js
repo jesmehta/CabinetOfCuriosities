@@ -29,6 +29,7 @@ import { sections, entries } from "../docs/assets/js/cabinet-generated-content.j
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
 import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField } from "./cabinet-v3-islandshape.js";
+import { buildFlowField } from "./cabinet-v3-flowfield.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -651,6 +652,94 @@ function drawIslandsPath(stage, canvasBounds, grown) {
     anchor = placeBand(anchor, "v3-veg-band", vegThresholds, trace);
   }
   placeOne(anchor, "v3-coastline-outline", coastD);
+
+  // v3.6.16 -- returned so drawFlowFieldDebug() can reuse this exact
+  // heightmap (the coast vector rides on its gradient, see
+  // cabinet-v3-flowfield.js) instead of building a second one.
+  return { H, cols, rows, paddedBounds };
+}
+
+// v3.6.16 -- dev-only debug view of the flow field (no particles built
+// yet -- see cabinet-v3-flowfield.js and Landing-page-notes.2.0.md's
+// "Flow field" entry): showPotential tints a grid by the base current's
+// scalar potential ("the noise field"), showVectors draws the full
+// composite field as arrows ("vector directions"). Both off by default
+// -- cheap no-op (just removes any stale debug layer) when neither is
+// on, same pattern flatColourMode's own toggle bugfix established: a
+// full innerHTML clear + rebuild on every call, never a stale leftover
+// from a previous branch.
+function drawFlowFieldDebug(stage, canvasBounds, islandTrace) {
+  const { showPotential, showVectors } = v3Config.flow;
+  let group = stage.querySelector(".v3-flow-debug");
+
+  if (!showPotential && !showVectors) {
+    if (group) group.remove();
+    return;
+  }
+
+  if (!group) {
+    group = el("g", { class: "v3-flow-debug", "aria-hidden": "true" });
+  } else {
+    group.innerHTML = "";
+  }
+  stage.appendChild(group);
+
+  const { H, cols: hCols, rows: hRows, paddedBounds } = islandTrace;
+  const field = buildFlowField(H, hCols, hRows, v3Config.island.cellSize, paddedBounds, canvasBounds, v3Config.flow);
+
+  if (showPotential) {
+    let min = Infinity, max = -Infinity;
+    for (let i = 0; i < field.potentialGrid.length; i++) {
+      const v = field.potentialGrid[i];
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    const range = Math.max(1e-6, max - min);
+    for (let gy = 0; gy < field.rows; gy++) {
+      for (let gx = 0; gx < field.cols; gx++) {
+        const t = (field.potentialGrid[gy * field.cols + gx] - min) / range;
+        group.appendChild(
+          el("rect", {
+            class: "v3-flow-potential-cell",
+            x: canvasBounds.x + gx * field.cellSize,
+            y: canvasBounds.y + gy * field.cellSize,
+            width: field.cellSize,
+            height: field.cellSize,
+            style: `fill-opacity:${(0.12 + t * 0.4).toFixed(2)}`
+          })
+        );
+      }
+    }
+  }
+
+  if (showVectors) {
+    // Raw field magnitude spans a huge range (near-flat open water vs.
+    // right at a coastline -- see coastStrength's field notes in
+    // cabinet-v3-data.js), so arrows are length-capped rather than drawn
+    // at literal scale: arrowScale makes open-water arrows visible at
+    // all, maxLen keeps near-coast ones from overrunning neighbouring
+    // grid cells. Both first-guess render constants, not part of
+    // v3Config.flow itself -- this is a debug view, not the field.
+    const arrowScale = 6000;
+    const maxLen = field.cellSize * 0.85;
+    for (let gy = 0; gy < field.rows; gy++) {
+      for (let gx = 0; gx < field.cols; gx++) {
+        const i = gy * field.cols + gx;
+        const x = canvasBounds.x + gx * field.cellSize;
+        const y = canvasBounds.y + gy * field.cellSize;
+        let dx = field.vx[i] * arrowScale;
+        let dy = field.vy[i] * arrowScale;
+        const len = Math.hypot(dx, dy);
+        if (len > maxLen) {
+          dx = (dx / len) * maxLen;
+          dy = (dy / len) * maxLen;
+        }
+        group.appendChild(
+          el("line", { class: "v3-flow-vector", x1: x, y1: y, x2: x + dx, y2: y + dy })
+        );
+      }
+    }
+  }
 }
 
 // Exported for cabinet-v3-controls.js -- re-traces against the current
@@ -659,7 +748,8 @@ function drawIslandsPath(stage, canvasBounds, grown) {
 export function retraceIslands() {
   if (!islandLayoutState) return;
   const stage = document.querySelector("#v3-stage");
-  drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
+  const islandTrace = drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
+  drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, islandTrace);
 }
 
 // Exported (v3.6.8) so cabinet-v3-controls.js's centerBias slider and
@@ -757,7 +847,8 @@ export function render() {
   // Landing-page-notes.2.0.md for why this is a single combined trace
   // rather than one shape per circle.
   islandLayoutState = { grown, canvasBounds };
-  drawIslandsPath(stage, canvasBounds, grown);
+  const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
+  drawFlowFieldDebug(stage, canvasBounds, islandTrace);
 
   const grownBySection = new Map();
   grown.forEach(c => {

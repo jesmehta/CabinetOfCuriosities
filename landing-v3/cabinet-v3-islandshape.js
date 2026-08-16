@@ -713,3 +713,9 @@ export function buildCoastlineDistanceField(H, cols, rows, cellSize, threshold) 
 // Exported for the Node verification harness (land-area-fraction check,
 // contour counts) -- not used by the render path itself.
 export { buildIslandHeightmap, marchingSquaresSegments, chainSegmentsToPolygons, euclideanDistanceTransform2D };
+
+// Exported (v3.6.16) for cabinet-v3-flowfield.js -- the seeded-noise
+// primitives here are general-purpose, not coastline-specific, so the
+// flow field's own "lazy current" noise reuses them rather than
+// duplicating a second Perlin implementation.
+export { mulberry32, seedFromString, buildPermutation, fbm2D };

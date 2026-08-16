@@ -205,6 +205,31 @@ export const v3Config = {
     // to compare again later; nothing about the band config above is
     // lost by flipping this.
     flatColourMode: true
+  },
+
+  // v3.6.16 -- precomputed vector flow field (currents), see
+  // cabinet-v3-flowfield.js. Two composited layers: a smooth "lazy"
+  // base current (curl noise) plus a coast vector derived from the
+  // SAME heightmap island renders from -- no separate island geometry.
+  // Particle advection isn't built yet; this first slice is the field
+  // math plus the two dev-panel debug toggles below, so the field can
+  // be judged/tuned by feel before anything animates on top of it. See
+  // Landing-page-notes.2.0.md's "Flow field" entry for the design
+  // conversation, and the field-notes block below for what each value
+  // does and how the defaults were picked.
+  flow: {
+    cellSize: 24,
+    seed: "cabinet-v3-flow",
+    potentialScale: 1 / 420,
+    octaves: 2,
+    lacunarity: 2,
+    gain: 0.5,
+    coastMix: 0.65,
+    coastStrength: 3,
+    // Dev-panel debug toggles (Visuals section) -- off by default, this
+    // is a tuning aid, not part of the shipped visual.
+    showPotential: false,
+    showVectors: false
   }
 };
 
@@ -354,3 +379,56 @@ export const v3Config = {
 // islands-tool "Preset look" buttons (cabinet-v3-controls.js) turn wave
 // rings off without touching the tuned array the Wave rings generator
 // panel maintains.
+
+// ---------------------------------------------------------------------
+// FLOW CONFIG FIELD NOTES -- one entry per key in v3Config.flow above.
+//
+// cellSize -- Grid spacing for the flow field itself, in canvas px.
+// Coarser than island.cellSize (4) on purpose: the field gets bilinear-
+// sampled at read time (cabinet-v3-flowfield.js's sample()), and a lazy,
+// smooth current doesn't need coastline-trace resolution to look right.
+//
+// seed -- Fixed seed for the base current's own noise, independent of
+// island.seed (the coastline's) -- keeps the current's texture
+// decorrelated from the coastline's, same reasoning as warpOffset()'s
+// own separate permutation table in cabinet-v3-islandshape.js.
+//
+// potentialScale -- Noise sample frequency for the current's underlying
+// scalar potential: world px per period is roughly 1 / potentialScale
+// (so 1/420 ~= a 420px period). Deliberately much lower frequency than
+// island.noiseScale's fine coastline texture -- "lazy," broad
+// undulation across the whole canvas, not fine detail.
+//
+// octaves / lacunarity / gain -- Same fbm2D idea as island's own
+// octaves/lacunarity/gain. Kept low (2) on purpose -- "not very
+// turbulent," per the design conversation; the coast vector below is
+// what's meant to supply the visual interest, not current texture.
+//
+// coastMix -- Blends the coast vector between pure repulsion (0, push
+// straight off the coast) and pure tangential flow (1, slide along the
+// edge instead of just bouncing off it) -- both are rotations of the
+// SAME heightmap gradient (see cabinet-v3-flowfield.js), so this is one
+// continuous dial, not a choice between two different mechanisms.
+// 0.65 leans toward edge-following since a particle just bouncing
+// straight off every island it nears reads as mechanical/repetitive;
+// mostly-tangential motion (with enough repulsion mixed in to still
+// actually clear the coast) reads more like a real current deflecting
+// around an obstacle.
+//
+// coastStrength -- Multiplier on the coast vector, relative to the base
+// current's own raw magnitude. Empirically checked (a throwaway Node
+// script against real heightmap output, not guessed): at 3, the coast
+// vector runs roughly 20-25x the base current's magnitude right at a
+// coastline, fading to ~0 by open water -- clearly dominant near an
+// island (so avoidance actually reads as strong, per the design
+// conversation) without needing a separate falloff-shaping function,
+// since the underlying gradient it's built from already vanishes far
+// from any coast on its own.
+//
+// showPotential / showVectors -- Dev-panel-only debug toggles (Visuals
+// section, cabinet-v3-controls.js): showPotential renders the base
+// current's own scalar potential as a tinted grid ("the noise field"),
+// showVectors renders the full composite field as arrows ("vector
+// directions") -- see drawFlowFieldDebug() in cabinet-v3-layout.js. Both
+// off by default; this is how the field gets judged/tuned before any
+// particle animation is built on top of it, not a shipped visual.

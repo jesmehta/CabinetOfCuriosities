@@ -338,6 +338,29 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
   stroke-dasharray: 6 6;
 }
 
+/* v3.6.16 -- dev-only flow-field debug view (Visuals section: Flow
+   potential / Flow vectors, cabinet-v3-controls.js -- see
+   drawFlowFieldDebug() in cabinet-v3-layout.js). Deliberately garish,
+   off-palette colours -- unmistakably a debug overlay, never
+   confusable with the map's real content. pointer-events: none on the
+   group so it can never intercept an island/section hover even though
+   it happens to sit under them in paint order already. */
+.v3-flow-debug {
+  pointer-events: none;
+}
+
+.v3-flow-potential-cell {
+  fill: #ff2fa0;
+  stroke: none;
+}
+
+.v3-flow-vector {
+  stroke: #00e5ff;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
 /* v3.6.5 -- stacked translucent colour bands (replaces the single-ring
    evenodd approach). Each group is ONE colour at a fixed fill-opacity,
    drawn as several full (unclipped) nested contours -- overlap count,

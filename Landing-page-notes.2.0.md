@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.15** (domain warping for real concave coastlines,
+Currently on **v3.6.16** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -18,14 +18,16 @@ solves its own shape from the real viewport at load, with the page's
 title/tagline back in a normal top-of-page row (v3.6.12 reverted
 v3.6.10's map-corner overlay) sitting on the same sea colour as the
 canvas itself, per-section extra-island counts on
-`content/cabinet-sections.tsv` itself, and (new) both islands AND their
-whole section are click-through links to their own pages, with a soft
-blurred glow standing in for hover feedback instead of a hard shape) --
-see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
+`content/cabinet-sections.tsv` itself, both islands AND their whole
+section are click-through links to their own pages with a soft blurred
+glow standing in for hover feedback instead of a hard shape, and (new) a
+precomputed vector flow field -- `cabinet-v3-flowfield.js`, field math
+and two dev-panel debug toggles only so far, no particles riding it yet)
+-- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
-v3.6.15 progression
+v3.6.15 -> v3.6.16 progression
 and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
@@ -1258,8 +1260,13 @@ flat list, not the reasoning.
    instruction to resume, would need explicit direction.
 4. Flowfield stretch goal -- a precomputed noise/flow field with live,
    cheap particle advection along it (waves, boats), obstacles/repulsion
-   around islands, optionally mouse-reactive. Discussed conceptually
-   only, nothing built.
+   around islands, optionally mouse-reactive. **In progress, v3.6.16**:
+   the field itself (base current + island avoidance) is built and
+   tuned, with a dev-panel debug view to check it -- see that changelog
+   entry and `cabinet-v3-flowfield.js`. Still open: the actual particle
+   system (spawn/advect/recycle off-canvas), particle rendering, and the
+   mouse-reactive idea (cost still unresolved, per the original
+   conversation).
 5. ~~islands-tool idea: a control to re-roll/regenerate the circle
    centres and packing stage itself~~ -- done, v3.6.8: "Reroll
    positions" button, now in the Layout section (v3.6.9 restructure).
@@ -1390,6 +1397,73 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.16 -- flow field: math + debug view, no particles yet (first slice of the Flowfield stretch goal)
+
+Punch-list item 4's flowfield idea, picked back up with concrete
+direction this time: precomputed field (not live simulation), and for
+island-avoidance, a choice between three approaches -- no-go areas, a
+strong edge-following vector, or repulsion (flagged as "an easier
+composite vector field to compute").
+
+Turned out not to be a choice at all. `buildIslandHeightmap()`
+(`cabinet-v3-islandshape.js`) already produces a smooth scalar height
+`h(x,y)` for the coastline trace -- its gradient points toward land, so
+`-gradient` is repulsion and `gradient` rotated 90deg is a tangential,
+edge-following vector, both derived from the exact same already-computed
+field, no separate boundary tracing needed (which was the genuinely
+expensive version of "edge-following" being flagged as a concern). A new
+`coastMix` config value blends the two rather than forcing a pick: 0 is
+pure repulsion, 1 is pure tangential; shipped at 0.65, leaning toward
+"slides around the island" over "bounces off it," which reads less
+mechanical.
+
+The base current (the "smooth lazy field, not very turbulent" part) is
+curl noise -- the gradient of a low-frequency scalar potential, rotated
+90deg -- rather than sampling two independent noise functions for vx/vy
+directly, since curl noise is divergence-free by construction (no fake
+convergence points where particles would unnaturally clump, which
+independent sampling can produce).
+
+New module: `cabinet-v3-flowfield.js`, pure logic/no DOM, same split
+rationale as `cabinet-v3-treemap.js`/`cabinet-v3-circlepack.js`/
+`cabinet-v3-islandshape.js`. Reuses that last module's seeded-noise
+primitives (`mulberry32`/`seedFromString`/`buildPermutation`/`fbm2D`,
+newly exported for this) rather than duplicating a second Perlin
+implementation -- they were already general-purpose, not coastline-
+specific. New `v3Config.flow` block in `cabinet-v3-data.js` holds the
+tuning knobs, field-noted the same way `v3Config.island` is.
+
+Default constants (`potentialScale`, `coastStrength`, etc.) came from a
+throwaway Node script sampling the real field against realistic content,
+not guessed -- confirmed `coastStrength: 3` puts the coast vector at
+roughly 20-25x the base current's magnitude right at a coastline, fading
+to near-zero by open water, entirely for free from the gradient's own
+shape (no separate falloff function needed).
+
+**Scope, deliberately**: field math plus two dev-panel debug toggles
+only -- Visuals section, "Flow potential" (tints a grid by the base
+current's own scalar potential -- "the noise field" itself) and "Flow
+vectors" (the full composite field as arrows, length-capped for
+readability near a coastline where raw magnitude spikes). No particle
+system yet. This was a deliberate first slice, agreed before writing any
+code: validate the field looks right by eye before spending effort
+animating something on top of it that might need the field retuned
+anyway. Both toggles ride the existing cheap `retraceIslands()` path
+(same as Wave contours/Colour bands), verified clean on/off toggling with
+no stale-element leftovers and zero console errors.
+
+Screenshots: `v3.6.16-flow-vectors-debug.png`,
+`v3.6.16-flow-potential-debug.png`.
+
+Also settled, going forward: a persistent local Playwright install now
+lives outside the (session-wiped) scratchpad specifically so it doesn't
+need reinstalling every session -- and for anything visual/aesthetic,
+the plan is to point at the live page and let it be judged directly
+rather than defaulting to a screenshot-and-describe round trip.
+Playwright stays for what it's actually good for here: functional
+checks (console errors, correct hrefs, no stale toggle state) that don't
+need a human eye.
 
 ### v3.6.14-v3.6.15 -- eight comparison colour/type schemes wired into the Theme dropdown
 

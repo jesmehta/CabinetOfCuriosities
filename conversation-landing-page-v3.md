@@ -665,6 +665,87 @@ decision, the trailer went back in this time; the underlying principle
 (follow what the repo is actually doing now, not a fixed rule) held in
 both directions.
 
+## Flow field: two options collapse into one mechanism, then "use me" (this session, v3.6.16)
+
+Item 4's flowfield idea (see "The original punch list" above) came back
+up on its own, unprompted by any specific bug or request -- just picked
+up as the next open thread. Asked for a technical proposal before any
+code, direction given fully worked out already:
+
+> I am ok with precomputed fields, and the islands are either no-go
+> areas, or there is a strong vector along the island edge that
+> transports particles from one edge to the other until the main
+> current takes them away (which sounds comutationally bad atleast for
+> the initiation, it may be ok as a precompute) or actively repulsing so
+> thats an easier composite vector field to compute.
+
+Plus: particles start as small ellipses, spawn/despawn or reset off-
+canvas (explicitly framed as "whichever's easier," not a hard
+requirement for one over the other), the base current itself should be
+"a smooth lazy field, not very turbulent" since island repulsion alone
+was expected to carry the visual interest, and -- specifically requested
+up front, before any particle code -- a dev-panel way to see the noise
+field and vector directions while tuning it.
+
+The proposal back collapsed what was framed as three separate options
+into one mechanism: `buildIslandHeightmap()` already computes a smooth
+scalar field for the coastline trace, so its gradient IS the no-go/
+repulsion vector (push away from land), and that same gradient rotated
+90deg IS the edge-following tangential vector -- no separate boundary-
+tracing needed for the "computationally bad" option, since both come out
+of a field that already exists. Framed as a `coastMix` blend rather than
+a pick-one. Approved in three words -- "Sure go ahead" -- for the
+narrower first slice proposed alongside the technical writeup (field
+math + two debug toggles, no particles yet, so the field can be judged
+before anything gets built on top of it).
+
+Implementation surfaced one genuine design choice worth recording: curl
+noise (gradient of a potential, rotated) for the base current, over the
+more obvious "sample two independent noise functions for vx and vy" --
+chosen because curl noise is divergence-free by construction, so it
+can't produce the fake convergence points independent sampling risks.
+Not asked about directly; a judgment call made and then documented,
+rather than surfaced as a decision point, since it's a standard,
+low-risk technique with a clear reason and no real tradeoff against the
+alternative.
+
+Default tuning values (how strong the coast vector should be relative to
+the current, the current's own frequency) came from a throwaway Node
+script sampling the actual field against realistic content -- open
+water vs. right at a coastline -- rather than guessed and eyeballed
+later, continuing this project's own established practice for anything
+with a "does this feel right" dimension.
+
+### "Use me"
+
+Once the debug toggles were working, screenshots got taken (Playwright,
+saved to `dev-screenshots/`) to describe what the field looked like
+before asking whether to proceed further. Response, verbatim:
+
+> I am the human in the loop, it is faster for me to see the updated
+> page and say yes no ok than you to do the screenshot workflow, so use
+> me.
+
+Alongside a second, more mechanical correction: a working Playwright
+install had been set up and torn down multiple times across this
+session as the scratchpad directory got wiped between turns --
+"install chromium and playwright if you are going to frequently use it,
+dont uninstall-reinstall all the time." Fixed by installing once into a
+persistent location outside the scratchpad and recording where, so it
+doesn't need reinstalling next time either.
+
+The bigger lesson is the first one: screenshot-and-describe is a real
+tool for *functional* verification (console errors, correct hrefs, no
+stale toggle state -- things a human wouldn't want to manually check
+every time) but a poor substitute for actual visual judgment, which the
+user is simply faster and more reliable at doing directly. This tracks a
+pattern from earlier in the project too -- the label-halo concatenation
+bug, the front-end colour miscategorization, the overlap issue -- real
+visual problems this session's own screenshot workflow hadn't caught
+first, the user had. Going forward: functional checks stay automated;
+anything about how something *looks* gets a "here's what to reload and
+look at," not a description of a screenshot.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
