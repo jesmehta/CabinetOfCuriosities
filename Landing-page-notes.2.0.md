@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.27** (domain warping for real concave coastlines,
+Currently on **v3.6.28** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -46,13 +46,18 @@ outermost wave ring already sits at, clipped to that section's own
 rectangle so an intruding neighbour's glow can spill across a region
 seam visually without ever being clickable there -- plus inverted
 hover-colour label treatments (light-on-dark becomes dark-on-light) and
-one fewer label-style option (thin stroke, removed)
+one fewer label-style option (thin stroke, removed), and (new) a ninth
+Theme preset -- "MedieRiso," a dark warm-sepia base (colour bands AND
+wave rings on together) with every highlight -- rings, band boundaries,
+hover halos, label outlines, boat fills, dragon fills -- pulled from the
+existing "riso" theme's own neon palette
 -- see the changelog for the full v3.0 -> v3.1 -> v3.2 -> v3.3 -> v3.4 ->
 v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 -> v3.6.1 -> v3.6.2 -> v3.6.3 -> v3.6.4 -> v3.6.5 -> v3.6.6 -> v3.6.7 ->
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
--> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 -> v3.6.26 -> v3.6.27
+-> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 -> v3.6.26 -> v3.6.27 ->
+v3.6.28
 progression and why each pass changed what it did.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
@@ -1274,9 +1279,14 @@ flat list, not the reasoning.
 
 ### Punch list (sea serpent through colophon)
 
-1. Sea-serpent redesign -- on hold pending a hand-drawn reference (the
-   arc-based v1 attempt, `cabinet-v3-seaserpent.js` / `_test-serpent.html`,
-   is untracked in the repo, not deleted, not wired into the real page).
+1. ~~Sea-serpent redesign -- on hold pending a hand-drawn reference~~ --
+   **done, v3.6.24**: the blocker was the reference itself, resolved by
+   the user supplying one directly (`dragon.svg`) rather than a
+   hand-drawn sketch. 1-3 independent sea-dragon wanderers, noise-driven
+   movement, coastal avoidance, event-triggered dive/resurface -- see
+   that changelog entry. The arc-based v1 attempt
+   (`cabinet-v3-seaserpent.js` / `_test-serpent.html`) stays untracked,
+   unused, not deleted -- superseded, not merged into this.
 2. Water wave-line texture -- on hold pending a reference image (v2's
    own wavelines weren't visible/legible as a reference on their own).
 3. Boats sailing in smooth flows (not randomly moving) -- the original
@@ -1307,17 +1317,18 @@ flat list, not the reasoning.
 5. ~~islands-tool idea: a control to re-roll/regenerate the circle
    centres and packing stage itself~~ -- done, v3.6.8: "Reroll
    positions" button, now in the Layout section (v3.6.9 restructure).
-6. islands-tool idea: switch or layer between the wave contours, the
-   topology noise contour bands, or both -- **tier 1 done** (v3.6.8's
+6. ~~islands-tool idea: switch or layer between the wave contours, the
+   topology noise contour bands, or both~~ -- **tier 1 done** (v3.6.8's
    three preset buttons, replaced in v3.6.9 by two independent
    checkboxes in the Visuals section -- Wave contours / Colour bands --
    which cover the same three combinations plus a fourth the buttons
-   couldn't reach). Tier 2 still open: other whole look-and-feel presets
-   beyond those (e.g. a "medieval map" preset combining wave contours
-   with an illuminated-manuscript-style treatment) need actual new
-   rendering code for a treatment that isn't designed yet -- cost
-   unknown until that design happens, needs its own discussion before
-   estimating.
+   couldn't reach). **Tier 2 also done, v3.6.14-v3.6.15 + v3.6.28**:
+   nine whole look-and-feel presets now exist beyond the original
+   medieval/satellite draft pair (medieval-map, bathymetric, riso,
+   cyanotype, neon, ukiyo, medieRiso), each its own colour token set +
+   type pairing, switched live via the Theme select -- see
+   `v3-scheme-candidates.md` and the changelog for the reasoning behind
+   each.
 7. ~~islands-tool idea: give the topology noise contour bands
    (`seaBandThresholds`/`sandThresholds`/`vegThresholds`) their own
    panel section~~ -- done, v3.6.9: "Topological offset parameters" in
@@ -1434,6 +1445,62 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.28 -- "MedieRiso" theme: dark sepia base, riso-neon highlights throughout
+
+Direct request, given as a single spec: a ninth Theme preset, dark warm
+brown/sepia base colours "based on the medieval map palette," with every
+highlight -- wave contours, hover halos, text outlines, boat interiors,
+dragon fills, topology-band boundaries -- pulled from the riso palette
+instead, outlines/strokes staying dark throughout.
+
+**Palette.** `--v3-sea-deep/shallow/veg/sand` pushed to a genuinely dark
+register (`#2c1f16` down to `#8a6440`) -- deliberately further than the
+existing "medieval-map" theme's light parchment, closer to an old
+leather-bound atlas at night, so the neon accents have real contrast to
+land on. Riso accents reuse the EXISTING "riso" theme's own established
+hex values rather than inventing a new set (`--v3-sea-deep`/`shallow`/
+`veg`/`sand` there ARE riso's blue/teal/pink/yellow) -- `--v3-ring-ink`
+(wave rings, and new band-boundary strokes -- see below) takes riso
+yellow, the single highest-contrast "electric contour" accent; hover
+halos and label outlines take riso pink, a second, deliberately distinct
+"interaction" accent so hovering doesn't just read as "brighter yellow."
+Both wave rings AND colour bands are on together (`THEME_PRESETS`,
+`cabinet-v3-controls.js`), same pairing as "ukiyo" -- bands carry the
+sepia depth, rings lay neon iso-lines on top, two roles rather than one
+replacing the other.
+
+**Extending the theme system to reach things it never has.** Several
+elements this request touches were never theme-aware at all -- hover
+halo fill and label-outline colour were hardcoded to `--cab-land-hover`/
+`--cab-land-light` directly (not a `--v3-*` token), and boat/dragon fill
+colours were plain JS constants with no CSS or theme hook whatsoever.
+Refactored the former into two new tokens on `body.v3-proto`
+(`--v3-halo-ink`, `--v3-label-outline`), defaulting to the exact values
+every other theme already had hardcoded (verified by diffing all 8
+existing themes' computed values before/after -- pixel-identical, and
+confirmed the actual production default via the zero-JS `index.html`
+hover check too) so only `medieRiso` visibly changes. For the latter,
+added a small `isMedieRisoTheme()` check (`cabinet-v3-layout.js`, reads
+`document.body.dataset.theme` live, no caching -- so switching themes via
+the dev panel needs no separate particle-pool/dragon rebuild wiring) that
+swaps in a riso colour pool for boats' FILL (`buildParticleElement()`)
+and dragons' fill array (`ensureDragon()`) only when active -- outlines/
+strokes for both are untouched, since the existing dark palettes already
+satisfied "outlines are dark" as-is. Confirmed live: boat fills sampled
+across a full 130-particle pool were exactly the 3 riso hues expected,
+dragon fills matched too.
+
+**One genuinely new visual treatment, not a token swap**: sea/sand/veg
+colour bands are fill-only in every other theme (`.v3-sea-band` etc.,
+`cabinet-v3-style.css`) -- added a `--v3-ring-ink` boundary stroke to
+them, scoped only to `[data-theme="medieRiso"]`, so each band's own edge
+reads as an iso-line too, not just the wave rings.
+
+Typography reuses already-loaded font stacks from two existing themes
+rather than adding a new dependency: "Cinzel" for the header (medieval's
+own choice) paired with "Space Mono" for labels (riso's own choice) --
+the same medieval+riso hybrid the colour palette is doing, just in type.
 
 ### v3.6.27 -- hover label colours invert on hover; "thin stroke" label style removed
 

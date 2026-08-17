@@ -1199,6 +1199,66 @@ DOM-structure level -- nesting the label inside the link, the same
 relationship island labels already had with their own `<a>` -- rather
 than reaching for a sibling-combinator selector to work around it.
 
+## Punch-list bookkeeping, then a new theme in one dense spec
+
+Two quick corrections to the standing to-do list, both content matches
+rather than exact item-number matches (the numbers referenced didn't
+line up with the doc's own numbering, but what was meant was
+unambiguous): "1 is done, we used my dragon svg file, and thats the
+thing" -- the sea-serpent redesign item, on hold since it opened pending
+a hand-drawn reference, resolved not by anyone drawing one but by the
+user supplying `dragon.svg` directly, which the dragon feature (v3.6.24)
+was already built from. And "3 is done, we have other themes beyond the
+2 initial ones" -- the punch list's own tier-2 "other whole look-and-feel
+presets" item, satisfied by the seven themes built since (medieval-map,
+bathymetric, riso, cyanotype, neon, ukiyo, and now medieRiso itself)
+beyond the original medieval/satellite draft pair.
+
+Then, in the same message, a new theme spec, dense and fully worked out
+up front rather than discussed first: dark warm brown/sepia base colours
+"based on the medieval map palette," every highlight pulled from "the
+riso palette" instead -- wave contours, hover halos, text outlines, boat
+interiors, dragon fills, topology-band boundaries -- with outlines
+staying dark throughout, closed with a name: "medieRiso."
+
+Checked the existing theme system before writing anything: eight themes
+already existed, including one already called "riso" (`v3-scheme-
+candidates.md` scheme 3a) with its own established neon hex values
+(blue/teal/pink/yellow) -- reused those verbatim rather than inventing a
+new palette, both for consistency with the site's own existing
+vocabulary and because the request's own name ("medieRiso") already
+implied a literal medieval+riso hybrid, not a from-scratch third thing.
+
+The harder part wasn't the palette -- it was that several things this
+spec asked for had never been theme-aware at all. Hover-halo fill and
+label-outline colour were hardcoded directly to shared site tokens
+(`--cab-land-hover`/`--cab-land-light`), not the theme-overridable
+`--v3-*` tokens every other themed property already used; boat and
+dragon fill colours were plain JS constants with no CSS or theme hook
+whatsoever. Rather than special-case medieRiso with its own separate
+code path, refactored both into the SAME extensible mechanism the theme
+system already uses elsewhere -- two new `--v3-*` tokens for the CSS
+half, a small live theme-check for the JS half -- so a tenth theme
+wanting to touch these same properties later would just set a token or
+read the same check, not repeat this refactor. Verified the refactor
+itself didn't move anything for the other eight themes (or index.html's
+own default, unthemed look) by diffing computed values before/after,
+not just assuming a "should default the same" comment was enough.
+
+One genuinely new rule, not just a palette applied to an existing one:
+colour bands had never had a boundary stroke in ANY theme (fill-only,
+everywhere) -- added one, scoped only to medieRiso, so each band's edge
+reads as its own iso-line alongside the wave rings, rather than stretching
+an existing rule to cover a case it wasn't built for.
+
+Reported back with screenshots (full map, an island hover crop, a
+section hover crop) and explicit measured confirmation (boat/dragon fill
+colours sampled directly from the live DOM, not eyeballed) rather than
+just a "done" -- consistent with the pattern established earlier this
+session for anything genuinely visual: implement, verify with real
+numbers where a claim can be checked that way, then hand it to the user
+to look at themselves before it's treated as decided.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

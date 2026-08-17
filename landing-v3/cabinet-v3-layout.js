@@ -901,6 +901,22 @@ let animStartTime = null;
 // these read as small distinct specks against open water rather than
 // blending into the coastline/label colours.
 const PARTICLE_COLORS = ["#3b2416", "#1c1a17", "#4a2f5e", "#1f2b4a"]; // dark brown, black, violet, navy
+
+// v3.6.28 -- medieRiso theme (cabinet-v3-style.css): "boat interior
+// colours are riso, outlines are dark" -- PARTICLE_COLORS above is
+// already dark (brown/black/violet/navy), so only the FILL needs a
+// theme-conditional override; the stroke/outline logic below is
+// untouched. Riso blue/teal/orange -- distinct from the yellow/pink the
+// theme's wave-ring and hover-halo accents already claim (see that CSS
+// block's own comment), so boats read as their own accent family rather
+// than competing with ambient contour or interaction colours. Read live
+// (not cached) since the theme can change at any point via the dev
+// panel's Theme select without a particle-pool rebuild.
+const MEDIE_RISO_BOAT_FILLS = ["#0078bf", "#46bdb1", "#ff6b35"];
+function isMedieRisoTheme() {
+  return document.body.dataset.theme === "medieRiso";
+}
+
 // v3.6.20 -- elapsed-seconds mark of the last debug-grid rebuild (see
 // animationFrame()'s throttled refresh below); null means "never yet."
 let lastDebugFieldTime = null;
@@ -946,11 +962,18 @@ function buildParticleElement() {
   const scale = sizeMin + Math.random() * (sizeMax - sizeMin);
   const rx = 3.2 * scale, ry = 1.3 * scale;
   const color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+  // v3.6.28 -- inline fill only under medieRiso; every other theme keeps
+  // reading .v3-particle's own CSS fill (--cab-land-light) by leaving
+  // this unset, same "inline wins the cascade" mechanism the stroke
+  // above already relies on.
+  const fillStyle = isMedieRisoTheme()
+    ? `fill:${MEDIE_RISO_BOAT_FILLS[Math.floor(Math.random() * MEDIE_RISO_BOAT_FILLS.length)]};`
+    : "";
 
   const pg = el("g", { class: "v3-particle-group" });
   const ellipse = el("ellipse", {
     class: "v3-particle", cx: 0, cy: 0, rx: rx.toFixed(2), ry: ry.toFixed(2),
-    style: `stroke:${color}`
+    style: `${fillStyle}stroke:${color}`
   });
   pg.appendChild(ellipse);
 
@@ -1108,6 +1131,14 @@ function buildDragonElement(fill) {
   return { outer, slide };
 }
 
+// v3.6.28 -- medieRiso theme: "dragon fill colours are riso palette."
+// Same length (3) as v3Config.dragon.fillColors so the shuffle below's
+// "never repeats since count <= fillColors.length" property still
+// holds. Pink/blue/orange -- distinct from the boat fill pool
+// (MEDIE_RISO_BOAT_FILLS, above) so dragons don't visually blend into
+// the boat traffic.
+const MEDIE_RISO_DRAGON_FILLS = ["#ff48b0", "#0078bf", "#ff6b35"];
+
 // Full (re)build -- called wherever ensureParticles() also is (a fresh
 // layout invalidates the old dragons' canvasBounds same as it does
 // particles'). v3.6.24 -- 1-3 dragons (never 0), fresh spawn points/
@@ -1116,8 +1147,13 @@ function buildDragonElement(fill) {
 // dragons, has to be non zero." Colours come from a SHUFFLED copy of
 // fillColors so up to 3 dragons never repeat one (there are always
 // <= fillColors.length of them) -- direct request, "different colours."
+// v3.6.28 -- that source array is theme-conditional (see
+// MEDIE_RISO_DRAGON_FILLS above), read live rather than baked into
+// v3Config.dragon itself so switching themes via the dev panel doesn't
+// need its own separate wiring.
 function ensureDragon(stage, canvasBounds, sampler, t) {
-  const { fillColors, sizeMultMin, sizeMultMax } = v3Config.dragon;
+  const { fillColors: defaultFillColors, sizeMultMin, sizeMultMax } = v3Config.dragon;
+  const fillColors = isMedieRisoTheme() ? MEDIE_RISO_DRAGON_FILLS : defaultFillColors;
   const count = 1 + Math.floor(Math.random() * 3);
 
   const colors = [...fillColors];

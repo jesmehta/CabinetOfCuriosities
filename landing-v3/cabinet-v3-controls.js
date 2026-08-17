@@ -281,7 +281,8 @@ function buildControlPanel() {
     ["riso", "Riso"],
     ["cyanotype", "Cyanotype"],
     ["neon", "Neon Memphis"],
-    ["ukiyo", "Ukiyo-e Woodblock"]
+    ["ukiyo", "Ukiyo-e Woodblock"],
+    ["medieRiso", "MedieRiso"]
   ].forEach(([value, label]) => {
     const opt = document.createElement("option");
     opt.value = value;
@@ -297,7 +298,11 @@ function buildControlPanel() {
     riso: { flatColourMode: false, showWaveRings: false },
     cyanotype: { flatColourMode: false, showWaveRings: false },
     neon: { flatColourMode: true, showWaveRings: true },
-    ukiyo: { flatColourMode: false, showWaveRings: true }
+    ukiyo: { flatColourMode: false, showWaveRings: true },
+    // v3.6.28 -- bands AND rings on together, same pairing as "ukiyo":
+    // bands carry the dark sepia depth, rings lay the riso iso-line
+    // accent on top -- see that theme's own CSS comment.
+    medieRiso: { flatColourMode: false, showWaveRings: true }
   };
   themeSelect.addEventListener("change", () => {
     if (themeSelect.value) document.body.dataset.theme = themeSelect.value;

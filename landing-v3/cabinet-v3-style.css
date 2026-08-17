@@ -23,6 +23,16 @@ body.v3-proto {
      heavy/near-black for legibility). */
   --v3-ink: var(--cab-ink);
   --v3-ring-ink: var(--v3-ink);
+  /* v3.6.28 -- hover-halo fill (islands, sections, and a section label's
+     own hover colour) and label-outline colour (the "halo"/"glow" label
+     styles' stroke/drop-shadow, and what an entry's label INVERTS to on
+     hover -- see .v3-island-label below), both broken out into their own
+     themeable tokens for medieRiso (riso neon accents on a dark base
+     needs these to be vivid, not the light parchment tones every other
+     theme is happy reusing) -- default to the exact values every other
+     theme already had hardcoded, so nothing else changes. */
+  --v3-halo-ink: var(--cab-land-hover);
+  --v3-label-outline: var(--cab-land-light);
 
   margin: 0;
   /* v3.6.12 -- was var(--cab-sea) (a different, greyer tone than the
@@ -243,6 +253,70 @@ body.v3-proto[data-theme="ukiyo"] .v3-header h1 {
 body.v3-proto[data-theme="ukiyo"] .v3-island-label,
 body.v3-proto[data-theme="ukiyo"] .v3-section-label {
   font-family: "Zen Old Mincho", var(--cab-font-body);
+}
+
+/* "medieRiso" -- v3.6.28, direct request: a dark warm-brown/sepia base
+   (the medieval-map register, pushed all the way to a night-time old-
+   leather-atlas depth rather than that theme's light parchment) with
+   EVERY highlight -- wave rings, band boundaries, hover halos, label
+   outlines, boat fills, dragon fills -- pulled from the riso theme's own
+   established neon palette (reused verbatim: --v3-sea-deep/shallow/veg/
+   sand above ARE "riso"'s blue/teal/pink/yellow, just never both used at
+   once by any one theme before this). Like "ukiyo", both wave rings AND
+   colour bands are on together (THEME_PRESETS, cabinet-v3-controls.js)
+   -- the bands carry the sepia depth, the rings lay neon iso-lines on
+   top, distinct roles rather than either replacing the other.
+
+   Colour roles, so a change to one doesn't have to be reasoned out
+   again from scratch:
+   - --v3-ring-ink (wave rings AND, below, band boundaries): riso yellow
+     -- the single dominant "electric contour" accent, highest contrast
+     against the dark brown base of anything in the palette.
+   - --v3-halo-ink / --v3-label-outline (hover halos, a section label's
+     solid hover colour, an island label's ambient outline AND what it
+     inverts to on hover): riso pink -- a second, distinct "interaction"
+     accent, so hovering reads as a different event from the ambient
+     yellow contour work, not just "brighter yellow."
+   - Boat fills, dragon fills (JS-side, cabinet-v3-layout.js's
+     buildParticleElement()/ensureDragon()): drawn from the remaining
+     riso hues (blue/teal/orange) when this theme is active, still
+     independent per-boat/per-dragon randomisation, same mechanism every
+     other theme's boats/dragons already use -- just a different colour
+     pool. Outlines stay the existing dark palette (PARTICLE_COLORS) --
+     already dark brown/black/violet/navy, no change needed for "outlines
+     are dark" to already hold true here.
+   - Band boundaries: sea/sand/veg bands are fill-only everywhere else
+     (see .v3-sea-band etc. below) -- this is the one purely NEW
+     treatment, not a token swap of an existing rule, adding a thin
+     --v3-ring-ink stroke so each band's own edge reads as an iso-line
+     too, not just the wave rings. */
+body.v3-proto[data-theme="medieRiso"] {
+  --v3-sea-deep: #2c1f16;
+  --v3-sea-shallow: #4a3524;
+  --v3-veg: #5c4530;
+  --v3-sand: #8a6440;
+  --v3-ink: #150e09;
+  --v3-ring-ink: #ffe800;
+  --v3-halo-ink: #ff48b0;
+  --v3-label-outline: #ff48b0;
+}
+
+body.v3-proto[data-theme="medieRiso"] .v3-sea-band,
+body.v3-proto[data-theme="medieRiso"] .v3-sand-band,
+body.v3-proto[data-theme="medieRiso"] .v3-veg-band {
+  stroke: var(--v3-ring-ink);
+  stroke-width: 0.6;
+  stroke-opacity: 0.8;
+}
+
+body.v3-proto[data-theme="medieRiso"] .v3-header h1 {
+  font-family: "Cinzel", var(--cab-font-heading);
+  letter-spacing: 0.04em;
+}
+
+body.v3-proto[data-theme="medieRiso"] .v3-island-label,
+body.v3-proto[data-theme="medieRiso"] .v3-section-label {
+  font-family: "Space Mono", var(--cab-font-body);
 }
 
 /* v3.6.12 -- header reverted to a normal top-of-flow row (was: absolute
@@ -519,7 +593,7 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
    edge rather than stopping dead at it) -- fill only, no stroke, blurred
    so it fades out rather than presenting a crisp boundary. */
 .v3-island-glow {
-  fill: var(--cab-land-hover);
+  fill: var(--v3-halo-ink);
   opacity: 0;
   pointer-events: none;
   filter: blur(6px);
@@ -553,7 +627,7 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
 body:not([data-label-style]) .v3-island-label,
 body[data-label-style="halo"] .v3-island-label {
   paint-order: stroke;
-  stroke: var(--cab-land-light);
+  stroke: var(--v3-label-outline);
   stroke-width: 3px;
 }
 
@@ -562,7 +636,7 @@ body[data-label-style="halo"] .v3-island-label {
    sat between. */
 
 body[data-label-style="glow"] .v3-island-label {
-  filter: drop-shadow(0 0 1.5px var(--cab-land-light)) drop-shadow(0 0 1.5px var(--cab-land-light));
+  filter: drop-shadow(0 0 1.5px var(--v3-label-outline)) drop-shadow(0 0 1.5px var(--v3-label-outline));
 }
 
 /* "plain" intentionally adds nothing -- a no-halo baseline to judge the
@@ -574,19 +648,23 @@ body[data-label-style="glow"] .v3-island-label {
    fill"). Not scoped to "plain" -- there's no halo/glow color there to
    invert. .v3-island-label has pointer-events: none (see above), so the
    hover state has to key off .v3-island (the actual <a>), same pattern
-   .v3-island-glow's own opacity toggle already uses. */
+   .v3-island-glow's own opacity toggle already uses.
+   v3.6.28 -- --cab-land-light/--cab-ink swapped for --v3-label-outline/
+   --v3-ink (both already themeable, see body.v3-proto above) so this
+   inversion uses whatever a theme's own outline/ink colours are, not
+   always the site-wide parchment/cab-ink pair. */
 body:not([data-label-style]) .v3-island:hover .v3-island-label,
 body:not([data-label-style]) .v3-island:focus-visible .v3-island-label,
 body[data-label-style="halo"] .v3-island:hover .v3-island-label,
 body[data-label-style="halo"] .v3-island:focus-visible .v3-island-label {
-  fill: var(--cab-land-light);
-  stroke: var(--cab-ink);
+  fill: var(--v3-label-outline);
+  stroke: var(--v3-ink);
 }
 
 body[data-label-style="glow"] .v3-island:hover .v3-island-label,
 body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
-  fill: var(--cab-land-light);
-  filter: drop-shadow(0 0 1.5px var(--cab-ink)) drop-shadow(0 0 1.5px var(--cab-ink));
+  fill: var(--v3-label-outline);
+  filter: drop-shadow(0 0 1.5px var(--v3-ink)) drop-shadow(0 0 1.5px var(--v3-ink));
 }
 
 /* Dashed ring marking "not fully live" -- wip entries (still a link,
@@ -613,14 +691,17 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
 }
 
 /* v3.6.27 -- section hover: label turns the SOLID version of its own
-   glow colour (--cab-land-hover is already a fully-opaque hex, just
-   used at low opacity -- .v3-section-glow below -- for the wash; this
-   is the same token at full strength). Direct request: "section hover
+   glow colour (--v3-halo-ink is already a fully-opaque hex, just used at
+   low opacity -- .v3-section-glow below -- for the wash; this is the
+   same token at full strength). Direct request: "section hover
    highlight should turn the section name the solid version of the halo
-   colour." */
+   colour." v3.6.28 -- was --cab-land-hover directly; now the themeable
+   --v3-halo-ink (see body.v3-proto above), same token .v3-island-glow/
+   .v3-section-glow already use, so a theme only has to set one value for
+   every hover-halo role at once. */
 .v3-section-link:hover .v3-section-label,
 .v3-section-link:focus-visible .v3-section-label {
-  fill: var(--cab-land-hover);
+  fill: var(--v3-halo-ink);
 }
 
 /* v3.6.13 -- the section's own landing-page link, covering the whole
@@ -645,7 +726,7 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
    would compete with the islands sitting inside it rather than reading
    as "this whole area is one clickable section." */
 .v3-section-glow {
-  fill: var(--cab-land-hover);
+  fill: var(--v3-halo-ink);
   opacity: 0;
   pointer-events: none;
   filter: blur(14px);
