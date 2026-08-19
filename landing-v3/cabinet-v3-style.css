@@ -693,7 +693,25 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
      from it -- let pointer events pass straight through to the rect
      underneath, same reasoning as .v3-island-label. */
   pointer-events: none;
-  transition: fill var(--cab-transition-fast);
+  transition: fill var(--cab-transition-fast), stroke var(--cab-transition-fast), filter var(--cab-transition-fast);
+}
+
+/* v3.6.30 -- section headings get the same three data-label-style
+   variants .v3-island-label already has (halo/glow/plain, dev panel:
+   Visuals > Label style) -- direct request: "the section headings a
+   thick stroke halo and other treatments like the island entry names."
+   Same attribute, same rules, just a second selector -- a section name
+   sits on the same busy multi-band/wave-ring background an island name
+   does, so it needs the same legibility treatment, not a separate one. */
+body:not([data-label-style]) .v3-section-label,
+body[data-label-style="halo"] .v3-section-label {
+  paint-order: stroke;
+  stroke: var(--v3-label-outline);
+  stroke-width: 3px;
+}
+
+body[data-label-style="glow"] .v3-section-label {
+  filter: drop-shadow(0 0 1.5px var(--v3-label-outline)) drop-shadow(0 0 1.5px var(--v3-label-outline));
 }
 
 /* v3.6.27 -- section hover: label turns the SOLID version of its own
