@@ -259,27 +259,33 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
    (the medieval-map register, pushed all the way to a night-time old-
    leather-atlas depth rather than that theme's light parchment) with
    EVERY highlight -- wave rings, band boundaries, hover halos, label
-   outlines, boat fills, dragon fills -- pulled from the riso theme's own
-   established neon palette (reused verbatim: --v3-sea-deep/shallow/veg/
-   sand above ARE "riso"'s blue/teal/pink/yellow, just never both used at
-   once by any one theme before this). Like "ukiyo", both wave rings AND
-   colour bands are on together (THEME_PRESETS, cabinet-v3-controls.js)
-   -- the bands carry the sepia depth, the rings lay neon iso-lines on
-   top, distinct roles rather than either replacing the other.
+   outlines, boat fills, dragon fills -- pulled from a riso-style neon
+   palette. Like "ukiyo", both wave rings AND colour bands are on
+   together (THEME_PRESETS, cabinet-v3-controls.js) -- the bands carry
+   the sepia/navy depth, the rings lay neon iso-lines on top, distinct
+   roles rather than either replacing the other.
+
+   v3.6.29 -- --v3-sea-deep and --v3-ink swapped from warm brown to a
+   near-black indigo/deep-blue pair (explicit hex values given), and
+   --v3-halo-ink/--v3-label-outline split apart (were both riso pink;
+   now magenta vs. purple) so hover reads as a distinct hue shift, not
+   just the same pink again. --v3-sea-shallow/--v3-veg/--v3-sand stay
+   the original sepia tones -- untouched, no new colour was given for
+   them.
 
    Colour roles, so a change to one doesn't have to be reasoned out
    again from scratch:
-   - --v3-ring-ink (wave rings AND, below, band boundaries): riso yellow
-     -- the single dominant "electric contour" accent, highest contrast
-     against the dark brown base of anything in the palette.
-   - --v3-halo-ink / --v3-label-outline (hover halos, a section label's
-     solid hover colour, an island label's ambient outline AND what it
-     inverts to on hover): riso pink -- a second, distinct "interaction"
-     accent, so hovering reads as a different event from the ambient
-     yellow contour work, not just "brighter yellow."
+   - --v3-ring-ink (wave rings AND, below, band boundaries): neon
+     teal/mint -- the single dominant "electric contour" accent, highest
+     contrast against the dark base of anything in the palette.
+   - --v3-halo-ink (hover halos, a section label's solid hover colour):
+     neon magenta.
+   - --v3-label-outline (an island label's ambient outline AND what it
+     inverts to on hover): neon purple -- distinct from --v3-halo-ink so
+     ambient label styling and active hover read as different accents.
    - Boat fills, dragon fills (JS-side, cabinet-v3-layout.js's
-     buildParticleElement()/ensureDragon()): drawn from the remaining
-     riso hues (blue/teal/orange) when this theme is active, still
+     buildParticleElement()/ensureDragon()): drawn from the riso theme's
+     hues (blue/teal/orange) when this theme is active, still
      independent per-boat/per-dragon randomisation, same mechanism every
      other theme's boats/dragons already use -- just a different colour
      pool. Outlines stay the existing dark palette (PARTICLE_COLORS) --
@@ -291,14 +297,14 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
      --v3-ring-ink stroke so each band's own edge reads as an iso-line
      too, not just the wave rings. */
 body.v3-proto[data-theme="medieRiso"] {
-  --v3-sea-deep: #2c1f16;
+  --v3-sea-deep: #030085;
   --v3-sea-shallow: #4a3524;
   --v3-veg: #5c4530;
   --v3-sand: #8a6440;
-  --v3-ink: #150e09;
-  --v3-ring-ink: #ffe800;
-  --v3-halo-ink: #ff48b0;
-  --v3-label-outline: #ff48b0;
+  --v3-ink: #060126;
+  --v3-ring-ink: #f21d92;
+  --v3-halo-ink: #1bf2b5;
+  --v3-label-outline: #e031eb;
 }
 
 body.v3-proto[data-theme="medieRiso"] .v3-sea-band,
