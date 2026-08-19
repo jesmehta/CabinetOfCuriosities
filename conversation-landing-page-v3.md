@@ -1259,6 +1259,76 @@ session for anything genuinely visual: implement, verify with real
 numbers where a claim can be checked that way, then hand it to the user
 to look at themselves before it's treated as decided.
 
+## MedieRiso, retuned with explicit hex values, then a note that wasn't a bug report
+
+Two short follow-ups to the theme just shipped. First, five literal hex
+codes with no further explanation: "F21D92 E031EB 060126 030085 1BF2B5 /
+update mediriso with these colours." Five colours, five slots that map
+cleanly without inventing anything: the two near-black/deep-blue values
+onto `--v3-ink`/`--v3-sea-deep` (moving those off warm brown), the three
+remaining onto `--v3-ring-ink`/`--v3-halo-ink`/`--v3-label-outline` --
+which also, for the first time, gave halo and label-outline genuinely
+different hues instead of sharing one pink. Left `--v3-sea-shallow`/
+`--v3-veg`/`--v3-sand` alone since no new colour was given for them.
+Verified via the dev panel's real Theme select (not just the `dataset`
+shortcut) and screenshots. Then "swap ring ink and halo ink" -- a
+one-line trade, applied directly.
+
+Next message: "tell me which token is used for what - in short" -- answered
+with a plain list, no code changes.
+
+Then a screenshot-driven observation: "the teal glow looks radioactive on
+island hover - a combined effect of the glow + underlying colours."
+Traced the actual cause rather than taking the description at face value
+-- `.v3-island-glow` is a 6px-blurred fill of the *whole* traced island
+shape at 0.65 opacity, so a saturated teal on MedieRiso's near-black base
+reads very differently than the same rule does on any of the other,
+lighter themes. Wrote this into the changelog (v3.6.29) as a flagged,
+unfixed observation with candidate directions, exactly as asked --
+"note the feedback," not a request to act on it. The correction came
+right after: "I didn't mean it needed to be corrected or otherwise, it
+was just a note. Because I'm still updating colours and would lose that
+combination if I wanted it here or elsewhere." That line is what the
+next piece of work responds to directly.
+
+## A colour editor grown from "I'd lose the combination," then widened mid-turn
+
+Immediately following the correction above, in the same breath: "just
+give me colour controls for each of the tokens on the control panel,
+make things collapsible." Read as literally scoped -- one input per
+`--v3-*` token, wrapped in a collapsible section, nothing more. While
+that was being built, a second message arrived correcting the scope
+before the first reply had even landed: "allow each theme's tokens to be
+seen and edited so I can copy paste colour code from one to another as
+well." That changed the shape of the feature substantially -- not "the
+current theme's 8 tokens," but all ten themes' tokens simultaneously,
+each independently editable, with a plain-text field specifically so a
+value could be selected and pasted across themes (a bare colour swatch
+has no copyable text). Built as `themeTokenState`, seeded once from each
+theme's own real CSS via a synchronous dataset-flip-then-restore read
+(`readThemeTokens()`) before any manual edit could contaminate that
+baseline, with edits to the live theme pushed on as inline `body` styles
+so they're visible immediately and survive a Theme-select switch.
+
+In the same sitting, a separate, unrelated ask: "Give the section
+headings a thick stroke halo and other treatments like the island entry
+names." `.v3-section-label` had a hover-colour behaviour (v3.6.27) but
+no ambient legibility treatment at all -- mirrored `.v3-island-label`'s
+existing three `data-label-style` variants onto it directly, same
+tokens, same selectors, confirmed the zero-JS static build didn't need
+rebuilding since the change is pure CSS.
+
+Closed with an open question rather than an assumption: asked whether
+the two whole-site launch-planning docs that had landed in `landing-v3/`
+(`three-world-launch-phases.md`, `cabinet-multi-repo-assembly-concept-
+note-short.md`) should be folded into this file's own to-do list or kept
+separate -- not yet answered, still open. Also gave an unsolicited
+folder-organisation recommendation for eventually merging `landing-v3/`
+into `main`, centred on the observation that the site's actual *shipped*
+surface (`index.html` + one CSS file) is a small fraction of its
+*development* surface (nine JS modules, the dev-only tuning panel, the
+build scripts, the archive) -- offered as a plan, not carried out.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

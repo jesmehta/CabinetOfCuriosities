@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.28** (domain warping for real concave coastlines,
+Currently on **v3.6.30** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -1445,6 +1445,93 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.6.30 -- section headings get the label-style treatment; a per-theme colour editor on the dev panel
+
+Two additions, unrelated to each other beyond both being label/colour
+tooling:
+
+**Section heading label style.** `.v3-section-label` (the region names --
+"Bookshelf of Curiosities," "Machines & Makings," etc.) previously had no
+legibility treatment of its own, just a flat fill plus the existing
+hover-to-solid-halo-colour behaviour (v3.6.27). Direct request: "the
+section headings a thick stroke halo and other treatments like the
+island entry names." Mirrors `.v3-island-label`'s existing three
+`data-label-style` variants exactly -- same selectors, same
+`--v3-label-outline` token, just added as a second target: "halo"
+(default) gets a 3px `--v3-label-outline` stroke via `paint-order:
+stroke`, "glow" gets the same double `drop-shadow()` blur, "plain" adds
+nothing. Since `body:not([data-label-style])` counts as "halo," this is
+live on the zero-JS `index.html` snapshot immediately -- pure CSS, no
+markup change, confirmed via `npm run build` producing no diff. Existing
+hover behaviour (label turns solid `--v3-halo-ink` on section hover)
+untouched -- only fill was ever requested to change there, not the
+ambient stroke/glow this adds.
+
+**Theme colours editor (dev panel).** Direct ask, given in two parts: "I
+didn't mean it needed to be corrected... I'm still updating colours and
+would lose that combination" (context for why this exists at all -- see
+v3.6.29's flagged glow note, which is exactly the kind of in-progress
+tuning that was getting lost between conversation turns), then "just
+give me colour controls for each of the tokens on the control panel,
+make things collapsible," followed immediately by "allow each theme's
+tokens to be seen and edited so I can copy paste colour code from one to
+another as well." New "Theme colours (all themes)" subsection under
+Visuals (`cabinet-v3-controls.js`): one collapsible group per theme (all
+10, including "(none -- default)"), each holding the 8 `--v3-*` tokens
+as a colour swatch + a plain hex `<input type="text">` side by side --
+the text field is what makes "copy paste... from one to another"
+literal, since a bare `<input type="color">` has no selectable text.
+
+Mechanism: `themeTokenState`, a live in-memory copy of every theme's own
+token values, seeded once at panel build via a new `readThemeTokens()`
+helper (flips `document.body.dataset.theme` to each theme in turn,
+reads `getComputedStyle` -- which resolves any `var()` chain a theme's
+own tokens might reference, e.g. the default theme's `--v3-halo-ink:
+var(--cab-land-hover)` -- then flips back, synchronously so nothing
+repaints in between) BEFORE any inline override exists, so one theme's
+edits can never contaminate another's "original" reading. Editing a
+token writes into that theme's own slot in `themeTokenState` only; if
+the edited theme is the one currently live, `applyThemeTokens()` also
+pushes it onto `<body>` as an inline custom property (inline outranks
+both the base `body.v3-proto` block and any `body.v3-proto[data-
+theme="X"]` block, which is what makes the edit visible at all). The
+existing Theme `<select>`'s change handler now also calls
+`applyThemeTokens()` on every switch, so picking a different theme
+re-applies whatever's been edited for it rather than reverting to its
+un-edited CSS. "Reset colours" restores every theme from a one-time
+snapshot taken at panel load. `THEME_OPTIONS` (the theme list) hoisted
+out of the `<select>`-building code so the select and the new editor
+can't drift into two different theme lists.
+
+### v3.6.29 -- MedieRiso token tuning: explicit riso-neon hex values, ring/halo swap, flagged glow note
+
+Two follow-up edits to v3.6.28's MedieRiso palette, given as explicit hex
+values rather than described: `--v3-ink`/`--v3-sea-deep` moved off warm
+brown to a near-black indigo/deep-blue pair (`#060126`/`#030085`), and
+`--v3-halo-ink`/`--v3-label-outline` split apart -- both were riso pink
+before, now distinct hues (initially magenta/purple, then `--v3-ring-ink`
+and `--v3-halo-ink` swapped per follow-up so wave contours/band
+boundaries read magenta `#f21d92` and the hover halo reads teal
+`#1bf2b5`; `--v3-label-outline` stays purple `#e031eb`).
+`--v3-sea-shallow`/`--v3-veg`/`--v3-sand` untouched, still the original
+sepia tones.
+
+**Flagged, not fixed:** the teal hover halo "looks radioactive" on an
+island. Cause, not just a subjective read -- `.v3-island-glow` is a
+6px-blurred fill of the *entire traced island shape* at 0.65 opacity on
+hover (`cabinet-v3-style.css`), laid over the dark navy sea, the sepia
+island fill, AND the magenta wave-contour rings all at once. On the
+lighter/warmer bases the other 8 themes use, that same treatment reads as
+a tint; on MedieRiso's near-black base a saturated teal at 0.65 opacity
+blurred outward reads as emissive/neon rather than a highlight wash --
+compounded by sitting directly against its magenta-ring/sepia-fill
+neighbours. No action taken. Candidate directions for a real fix, if
+wanted: lower `.v3-island-glow`/`.v3-section-glow` opacity specifically
+for this theme (a themeable `--v3-glow-opacity` token), desaturate
+`--v3-halo-ink` itself, or leave as-is -- "riso/neon" was the literal
+brief, so a hover state that reads as electric may just be correct for
+this theme.
 
 ### v3.6.28 -- "MedieRiso" theme: dark sepia base, riso-neon highlights throughout
 
