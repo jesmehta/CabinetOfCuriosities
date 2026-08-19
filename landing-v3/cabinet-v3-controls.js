@@ -60,6 +60,69 @@ function formatValue(v, step) {
   return step < 1 ? Number(v).toFixed(2) : String(Math.round(v));
 }
 
+// Shared by the Theme <select> and the Theme colours editor below, so
+// the two can't drift apart into two different lists of themes.
+const THEME_OPTIONS = [
+  ["", "(none -- current default)"],
+  ["medieval", "Wave Contour (draft)"],
+  ["satellite", "Topology (draft)"],
+  ["medieval-map", "Medieval Map"],
+  ["bathymetric", "Topology — Bathymetric Satellite"],
+  ["riso", "Riso"],
+  ["cyanotype", "Cyanotype"],
+  ["neon", "Neon Memphis"],
+  ["ukiyo", "Ukiyo-e Woodblock"],
+  ["medieRiso", "MedieRiso"]
+];
+
+// v3.6.30 -- theme colour tokens exposed on the panel: "still updating
+// colours and would lose that combination" -- hand-editing hex values in
+// cabinet-v3-style.css and rebuilding to compare was too slow a loop.
+// One row per --v3-* custom property (see that file's body.v3-proto
+// block for what each actually paints).
+const COLOR_TOKENS = [
+  { key: "--v3-sea-deep", label: "Sea (deep)" },
+  { key: "--v3-sea-shallow", label: "Sea (shallow)" },
+  { key: "--v3-veg", label: "Vegetation" },
+  { key: "--v3-sand", label: "Sand" },
+  { key: "--v3-ink", label: "Ink" },
+  { key: "--v3-ring-ink", label: "Ring / contour ink" },
+  { key: "--v3-halo-ink", label: "Hover halo" },
+  { key: "--v3-label-outline", label: "Label outline" }
+];
+
+// Canvas 2D's fillStyle setter/getter round-trips ANY valid CSS colour
+// (an rgb() string, a var() chain already resolved by getComputedStyle,
+// a named colour) into a normalised "#rrggbb" string -- the exact format
+// <input type="color"> requires, without hand-parsing rgb() strings.
+let colorProbeCtx = null;
+function cssColorToHex(cssColor) {
+  if (!colorProbeCtx) colorProbeCtx = document.createElement("canvas").getContext("2d");
+  colorProbeCtx.fillStyle = "#000000";
+  colorProbeCtx.fillStyle = cssColor;
+  return colorProbeCtx.fillStyle;
+}
+
+// Reads a theme's OWN authored token values, independent of whichever
+// theme is actually live right now -- flips document.body.dataset.theme
+// to `themeName`, reads getComputedStyle (which resolves any var()
+// chain, e.g. the default theme's --v3-halo-ink: var(--cab-land-hover)),
+// then flips it back, all synchronously so nothing repaints in between.
+// Deliberately reads computed style rather than parsing stylesheet rule
+// text -- the latter would return the literal string "var(--cab-land-
+// hover)" for tokens that reference another token, not a usable colour.
+function readThemeTokens(themeName) {
+  const original = document.body.dataset.theme;
+  if (themeName) document.body.dataset.theme = themeName;
+  else delete document.body.dataset.theme;
+  const cs = getComputedStyle(document.body);
+  const values = {};
+  COLOR_TOKENS.forEach(t => { values[t.key] = cssColorToHex(cs.getPropertyValue(t.key).trim()); });
+  if (original) document.body.dataset.theme = original;
+  else delete document.body.dataset.theme;
+  return values;
+}
+
 // Builds one <label class="v3-controls-row"> slider row inside
 // `container`, wired to `get`/`set`. `onChange` runs after every input
 // tick (default retraceIslands(), the cheap path -- callers whose
@@ -272,18 +335,7 @@ function buildControlPanel() {
   const themeSelect = document.createElement("select");
   themeSelect.style.gridArea = "input";
   themeSelect.style.width = "100%";
-  [
-    ["", "(none -- current default)"],
-    ["medieval", "Wave Contour (draft)"],
-    ["satellite", "Topology (draft)"],
-    ["medieval-map", "Medieval Map"],
-    ["bathymetric", "Topology — Bathymetric Satellite"],
-    ["riso", "Riso"],
-    ["cyanotype", "Cyanotype"],
-    ["neon", "Neon Memphis"],
-    ["ukiyo", "Ukiyo-e Woodblock"],
-    ["medieRiso", "MedieRiso"]
-  ].forEach(([value, label]) => {
+  THEME_OPTIONS.forEach(([value, label]) => {
     const opt = document.createElement("option");
     opt.value = value;
     opt.textContent = label;
@@ -307,6 +359,7 @@ function buildControlPanel() {
   themeSelect.addEventListener("change", () => {
     if (themeSelect.value) document.body.dataset.theme = themeSelect.value;
     else delete document.body.dataset.theme;
+    applyThemeTokens(themeSelect.value);
 
     const preset = THEME_PRESETS[themeSelect.value];
     if (preset) {
@@ -320,6 +373,99 @@ function buildControlPanel() {
   themeRow.appendChild(themeName);
   themeRow.appendChild(themeSelect);
   visualsSection.appendChild(themeRow);
+
+  // -- Theme colours (v3.6.30) -- every theme's own 8 tokens, editable
+  // independently of which one is currently live. themeTokenState is the
+  // live working set, seeded from each theme's real CSS (readThemeTokens())
+  // at panel-build time, BEFORE any inline override exists yet -- reading
+  // any later than that would risk one theme's already-applied inline
+  // colours bleeding into another theme's "original" reading, since
+  // readThemeTokens() only flips the data-theme ATTRIBUTE, not whatever's
+  // sitting in body.style. themeTokenDefaults is a one-time snapshot of
+  // the same, kept untouched, for Reset colours.
+  const themeTokenState = {};
+  THEME_OPTIONS.forEach(([value]) => { themeTokenState[value] = readThemeTokens(value); });
+  const themeTokenDefaults = {};
+  Object.keys(themeTokenState).forEach(k => { themeTokenDefaults[k] = { ...themeTokenState[k] }; });
+
+  // Pushes themeTokenState[themeName] onto <body> as inline custom
+  // properties -- inline style outranks both the base body.v3-proto
+  // block and any body.v3-proto[data-theme="X"] block, so this is what
+  // actually makes an edit visible, and what makes switching Theme (see
+  // themeSelect's change handler above) pick up whatever's been edited
+  // for the newly active theme instead of reverting to its un-edited CSS.
+  function applyThemeTokens(themeName) {
+    const values = themeTokenState[themeName] || themeTokenState[""];
+    COLOR_TOKENS.forEach(t => document.body.style.setProperty(t.key, values[t.key]));
+  }
+
+  // Nested one level deeper than the outer "Theme colours" subsection --
+  // one collapsible group per theme, all closed by default, so browsing
+  // to compare/copy a value between two themes doesn't mean scrolling
+  // past the other seven's 8 rows each. A swatch + a plain text hex
+  // field per token, kept in sync both ways -- the text field is what
+  // makes "copy paste colour code from one to another" literal: select
+  // it, copy, paste into another theme's field for the same token.
+  const colorsSubsection = makeSubsection(visualsSection, "Theme colours (all themes)", false);
+  const colorRowWidgets = [];
+  THEME_OPTIONS.forEach(([themeValue, themeLabel]) => {
+    const themeGroup = makeSubsection(colorsSubsection, themeLabel || "(none -- current default)", false);
+    COLOR_TOKENS.forEach(token => {
+      const row = document.createElement("label");
+      row.className = "v3-controls-row";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "v3-controls-name";
+      nameSpan.textContent = token.label;
+
+      const swatch = document.createElement("input");
+      swatch.type = "color";
+      swatch.value = themeTokenState[themeValue][token.key];
+
+      const hexField = document.createElement("input");
+      hexField.type = "text";
+      hexField.value = themeTokenState[themeValue][token.key];
+      hexField.spellcheck = false;
+      hexField.maxLength = 7;
+
+      const commit = hex => {
+        themeTokenState[themeValue][token.key] = hex;
+        if ((document.body.dataset.theme || "") === themeValue) applyThemeTokens(themeValue);
+      };
+
+      swatch.addEventListener("input", () => {
+        hexField.value = swatch.value;
+        commit(swatch.value);
+      });
+      hexField.addEventListener("input", () => {
+        if (/^#[0-9a-fA-F]{6}$/.test(hexField.value)) {
+          swatch.value = hexField.value;
+          commit(hexField.value);
+        }
+      });
+
+      row.appendChild(nameSpan);
+      row.appendChild(swatch);
+      row.appendChild(hexField);
+      themeGroup.appendChild(row);
+
+      colorRowWidgets.push({
+        refresh: () => {
+          const v = themeTokenState[themeValue][token.key];
+          swatch.value = v;
+          hexField.value = v;
+        }
+      });
+    });
+  });
+
+  addButton(colorsSubsection, "Reset colours", () => {
+    Object.keys(themeTokenDefaults).forEach(k => { themeTokenState[k] = { ...themeTokenDefaults[k] }; });
+    colorRowWidgets.forEach(w => w.refresh());
+    applyThemeTokens(document.body.dataset.theme || "");
+  }, { block: true });
+
+  applyThemeTokens(document.body.dataset.theme || "");
 
   // -- Label style (v3.6.12) -- picks which .v3-island-label halo
   // treatment cabinet-v3-style.css applies, via a data-label-style
@@ -582,6 +728,7 @@ function buildControlPanel() {
     bandCheck.checked = !v3Config.island.flatColourMode;
     delete document.body.dataset.theme;
     themeSelect.value = "";
+    applyThemeTokens("");
     v3Config.flow.showPotential = visualsDefaults.showFlowPotential;
     v3Config.flow.showVectors = visualsDefaults.showFlowVectors;
     flowPotentialCheck.checked = v3Config.flow.showPotential;

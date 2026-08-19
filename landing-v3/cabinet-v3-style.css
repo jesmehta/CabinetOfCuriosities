@@ -922,6 +922,28 @@ body[data-label-style="glow"] .v3-section-label {
   width: 100%;
 }
 
+/* v3.6.30 -- theme colour editor rows (cabinet-v3-controls.js):
+   swatch sits where a slider's numeric readout normally goes (grid-area
+   "value"), the hex text field takes the full-width "input" row below
+   it, same two-row layout every other .v3-controls-row already uses. */
+.v3-controls-row input[type="color"] {
+  grid-area: value;
+  width: 28px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.v3-controls-row input[type="text"] {
+  grid-area: input;
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 11px;
+}
+
 .v3-controls-buttons {
   display: flex;
   gap: 6px;
