@@ -159,29 +159,26 @@ export const sections = [
     "extraCount": 2
   },
   {
-    "id": "about",
-    "title": "About Me",
-    "subtitle": "CV, links, and current work.",
-    "href": "about/",
-    "order": 70,
-    "weight": 1,
+    "id": "compass",
+    "title": "Compass Rose",
+    "subtitle": "",
+    "href": "",
+    "order": 80,
+    "weight": 4,
     "status": true,
-    "kind": "world",
-    "tags": [
-      "about",
-      "cv"
-    ],
-    "location": "mkdocs",
+    "kind": "compass",
+    "tags": [],
+    "location": "",
     "map": {
-      "islandId": "island-about",
-      "mapForm": "small-island",
+      "islandId": "island-compass",
+      "mapForm": "compass",
       "cx": 1470,
-      "cy": 170,
+      "cy": 1170,
       "rx": 115,
-      "ry": 85
+      "ry": 115
     },
-    "extraCount": 1,
-    "notes": "Deliberately peripheral (top-right), not central, per design brief."
+    "extraCount": 0,
+    "notes": "SE-reserved compass rose section -- kind: compass triggers a dedicated render path in landing-v3 (no archipelago growth, no filler islands); cx/cy/rx/ry are unused placeholders, real placement comes from the deterministic SE-corner square carve in cabinet-v3-layout.js."
   }
 ];
 
@@ -763,51 +760,82 @@ export const entries = [
     "icon": "icon-bot"
   },
   {
-    "id": "cv",
-    "section": "about",
-    "title": "CV",
-    "subtitle": "Professional profile and experience.",
-    "href": "https://www.jesalmehta.com",
+    "id": "compass-n",
+    "section": "compass",
+    "title": "About Me",
+    "subtitle": "",
+    "href": "",
     "order": 10,
     "weight": 1,
     "status": true,
-    "kind": "profile-page",
-    "tags": [
-      "cv",
-      "profile"
-    ],
-    "location": "external",
+    "kind": "compass-direction",
+    "tags": [],
+    "location": "",
     "visual": {
-      "placement": "land",
-      "size": "small",
-      "cardType": "thumbnail-plaque",
-      "x": 87.8,
-      "y": 9.2
+      "placement": "",
+      "size": "",
+      "cardType": "",
+      "anchor": "N"
     },
-    "icon": "icon-scroll"
+    "notes": "href intentionally blank for now -- set directly in this TSV when ready."
   },
   {
-    "id": "currently",
-    "section": "about",
-    "title": "Currently",
-    "subtitle": "Current work, study, and ongoing directions.",
-    "href": "about/",
+    "id": "compass-e",
+    "section": "compass",
+    "title": "Contact me",
+    "subtitle": "",
+    "href": "",
     "order": 20,
     "weight": 1,
     "status": true,
-    "kind": "profile-page",
-    "tags": [
-      "currently",
-      "profile"
-    ],
-    "location": "mkdocs",
+    "kind": "compass-direction",
+    "tags": [],
+    "location": "",
     "visual": {
-      "placement": "land",
-      "size": "small",
-      "cardType": "thumbnail-plaque",
-      "x": 95.9,
-      "y": 16.9
+      "placement": "",
+      "size": "",
+      "cardType": "",
+      "anchor": "E"
     },
-    "icon": "icon-hourglass"
+    "notes": "href intentionally blank for now -- set directly in this TSV when ready."
+  },
+  {
+    "id": "compass-s",
+    "section": "compass",
+    "title": "Colophon",
+    "subtitle": "",
+    "href": "",
+    "order": 30,
+    "weight": 1,
+    "status": true,
+    "kind": "compass-direction",
+    "tags": [],
+    "location": "",
+    "visual": {
+      "placement": "",
+      "size": "",
+      "cardType": "",
+      "anchor": "S"
+    },
+    "notes": "href intentionally blank for now -- set directly in this TSV when ready."
+  },
+  {
+    "id": "compass-w",
+    "section": "compass",
+    "title": "CV",
+    "subtitle": "",
+    "href": "https://www.jesalmehta.com",
+    "order": 40,
+    "weight": 1,
+    "status": true,
+    "kind": "compass-direction",
+    "tags": [],
+    "location": "",
+    "visual": {
+      "placement": "",
+      "size": "",
+      "cardType": "",
+      "anchor": "W"
+    }
   }
 ];

@@ -22,5 +22,7 @@ dataviz	interfaces-data-texts	Data Visualisations	Charts, maps, datasets, and vi
 writings	interfaces-data-texts	Writings	Essays, notes, reflections, and digital texts.		30	2	wip	writing-collection	writing;essays	mkdocs		icon-quill		land	55.2	88.3			medium	thumbnail-plaque		
 webtech	interfaces-data-texts	WebTech	Web pieces that do not belong inside fffx.	dotMandalaTool/	40	3	true	web-experiment	webtech;tools	mkdocs		icon-code		land	70.4	88.3			medium	thumbnail-plaque		
 tracery-bots	interfaces-data-texts	Tracery Bots	Generative text bots built with Tracery.	traceryBots/	50	2	true	web-experiment	tracery;bots;generative-text	mkdocs		icon-bot		coast			east	1	medium	port-card		
-cv	about	CV	Professional profile and experience.	https://www.jesalmehta.com	10	1	true	profile-page	cv;profile	external		icon-scroll		land	87.8	9.2			small	thumbnail-plaque		
-currently	about	Currently	Current work, study, and ongoing directions.	about/	20	1	true	profile-page	currently;profile	mkdocs		icon-hourglass		land	95.9	16.9			small	thumbnail-plaque		
+compass-n	compass	About Me			10	1	true	compass-direction									N					href intentionally blank for now -- set directly in this TSV when ready.
+compass-e	compass	Contact me			20	1	true	compass-direction									E					href intentionally blank for now -- set directly in this TSV when ready.
+compass-s	compass	Colophon			30	1	true	compass-direction									S					href intentionally blank for now -- set directly in this TSV when ready.
+compass-w	compass	CV		https://www.jesalmehta.com	40	1	true	compass-direction									W					
