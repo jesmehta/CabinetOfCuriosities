@@ -1329,6 +1329,132 @@ surface (`index.html` + one CSS file) is a small fraction of its
 *development* surface (nine JS modules, the dev-only tuning panel, the
 build scripts, the archive) -- offered as a plan, not carried out.
 
+## Two quick fixes, then a much bigger ask arrives mid-sentence
+
+Picked back up with two small, unrelated requests: "Update all
+themes/visuals to not have the dotted circles for the WIP/dummy entries.
+Dummy entries simply have no hover effect of their own, they lead to
+section heads like non-entry islands" -- and, in the same message, new
+Medieval Map colours ("islands - a darker brown, rich and intense, with
+reddish tones / sea - a lighter sepia/brown, amber tones"). Both closed
+out cleanly and quickly -- see the v3.7 changelog entry.
+
+Then, mid-reply to those two, the actual scope of the session arrived:
+"we're going to condense the visuals to 2 distinct schemes, and then i'll
+tell you how to apply them," followed immediately by a full spec for one
+scheme (sepia sea, darker-sepia land, drop shadows, an inland colour
+fade, a lat/long grid) and, separately, a full compass-rose feature
+request built around a provided `compass_rose.svg`. Given how much was
+packed into one message, and this project's own established preference
+for surfacing mechanism/cost trade-offs before writing code, the reply
+was a discussion turn, not code: reflected the whole ask back as a punch
+list, flagged the one genuine engineering fork worth a real decision
+(how literally "reserved... in the southeast" needed to be honoured),
+and asked two blocking questions via the question tool rather than
+guessing -- whether to guarantee a flush corner placement or accept
+squarify's best-effort near-corner result, and what should happen to the
+`about` section's `currently` entry once About Me folded into the
+compass. Mid-turn, more detail kept arriving before either question was
+answered (South/West link reassignments, then "let them not point
+anywhere" for the still-unbuilt hrefs) -- each folded in as it came
+rather than re-asking.
+
+One more architectural question came up before touching anything:
+`content/cabinet-*.tsv` are shared between `landing-v3` and the still-
+live production site. Flagged plainly rather than assumed away -- adding
+a `compass` section there would render oddly on production until it's
+updated separately, and removing `about` would drop About Me/CV off the
+live site too. Answered directly: "docs/index.html is the v1, it will
+anyway be superseded by v3" -- cleared to proceed without further
+hedging.
+
+## The compass rose: a real area bug, a real z-order bug, and a lot of fast iteration
+
+The southeast-corner reservation shipped first with a real bug that
+wasn't obvious until it rendered: a barely-visible speck instead of a
+proper compass. "The compass rose is extremely tiny - what is the
+current weight of Visual Field Notes?" was the first sign something was
+off (asked to sanity-check the weight math before assuming the mechanism
+itself was wrong) -- then, once the numbers didn't explain it, "recheck
+if compass rose is weight 1 or 4... it is tiny enough to sit in the
+margin below the lowermost section." The weight WAS being read
+correctly the whole time (verified directly, `node -e` against the
+generated content); the bug was geometric -- see the changelog entry for
+the actual mechanism. Worth recording here: the fix required abandoning
+the first "reserve a strip, inscribe a square" approach entirely for a
+true-square-first, split-the-remainder-in-two approach, not a tweak to
+the original.
+
+From there the compass went through several fast rounds of direct,
+specific feedback on the same rendering, each landing before the
+previous fix had even been fully written up:
+
+- "make the compass rose smaller, about 70% of current size, or as
+  needed, and add the requisite text labels to the 4 quadrants... I also
+  dont want the hover to be the sharp triangles, it should be a similar
+  glow effect on the label text and the one compass arm that is being
+  hovered on" -- the shrink, the labels, and the hover redesign all
+  arrived as one message, plus the very next message added the lat/long
+  grid and diagonals spec on top before the first part was even built.
+- After building it: "CV can be in the same line as the E arm, why
+  below? Contact Me can be over 2 lines instead of 1. Maintain the
+  alignments" -- a direct correction that the earlier off-centre label
+  nudge (done to dodge a text collision) was the wrong fix; word-wrapping
+  the longer label was the right one.
+- "Compass rose - active link area is not the entire quadrant, only the
+  text label + compass arm with some small offset" -- tightened the hit
+  shape, which was then simplified twice more in the space of two
+  messages: "enclose the 4 quadrant labels in a rectangle with a little
+  ornament on the corners" (built, screenshotted on request before
+  removal: "capture a screenshot before eliminating them"), then "ok
+  maybe no rectangular frames," then "and not leftover ornaments
+  either." Ended back at a plain invisible hit box -- visually simplest
+  of everything tried, arrived at by trying the more elaborate versions
+  first rather than guessing the simple one would be preferred.
+- "Lat long and diagoals are not visible. Make the dashes longer. Also,
+  all these lines need to be visible on sea but not visible on land" --
+  the visibility half was a real bug, not a tuning question: the grid
+  had been drawn before the landmass on the assumption that draw order
+  is paint order, which turned out to be false for this codebase's own
+  landmass-rendering convention (`placeOne()` always pins it to
+  `stage.firstChild`). Confirmed by direct feedback a second time after
+  the first fix attempt (reversing the call order) didn't work either --
+  "lines are overlaid on the islands" -- before landing on the actual
+  fix, a real SVG mask built from the coastline's own traced shape.
+  Dash styling itself took two more rounds after that ("Use a different
+  line scheme than the section outlines - smaller dashes but more
+  frequent, slightly lesser weight") to stop reading as a bigger/smaller
+  version of the same dash pattern.
+- "add diagonals at 22.5 degree intervals as well, above and below SE EN
+  NW WS" -- turned the 4-ray ordinal star into the full 16-point compass
+  convention.
+- Grid pitch and controls iterated in small, precise steps: 100 -> 73
+  ("prime, no to avoid accidental close positioning or overlap with
+  section outlines") -> a request for independent lat/long controls
+  entirely -> spacing widened to 0-600 with an on/off toggle -> that one
+  toggle split into two ("separate toggles for grid and compass
+  diagonals") once it became clear grid and diagonals were conceptually
+  separate things worth hiding independently.
+- Asked directly, separately from any of the above: "you didnt answer my
+  Q about alternate pages to CV and Contact Me for the rose? Something
+  suitable utilitarian/behind the scenes/meta" -- a real question that
+  had gotten lost under the code work in an earlier reply. Answered with
+  a short multi-select list (Now/Currently, Site Map, Uses/Toolkit,
+  Changelog) rather than picking one -- the user chose Now/Currently and
+  Site Map, then immediately caveated it: "N is About Me, E and W were
+  going to be opened. But I may reshuffle things anyway" -- left as an
+  open intention, nothing written into the TSV yet.
+- Last fix in this stretch wasn't really about the compass at all:
+  "make section heads text not italic" turned out to have two layers.
+  Removing the theme's own `font-style: italic` didn't fix it ("well the
+  italics arent gone yet either," with a screenshot as proof) -- the
+  actual cause was `islands-tool.html`'s Google Fonts URL only ever
+  requesting the italic cut of "IM Fell English," with no upright face
+  available to fall back to. The small-caps request that followed
+  ("make them small caps to differentiate though") was a deliberate
+  request for a DIFFERENT kind of distinction than italic gave, applied
+  site-wide rather than to just the one theme that prompted it.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

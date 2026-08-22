@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.6.30** (domain warping for real concave coastlines,
+Currently on **v3.7.8** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -57,8 +57,23 @@ v3.4.1 -> v3.4.2 -> v3.5 -> v3.5.1 -> v3.5.2 -> v3.5.3 -> v3.5.4 -> v3.6
 v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
 -> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 -> v3.6.26 -> v3.6.27 ->
-v3.6.28
-progression and why each pass changed what it did.
+v3.6.28 -> v3.6.29 -> v3.6.30 -> v3.7 -> v3.7.1 -> v3.7.2 -> v3.7.3 ->
+v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8
+progression and why each pass changed what it did. Most recently (v3.7 ->
+v3.7.8): WIP/dummy entries dropped their dashed status ring and their own
+hover identity entirely, behaving exactly like non-entry filler islands
+(no link/hit/glow of their own, hover and click fall through to the
+section's own link); the Medieval Map theme retinted (darker reddish
+island fill, lighter amber/sepia sea); and by far the largest single
+addition, a reserved southeast "compass rose" section -- a fixed square
+tile carved deterministically out of the treemap (not just squarify's
+best-effort placement), rendering `compass_rose.svg`'s own artwork
+recoloured through the same `--v3-*` theme tokens every other themed
+element uses, four TSV-driven direction links (replacing the old About
+Me section entirely), plus an independently-toggleable, independently-
+spaced dotted lat/long grid radiating from the compass's own centre
+(masked to the sea, never visible over land) with 16-point-compass-style
+diagonal rays through the compass's own ordinal arms.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1445,6 +1460,199 @@ they're real open items on the same overall site.
     satisfies).
 
 ## Changelog
+
+### v3.7.1-v3.7.8 -- compass rose (reserved SE section, TSV-driven links, colour-token mapping), lat/long grid, section-label small caps
+
+By far the largest single addition since v3.0: a fixed "compass rose"
+section in the southeast corner of the map, four direction links driven
+straight off the TSV content pipeline, and a lat/long grid radiating
+from its centre. Landed across a long back-and-forth with several real
+bugs found and fixed along the way -- documented here in the order they
+actually happened, since the wrong turns are as informative as where it
+ended up.
+
+**About Me folds into the compass.** Direct instruction: "the compass
+rose subsumes the need for the About Me section." The `about` section
+(and its `cv`/`currently` entries) is gone from `content/cabinet-
+sections.tsv`/`cabinet-entries.tsv`; a new `compass` section (`kind:
+"compass"`) and four `compass-n/e/s/w` entries replace it, each entry's
+existing `anchor` column (previously unused by the v3 renderer) repurposed
+to carry its direction. `cv`'s old href (`https://www.jesalmehta.com`)
+carried over to whichever direction ended up as "CV"; the other three
+directions' hrefs were left deliberately blank ("let them not point
+anywhere... I'll add those when I update the TSVs"). Confirmed with the
+user before touching this: `content/cabinet-*.tsv` is shared between
+`landing-v3` and the still-live production site (`docs/index.html` via
+`cabinet-render.js`), which has no idea what `kind: "compass"` means and
+will render it oddly until it's updated separately -- accepted per direct
+answer ("docs/index.html is the v1, it will anyway be superseded by v3").
+
+**Reserving an exact southeast square, not squarify's best guess.**
+Direct ask: "reserve a square section... in the southeast." squarify()
+(the treemap algorithm every other section already goes through) has no
+corner preference -- confirmed by checking the actual current layout,
+where the smallest/last-ordered section landed top-right, not
+bottom-right. `buildRegions()` (`cabinet-v3-layout.js`) now special-cases
+a `kind: "compass"` section: carve a TRUE square (side = sqrt(area), not
+stretched to fit any canvas dimension) flush to the canvas's real
+bottom-right corner, then split what's left into two rects via one cut
+(a full-width band above the square's row, a sliver to its own left in
+that same row) and squarify each separately, sections distributed
+between the two by weight (closest match to each rect's own proportional
+area share), greedily from the END of reading order -- so only the
+last-ordered section(s) ever share the bottom row with the compass.
+
+First version of this got the AREA math wrong in a way that wasn't
+caught until the compass rendered as a barely-visible speck ("the
+compass rose is extremely tiny... it is tiny enough to sit in the margin
+below the lowermost section"): it reserved a full-CANVAS-WIDTH strip
+sized so its total AREA matched the compass's weight share, then
+inscribed a square inside that strip. Forcing a fixed-area strip to also
+span the entire canvas width makes it very thin (`stripHeight =
+area/width`), and the inscribed square is then capped by that thin
+height, not by the actual weight -- on real content this produced a side
+length around 32px instead of the ~191px its weight (4, same weight
+scale as every other section, out of a real total of 64) should have
+given it. The weight itself WAS being read correctly the whole time; the
+strip's shape just made almost all of that area unusable as a square.
+Fixed by carving the true square first, as described above.
+
+**The rose itself.** `compass_rose.svg` (provided) copied in as inline
+SVG data (`COMPASS_ROSE_SHAPES`, same "just build DOM elements directly"
+approach `DRAGON_PATH_D` already uses, for the same file:// CORS reason)
+-- two overlapping 8-point stars (a cardinal N/E/S/W one carrying the
+four real links, a purely decorative ordinal NE/NW/SE/SW one) plus a
+central blue ring/needle motif. The source SVG's exactly 3 fixed fills
+(white/black/blue) plus a none-fill/black-stroke outline pass are
+remapped to theme colour tokens per direct request ("match scheme colour
+tokens to these"): white -> `--v3-sea-shallow` (a theme's lighter/
+sepia-toned slot), black -> `--v3-ink` (the same ink every coastline/
+label outline already uses), blue -> `--v3-ring-ink` (a theme's other
+mid-brightness accent) -- deliberately NOT `--v3-halo-ink`/
+`--v3-label-outline`, so a hover-invert happening elsewhere on the page
+can never accidentally recolour the compass.
+
+**Sizing, labels, and hit area -- several rounds of direct feedback.**
+The rose shrank from filling its whole square to `COMPASS_ROSE_SCALE =
+0.62` (tried 0.7 first; "Contact me," the longest of the four labels,
+still clipped the rose's own arm at that size even after nudging its
+position, so it went smaller -- "or as needed" per the original request),
+freeing a margin for a real text label per direction (`entry.title`,
+pulled straight from the TSV). E/W labels stayed level with their own
+arm's centreline throughout ("CV can be in the same line as the [W]
+arm... maintain the alignments") -- the actual fix for "Contact me"'s
+collision was word-wrapping it onto 2 lines (`wrap: true` in
+`COMPASS_LABEL_LAYOUT`), not moving it off-axis. The hit area went
+through three shapes in direct response to feedback: first a full
+90-degree wedge per direction (too imprecise -- "the active link area is
+not the entire quadrant, only the text label + compass arm"), then a
+combined arm-hull + label-box shape, then simplified straight down to
+just an invisible box around the label's own estimated text size
+(character count x fontSize x charWidthFactor, this file's existing
+text-width convention -- not a live `getBBox()` measurement). A visible
+bordered "card" with corner ornaments was tried and screenshotted per
+explicit request, then dropped on sight two messages later ("maybe no
+rectangular frames"..."not leftover ornaments either"). Hover feedback
+similarly moved away from a filled wedge ("I dont want the hover to be
+the sharp triangles") to a blurred glow on just the hovered arm
+(`.v3-compass-arm-glow`, one hand-traced hull per cardinal arm, same
+opacity-0-to-visible mechanic `.v3-island-glow` already uses) plus a
+matching glow on that direction's label -- wired via CSS `:has()` since
+the hit target and its glow targets live in different transformed
+groups and aren't DOM siblings.
+
+**Lat/long grid + diagonals.** A dotted grid phase-aligned through the
+compass's own centre (`origin`, not canvas (0,0)) -- so one longitude
+line always runs through its N-S axis and one latitude line through its
+E-W axis, per the original spec ("the compass N S E W direction match
+one pair of lat-long lines") -- plus rays through the compass's own
+ordinal arms, later extended to fire every 22.5 degrees ("add diagonals
+at 22.5 degree intervals as well, above and below SE EN NW WS") for a
+full 16-point radiating star.
+
+"Over the sea, not visible on land" went through a real wrong turn: the
+first attempt drew the grid before `drawIslandsPath()`'s landmass trace,
+on the assumption that draw order determines paint order. It doesn't --
+`drawIslandsPath()`'s own `placeOne()` helper unconditionally pins the
+landmass to `stage.firstChild` (the bottom-most layer) no matter when
+anything else runs, confirmed both by direct feedback ("lines are
+overlaid on the islands") and by inspecting the actual rendered DOM
+order after trying the reverse call order too -- nothing can ever paint
+under the landmass via DOM order alone. Fixed with a real SVG `<mask>`:
+white (visible) everywhere except the land silhouette itself, painted
+black using the exact same `d` + evenodd fill-rule `.v3-coastline-
+outline` already traces (one shared shape for every island, present
+regardless of `flatColourMode`).
+
+Pitch: started at a round 100, changed to 73 ("prime, no to avoid
+accidental close positioning or overlap with section outlines"), then
+split into independent `v3Config.geo.latSpacing`/`lonSpacing` with their
+own dev-panel sliders ("give me 2 separate controls for each of them"),
+default settled at 120, range widened to 0-600 (0 meaning "no lines on
+that axis," guarded in `drawGeoGrid()` against the infinite-loop/
+zero-step case a naive port of the old fixed-`GEO_GRID_SPACING`-constant
+loops would have hit). Two independent on/off toggles, not one --
+"separate toggles for grid and compass diagonals" -- `v3Config.geo.
+showGrid`/`showDiagonals`. Line style went through two rounds of direct
+feedback too: `0.1 9` dasharray (effectively invisible at real map
+scale) -> `3 9` (visible, but too close to `.v3-region-outline`'s own
+`6 6` dashed rhythm) -> final `2 4` at `stroke-width: 1.1` (vs. region-
+outline's `1.5`) -- smaller dashes, more frequent, a hair lighter, a
+genuinely different texture rather than just a different-sized version
+of the same dash.
+
+Both new dev-panel subsections (Geo grid, and Particle counts, moved
+into its own collapsible group at the same time) use the same
+`makeSubsection()` nesting Wave ring parameters/Topological offset
+parameters already established -- direct request: "make lat long
+parameters and particle count sections collapsible as well."
+
+**Section labels: not italic, small caps.** Two small, unrelated-seeming
+fixes that turned out to have the same root cause worth recording.
+`.v3-section-label` picked up `font-variant: small-caps` site-wide
+(direct request, "make them small caps to differentiate though" --
+following "make section heads text not italic") to keep SOME visual
+distinction from island labels once italic went away. The italic itself
+turned out NOT to be a simple `font-style: italic` in this file at all
+(that was removed from the `medieval-map` theme's own section-label rule
+first, and the text stayed slanted regardless) -- the real cause was
+`islands-tool.html`'s Google Fonts URL only ever requesting the ITALIC
+cut of "IM Fell English" (`family=IM+Fell+English:ital@1`), with no
+upright face loaded to fall back to under that family name at all.
+Fixed at the source: `ital@1` -> `ital@0`. (`index.html`/`build-
+render.html` load no Google Fonts at all, a pre-existing gap outside
+this fix's scope -- not touched.)
+
+### v3.7 -- WIP/dummy entries lose their dashed ring and their own hover identity; Medieval Map retinted
+
+Two unrelated fixes, both direct requests, done back to back at the
+start of this pass.
+
+**WIP entries behave like filler islands, not muted real ones.** Previous
+behaviour: an entry with `status: "wip"` still got its own `<a>`, hover
+glow, and hit region, just with a dashed `.v3-status-ring` drawn over it
+to flag "not fully live." Direct request: "Update all themes/visuals to
+not have the dotted circles for the WIP/dummy entries. Dummy entries
+simply have no hover effect of their own, they lead to section heads
+like non-entry islands." `renderRegion()` (`cabinet-v3-layout.js`) now
+skips the link/hit/glow/ring entirely for `status: "wip"` entries --
+only the name label is drawn (still useful; it's a real, titled entry,
+just not ready for its own hover/click identity), and with pointer-
+events:none on the label and no `<a>` of its own, hover/click on that
+spot falls straight through to the section's own hitGroup/glowGroup --
+same as `kind: "filler"` circles, which never had a link of their own
+either. `.v3-status-ring`'s CSS rule removed as dead code.
+
+**Medieval Map retinted.** Direct spec: "islands - a darker brown, rich
+and intense, with reddish tones / sea - a lighter sepia/brown, amber
+tones." `--v3-veg`/`--v3-sand` (island tokens) -> deep reddish-brown
+(`#5c2417`/`#7d3a24`); `--v3-sea-deep`/`--v3-sea-shallow` (sea tokens) ->
+lighter amber/sepia (`#c9974f`/`#ddbd82`). `--v3-ink` (coastline stroke,
+default label style) untouched. This theme runs `flatColourMode`, so
+`--v3-veg`/`--v3-sea-deep` are what actually render (flat land fill +
+`.v3-stage`'s own background); `--v3-sand`/`--v3-sea-shallow` (the
+non-flat band tiers) tuned to the same two hue families anyway so the
+theme stays coherent if flat mode is switched off from the dev panel.
 
 ### v3.6.30 -- section headings get the label-style treatment; a per-theme colour editor on the dev panel
 
