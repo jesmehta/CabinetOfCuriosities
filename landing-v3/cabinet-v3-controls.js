@@ -274,7 +274,11 @@ function buildControlPanel() {
     particleMaxCount: v3Config.particles.maxCount,
     coastSpawnFraction: v3Config.particles.coastSpawnFraction,
     coastSpawnDirMode: v3Config.particles.coastSpawnDirMode,
-    personalityMode: v3Config.particles.personalityMode
+    personalityMode: v3Config.particles.personalityMode,
+    showGeoGrid: v3Config.geo.showGrid,
+    showGeoDiagonals: v3Config.geo.showDiagonals,
+    latSpacing: v3Config.geo.latSpacing,
+    lonSpacing: v3Config.geo.lonSpacing
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -538,14 +542,20 @@ function buildControlPanel() {
   // a tuning tool, setting the cap below the base count just means
   // click-to-launch can never add anything, which is a harmless (if
   // slightly odd) state to leave it in.
-  addGroupHeading(visualsSection, "Particle counts");
-  const particleCountWidget = buildSlider(visualsSection, {
+  // v3.7.7 -- wrapped in its own collapsible subsection (direct request:
+  // "make... particle count sections collapsible as well") -- same
+  // makeSubsection() nesting Wave ring parameters/Topological offset
+  // parameters/Geo grid already use, just covering this whole cluster
+  // (counts, coastal spawn, personality) under one summary instead of
+  // sitting loose in Visuals.
+  const particleSubsection = makeSubsection(visualsSection, "Particle counts", false);
+  const particleCountWidget = buildSlider(particleSubsection, {
     label: "Base count", min: 10, max: 1000, step: 10,
     get: () => v3Config.particles.count,
     set: v => { v3Config.particles.count = v; },
     onChange: refreshParticleCount
   });
-  const particleMaxWidget = buildSlider(visualsSection, {
+  const particleMaxWidget = buildSlider(particleSubsection, {
     label: "Max cap (click-to-launch)", min: 10, max: 1000, step: 10,
     get: () => v3Config.particles.maxCount,
     set: v => { v3Config.particles.maxCount = v; },
@@ -561,7 +571,7 @@ function buildControlPanel() {
   // "repulsion" (push straight off the shore) vs "blended" (the normal
   // current+coast blend every other spawn uses) hadn't been decided,
   // meant to be compared by feel rather than guessed.
-  const coastSpawnFractionWidget = buildSlider(visualsSection, {
+  const coastSpawnFractionWidget = buildSlider(particleSubsection, {
     label: "Coastal spawn %", min: 0, max: 1, step: 0.05,
     get: () => v3Config.particles.coastSpawnFraction,
     set: v => { v3Config.particles.coastSpawnFraction = v; },
@@ -591,7 +601,7 @@ function buildControlPanel() {
   });
   coastDirRow.appendChild(coastDirName);
   coastDirRow.appendChild(coastDirSelect);
-  visualsSection.appendChild(coastDirRow);
+  particleSubsection.appendChild(coastDirRow);
 
   // -- Particle personality (v3.6.23, demo/comparison build) -- direct
   // ask: "what's a fast good way for me to see a demo of one or both?"
@@ -626,7 +636,7 @@ function buildControlPanel() {
   });
   personalityRow.appendChild(personalityName);
   personalityRow.appendChild(personalitySelect);
-  visualsSection.appendChild(personalityRow);
+  particleSubsection.appendChild(personalityRow);
 
   // -- Wave ring parameters -- unchanged generator logic from v3.6.7
   // (waveDistances is a derived array, d[i] = start * multiplier^i +
@@ -711,6 +721,54 @@ function buildControlPanel() {
   addBandGroup("sandThresholds", "Sand");
   addBandGroup("vegThresholds", "Veg");
 
+  // -- Geo grid (v3.7.7) -- lat/long dotted grid + compass diagonals
+  // (drawGeoGrid(), cabinet-v3-layout.js). Direct request: "2 separate
+  // controls for each of them" -- latitude (horizontal lines) and
+  // longitude (vertical lines) get independent sliders rather than one
+  // shared spacing, bound straight to v3Config.geo so the default
+  // retraceIslands() onChange (drawGeoGrid() now runs inside it too)
+  // redraws just the grid on every tick, same cheap path every other
+  // slider in this subsection already uses.
+  // v3.7.8 -- "off" toggles added (same checkbox-row pattern as Wave
+  // contours/Colour bands above), and both sliders widened to 0-600
+  // (were 40-300) -- both direct requests. 0 is a valid, non-crashing
+  // value on either slider now -- see drawGeoGrid()'s own "spacing <= 0"
+  // guard in cabinet-v3-layout.js. Grid and diagonals get INDEPENDENT
+  // toggles (v3Config.geo.showGrid/showDiagonals) -- direct follow-up:
+  // "separate toggles for grid and compass diagonals."
+  const geoSubsection = makeSubsection(visualsSection, "Geo grid", false);
+
+  const addGeoCheckbox = (key, label) => {
+    const row = document.createElement("label");
+    row.className = "v3-controls-checkbox-row";
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = v3Config.geo[key];
+    check.addEventListener("change", () => {
+      v3Config.geo[key] = check.checked;
+      retraceIslands();
+    });
+    const checkLabel = document.createElement("span");
+    checkLabel.textContent = label;
+    row.appendChild(check);
+    row.appendChild(checkLabel);
+    geoSubsection.appendChild(row);
+    return check;
+  };
+  const showGridCheck = addGeoCheckbox("showGrid", "Show lat/long grid");
+  const showDiagonalsCheck = addGeoCheckbox("showDiagonals", "Show compass diagonals");
+
+  const latSpacingWidget = buildSlider(geoSubsection, {
+    label: "Latitude spacing (px)", min: 0, max: 600, step: 1,
+    get: () => v3Config.geo.latSpacing,
+    set: v => { v3Config.geo.latSpacing = v; }
+  });
+  const lonSpacingWidget = buildSlider(geoSubsection, {
+    label: "Longitude spacing (px)", min: 0, max: 600, step: 1,
+    get: () => v3Config.geo.lonSpacing,
+    set: v => { v3Config.geo.lonSpacing = v; }
+  });
+
   // Reset-function pattern, shared by resetVisuals/resetShape/resetLayout:
   // each restores STATE ONLY (v3Config fields + each widget's .refresh())
   // and deliberately never calls retraceIslands()/render() itself -- that's
@@ -748,6 +806,14 @@ function buildControlPanel() {
     Object.assign(waveGen, waveGenDefaults);
     Object.values(waveFieldWidgets).forEach(w => w.refresh());
     refreshWavePreview();
+    v3Config.geo.showGrid = visualsDefaults.showGeoGrid;
+    v3Config.geo.showDiagonals = visualsDefaults.showGeoDiagonals;
+    showGridCheck.checked = v3Config.geo.showGrid;
+    showDiagonalsCheck.checked = v3Config.geo.showDiagonals;
+    v3Config.geo.latSpacing = visualsDefaults.latSpacing;
+    v3Config.geo.lonSpacing = visualsDefaults.lonSpacing;
+    latSpacingWidget.refresh();
+    lonSpacingWidget.refresh();
   }
 
   addButton(visualsSection, "Reset visuals", () => {

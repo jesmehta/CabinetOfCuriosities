@@ -94,17 +94,30 @@ body.v3-proto[data-theme="satellite"] {
 }
 
 /* "medieval-map" -- v3-scheme-candidates.md scheme 1 (Tolkien / plain
-   engraved-map linework). Land and sea are meant to read through ink
-   contour, not colour contrast -- sea-deep/sea-shallow and sand/veg are
-   all kept close in value on purpose, narrower than any other scheme
-   here. Three-tier type: Cinzel for the title, IM Fell English italic
-   (not the SC face "medieval" above uses) for section labels, EB
-   Garamond for the small dense island labels. */
+   engraved-map linework). Three-tier type: Cinzel for the title, IM Fell
+   English (not the SC face "medieval" above uses) for section labels,
+   EB Garamond for the small dense island labels.
+
+   v3.7.8 -- section labels' italic dropped per direct feedback ("make
+   section heads text not italic"). Small-caps (the follow-up request,
+   "make them small caps to differentiate though") turned out to be a
+   SITE-WIDE change, not specific to this theme's own type choice -- see
+   the base .v3-section-label rule below, not here.
+
+   v3.7 -- sea-deep/veg retuned to explicit direction ("islands - a
+   darker brown, rich and intense, with reddish tones / sea - a lighter
+   sepia/brown, amber tones"), moving off the original all-close-in-value
+   parchment palette. flatColourMode is on for this theme (THEME_PRESETS,
+   cabinet-v3-controls.js), so --v3-veg (flat land fill) and --v3-sea-deep
+   (.v3-stage's own background) are what actually render; --v3-sand/
+   --v3-sea-shallow (the non-flat band tiers) are tuned as a lighter step
+   toward the same two hue families so the theme still reads coherently
+   if flat mode is switched off from the dev panel. */
 body.v3-proto[data-theme="medieval-map"] {
-  --v3-sea-deep: #cfc7ab;
-  --v3-sea-shallow: #d9d2b9;
-  --v3-veg: #e8dcc0;
-  --v3-sand: #e2d5b0;
+  --v3-sea-deep: #c9974f;
+  --v3-sea-shallow: #ddbd82;
+  --v3-veg: #5c2417;
+  --v3-sand: #7d3a24;
   --v3-ink: #1c1712;
 }
 
@@ -115,7 +128,6 @@ body.v3-proto[data-theme="medieval-map"] .v3-header h1 {
 
 body.v3-proto[data-theme="medieval-map"] .v3-section-label {
   font-family: "IM Fell English", var(--cab-font-body);
-  font-style: italic;
 }
 
 body.v3-proto[data-theme="medieval-map"] .v3-island-label {
@@ -494,6 +506,179 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
   vector-effect: non-scaling-stroke;
 }
 
+/* v3.7 -- compass rose (cabinet-v3-layout.js's renderCompassRegion(),
+   compass_rose.svg's own shapes inlined as COMPASS_ROSE_SHAPES). The
+   source SVG uses exactly 3 fixed fills (white/black/blue) plus a
+   none-fill+black-stroke outline pass -- remapped here to theme colour
+   tokens per direct request ("match scheme colour tokens to these"):
+   white -> the lighter/sepia-toned token, black -> the same --v3-ink
+   every coastline/label outline already uses, blue -> --v3-ring-ink (a
+   theme's other mid-brightness accent slot) -- deliberately NOT
+   --v3-halo-ink/--v3-label-outline, so a hover-invert happening
+   elsewhere on the page can never accidentally recolour the compass. */
+.v3-compass-white {
+  fill: var(--v3-sea-shallow);
+}
+
+.v3-compass-black {
+  fill: var(--v3-ink);
+}
+
+.v3-compass-blue {
+  fill: var(--v3-ring-ink);
+}
+
+.v3-compass-outline {
+  fill: none;
+  stroke: var(--v3-ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+/* v3.7.1 -- rose shrunk (COMPASS_ROSE_SCALE, cabinet-v3-layout.js),
+   re-centred; the freed margin holds a real text label per direction
+   (.v3-compass-direction-label). The rose artwork and the label text
+   itself never intercept pointer events -- v3.7.4 moved the actual hit
+   target to a bordered card around each label (.v3-compass-label-frame,
+   below), not the rose or the label text directly. */
+.v3-compass-rose,
+.v3-compass-labels {
+  pointer-events: none;
+}
+
+.v3-compass-direction-label {
+  font-family: var(--cab-font-body);
+  font-size: 11px;
+  fill: var(--v3-ink);
+  dominant-baseline: middle;
+  transition: fill var(--cab-transition-fast), filter var(--cab-transition-fast);
+}
+
+/* v3.7.4 -- direct request: give the compass labels "the Entry text
+   treatment with halos etc" -- the same 3-variant data-label-style
+   system (halo/glow/plain, dev panel: Visuals > Label style) already
+   applied to .v3-island-label/.v3-section-label, same selectors/values,
+   just a third target. Ambient only -- the hover-specific fill+glow
+   rules further down (triggered by .v3-compass-hit's own :hover) still
+   take over on top of whichever of these is active, same as islands'
+   own hover-invert layers on top of their ambient halo/glow/plain. */
+body:not([data-label-style]) .v3-compass-direction-label,
+body[data-label-style="halo"] .v3-compass-direction-label {
+  paint-order: stroke;
+  stroke: var(--v3-label-outline);
+  stroke-width: 3px;
+}
+
+body[data-label-style="glow"] .v3-compass-direction-label {
+  filter: drop-shadow(0 0 1.5px var(--v3-label-outline)) drop-shadow(0 0 1.5px var(--v3-label-outline));
+}
+
+.v3-compass-hit {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* v3.7.4 -- direct request tried enclosing each label in a visible
+   bordered rectangle with corner ornaments as the click target.
+   v3.7.5 -- both the border and the ornaments were dropped again on
+   sight ("maybe no rectangular frames"..."not leftover ornaments
+   either") -- .v3-compass-label-frame is back to a plain invisible hit
+   rect, same padded box around the label, just nothing drawn. */
+.v3-compass-label-frame {
+  fill: transparent;
+  stroke: transparent;
+}
+
+.v3-compass-hit:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: -2px;
+}
+
+/* v3.7.1 -- direct request: "I dont want the hover to be the sharp
+   triangles, it should be a similar glow effect on the label text and
+   the one compass arm that is being hovered on." Hit and target aren't
+   DOM siblings (hits need the full-square transform, the arm-glow needs
+   the rose's own shrunk one -- see renderCompassRegion()'s comment), so
+   this uses :has() rather than a sibling combinator; one block per
+   direction since CSS has no "match the sibling's data-* value"
+   selector. .v3-compass-arm-glow is a blurred duplicate of just that
+   one arm's own outline (COMPASS_ARM_HULLS) -- same
+   opacity-0-to-visible-on-hover mechanic .v3-island-glow already uses,
+   just traced to one arm instead of a whole island. */
+.v3-compass-arm-glow {
+  fill: var(--v3-halo-ink);
+  opacity: 0;
+  filter: blur(18px);
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:hover) .v3-compass-arm-glow[data-direction="N"],
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:focus-visible) .v3-compass-arm-glow[data-direction="N"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:hover) .v3-compass-direction-label[data-direction="N"],
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:focus-visible) .v3-compass-direction-label[data-direction="N"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:hover) .v3-compass-arm-glow[data-direction="E"],
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:focus-visible) .v3-compass-arm-glow[data-direction="E"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:hover) .v3-compass-direction-label[data-direction="E"],
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:focus-visible) .v3-compass-direction-label[data-direction="E"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:hover) .v3-compass-arm-glow[data-direction="S"],
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:focus-visible) .v3-compass-arm-glow[data-direction="S"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:hover) .v3-compass-direction-label[data-direction="S"],
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:focus-visible) .v3-compass-direction-label[data-direction="S"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:hover) .v3-compass-arm-glow[data-direction="W"],
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:focus-visible) .v3-compass-arm-glow[data-direction="W"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:hover) .v3-compass-direction-label[data-direction="W"],
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:focus-visible) .v3-compass-direction-label[data-direction="W"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+/* v3.7.1 -- faint dotted lat/long grid + compass diagonals
+   (cabinet-v3-layout.js's drawGeoGrid()), ~100px apart. A distinct dot
+   pattern from .v3-region-outline's dashed 6-6 (that one reads as
+   dashes; round linecap + a near-zero dash length here reads as actual
+   round dots) -- direct request: "different dotted pattern than section
+   outlines." No clip-path for "over sea, not on land" -- drawGeoGrid()
+   runs before the landmass trace, so land just paints over it. */
+.v3-geo-grid {
+  pointer-events: none;
+}
+
+.v3-geo-line {
+  stroke: var(--v3-ink);
+  /* v3.7.2 -- direct feedback, two rounds: first that the original
+     near-zero dash length (0.1 9) was effectively invisible at real map
+     scale, then that the fix (3 9) still read too close to
+     .v3-region-outline's own 6 6 dashes. Settled here on a visibly
+     DIFFERENT rhythm from region-outline, not just a different length:
+     smaller dashes, shorter gaps (more frequent), and a hair lighter
+     stroke (1.1 vs region-outline's 1.5) -- reads as a finer, denser
+     texture instead of a bigger/smaller version of the same dash. */
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-dasharray: 2 4;
+  opacity: 0.55;
+}
+
 /* v3.6.5 -- stacked translucent colour bands (replaces the single-ring
    evenodd approach). Each group is ONE colour at a fixed fill-opacity,
    drawn as several full (unclipped) nested contours -- overlap count,
@@ -673,21 +858,22 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
   filter: drop-shadow(0 0 1.5px var(--v3-ink)) drop-shadow(0 0 1.5px var(--v3-ink));
 }
 
-/* Dashed ring marking "not fully live" -- wip entries (still a link,
-   just visually flagged), drawn on top of the shared landmass at that
-   entry's own original circle position. */
-.v3-status-ring {
-  fill: none;
-  stroke: var(--cab-ink-soft);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-  opacity: 0.85;
-}
+/* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-
+   layout.js no longer draws .v3-status-ring at all) -- wip/dummy entries
+   now have no hover-styled identity of their own, so there's nothing
+   left for this rule to style. See the v3.7 comment in renderRegion()
+   (cabinet-v3-layout.js) for the full reasoning. */
 
 .v3-section-label {
   font-family: var(--cab-font-heading);
   fill: var(--cab-ink);
   letter-spacing: 0.03em;
+  /* v3.7.8 -- direct request ("make them small caps to differentiate
+     though," following "make section heads text not italic"): applies
+     site-wide, not just to medieval-map's italic-prone type choice --
+     every theme's section label gets this same differentiation from
+     island labels, not just the one that happened to prompt it. */
+  font-variant: small-caps;
   /* v3.6.13 -- sits visually on top of .v3-section-link's hit rect
      (see cabinet-v3-layout.js) but shouldn't steal the click/hover away
      from it -- let pointer events pass straight through to the rect

@@ -520,6 +520,25 @@ export const v3Config = {
     // weight/tone carries over.
     fillColors: ["#d9b98a", "#aecbdb", "#c9b3d9"],
     strokeColor: "#2b2a29"
+  },
+
+  // v3.7.7 -- lat/long dotted grid + compass diagonals (drawGeoGrid() in
+  // cabinet-v3-layout.js). Live-tunable (dev panel: Visuals > Latitude
+  // spacing / Longitude spacing, cabinet-v3-controls.js) via the same
+  // cheap retraceIslands() path every other island slider already uses.
+  // Split into two independent axes rather than one shared spacing --
+  // direct request. 120 (not the round 100 it started at, and not 73,
+  // its intermediate prime-pitch value) is just the current default;
+  // either axis can be retuned live without touching this file.
+  // v3.7.8 -- split the single `enabled` flag into two -- direct
+  // request: "separate toggles for grid and compass diagonals." Grid
+  // (lat/long lines) and diagonals can now be shown/hidden
+  // independently.
+  geo: {
+    showGrid: true,
+    showDiagonals: true,
+    latSpacing: 120,
+    lonSpacing: 120
   }
 };
 

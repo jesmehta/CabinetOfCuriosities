@@ -101,7 +101,7 @@ function buildSectionMetas() {
         .filter(e => e.section === s.id)
         .sort((a, b) => a.order - b.order);
       const weight = sectionEntries.reduce((sum, e) => sum + e.weight, 0);
-      return { id: s.id, title: s.title, href: s.href, order: s.order, weight, entries: sectionEntries, extraCount: s.extraCount };
+      return { id: s.id, title: s.title, href: s.href, order: s.order, weight, kind: s.kind, entries: sectionEntries, extraCount: s.extraCount };
     })
     .filter(s => s.weight > 0)
     .sort((a, b) => a.order - b.order);
@@ -187,12 +187,107 @@ function resolveCanvasDimensions(sectionMetas, config) {
 // viewport by resolveCanvasDimensions(), not a fixed config constant) are
 // passed in by the caller rather than read from config directly, so this
 // function's own job stays just "partition a WxH rect," same as always.
+//
+// v3.7 -- a `kind: "compass"` section (at most one) is carved out
+// separately rather than joining the normal squarify() pool: direct
+// request was a DETERMINISTIC southeast-corner reservation, and squarify
+// gives no such guarantee (the current smallest/last-ordered section
+// already lands top-right, not bottom-right, under plain squarify --
+// verified before writing this).
+//
+// v3.7 bugfix -- the first version of this reserved a full-CANVAS-WIDTH
+// strip along the bottom, sized so its AREA matched the compass's weight
+// share, then inscribed a square inside it. That's wrong: forcing a
+// fixed-area strip to also span the entire canvas width makes it very
+// thin (stripHeight = area/width), and the inscribed square is then
+// capped by that thin height, not by the weight -- on real content this
+// put a section-4-worth-of-area compass at a fraction of its intended
+// SIDE LENGTH (~32px instead of ~191px, confirmed by direct measurement
+// -- the weight WAS being read correctly; the strip's shape just made
+// almost all of that area unusable as a square). Fixed here by carving
+// the TRUE square first (side = sqrt(area), not stretched to fit any
+// canvas dimension), then splitting what's left into two rects via one
+// cut (a full-width band above the square's row, plus a sliver to the
+// square's own left in that same row) and squarifying each separately
+// so neither loses real section area to empty margin. Sections are
+// distributed between the two rects by weight (closest match to each
+// rect's own proportional area share), greedily from the END of reading
+// order -- so only the last few (lowest-priority) sections ever share
+// the bottom row with the compass; everything else keeps its normal
+// top-area placement untouched. This can leave the section(s) sharing
+// the bottom-left sliver slightly over- or under-sized relative to a
+// perfect weight match (same class of imprecision squarify's own "worst
+// aspect ratio" heuristic already accepts elsewhere) -- preferred over
+// either the original bug (near-zero area) or leaving the sliver as
+// wasted empty sea.
 function buildRegions(sectionMetas, width, height) {
   const { regionGap } = v3Config.canvas;
-  const items = sectionMetas.map(s => ({ id: s.id, weight: effectiveWeightForArea(s, v3Config.canvas) }));
-  const rects = squarify(items, { x: 0, y: 0, width, height });
+  const compassMeta = sectionMetas.find(s => s.kind === "compass");
+  const regularMetas = compassMeta ? sectionMetas.filter(s => s !== compassMeta) : sectionMetas;
 
-  const regions = rects.map(r => ({
+  if (!compassMeta) {
+    const items = regularMetas.map(s => ({ id: s.id, weight: effectiveWeightForArea(s, v3Config.canvas) }));
+    const regions = squarify(items, { x: 0, y: 0, width, height }).map(r => regionFromRect(r, regionGap));
+    return { regions, canvasWidth: width, canvasHeight: height };
+  }
+
+  const totalEffectiveWeight = sectionMetas.reduce((sum, s) => sum + effectiveWeightForArea(s, v3Config.canvas), 0) || 1;
+  const compassWeight = effectiveWeightForArea(compassMeta, v3Config.canvas);
+  const compassArea = (compassWeight / totalEffectiveWeight) * (width * height);
+  // Sanity ceiling (never more than 60% of either dimension) -- guards
+  // against a future weight change making the compass swallow the
+  // canvas; irrelevant at today's real weights (side << either bound).
+  const side = Math.min(Math.sqrt(compassArea), width * 0.6, height * 0.6);
+
+  const compassOuter = { x: width - side, y: height - side, width: side, height: side };
+  const topRect = { x: 0, y: 0, width, height: height - side };
+  const leftRect = { x: 0, y: height - side, width: width - side, height: side };
+
+  const topArea = topRect.width * topRect.height;
+  const leftArea = leftRect.width * leftRect.height;
+  const totalRegularWeight = regularMetas.reduce((sum, s) => sum + effectiveWeightForArea(s, v3Config.canvas), 0) || 1;
+  const targetLeftWeight = totalRegularWeight * (leftArea / (topArea + leftArea || 1));
+
+  const ordered = [...regularMetas].sort((a, b) => a.order - b.order);
+  const leftGroup = [];
+  let leftWeight = 0;
+  // leftArea/topArea below 2% isn't worth giving a whole section to --
+  // left as plain open sea next to the square instead (same "unfilled
+  // sea within a section's own outer rect" every region already has).
+  if (leftArea / (topArea + leftArea || 1) > 0.02) {
+    for (let i = ordered.length - 1; i >= 0; i--) {
+      const w = effectiveWeightForArea(ordered[i], v3Config.canvas);
+      const withNext = leftWeight + w;
+      if (leftGroup.length === 0 || Math.abs(withNext - targetLeftWeight) < Math.abs(leftWeight - targetLeftWeight)) {
+        leftGroup.unshift(ordered[i]);
+        leftWeight = withNext;
+      } else {
+        break;
+      }
+    }
+  }
+  const leftIds = new Set(leftGroup.map(s => s.id));
+  const topGroup = ordered.filter(s => !leftIds.has(s.id));
+
+  const regions = [];
+  if (topGroup.length) {
+    const topItems = topGroup.map(s => ({ id: s.id, weight: effectiveWeightForArea(s, v3Config.canvas) }));
+    squarify(topItems, topRect).forEach(r => regions.push(regionFromRect(r, regionGap)));
+  }
+  if (leftGroup.length) {
+    const leftItems = leftGroup.map(s => ({ id: s.id, weight: effectiveWeightForArea(s, v3Config.canvas) }));
+    squarify(leftItems, leftRect).forEach(r => regions.push(regionFromRect(r, regionGap)));
+  }
+
+  const compassRegion = regionFromRect({ id: compassMeta.id, ...compassOuter }, regionGap);
+  compassRegion.compassSquare = compassRegion.inner;
+  regions.push(compassRegion);
+
+  return { regions, canvasWidth: width, canvasHeight: height };
+}
+
+function regionFromRect(r, regionGap) {
+  return {
     id: r.id,
     outer: r,
     inner: {
@@ -201,9 +296,7 @@ function buildRegions(sectionMetas, width, height) {
       width: r.width - regionGap * 2,
       height: r.height - regionGap * 2
     }
-  }));
-
-  return { regions, canvasWidth: width, canvasHeight: height };
+  };
 }
 
 // Greedy word-wrap: packs words onto a line until the next word would
@@ -589,10 +682,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // *interactive* layer on top of that shared shape: an invisible hit
   // circle at the entry's original (x, y, radius) so clicking/hovering
   // still targets the right entry even where its visible coastline has
-  // merged with a neighbour's, plus a dashed status ring for any entry
-  // not fully live (status: "wip") since a fused landmass can't be given
-  // two different fill colors for two different entries' statuses the
-  // way separate circles could.
+  // merged with a neighbour's.
   //
   // v3.6.13 -- hover used to ring the hit circle with a stroke; that
   // read as a hard, obviously-artificial circle popping up over an
@@ -606,17 +696,29 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // Glow and hit both reuse the exact SAME path -- no separate enlarged
   // geometry for the glow; .v3-island-glow's existing blur(6px) filter
   // already produces the soft bleed past the coastline edge on its own.
+  //
+  // v3.7 -- dropped the dashed status ring for entries not fully live
+  // (status: "wip"), and with it their own link/hit/glow entirely --
+  // direct request: "Dummy entries simply have no hover effect of their
+  // own, they lead to section heads like non-entry islands." Only the
+  // name label is drawn (still useful -- it's a real, titled entry, just
+  // not ready for its own hover/click identity yet); with no <a> of its
+  // own and pointer-events:none on the label, hover/click on that spot
+  // falls through to whatever's beneath -- the section's own hitGroup/
+  // glowGroup (sectionLink, above) -- same as "filler" circles below,
+  // which have never had a link of their own either.
   circles.forEach(c => {
+    if (c.kind === "entry" && c.status === "wip") {
+      group.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
+      return;
+    }
+
     if (c.kind === "entry") {
-      const isMuted = c.status === "wip";
       const link = el("a", { class: "v3-island", href: c.href || "#" });
       link.setAttribute("data-id", c.id);
       const islandD = traceIsolatedShape([c], v3Config.island, 0);
       link.appendChild(el("path", { d: islandD, class: "v3-island-glow", "fill-rule": "evenodd" }));
       link.appendChild(el("path", { d: islandD, class: "v3-island-hit", "fill-rule": "evenodd" }));
-      if (isMuted) {
-        link.appendChild(el("circle", { cx: c.x, cy: c.y, r: c.radius, class: "v3-status-ring", "aria-hidden": "true" }));
-      }
       link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
       group.appendChild(link);
       return;
@@ -651,6 +753,320 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // none (already set) means this still can't steal the hover/click away
   // from sectionLink's own hit shape underneath.
   sectionLink.appendChild(labelGroup);
+
+  stage.appendChild(group);
+}
+
+// v3.7 -- compass_rose.svg's own shapes, copied directly (same "just
+// build DOM elements directly" approach DRAGON_PATH_D above already
+// uses, for the same file:// CORS reason). Original source: 3 fills only
+// (white #FEFEFE, black #2B2A29, blue #00A0E3) plus a none-fill/black-
+// stroke outline pass -- renamed here to the semantic classes
+// .v3-compass-white/-black/-blue/-outline (cabinet-v3-style.css) so each
+// maps to a theme colour token instead of a fixed hex, per direct
+// request ("match scheme colour tokens to these"). Source viewBox:
+// "0 0 827.72 827.72", center (413.86, 413.86).
+const COMPASS_VIEWBOX = 827.72;
+const COMPASS_ROSE_SHAPES = [
+  { tag: "polygon", cls: "v3-compass-black", points: "540.02,314.44 595.57,232.15 527.43,300.29 413.86,413.86 501.22,371.92" },
+  { tag: "polygon", cls: "v3-compass-black", points: "314.44,287.7 232.15,232.15 300.29,300.29 413.86,413.86 371.92,326.49" },
+  { tag: "polygon", cls: "v3-compass-black", points: "287.7,513.28 232.15,595.57 300.29,527.43 413.86,413.86 326.49,455.8" },
+  { tag: "polygon", cls: "v3-compass-black", points: "513.28,540.02 595.57,595.57 527.43,527.43 413.86,413.86 455.8,501.22" },
+  { tag: "polygon", cls: "v3-compass-white", points: "513.28,287.7 595.57,232.15 527.43,300.29 413.86,413.86 455.8,326.49" },
+  { tag: "polygon", cls: "v3-compass-white", points: "287.7,314.44 232.15,232.15 300.29,300.29 413.86,413.86 326.49,371.92" },
+  { tag: "polygon", cls: "v3-compass-white", points: "314.44,540.02 232.15,595.57 300.29,527.43 413.86,413.86 371.92,501.22" },
+  { tag: "polygon", cls: "v3-compass-white", points: "540.02,513.28 595.57,595.57 527.43,527.43 413.86,413.86 501.22,455.8" },
+  { tag: "polygon", cls: "v3-compass-outline", points: "540.02,314.44 595.57,232.15 513.28,287.7 455.8,326.49 413.86,413.86 501.22,455.8 540.02,513.28 595.57,595.57 513.28,540.02 455.8,501.22 413.86,413.86 326.49,371.92 287.7,314.44 232.15,232.15 314.44,287.7 371.92,326.49 413.86,413.86 371.92,501.22 314.44,540.02 232.15,595.57 287.7,513.28 326.49,455.8 413.86,413.86 501.22,371.92" },
+  { tag: "path", cls: "v3-compass-blue", d: "M480.6 274.83l-17.41 36.26c0.69,-0.01 1.37,-0.02 2.06,-0.02 56.58,0 102.48,45.71 102.79,102.22 -0.22,-61 -35.87,-113.66 -87.44,-138.46z" },
+  { tag: "path", cls: "v3-compass-blue", d: "M568.04 414.43c-0.31,56.51 -46.21,102.22 -102.79,102.22 -0.69,0 -1.38,-0.01 -2.06,-0.02l17.41 36.26c51.57,-24.8 87.22,-77.46 87.44,-138.46z" },
+  { tag: "path", cls: "v3-compass-blue", d: "M228.84 413.86c0,-51.09 20.71,-97.35 54.19,-130.83 33.48,-33.48 79.74,-54.19 130.83,-54.19 28.69,0 55.86,6.53 80.09,18.18l17.8 -37.07c-29.62,-14.25 -62.82,-22.23 -97.89,-22.23 -62.44,0 -118.98,25.31 -159.9,66.24 -40.92,40.92 -66.24,97.46 -66.24,159.9 0,62.44 25.31,118.98 66.24,159.9 40.92,40.92 97.46,66.24 159.9,66.24 35.06,0 68.27,-7.98 97.89,-22.23l-17.8 -37.07c-24.23,11.65 -51.4,18.18 -80.09,18.18 -51.09,0 -97.35,-20.71 -130.83,-54.19 -33.48,-33.48 -54.19,-79.74 -54.19,-130.83z" },
+  { tag: "path", cls: "v3-compass-blue", d: "M598.88 413.86c0,51.09 -20.71,97.35 -54.19,130.83 -14.68,14.68 -31.82,26.91 -50.74,36.01l17.8 37.07c23.13,-11.12 44.07,-26.07 62.02,-44.01 40.92,-40.92 66.24,-97.46 66.24,-159.9 0,-62.44 -25.31,-118.98 -66.24,-159.9 -17.94,-17.94 -38.89,-32.89 -62.02,-44.01l-17.8 37.07c18.92,9.1 36.06,21.33 50.74,36.01 33.48,33.48 54.19,79.74 54.19,130.83z" },
+  { tag: "path", cls: "v3-compass-blue", d: "M413.86 259.67c-85.15,0 -154.19,69.03 -154.19,154.19 0,85.15 69.03,154.19 154.19,154.19 23.91,0 46.54,-5.44 66.74,-15.15l-17.41 -36.26c-55.82,-1.1 -100.73,-46.69 -100.73,-102.77 0,-56.08 44.91,-101.67 100.73,-102.77l17.41 -36.26c-20.2,-9.71 -42.83,-15.15 -66.74,-15.15z" },
+  { tag: "polygon", cls: "v3-compass-black", points: "444.12,158.65 413.86,2.7 413.86,156.88 413.86,413.86 465.25,267.57" },
+  { tag: "polygon", cls: "v3-compass-black", points: "158.65,383.6 2.7,413.86 156.88,413.86 413.86,413.86 267.57,362.47" },
+  { tag: "polygon", cls: "v3-compass-black", points: "383.6,669.07 413.86,825.02 413.86,670.84 413.86,413.86 362.47,560.15" },
+  { tag: "polygon", cls: "v3-compass-black", points: "669.07,444.12 825.02,413.86 670.84,413.86 413.86,413.86 560.15,465.25" },
+  { tag: "polygon", cls: "v3-compass-white", points: "383.6,158.65 413.86,2.7 413.86,156.88 413.86,413.86 362.47,267.57" },
+  { tag: "polygon", cls: "v3-compass-white", points: "158.65,444.12 2.7,413.86 156.88,413.86 413.86,413.86 267.57,465.25" },
+  { tag: "polygon", cls: "v3-compass-white", points: "444.12,669.07 413.86,825.02 413.86,670.84 413.86,413.86 465.25,560.15" },
+  { tag: "polygon", cls: "v3-compass-white", points: "669.07,383.6 825.02,413.86 670.84,413.86 413.86,413.86 560.15,362.47" },
+  { tag: "polygon", cls: "v3-compass-outline", points: "444.12,158.65 413.86,2.7 383.6,158.65 362.47,267.57 413.86,413.86 560.15,362.47 669.07,383.6 825.02,413.86 669.07,444.12 560.15,465.25 413.86,413.86 267.57,465.25 158.65,444.12 2.7,413.86 158.65,383.6 267.57,362.47 413.86,413.86 465.25,560.15 444.12,669.07 413.86,825.02 383.6,669.07 362.47,560.15 413.86,413.86 465.25,267.57" },
+  { tag: "path", cls: "v3-compass-blue", d: "M383.77 476.53l-36.66 76.36c20.2,9.71 42.83,15.15 66.74,15.15 23.91,0 46.54,-5.44 66.74,-15.15l-17.41 -36.26c-32.34,-0.64 -61.01,-16.21 -79.42,-40.1z" },
+  { tag: "path", cls: "v3-compass-blue", d: "M383.77 351.19c18.4,-23.89 47.08,-39.46 79.42,-40.1l17.41 -36.26c-20.2,-9.71 -42.83,-15.15 -66.74,-15.15 -23.91,0 -46.55,5.44 -66.74,15.15l36.66 76.36z" },
+  { tag: "path", cls: "v3-compass-blue", d: "M365.14 435.37c-1.61,-7.23 -2.46,-14.74 -2.46,-22.45 0,-7.71 0.85,-15.22 2.46,-22.45l-91.24 -41.86c-8.99,19.57 -14.01,41.35 -14.01,64.3 0,22.95 5.01,44.73 14.01,64.3l91.24 -41.86zm-2.46 -22.45c0,-7.71 0.85,-15.22 2.46,-22.45 -1.61,7.23 -2.46,14.74 -2.46,22.45zm2.46 22.45c-1.61,-7.23 -2.46,-14.74 -2.46,-22.45 0,7.71 0.85,15.22 2.46,22.45z" }
+];
+
+// v3.7.1 -- the visible outline of each of the 4 CARDINAL arms (N/E/S/W
+// only -- the ordinal/diagonal star's NE/NW/SE/SW arms have no entry of
+// their own and stay purely decorative), traced by hand from
+// COMPASS_ROSE_SHAPES' own black+white half-polygons above (e.g. N =
+// shapes 15+19's outer points, tip to tip through the shared centre).
+// Used only for the hover glow overlay below -- direct request was a
+// glow on "the one compass arm being hovered," not a filled wedge.
+const COMPASS_ARM_HULLS = {
+  N: "413.86,2.7 444.12,158.65 465.25,267.57 413.86,413.86 362.47,267.57 383.6,158.65",
+  E: "825.02,413.86 669.07,444.12 560.15,465.25 413.86,413.86 560.15,362.47 669.07,383.6",
+  S: "413.86,825.02 383.6,669.07 362.47,560.15 413.86,413.86 465.25,560.15 444.12,669.07",
+  W: "2.7,413.86 158.65,383.6 267.57,362.47 413.86,413.86 267.57,465.25 158.65,444.12"
+};
+
+// Direction -> unit position (0..1 of the square) + text-anchor for each
+// edge label -- sits in the margin COMPASS_ROSE_SCALE below deliberately
+// leaves around the shrunk rose. E/W stay level with their own arm's
+// centreline (y: 0.5, matching N/S's own alignment convention -- direct
+// feedback: the earlier off-centre nudge here was the wrong fix). The
+// real problem was "Contact me" being the longest of the 4 labels and
+// too wide for the edge margin at any single-line y -- solved instead
+// via `wrap: true` (below), which lines-breaks it onto 2 lines so it
+// never needs that width in the first place.
+const COMPASS_LABEL_LAYOUT = {
+  N: { x: 0.5, y: 0.08, anchor: "middle" },
+  E: { x: 0.97, y: 0.5, anchor: "end", wrap: true },
+  S: { x: 0.5, y: 0.94, anchor: "middle" },
+  W: { x: 0.03, y: 0.5, anchor: "start" }
+};
+
+// v3.7.1 -- direct request: "make the compass rose smaller, about 70% of
+// current size... add the requisite text labels to the 4 quadrants."
+// The freed-up margin is where COMPASS_LABEL_LAYOUT places those labels
+// -- 0.62, not a literal 0.7, since "Contact me"/"About Me" (the longest
+// labels) still clipped the rose's own arm tips at 0.7 (confirmed
+// visually) even after the off-centre nudge above; "or as needed" per
+// the original request.
+const COMPASS_ROSE_SCALE = 0.62;
+
+// v3.7 -- the reserved SE compass section (kind: "compass",
+// buildRegions()'s carve-out above). No archipelago here: the compass
+// graphic is placed directly at region.compassSquare (already the
+// largest square inscribed in this section's own strip, flush to the
+// canvas's true bottom-right corner), uniformly scaled from
+// COMPASS_ROSE_SHAPES' own square viewBox -- a single scale factor keeps
+// every shape's proportions intact.
+//
+// v3.7.1 -- three direct-request changes: (1) the rose itself now
+// renders at COMPASS_ROSE_SCALE, re-centred in the square (was full
+// square before); (2) each direction gets a real text label
+// (COMPASS_LABEL_LAYOUT) in the margin that shrink freed up; (3) hover
+// feedback is no longer a filled wedge -- .v3-compass-hit's 4 triangles
+// (split along the square's own diagonals, same N/E/S/W split as
+// before) stay as generous, fully invisible hit/focus targets covering
+// the WHOLE square (including the label margin, so hovering a label
+// counts too), but the VISIBLE feedback is now a blurred glow on that
+// direction's own arm hull (COMPASS_ARM_HULLS, drawn inside the same
+// scaled `rose` group so it tracks the shrunk artwork exactly) plus a
+// matching glow on its label -- wired via CSS :has() in
+// cabinet-v3-style.css (hit and target aren't DOM siblings, since hits
+// need the full-square transform and the arm-glow needs the rose's own
+// shrunk one).
+function renderCompassRegion(stage, region, sectionMeta) {
+  const square = region.compassSquare;
+  if (!square || square.width <= 0) return;
+
+  const group = el("g", { class: "v3-compass" });
+
+  const fullScale = square.width / COMPASS_VIEWBOX;
+  const scale = fullScale * COMPASS_ROSE_SCALE;
+  const inset = (square.width - square.width * COMPASS_ROSE_SCALE) / 2;
+  const rose = el("g", {
+    class: "v3-compass-rose",
+    transform: `translate(${square.x + inset}, ${square.y + inset}) scale(${scale})`
+  });
+  COMPASS_ROSE_SHAPES.forEach(shape => {
+    const attrs = { class: shape.cls };
+    if (shape.tag === "polygon") attrs.points = shape.points;
+    else attrs.d = shape.d;
+    rose.appendChild(el(shape.tag, attrs));
+  });
+  Object.entries(COMPASS_ARM_HULLS).forEach(([dir, points]) => {
+    rose.appendChild(el("polygon", { class: "v3-compass-arm-glow", "data-direction": dir, points }));
+  });
+  group.appendChild(rose);
+
+  const byDirection = new Map(
+    sectionMeta.entries
+      .filter(e => e.status !== false)
+      .map(e => [e.visual && e.visual.anchor, e])
+  );
+
+  // v3.7.2 -- `wrap: true` (E, currently -- "Contact me", the longest of
+  // the 4 labels) line-breaks one word per <tspan> instead of pushing
+  // the label off its arm's own centreline to dodge a collision (direct
+  // feedback: "CV can be in the same line as the [W] arm, why below?...
+  // maintain the alignments"). Lines stack centred ON pos.y via dy, so
+  // the label's vertical MIDPOINT stays level with the arm regardless
+  // of how many lines it takes.
+  //
+  // v3.7.4/5 -- direct feedback simplified the hit area twice: first to
+  // "enclose the 4 quadrant labels in a rectangle... that area is the
+  // active area" (dropping the earlier arm-hull hit shape, v3.7.3),
+  // then to drop the rectangle's own visible border and corner
+  // ornaments too ("maybe no rectangular frames... not leftover
+  // ornaments either") -- .v3-compass-label-frame stays as a plain
+  // invisible hit rect, sized around the label's ESTIMATED text box
+  // (character count x fontSize x charWidthFactor, this file's own
+  // existing text-width convention, see wrapTitleToLines() above; not a
+  // live getBBox() measurement). Hovering/focusing it still glows the
+  // matching arm via the existing :has() rules -- unchanged, they only
+  // care about .v3-compass-hit[data-direction]'s OWN :hover/
+  // :focus-visible state, not what shape triggered it.
+  const LABEL_HIT_PAD = 5;
+  const LABEL_CHAR_WIDTH_FACTOR = 0.56;
+  const LABEL_FONT_SIZE = 11;
+
+  const labels = el("g", { class: "v3-compass-labels" });
+  const hits = el("g", { class: "v3-compass-hits" });
+  const labelLineHeight = 12;
+
+  Object.entries(COMPASS_LABEL_LAYOUT).forEach(([dir, pos]) => {
+    const entry = byDirection.get(dir);
+    if (!entry) return;
+
+    const lines = pos.wrap ? entry.title.split(" ") : [entry.title];
+    const x = square.x + pos.x * square.width;
+    const y = square.y + pos.y * square.height;
+    const textEl = el("text", { class: "v3-compass-direction-label", "data-direction": dir, x, "text-anchor": pos.anchor });
+    const firstY = y - ((lines.length - 1) * labelLineHeight) / 2;
+    lines.forEach((line, i) => {
+      textEl.appendChild(el("tspan", { x, y: firstY + i * labelLineHeight }, line));
+    });
+    labels.appendChild(textEl);
+
+    const maxLineLen = Math.max(...lines.map(l => l.length));
+    const boxWidth = maxLineLen * LABEL_FONT_SIZE * LABEL_CHAR_WIDTH_FACTOR + LABEL_HIT_PAD * 2;
+    const boxHeight = lines.length * labelLineHeight + LABEL_HIT_PAD * 2;
+    let boxLeft;
+    if (pos.anchor === "start") boxLeft = x - LABEL_HIT_PAD;
+    else if (pos.anchor === "end") boxLeft = x - boxWidth + LABEL_HIT_PAD;
+    else boxLeft = x - boxWidth / 2;
+    const boxTop = y - boxHeight / 2;
+
+    const link = el("a", { class: "v3-compass-hit", href: entry.href || "#", "data-direction": dir });
+    link.appendChild(el("rect", { class: "v3-compass-label-frame", x: boxLeft, y: boxTop, width: boxWidth, height: boxHeight }));
+    hits.appendChild(link);
+  });
+
+  group.appendChild(labels);
+  group.appendChild(hits);
+
+  stage.appendChild(group);
+}
+
+// v3.7.1 -- faint dotted lat/long grid, ~100px apart (direct request),
+// phase-aligned through `origin` (the compass's own centre) rather than
+// canvas (0,0) -- so one longitude line always runs through the
+// compass's own N-S axis and one latitude line through its E-W axis
+// (direct request: "the compass N S E W direction match one pair of
+// lat-long lines"). Diagonal rays from that same origin echo the
+// compass's own NE/NW/SE/SW ordinal arms outward across the map.
+//
+// v3.7.2 bugfix -- "over the sea, not visible on land" was originally
+// attempted via paint order (draw the grid before the landmass, let
+// land cover it) -- doesn't work: drawIslandsPath()'s own placeOne()
+// helper unconditionally pins the landmass to stage.firstChild no
+// matter when it's called relative to anything else, so it's ALWAYS
+// the bottom-most layer; nothing can ever paint under it via DOM order
+// alone (confirmed by direct feedback -- "lines are overlaid on the
+// islands" -- even after trying the reverse call order). Fixed instead
+// with a real SVG <mask>: white (visible) everywhere except the land
+// silhouette itself, painted black using the exact same `d` + evenodd
+// fill-rule .v3-coastline-outline already traces (present regardless
+// of flatColourMode, one shared shape for every island) -- so this
+// MUST run after drawIslandsPath() has drawn that element, not before.
+//
+// v3.7.7 -- pitch went from a round 100 to 73 (prime, so it can't share
+// a common factor with other periodic geometry on the map -- region
+// gaps, dash rhythms -- and fall into a repeating coincidence with any
+// of them), then split into two INDEPENDENT axes (v3Config.geo.
+// latSpacing/lonSpacing, cabinet-v3-data.js) with their own dev-panel
+// sliders -- direct request: "give me 2 separate controls for each of
+// them." Diagonals need no spacing of their own (single rays from
+// `origin`, not a repeating series) so they're unaffected either way.
+//
+// Idempotent -- removes any previous .v3-geo-grid before drawing a new
+// one, same reasoning as placeOne()'s reuse-or-create below: this gets
+// called again on every spacing-slider tick via retraceIslands()
+// (cabinet-v3-controls.js), and a plain stage.appendChild() on every
+// tick would stack up a fresh duplicate grid layer each time instead of
+// replacing the old one.
+function drawGeoGrid(stage, canvasBounds, origin) {
+  const existing = stage.querySelector(".v3-geo-grid");
+  if (existing) existing.remove();
+  // v3.7.8 -- two independent dev-panel toggles, not one -- direct
+  // request: "separate toggles for grid and compass diagonals." Bail out
+  // right after clearing the stale group above when BOTH are off, so
+  // "off" really means nothing left in the DOM, not an empty-but-present
+  // group.
+  const { showGrid, showDiagonals, latSpacing, lonSpacing } = v3Config.geo;
+  if (!showGrid && !showDiagonals) return;
+
+  const group = el("g", { class: "v3-geo-grid" });
+  const left = canvasBounds.x;
+  const right = canvasBounds.x + canvasBounds.width;
+  const top = canvasBounds.y;
+  const bottom = canvasBounds.y + canvasBounds.height;
+
+  // v3.7.8 -- sliders now go down to 0 (direct request); a 0 (or
+  // negative, not reachable via the slider but defensive anyway) step
+  // would either hang the loop below (x -= 0 never advances) or run it
+  // backwards, so treat "spacing <= 0" as "no lines on that axis" rather
+  // than looping at all.
+  if (showGrid) {
+    if (lonSpacing > 0) {
+      for (let x = origin.x; x > left; x -= lonSpacing) {
+        group.appendChild(el("line", { class: "v3-geo-line", x1: x, y1: top, x2: x, y2: bottom }));
+      }
+      for (let x = origin.x + lonSpacing; x < right; x += lonSpacing) {
+        group.appendChild(el("line", { class: "v3-geo-line", x1: x, y1: top, x2: x, y2: bottom }));
+      }
+    }
+    if (latSpacing > 0) {
+      for (let y = origin.y; y > top; y -= latSpacing) {
+        group.appendChild(el("line", { class: "v3-geo-line", x1: left, y1: y, x2: right, y2: y }));
+      }
+      for (let y = origin.y + latSpacing; y < bottom; y += latSpacing) {
+        group.appendChild(el("line", { class: "v3-geo-line", x1: left, y1: y, x2: right, y2: y }));
+      }
+    }
+  }
+
+  // Reach far enough to clear canvasBounds regardless of aspect ratio;
+  // the <svg> viewBox itself clips the overshoot, no bounds math needed.
+  // v3.7.6 -- direct request: rays every 22.5 degrees, not just the 4
+  // ordinal 45-degree ones -- "add diagonals at 22.5 degree intervals as
+  // well, above and below SE EN NW WS" (i.e. one on each side of NE/SE/
+  // SW/NW). The 4 cardinal angles (0/90/180/270) are skipped -- those
+  // directions are already the straight lat/long lines above, through
+  // this same origin; a ray there would just retrace one.
+  const reach = Math.max(canvasBounds.width, canvasBounds.height) * 1.5;
+  for (let deg = 0; showDiagonals && deg < 360; deg += 22.5) {
+    if (deg % 90 === 0) continue;
+    const rad = (deg * Math.PI) / 180;
+    const dx = Math.cos(rad);
+    const dy = Math.sin(rad);
+    group.appendChild(el("line", {
+      class: "v3-geo-line v3-geo-diagonal",
+      x1: origin.x, y1: origin.y,
+      x2: origin.x + dx * reach, y2: origin.y + dy * reach
+    }));
+  }
+
+  const coastline = stage.querySelector(".v3-coastline-outline");
+  if (coastline) {
+    let defs = stage.querySelector("#v3-geo-defs");
+    if (!defs) {
+      defs = el("defs", { id: "v3-geo-defs" });
+      stage.insertBefore(defs, stage.firstChild);
+    }
+    let mask = defs.querySelector("#v3-sea-mask");
+    if (!mask) {
+      mask = el("mask", { id: "v3-sea-mask" });
+      defs.appendChild(mask);
+    }
+    mask.textContent = "";
+    mask.appendChild(el("rect", { x: canvasBounds.x, y: canvasBounds.y, width: canvasBounds.width, height: canvasBounds.height, fill: "white" }));
+    mask.appendChild(el("path", { d: coastline.getAttribute("d"), "fill-rule": "evenodd", fill: "black" }));
+    group.setAttribute("mask", "url(#v3-sea-mask)");
+  }
 
   stage.appendChild(group);
 }
@@ -1375,6 +1791,12 @@ export function retraceIslands() {
   const islandTrace = drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
   lastIslandTrace = islandTrace;
 
+  // v3.7.7 -- redraw the lat/long grid too (cheap: drawGeoGrid() replaces
+  // its own group rather than accumulating one per call, see its own
+  // comment) so the new Latitude/Longitude spacing sliders (dev panel)
+  // can reuse this same cheap path instead of needing a full render().
+  drawGeoGrid(stage, islandLayoutState.canvasBounds, islandLayoutState.gridOrigin);
+
   if (v3Config.flow.showPotential || v3Config.flow.showVectors) {
     const field = buildCurrentFlowField(islandLayoutState.canvasBounds, islandTrace, currentAnimTime());
     drawFlowFieldDebug(stage, islandLayoutState.canvasBounds, field);
@@ -1436,7 +1858,21 @@ export function render() {
   // before splitLabelBand() so the band is sized to what the title
   // actually needs (possibly wrapped onto multiple lines), not the
   // other way around.
+  // v3.7 -- the compass section (kind: "compass") gets no label band or
+  // archipelago seeding of its own; it's rendered separately, below, via
+  // renderCompassRegion(). Its OWN outer rect still goes into obstacles
+  // (below) so ordinary archipelago growth from neighbouring sections
+  // can't bleed into its reserved strip -- squarify() never put any
+  // seeds there to begin with (buildRegions() ran the real squarify()
+  // call against a canvas already shortened to exclude that strip), but
+  // growth itself is a single global pass with no per-region hard walls
+  // (see the v3.5 comment above), so without this a circle from an
+  // adjacent section could still grow across that boundary.
+  const compassMeta = sectionMetas.find(s => s.kind === "compass");
+  const compassRegion = compassMeta ? regionById.get(compassMeta.id) : null;
+
   const layout = sectionMetas
+    .filter(sectionMeta => sectionMeta.kind !== "compass")
     .map(sectionMeta => {
       const region = regionById.get(sectionMeta.id);
       if (!region) return null;
@@ -1456,6 +1892,7 @@ export function render() {
     buildSeedsForSection(sectionMeta, pack, allPlacedPoints)
   );
   const obstacles = layout.map(({ band }) => band);
+  if (compassRegion) obstacles.push(compassRegion.outer);
 
   // v3.6.10 registered the page's title/tagline (real HTML, not SVG --
   // see Landing-page-notes.2.0.md's "Canvas + legend" entry for why) as
@@ -1483,9 +1920,32 @@ export function render() {
   // cabinet-v3-islandshape.js and the "Fusion behaviour" decision in
   // Landing-page-notes.2.0.md for why this is a single combined trace
   // rather than one shape per circle.
-  islandLayoutState = { grown, canvasBounds };
+  //
+  // gridOrigin computed here (not just below, next to its own
+  // drawGeoGrid() call) so it can ride along in islandLayoutState --
+  // retraceIslands() (below) needs it too, to redraw the grid on its own
+  // cheap path when a spacing slider moves, without recomputing the
+  // whole layout just for that.
+  const gridOrigin = compassRegion
+    ? { x: compassRegion.compassSquare.x + compassRegion.compassSquare.width / 2, y: compassRegion.compassSquare.y + compassRegion.compassSquare.height / 2 }
+    : { x: canvasWidth / 2, y: canvasHeight / 2 };
+  islandLayoutState = { grown, canvasBounds, gridOrigin };
   const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
   lastIslandTrace = islandTrace;
+
+  // v3.7.2 bugfix -- this used to run BEFORE drawIslandsPath() on the
+  // (wrong) assumption that JS call order determines DOM/paint order.
+  // It doesn't: drawIslandsPath()'s own placeOne() helper (above) always
+  // self-pins the landmass to stage.firstChild, REGARDLESS of when it's
+  // called relative to anything else -- confirmed by direct feedback
+  // ("lines are overlaid on the islands") plus inspecting the actual
+  // rendered DOM order, which had the grid AFTER the landmass despite
+  // this call sitting textually first. Calling it here instead --
+  // AFTER drawIslandsPath() has already self-pinned to the front -- a
+  // plain appendChild() is now guaranteed to land right after that
+  // block, i.e. still under every region/the compass, still over the
+  // land (see drawGeoGrid()'s own comment for the "why" of that order).
+  drawGeoGrid(stage, canvasBounds, gridOrigin);
 
   if (v3Config.flow.showPotential || v3Config.flow.showVectors) {
     const field = buildCurrentFlowField(canvasBounds, islandTrace, currentAnimTime());
@@ -1518,6 +1978,10 @@ export function render() {
   layout.forEach(({ sectionMeta, region, band, label }) => {
     renderRegion(stage, region, band, label, sectionMeta, grownBySection.get(sectionMeta.id) || []);
   });
+
+  if (compassMeta && compassRegion) {
+    renderCompassRegion(stage, compassRegion, compassMeta);
+  }
 }
 
 // v3.6.8 -- reroll: pick a new nonce, re-run the whole pipeline. A fresh
