@@ -21,8 +21,9 @@ on completion -- history matters more than a tidy list. Companion files:
 Phase 0's punch list and Phase 1 (2026-08-23) carry a stable `**#N**`
 tag right after each item's checkbox, so items can be referred to by
 number ("#12") instead of by description -- one continuous sequence
-across both (Phase 0: #1-33, Phase 1: #34-59), not restarting per
-phase. Assigned once, in the order items appeared at the time -- a NEW
+across both (Phase 0: #1-33 plus #60-62 added later, Phase 1: #34-59),
+not restarting per phase. Assigned once, in the order items appeared at
+the time -- a NEW
 item added later gets the next unused number appended wherever it's
 inserted in the list, it does NOT trigger a renumber of anything else,
 same "history matters" reasoning as the no-renumbering rule above.
@@ -156,6 +157,13 @@ freely.
       options to take: scale it with the map, clamp its size within a
       range, or leave it fixed as-is (current behaviour, by default
       rather than decision).
+- [ ] **#60** The `<h1>` ("Cabinet of Curiosities") should sit on a fixed
+      frame that stays visible always; the map itself should be the part
+      that scrolls, rolling underneath that fixed frame as it grows with
+      more entries. Direct request, 2026-08-23. Related to #15 (both are
+      about how the real HTML header interacts with the SVG map below
+      it) but a distinct ask -- #15 is about text scaling, this is about
+      scroll/fixed-position behaviour as content grows.
 - [x] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
       About Me / Contact Me links, rather than those existing as regular
       islands -- see the doc-audit item below (WORLD-SYSTEMS.md's
@@ -169,21 +177,30 @@ freely.
       landing-v3-prototype into the production Cabinet structure" and
       the Branch/production transition checklist below -- marked done
       here, tracked there instead.**
-- [ ] **#18** Create a history section and place archival pages there --
+- [x] **#18** Create a history section and place archival pages there --
       `archived-landing-pages/` already exists as a filesystem
       convention; this is about giving it a real, linked home on the
-      site itself, not just a folder. **Partially done, 2026-08-23**:
-      `archived-landing-pages/` now has its own `index.html` landing
-      page linking two fully-built, browsable archives -- `v1/` (the
-      original MkDocs site, built from the now-real `cabinet-v1-before-
-      map` tag) and `v2/` (the archipelago-map stub that briefly
-      replaced it, copied standalone with its real JS/CSS dependency
-      chain so it still renders). Still open: linking this FROM the live
-      site -- deliberately deferred until #40 (promoting `landing-v3`
-      into production) settles how/where that link belongs, since the
-      current `docs/`-only `mkdocs build --site-dir public` deploy
-      wouldn't even package `archived-landing-pages/` (it lives outside
-      `docs_dir`) without that promotion changing things anyway.
+      site itself, not just a folder. **Narrowed to archive creation
+      itself and marked done, 2026-08-23** (the "real, linked home on
+      the site" half is real work still, split out as #61 below rather
+      than kept as an open caveat on this one): `archived-landing-pages/`
+      now has its own `index.html` landing page linking two fully-built,
+      browsable archives -- `v1/` (the original MkDocs site, built from
+      the now-real `cabinet-v1-before-map` tag) and `v2/` (the
+      archipelago-map stub that briefly replaced it, copied standalone
+      with its real CSS/JS dependency chain, including a second
+      missed script (`cabinet-interactions.js`) that was the actual
+      cause of a "graphics but no text labels" report, so it still
+      renders in full). `v2-history/` also holds the map's four earlier
+      visual eras (`c384a11` through `a3887b0`), each rebuilt standalone
+      from git history, for anyone who wants to see how it got there.
+- [ ] **#61** Link `archived-landing-pages/` from the live site's own
+      navigation -- split out from #18 above, which now only covers
+      building the archive itself. Deliberately deferred until #40
+      (promoting `landing-v3` into production) settles deploy structure,
+      since the current `docs/`-only `mkdocs build --site-dir public`
+      deploy wouldn't even package `archived-landing-pages/` as-is (it
+      lives outside `docs_dir`) regardless of how it's linked.
 - [ ] **#19** Launch the page -- **superseded by Phase 1 below.**
 - [ ] **#20** Write the colophon and creation notes.
 
@@ -324,6 +341,14 @@ own numbering note near the top) -- a move, not a re-add.
       auto-loaded override file (all live-tunable state in one object)
       so nothing needs hand-pasting into source at all. Needs a decision
       before implementing, not a guess.
+- [ ] **#62** Rework `archived-landing-pages/index.html` (the archive landing
+      page) -- direct reaction, 2026-08-23: "I dont like the lander, feels
+      iffy." Two directions raised, not yet chosen between: (a) redesign
+      it as its own real page, or (b) skip a standalone landing page
+      entirely and link `v1/`/`v2/` directly from the colophon (#20)
+      instead, treating archive access as a footnote rather than a
+      promoted destination. Not yet built either way -- needs a decision
+      first.
 
 ---
 
