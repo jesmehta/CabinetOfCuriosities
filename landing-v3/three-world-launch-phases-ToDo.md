@@ -575,7 +575,11 @@ own numbering note near the top) -- a move, not a re-add.
       `archived-landing-pages/index.html` itself is untouched, still
       exists, just no longer the intended path to the archive -- the
       compass's Colophon direction and `docs/colophon.md` bypass it
-      entirely and link straight to `v1/`/`v2/`.
+      entirely and link straight to `v1/`/`v2/`. Follow-up same day: the
+      four `v2-history/` sub-stages (`01-initial` through
+      `04-serpent-redesign`) were missing from the colophon page too --
+      added, nested under the `v2` link, same labels the old lander
+      used.
 
 ---
 
