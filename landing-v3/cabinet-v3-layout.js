@@ -1034,12 +1034,19 @@ function drawGeoGrid(stage, canvasBounds, origin) {
   // v3.7.6 -- direct request: rays every 22.5 degrees, not just the 4
   // ordinal 45-degree ones -- "add diagonals at 22.5 degree intervals as
   // well, above and below SE EN NW WS" (i.e. one on each side of NE/SE/
-  // SW/NW). The 4 cardinal angles (0/90/180/270) are skipped -- those
-  // directions are already the straight lat/long lines above, through
-  // this same origin; a ray there would just retrace one.
+  // SW/NW).
+  // v3.7.9 bugfix -- the 4 cardinal angles (0/90/180/270) were
+  // unconditionally skipped on the assumption they're always retraced by
+  // the straight lat/long lines above -- true only when showGrid is on.
+  // With showGrid off, that left the compass with NO N/S/E/W rays at
+  // all, only its ordinal diagonals -- "if latlong is off, the compass
+  // rose NSEW cardinal lines need to appear, not only the diagonals."
+  // Now the cardinal skip only applies while showGrid is actually
+  // drawing that segment, so turning the grid off doesn't blank the
+  // compass's own cardinal rays.
   const reach = Math.max(canvasBounds.width, canvasBounds.height) * 1.5;
   for (let deg = 0; showDiagonals && deg < 360; deg += 22.5) {
-    if (deg % 90 === 0) continue;
+    if (deg % 90 === 0 && showGrid) continue;
     const rad = (deg * Math.PI) / 180;
     const dx = Math.cos(rad);
     const dy = Math.sin(rad);

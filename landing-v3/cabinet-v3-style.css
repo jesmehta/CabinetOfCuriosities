@@ -18,11 +18,17 @@ body.v3-proto {
   --v3-sand: #e8d9a0;
   /* v3.6.15 -- ink used by wave rings/coastline outline, themeable
      separately from the land/sea fills below. --v3-ring-ink defaults to
-     following --v3-ink, but a theme can split them (see "neon" below,
-     where the ring gets a neon accent but the coastline outline stays
+     following --v3-ink, but a theme can split them ("medieRiso" below
+     does: a magenta ring accent while the coastline outline stays
      heavy/near-black for legibility). */
   --v3-ink: var(--cab-ink);
   --v3-ring-ink: var(--v3-ink);
+  /* v3.7.17 -- the compass rose's "blue" fill (.v3-compass-blue,
+     cabinet-v3-style.css below) -- see that rule's own comment for why
+     this couldn't stay --v3-ring-ink. Defaults to following it anyway so
+     every theme without its own tuned value renders unchanged; only
+     medieval-map (below) currently overrides it. */
+  --v3-compass-accent: var(--v3-ring-ink);
   /* v3.6.28 -- hover-halo fill (islands, sections, and a section label's
      own hover colour) and label-outline colour (the "halo"/"glow" label
      styles' stroke/drop-shadow, and what an entry's label INVERTS to on
@@ -510,14 +516,22 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    compass_rose.svg's own shapes inlined as COMPASS_ROSE_SHAPES). The
    source SVG uses exactly 3 fixed fills (white/black/blue) plus a
    none-fill+black-stroke outline pass -- remapped here to theme colour
-   tokens per direct request ("match scheme colour tokens to these"):
-   white -> the lighter/sepia-toned token, black -> the same --v3-ink
-   every coastline/label outline already uses, blue -> --v3-ring-ink (a
-   theme's other mid-brightness accent slot) -- deliberately NOT
-   --v3-halo-ink/--v3-label-outline, so a hover-invert happening
-   elsewhere on the page can never accidentally recolour the compass. */
+   tokens.
+   v3.7.17 -- white re-pointed from --v3-sea-shallow to --v3-sea-deep and
+   blue re-pointed from --v3-ring-ink to a new dedicated
+   --v3-compass-accent token, both direct requests: "white = deep sea,
+   black = same as now/whatever ink, and the 2 rings that are blue in the
+   svg = a dark-midtone hue, darker than the ink, lighter than the sea."
+   Black stays --v3-ink, unchanged. --v3-ring-ink wasn't right for the
+   accent any more: it defaults to following --v3-ink (see that token's
+   own comment above), which is exactly why the "blue" rings read as
+   near-identical to black on medieval-map -- no theme had ever given it a
+   real mid-brightness value of its own. --v3-compass-accent defaults to
+   the same var(--v3-ring-ink) fallback (so every OTHER theme's compass
+   looks exactly as it did), with an actual tuned value only where a theme
+   asked for one (medieval-map's own block below). */
 .v3-compass-white {
-  fill: var(--v3-sea-shallow);
+  fill: var(--v3-sea-deep);
 }
 
 .v3-compass-black {
@@ -525,7 +539,7 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
 }
 
 .v3-compass-blue {
-  fill: var(--v3-ring-ink);
+  fill: var(--v3-compass-accent);
 }
 
 .v3-compass-outline {
