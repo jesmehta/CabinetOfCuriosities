@@ -29,6 +29,14 @@ body.v3-proto {
      every theme without its own tuned value renders unchanged; only
      medieval-map (below) currently overrides it. */
   --v3-compass-accent: var(--v3-ring-ink);
+  /* v3.7.23 -- the compass rose's "white" fill (.v3-compass-white below).
+     Defaults to following --v3-sea-deep, the original "white = deep sea"
+     direct request (v3.7.17, see .v3-compass-white's own comment) -- kept
+     as the default for every theme that hasn't complained, only broken
+     out into its own token because "satellite" (below) needs a real
+     override: its ink is ALSO a shade of blue, so white-as-sea-deep and
+     black-as-ink read as two dark-ish blues next to each other. */
+  --v3-compass-white: var(--v3-sea-deep);
   /* v3.6.28 -- hover-halo fill (islands, sections, and a section label's
      own hover colour) and label-outline colour (the "halo"/"glow" label
      styles' stroke/drop-shadow, and what an entry's label INVERTS to on
@@ -103,6 +111,16 @@ body.v3-proto[data-theme="satellite"] {
      nothing else in the theme uses" logic as medieval-map's violet. */
   --v3-ink: #0d2436;
   --v3-compass-accent: #c1440e;
+  /* v3.7.23 -- direct feedback: "compass rose white parts can be the
+     colour of the glow or any other pale shade already in use, blue on
+     blue is too little contrast" -- --v3-compass-white defaults to
+     --v3-sea-deep (#1c5f8a, a mid blue), which next to this theme's own
+     --v3-ink (#0d2436, a dark blue) read as two blues rather than a
+     white/black pair. --v3-halo-ink is "the colour of the glow" the
+     request names -- this theme doesn't override it, so it's still the
+     shared warm parchment tone (--cab-land-hover, #faf3dc), a genuinely
+     pale colour with plenty of separation from both blues. */
+  --v3-compass-white: var(--v3-halo-ink);
 }
 
 /* "medieval-map" -- v3-scheme-candidates.md scheme 1 (Tolkien / plain
@@ -137,18 +155,33 @@ body.v3-proto[data-theme="medieval-map"] {
   --v3-ink: #1c1712;
   /* v3.7.17 -- compass rose "blue" rings: direct request, "a dark-midtone
      hue, darker than the ink, lighter than the sea, either deep violet or
-     brick red." Went with deep violet -- medieval-map's palette is
-     already all warm reds/browns/ambers (--v3-veg, --v3-sand, both
+     brick red." Went with deep violet at first -- medieval-map's palette
+     is already all warm reds/browns/ambers (--v3-veg, --v3-sand, both
      --v3-sea-* tones), so a brick red accent would read as one more shade
-     of the same hue family instead of a distinct compass accent; violet
-     is the contrast this theme doesn't have anywhere else yet. Easy swap
-     to a brick red (e.g. #6b2b1f) if that reads better live. */
-  --v3-compass-accent: #4a2c5e;
+     of the same hue family instead of a distinct compass accent.
+     v3.7.23 -- direct feedback, "Violet is too out of place, try Navy":
+     swapped for a deep navy -- still the same "cool contrast against an
+     all-warm palette" logic the violet was chosen for, just a hue the
+     user actually wants to see here. */
+  --v3-compass-accent: #1f2c52;
 }
 
 body.v3-proto[data-theme="medieval-map"] .v3-header h1 {
   font-family: "Cinzel", var(--cab-font-heading);
   letter-spacing: 0.04em;
+  /* v3.7.23 bugfix -- .v3-header h1/.v3-subtitle (below) are coloured
+     --cab-land-light (#f4ead0, a light parchment cream) site-wide, sized
+     for the dark-sea themes (satellite/riso/cyanotype/medieRiso) they
+     were designed against. medieval-map is the one theme with a LIGHT
+     --v3-sea-deep (#f4ebdd) -- direct feedback, "H1/title Cabinet Text in
+     Medieval theme is invisible": near-identical cream-on-cream. Override
+     to this theme's own --v3-ink instead of a one-off hex so it tracks
+     any future retune of that token. */
+  color: var(--v3-ink);
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-subtitle {
+  color: var(--v3-ink);
 }
 
 body.v3-proto[data-theme="medieval-map"] .v3-section-label {
@@ -482,7 +515,7 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    looks exactly as it did), with an actual tuned value only where a theme
    asked for one (medieval-map's own block below). */
 .v3-compass-white {
-  fill: var(--v3-sea-deep);
+  fill: var(--v3-compass-white);
 }
 
 .v3-compass-black {
@@ -824,7 +857,28 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
-  transition: fill var(--cab-transition-fast), stroke var(--cab-transition-fast), filter var(--cab-transition-fast);
+  transition: fill var(--cab-transition-fast), stroke var(--cab-transition-fast), filter var(--cab-transition-fast), transform var(--cab-transition-fast);
+  /* v3.7.23 -- transform-box: fill-box + transform-origin: center makes
+     the hover scale below grow the label in place, about its own
+     rendered centre. Without transform-box, CSS transforms on SVG
+     elements default to the current SVG VIEWPORT's origin, not the
+     element's -- every label would visibly drift toward the top-left of
+     the map as it scaled instead of growing in place, since text-anchor:
+     middle/dominant-baseline: middle above only centre the glyphs on the
+     x/y point, they don't affect the transform origin. */
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* v3.7.23 -- direct request: "Entry Text enlarges on hover for all
+   themes." Deliberately its own rule, not folded into the halo/glow/
+   plain hover rules below -- those three already vary fill/stroke/
+   filter per data-label-style and stay that way; this scale applies on
+   top of whichever one is active, so it doesn't need a fourth
+   label-style-specific copy to keep in sync. */
+.v3-island:hover .v3-island-label,
+.v3-island:focus-visible .v3-island-label {
+  transform: scale(1.18);
 }
 
 /* v3.6.12 -- legibility treatment behind each label, needed because the
