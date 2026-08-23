@@ -51,58 +51,64 @@ body.v3-proto {
   font-family: var(--cab-font-body);
 }
 
-/* v3.6.14-v3.6.15 -- seven parallel colour/type treatments, explicitly
-   meant to be compared against each other rather than one replacing the
-   other (see Landing-page-notes.2.0.md's punch-list item 10 and
-   v3-scheme-candidates.md for the full reasoning behind each one) --
+/* v3.6.14-v3.6.15 -- originally seven parallel colour/type treatments,
+   explicitly meant to be compared against each other rather than one
+   replacing the other (see Landing-page-notes.2.0.md's punch-list item 10
+   and v3-scheme-candidates.md for the full reasoning behind each one) --
    switched live via a `data-theme` attribute on <body> (dev panel:
    Visuals > Theme, cabinet-v3-controls.js), same pattern as
-   `data-label-style`. No attribute = the original muted --v3-* values
-   above, untouched -- this is what index.html still ships until one of
-   the seven wins. Overriding the map's own tokens here only ever
+   `data-label-style`. Overriding the map's own tokens here only ever
    affects descendants of body.v3-proto -- the shared cabinet-tokens.css
    file itself, and every other page that reads those tokens, is
    untouched.
 
-   "medieval" / "satellite" -- the original first-guess pair from
-   v3.6.14, kept side by side with their v3.6.15 doc-accurate
-   counterparts below rather than replaced, since their exact token
-   values differ (these reuse the site's existing --cab-paper/--cab-land
-   tokens; "medieval-map"/"bathymetric" below use v3-scheme-candidates.md's
-   own hex values and font pairings instead). Labelled "(draft)" in the
-   dropdown to keep the two pairs from reading as duplicates.
-   "medieval" pairs naturally with flatColourMode (wave rings only, no
-   depth/beach bands) -- a filled band gradient doesn't read as
-   parchment. "satellite" pairs naturally with colour bands on, wave
-   rings off -- the bands ARE the effect this theme is about. */
-body.v3-proto[data-theme="medieval"] {
-  --v3-sea-deep: var(--cab-paper-deep);
-  --v3-sea-shallow: var(--cab-paper);
-  --v3-veg: var(--cab-land);
-  --v3-sand: var(--cab-land-light);
-}
+   v3.7.19 -- direct request, "start eliminating": the no-attribute
+   default, "medieval" (Wave Contour draft), "neon" (Memphis-Milano), and
+   "ukiyo" (woodblock) dropped from both this stylesheet and the dropdown
+   (THEME_OPTIONS/THEME_PRESETS, cabinet-v3-controls.js) -- their full
+   descriptions stay in v3-scheme-candidates.md regardless, since that
+   doc records the DESIGN candidates, not which ones happen to still have
+   a live CSS block. "medieval" was the rough v3.6.14 first-guess reusing
+   the site's pre-existing --cab-paper/--cab-land tokens rather than the
+   doc's own tuned hex values -- "medieval-map" below is its doc-accurate,
+   since-heavily-customised replacement, so nothing about that direction
+   is actually lost.
 
-body.v3-proto[data-theme="medieval"] .v3-header h1 {
-  font-family: "Cinzel", var(--cab-font-heading);
-  letter-spacing: 0.04em;
-}
-
-body.v3-proto[data-theme="medieval"] .v3-island-label,
-body.v3-proto[data-theme="medieval"] .v3-section-label {
-  font-family: "IM Fell English SC", var(--cab-font-body);
-}
-
+   "satellite" (dropdown label "Topology") -- the rough v3.6.14
+   first-guess draft, same register "medieval" was for scheme 1. Doc
+   scheme 2 also had a doc-accurate sibling, "bathymetric" -- v3.7.22
+   merged the two into this one ("Topology Draft and Bathymetric -
+   merge/keep one"): kept this theme's own draft colours (not
+   bathymetric's), no font override (bathymetric's Fraunces/Space Grotesk
+   dropped -- "keep the serif font from draft not the sans serif one in
+   bathy," and this theme never had a font override to begin with, so it
+   already falls back to the site's own serif default,
+   --cab-font-heading/-body = Georgia). bathymetric's own colours weren't
+   discarded outright -- copied into "medieRiso" instead, see that
+   theme's own comment below. Pairs with colour bands on, wave rings off
+   -- the bands are the effect this theme is about. */
 body.v3-proto[data-theme="satellite"] {
   --v3-sea-deep: #1c5f8a;
   --v3-sea-shallow: #43d6d6;
   --v3-veg: #4caf3f;
   --v3-sand: #f2c94c;
+  /* v3.7.22 -- this theme had no --v3-ink/--v3-compass-accent of its own
+     before the merge (relied entirely on generic fallbacks), which the
+     compass rose ("colour the compass appropriately") would have shown
+     up as: black and blue reading near-identical, same latent issue
+     medieval-map had before its own v3.7.17 fix. Dark blue-black ink
+     (distinct from every saturated body colour here) plus a warm coral
+     accent -- the one hue family (red/orange) this palette (blue/cyan/
+     green/yellow) doesn't already have, same "give the compass a hue
+     nothing else in the theme uses" logic as medieval-map's violet. */
+  --v3-ink: #0d2436;
+  --v3-compass-accent: #c1440e;
 }
 
 /* "medieval-map" -- v3-scheme-candidates.md scheme 1 (Tolkien / plain
    engraved-map linework). Three-tier type: Cinzel for the title, IM Fell
-   English (not the SC face "medieval" above uses) for section labels,
-   EB Garamond for the small dense island labels.
+   English (not its small-caps cut) for section labels, EB Garamond for
+   the small dense island labels.
 
    v3.7.8 -- section labels' italic dropped per direct feedback ("make
    section heads text not italic"). Small-caps (the follow-up request,
@@ -151,31 +157,6 @@ body.v3-proto[data-theme="medieval-map"] .v3-section-label {
 
 body.v3-proto[data-theme="medieval-map"] .v3-island-label {
   font-family: "EB Garamond", var(--cab-font-body);
-}
-
-/* "bathymetric" -- v3-scheme-candidates.md scheme 2 (satellite/bathymetric,
-   brighter than "satellite" above). Shape reads through the colour
-   bands; ink stays cool navy rather than black to stay in the water
-   hues' family. Doc specifies two vegetation tiers (low/forest) but our
-   band system has one veg slot (alpha-stacked, same mechanism as every
-   other scheme here) -- using the forest tone as the base since it's
-   the dominant colour once bands stack. */
-body.v3-proto[data-theme="bathymetric"] {
-  --v3-sea-deep: #14588a;
-  --v3-sea-shallow: #7ec8e3;
-  --v3-veg: #4f7942;
-  --v3-sand: #f0dfa8;
-  --v3-ink: #16324a;
-}
-
-body.v3-proto[data-theme="bathymetric"] .v3-header h1 {
-  font-family: "Fraunces", var(--cab-font-heading);
-  font-weight: 600;
-}
-
-body.v3-proto[data-theme="bathymetric"] .v3-island-label,
-body.v3-proto[data-theme="bathymetric"] .v3-section-label {
-  font-family: "Space Grotesk", var(--cab-font-body);
 }
 
 /* "riso" -- v3-scheme-candidates.md scheme 3a. Colours only for now --
@@ -228,81 +209,38 @@ body.v3-proto[data-theme="cyanotype"] .v3-section-label {
   font-family: "Caveat", var(--cab-font-body);
 }
 
-/* "neon" -- v3-scheme-candidates.md scheme 4 (Memphis-Milano). Pastel
-   base carries every fill; neon is accent-only per the doc ("never a
-   fill") -- here that's the wave-ring stroke alone (--v3-ring-ink), not
-   the coastline outline, which stays heavy/near-black. The doc's own
-   "Open implementation note" flags that the pastel land/sea sit close
-   enough in value that outline weight has to do the work colour
-   contrast does in the other schemes -- stroke-width bumped below for
-   the same reason. */
-body.v3-proto[data-theme="neon"] {
-  --v3-sea-deep: #c8e8f5;
-  --v3-sea-shallow: #c9f2e0;
-  --v3-veg: #ffd9b3;
-  --v3-sand: #fff3b0;
-  --v3-ink: #201c18;
-  --v3-ring-ink: #7c3aed;
-}
-
-body.v3-proto[data-theme="neon"] .v3-coastline-outline {
-  stroke-width: 3;
-}
-
-body.v3-proto[data-theme="neon"] .v3-header h1 {
-  font-family: "Poppins", var(--cab-font-heading);
-  font-weight: 700;
-}
-
-body.v3-proto[data-theme="neon"] .v3-island-label,
-body.v3-proto[data-theme="neon"] .v3-section-label {
-  font-family: "Space Mono", var(--cab-font-body);
-}
-
-/* "ukiyo" -- v3-scheme-candidates.md scheme 5 (added after the other six,
-   woodblock-print register: Hokusai/Hiroshige). Shape reads through
-   colour bands AND ink outline together -- unlike every other scheme
-   here, the doc explicitly wants wave rings layered on top of the bands
-   too ("wave-ring contours would read naturally as woodblock linework
-   here"), so this is the only preset with both bands and rings on at
-   once. Vermillion (--ukiyo-vermillion in the doc) is called out for
-   seals/route lines/key details only -- nothing on the map plays that
-   role yet (same situation as medieval-map's unused rubric/gold), so it
-   isn't wired to a token here. */
-body.v3-proto[data-theme="ukiyo"] {
-  --v3-sea-deep: #1e4d6b;
-  --v3-sea-shallow: #4f7f96;
-  --v3-veg: #f0e6d2;
-  --v3-sand: #e8a33d;
-  --v3-ink: #2b2620;
-}
-
-body.v3-proto[data-theme="ukiyo"] .v3-header h1 {
-  font-family: "Shippori Mincho", var(--cab-font-heading);
-}
-
-body.v3-proto[data-theme="ukiyo"] .v3-island-label,
-body.v3-proto[data-theme="ukiyo"] .v3-section-label {
-  font-family: "Zen Old Mincho", var(--cab-font-body);
-}
-
-/* "medieRiso" -- v3.6.28, direct request: a dark warm-brown/sepia base
-   (the medieval-map register, pushed all the way to a night-time old-
-   leather-atlas depth rather than that theme's light parchment) with
-   EVERY highlight -- wave rings, band boundaries, hover halos, label
-   outlines, boat fills, dragon fills -- pulled from a riso-style neon
-   palette. Like "ukiyo", both wave rings AND colour bands are on
-   together (THEME_PRESETS, cabinet-v3-controls.js) -- the bands carry
-   the sepia/navy depth, the rings lay neon iso-lines on top, distinct
-   roles rather than either replacing the other.
+/* "medieRiso" -- v3.6.28, direct request: originally a dark warm-brown/
+   sepia base (the medieval-map register, pushed all the way to a
+   night-time old-leather-atlas depth rather than that theme's light
+   parchment) with EVERY highlight -- wave rings, band boundaries, hover
+   halos, label outlines, boat fills, dragon fills -- pulled from a
+   riso-style neon palette. Like the (since-removed) "ukiyo," both wave
+   rings AND colour bands are on together (THEME_PRESETS,
+   cabinet-v3-controls.js) -- the bands carry the base depth, the rings
+   lay neon iso-lines on top, distinct roles rather than either replacing
+   the other.
 
    v3.6.29 -- --v3-sea-deep and --v3-ink swapped from warm brown to a
    near-black indigo/deep-blue pair (explicit hex values given), and
    --v3-halo-ink/--v3-label-outline split apart (were both riso pink;
    now magenta vs. purple) so hover reads as a distinct hue shift, not
-   just the same pink again. --v3-sea-shallow/--v3-veg/--v3-sand stay
-   the original sepia tones -- untouched, no new colour was given for
-   them.
+   just the same pink again. --v3-sea-shallow/--v3-veg/--v3-sand stayed
+   the original sepia tones at that point -- untouched, no new colour was
+   given for them THEN.
+
+   v3.7.22 -- base 5 tokens (sea-deep/sea-shallow/veg/sand/ink) replaced
+   wholesale with "bathymetric"'s exact values, direct request as part of
+   merging that theme into "satellite"/Topology ("Topology Draft and
+   Bathymetric - merge/keep one... copy bathymetric colours into
+   medieriso") rather than letting bathymetric's palette disappear
+   outright when its own theme block was deleted. The riso-neon accent
+   layer below (--v3-ring-ink/--v3-halo-ink/--v3-label-outline, band-
+   boundary strokes, boat/dragon hues) is UNCHANGED -- still the same
+   "electric highlights over a dark, cool base" structure this theme was
+   built on, just a bathymetric-blue base instead of the sepia/indigo one
+   above. If this reads as too big an identity shift for "medieRiso" as a
+   name, the previous sepia/indigo values are preserved in git history
+   (this comment, pre-v3.7.22) to restore easily.
 
    Colour roles, so a change to one doesn't have to be reasoned out
    again from scratch:
@@ -328,11 +266,11 @@ body.v3-proto[data-theme="ukiyo"] .v3-section-label {
      --v3-ring-ink stroke so each band's own edge reads as an iso-line
      too, not just the wave rings. */
 body.v3-proto[data-theme="medieRiso"] {
-  --v3-sea-deep: #030085;
-  --v3-sea-shallow: #4a3524;
-  --v3-veg: #5c4530;
-  --v3-sand: #8a6440;
-  --v3-ink: #060126;
+  --v3-sea-deep: #14588a;
+  --v3-sea-shallow: #7ec8e3;
+  --v3-veg: #4f7942;
+  --v3-sand: #f0dfa8;
+  --v3-ink: #16324a;
   --v3-ring-ink: #f21d92;
   --v3-halo-ink: #1bf2b5;
   --v3-label-outline: #e031eb;

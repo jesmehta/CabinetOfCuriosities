@@ -62,16 +62,23 @@ function formatValue(v, step) {
 
 // Shared by the Theme <select> and the Theme colours editor below, so
 // the two can't drift apart into two different lists of themes.
+// v3.7.19 -- direct request, "start eliminating": dropped "" (none --
+// current default), "medieval" (Wave Contour draft), "neon" (Neon
+// Memphis), "ukiyo" (Ukiyo-e Woodblock). Full design descriptions for all
+// of these stay in v3-scheme-candidates.md regardless -- that doc records
+// the candidates themselves, independent of which ones still have a live
+// CSS block (cabinet-v3-style.css's own body.v3-proto[data-theme=...]
+// rules for these four were removed alongside this list).
+// v3.7.22 -- "bathymetric" merged into "satellite" (relabelled "Topology"
+// here, value unchanged -- see that theme's own CSS comment for the full
+// merge reasoning) and dropped from this list too; its colours weren't
+// discarded, they were copied into "medieRiso" instead (also that CSS
+// comment).
 const THEME_OPTIONS = [
-  ["", "(none -- current default)"],
-  ["medieval", "Wave Contour (draft)"],
-  ["satellite", "Topology (draft)"],
+  ["satellite", "Topology"],
   ["medieval-map", "Medieval Map"],
-  ["bathymetric", "Topology — Bathymetric Satellite"],
   ["riso", "Riso"],
   ["cyanotype", "Cyanotype"],
-  ["neon", "Neon Memphis"],
-  ["ukiyo", "Ukiyo-e Woodblock"],
   ["medieRiso", "MedieRiso"]
 ];
 
@@ -353,19 +360,15 @@ function buildControlPanel() {
     opt.textContent = label;
     themeSelect.appendChild(opt);
   });
-  themeSelect.value = document.body.dataset.theme || "";
+  themeSelect.value = document.body.dataset.theme || THEME_OPTIONS[0][0];
   const THEME_PRESETS = {
-    medieval: { flatColourMode: true, showWaveRings: true },
     satellite: { flatColourMode: false, showWaveRings: false },
     "medieval-map": { flatColourMode: true, showWaveRings: true },
-    bathymetric: { flatColourMode: false, showWaveRings: false },
     riso: { flatColourMode: false, showWaveRings: false },
     cyanotype: { flatColourMode: false, showWaveRings: false },
-    neon: { flatColourMode: true, showWaveRings: true },
-    ukiyo: { flatColourMode: false, showWaveRings: true },
-    // v3.6.28 -- bands AND rings on together, same pairing as "ukiyo":
-    // bands carry the dark sepia depth, rings lay the riso iso-line
-    // accent on top -- see that theme's own CSS comment.
+    // v3.6.28 -- bands AND rings on together, both carrying real weight:
+    // bands carry the dark sepia depth, rings lay a riso iso-line accent
+    // on top.
     medieRiso: { flatColourMode: false, showWaveRings: true }
   };
   themeSelect.addEventListener("change", () => {
@@ -407,7 +410,10 @@ function buildControlPanel() {
   // themeSelect's change handler above) pick up whatever's been edited
   // for the newly active theme instead of reverting to its un-edited CSS.
   function applyThemeTokens(themeName) {
-    const values = themeTokenState[themeName] || themeTokenState[""];
+    // v3.7.19 -- "" (the no-attribute default) was dropped from
+    // THEME_OPTIONS, so it's no longer a valid themeTokenState key to
+    // fall back to -- fall back to the first remaining option instead.
+    const values = themeTokenState[themeName] || themeTokenState[THEME_OPTIONS[0][0]];
     COLOR_TOKENS.forEach(t => document.body.style.setProperty(t.key, values[t.key]));
   }
 
@@ -792,9 +798,14 @@ function buildControlPanel() {
     v3Config.island.waveDistances = [...visualsDefaults.waveDistances];
     waveCheck.checked = v3Config.island.showWaveRings;
     bandCheck.checked = !v3Config.island.flatColourMode;
-    delete document.body.dataset.theme;
-    themeSelect.value = "";
-    applyThemeTokens("");
+    // v3.7.19 -- "" (the no-attribute default) was dropped from
+    // THEME_OPTIONS along with 3 other themes ("start eliminating"), so
+    // Reset now falls back to the first remaining option instead of an
+    // attribute value the dropdown itself no longer offers.
+    const resetTheme = THEME_OPTIONS[0][0];
+    document.body.dataset.theme = resetTheme;
+    themeSelect.value = resetTheme;
+    applyThemeTokens(resetTheme);
     v3Config.flow.showPotential = visualsDefaults.showFlowPotential;
     v3Config.flow.showVectors = visualsDefaults.showFlowVectors;
     flowPotentialCheck.checked = v3Config.flow.showPotential;
