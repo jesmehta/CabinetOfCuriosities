@@ -21,7 +21,7 @@ on completion -- history matters more than a tidy list. Companion files:
 Phase 0's punch list and Phase 1 (2026-08-23) carry a stable `**#N**`
 tag right after each item's checkbox, so items can be referred to by
 number ("#12") instead of by description -- one continuous sequence
-across both (Phase 0: #1-33 plus #60-62 added later, Phase 1: #34-59),
+across both (Phase 0: #1-33 plus #60-64 added later, Phase 1: #34-59),
 not restarting per phase. Assigned once, in the order items appeared at
 the time -- a NEW
 item added later gets the next unused number appended wherever it's
@@ -299,6 +299,23 @@ own numbering note near the top) -- a move, not a re-add.
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be
       built -- same shape of blocker as #30's boats.
+- [ ] **#64** Decide what to do about boats/dragons never appearing on the
+      production build -- **#38's "consciously deferred" made concrete,
+      2026-08-23**: seeing the live site with no boats/dragons at all
+      ("none of the boats and dragons have turned up") is a different
+      experience than reading the abstract deferral. Real options, not
+      yet chosen between: (a) leave it as-is, matching #38's decision;
+      (b) a cheap middle ground -- have `build-render.html` trigger a
+      one-time spawn (same functions `cabinet-v3-controls.js`'s
+      `startCurrentAnimation()` calls) before capture, so the static
+      build bakes in a frozen initial snapshot of boats/dragons at their
+      spawn positions, no runtime script required, consistent with how
+      everything else in the static build already works; (c) ship the
+      real animation loop to production as live runtime script -- a
+      bigger change, adds real JS payload/perf cost to every visitor,
+      and cuts against the "zero script" static-page architecture
+      already chosen deliberately elsewhere (the theme x hover mechanism
+      also doesn't work in production for the same reason).
 - [ ] **#30** Theme-specific boat artwork: swap the boat graphic between themes
       (islands-tool.html's dev panel boat toggle -- the current ellipses
       are a top-down view, fitted for Topology's satellite-map
@@ -434,12 +451,14 @@ failures remain.*
       `deploy.yml` already triggers `on: push: branches: - main`;
       pushing the merge (`7f3a638`) to `origin/main` triggered it
       directly, nothing separate needed.
-- [ ] **#50** Deploy the assembled `public/` artifact from `main` -- pushed
-      and the workflow should be running; **not independently confirmed
-      green** -- no `gh` CLI available in this environment to check the
-      Actions run status. Worth a manual look at the Actions tab (and at
-      cabinetofcuriosities.in once it's had a minute) before calling
-      this fully done.
+- [x] **#50** Deploy the assembled `public/` artifact from `main` -- **done,
+      confirmed live, 2026-08-23**: "IT WORKS !" -- cabinetofcuriosities.in
+      is serving v3. Two real bugs found by actually looking at the live
+      result rather than trusting the build alone: production's H1/
+      section/island-label fonts were never loading (v3.7.46 -- see
+      `Landing-page-notes.2.0.md`), fixed and reconfirmed live; boats and
+      dragons don't appear at all (not a regression -- see #64 below,
+      this is #38's "consciously deferred" made concrete).
 
 ### Bookshelf + FFFX
 

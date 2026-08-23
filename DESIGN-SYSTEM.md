@@ -1,8 +1,18 @@
 # Cabinet of Curiosities — Design System
 
-Visual rules for the map landing page (`docs/index.html` +
-`docs/assets/css/cabinet-landing.css`) and how they extend into normal
-MkDocs Material content pages (`docs/stylesheets/cabinet-material.css`).
+**Superseded, 2026-08-23**: `docs/index.html` no longer uses
+`cabinet-landing.css`/`cabinet-render.js` -- it's now a static build from
+`landing-v3/` (see `LANDING-PAGE-NOTES.md`'s own banner for the full
+context). The visual rules below describe that previous system, still
+accurate as a record of it, kept because `cabinet-landing.css` and
+`cabinet-render.js` are themselves preserved, unreferenced by anything
+live now but not deleted.
+
+Visual rules for the *previous* map landing page (`docs/index.html` +
+`docs/assets/css/cabinet-landing.css`, now archived at
+`archived-landing-pages/v2/`) and how they extended into normal MkDocs
+Material content pages (`docs/stylesheets/cabinet-material.css` --
+that part is still live, unrelated to which map version serves `/`).
 For layout/data plumbing rather than visual rules, see
 `LANDING-PAGE-NOTES.md`.
 

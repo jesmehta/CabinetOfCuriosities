@@ -2320,6 +2320,101 @@ cover, and whether the paste-back-into-source workflow still makes
 sense at this scale -- see `three-world-launch-phases-ToDo.md` for
 where that stands.
 
+## Archiving three generations, then promoting v3 to production
+
+Before any of this, a genuine bug found by direct comparison: **"v3
+index isnt in perfect sync with island tool - the base theme is still
+flat-ish topology, not medieval colours."** Every theme's colours turned
+out to be scoped entirely through `body.v3-proto[data-theme="..."]` CSS
+selectors, and `build-render.html`/`index.template.html` had simply
+never carried a `data-theme` attribute at all -- fixed (v3.7.45), and
+worth remembering as a category: `index.html`'s static build has bugs
+of its own, distinct from `islands-tool.html`'s, precisely because it's
+a second consumer of the same code that nothing was cross-checking.
+
+Then the actual request: **"Let's start the next phase - archiving the
+current live and previous versions, and merging the branches."** A
+three-generation structure -- v1 (the original fully-MkDocs site), v2
+(the archipelago-map stub), v3 (the current build) -- each preserved
+somewhere navigable rather than deleted. v1 turned out straightforward:
+a `cabinet-v1-before-map` git tag was *referenced* in
+`archived-landing-pages/README.md` but had never actually been created,
+so it was created at the right commit (`1194e49`) and the whole old
+MkDocs site built from it via a temporary git worktree. v2 was less
+straightforward than its own "stub" label suggested -- it turned out to
+still load `cabinet-render.js` (real content, not just a static
+picture), and the first archived copy was missing that plus a *second*
+script (`cabinet-interactions.js`), caught by the report **"v2 has
+graphics but no text labels etc?"** and confirmed via a Playwright pass
+(181 cards render once both scripts are present, zero before).
+
+A request that didn't survive contact with its own execution: a
+standalone `archived-landing-pages/index.html` landing page was built
+linking v1 and v2, but got a direct, blunt reaction once seen live: **"I
+dont like the lander, feels iffy... why do I feel iffy about it and
+what to make it into."** The honest answer: it borrowed the parchment
+palette but none of the site's actual visual vocabulary (map, compass,
+cartouche), reading as a generic card-grid landing page rather than
+either "Cabinet" or "archival" -- logged as its own to-do (#62) with
+the alternative raised in the same breath, linking archives directly
+from the colophon instead. A related, more concrete ask followed --
+**"one or two of the v2 older versions was A. so terrible that it must
+be witnessed B. had some interesting frames and whatnot ornamentation.
+Check if retrieval is possible"** -- answered by rebuilding all four of
+v2's intermediate git states standalone (`01-initial` through
+`04-serpent-redesign`), each with its own dependency chain as it stood
+at that commit, then folding links to them directly into the `v2` card
+on request rather than keeping the separate hub page first built for
+them: **"V2 intermediates dont need a separate lander page, put them on
+the basic archived landing pages, underneath v2 the main stub
+thumbnail."** `01-initial` turned out to be the answer to "A" --
+its own successor commit's message literally says it replaced "the
+plain double-rectangle frame" cartouche with corner scrollwork.
+
+Promoting v3 into production surfaced a real gap in `index.template.html`
+itself, not just in the archive: its `<head>` was still a bare dev
+placeholder (title "v3 layout prototype", no meta description, no
+favicon link) despite `index.html` being the file that actually ships.
+Brought in line with what `docs/index.html` (the outgoing v2 page) had
+been shipping, then the built page copied into `docs/index.html` with
+its two stylesheet hrefs rewritten for the new location -- the whole
+promotion turned out to need only that, since everything else (dragon,
+compass, boats, entry cards) is inlined SVG/text with no other file
+dependency.
+
+The merge to `main` itself surfaced something no one had specifically
+gone looking for: local `main` was stale (`1194e49`, from before the v2
+rebuild even started), while `origin/main` had moved on 2026-08-14 with
+two ad hoc commits -- caught only because it was asked about directly:
+**"There are 2 commits on main that should be ahead of the branch split
+with v2 and v3... Not particularly important, but do have a look."**
+One was a harmless nav addition. The other added `cname:
+cabinetofcuriosities.in` to the *old* `peaceiris/actions-gh-pages`-based
+`deploy.yml` -- and `landing-v3-prototype` had already independently
+rewritten that same file onto the newer `actions/deploy-pages` artifact
+mechanism, which has no equivalent parameter. Merging either version
+wholesale would have silently dropped custom-domain support; fixed by
+adding a `docs/CNAME` file (the artifact mechanism's real equivalent)
+before the merge, not discovered after. `main`'s own pre-merge state got
+tagged `cabinet-v2-before-v3`, matching the same "tag it before you move
+it" convention as v1's tag. First push was a clean fast-forward; the
+site went live, confirmed directly: **"IT WORKS !"**
+
+Two things surfaced immediately after, from actually looking at the
+live result rather than trusting the build succeeding: **"the index.html
+did not have the same H1 font as the tool pages"** (v3.7.46 --
+`index.template.html` had never loaded the Google Fonts
+`islands-tool.html` uses, a stale "nothing chosen as final yet" comment
+that had quietly become false once #36 was marked done), and **"none of
+the boats and dragons have turned up"** -- not a bug, exactly: the
+code's own comment already says particles/dragons only ever activate
+via `islands-tool.html`'s dev-panel `startCurrentAnimation()` call, and
+"static pages (`index.html`, `build-render.html`) never touch this, so
+they pay nothing for it." Consistent with #38's own "consciously
+deferred" finding, just more concrete once actually seen live rather
+than reasoned about abstractly -- what to do about it, if anything, is
+still open.
+
 ## The commit-convention correction, a third time
 
 This has happened before, twice, both recorded earlier in this file

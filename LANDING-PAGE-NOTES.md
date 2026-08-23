@@ -1,5 +1,15 @@
 # Cabinet of Curiosities — Landing Page Notes
 
+**Superseded, 2026-08-23**: `docs/index.html` is now a static build
+produced from `landing-v3/` (the "archipelago-tool" rebuild — see
+`landing-v3/Landing-page-notes.2.0.md` for that system's own full
+documentation, `landing-v3/three-world-launch-phases-ToDo.md` for how it
+got promoted). Everything below describes the *previous* (v2)
+implementation this file was written for — kept as-is, not rewritten,
+because it's genuinely still an accurate record of that version, which is
+itself preserved and browsable in `archived-landing-pages/v2/`. Read it
+as history, not as a description of what currently serves the live page.
+
 Implementation notes for the map landing page: how it was built, how to
 change it safely, and gotchas hit along the way. Visual rules live in
 `DESIGN-SYSTEM.md`; the schema conventions shared with Bookshelf/fffx live
@@ -139,13 +149,17 @@ the previous `docs/index.html`'s SVG block into
 
 ## Known gotchas hit while building this
 
-- **`href` safety**: Cabinet has no `CNAME` and deploys to a GitHub Pages
-  *project* subpath, not a custom domain root. Root-absolute hrefs like
-  `/about/` would silently resolve to the wrong host in production even
-  though they work fine under `mkdocs serve`'s root-served dev server.
-  Every internal link in the TSVs is path-relative with no leading slash.
-  Cross-repo links (Bookshelf, fffx) are legitimately absolute since
-  they're different domains.
+- **`href` safety**: true at the time this was written -- Cabinet had no
+  `CNAME` and deployed to a GitHub Pages *project* subpath, not a custom
+  domain root. As of 2026-08-23 that's changed (`docs/CNAME` ->
+  `cabinetofcuriosities.in`), but the convention this gotcha produced is
+  kept regardless: root-absolute hrefs like `/about/` would still
+  silently resolve to the wrong host the moment this ever deploys
+  anywhere else (a fork, a preview subpath, etc.), even though they work
+  fine under `mkdocs serve`'s root-served dev server. Every internal
+  link in the TSVs stays path-relative with no leading slash. Cross-repo
+  links (Bookshelf, fffx) are legitimately absolute since they're
+  different domains.
 - **mkdocs livereload breaks `networkidle` waits**: `mkdocs serve` injects
   a persistent SSE connection for auto-reload, so any test/automation
   waiting for network idle will hang. Wait for `load` plus an explicit
