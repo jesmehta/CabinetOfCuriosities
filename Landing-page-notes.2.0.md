@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.59 -- Bookshelf/FFFX split from Cabinet's own nav, real Teaching/Makings landing pages, Swatch Fields cross-listed on purpose (#72)](#v3759----bookshelffffx-split-from-cabinets-own-nav-real-teachingmakings-landing-pages-swatch-fields-cross-listed-on-purpose-72)
   - [v3.7.58 -- Working with AI, Prompt Generator, Oblique Strategies, SSD Creative Coding become real map entries (#71)](#v3758----working-with-ai-prompt-generator-oblique-strategies-ssd-creative-coding-become-real-map-entries-71)
   - [v3.7.57 -- mkdocs nav restructured around Compass/Teaching, first `cabinet-sections.tsv` gap found (#41/#44/#46/#66-69)](#v3757----mkdocs-nav-restructured-around-compassteaching-first-cabinet-sectionstsv-gap-found-4144466-69)
   - [v3.7.56 -- `deploy.yml`'s long inline comments trimmed to a help note](#v3756----deployymls-long-inline-comments-trimmed-to-a-help-note)
@@ -118,7 +119,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.58**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.59**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1538,6 +1539,59 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.59 -- Bookshelf/FFFX split from Cabinet's own nav, real Teaching/Makings landing pages, Swatch Fields cross-listed on purpose (#72)
+
+Direct follow-up to `v3.7.58`'s content-audit table, with corrections
+to how several of that table's "duplicate" flags should actually be
+read -- not every mkdocs+map double-listing is the same kind of problem.
+
+**Bookshelf and Form follows f(x)**: their sub-pages belong in THEIR OWN
+repos' mkdocs, not mirrored inside Cabinet's. `mkdocs.yml` now links each
+as a single external entry to its own world root
+(`bookshelf`/`fffx.cabinetofcuriosities.in`) instead of listing their
+sub-pages locally. `cabinet-entries.tsv`'s own rows for these (scifi,
+asimov, vera-molnar, etc.) are unaffected -- TSV and mkdocs are now
+allowed to genuinely differ here, on purpose, not as a gap to close.
+
+**Teaching**: gets a real `docs/teaching.md` landing page -- first entry
+under a restored `mkdocs.yml` Teaching section, followed by the same 4
+assembled/external links as before. This time the section isn't a flat
+duplicate of the map: the landing page itself has no map equivalent.
+`cabinet-sections.tsv`'s own `teaching` row `href` (previously a
+placeholder pointing at the external SSD Creative Coding URL) now points
+at this real page.
+
+**Machines & Makings**: `makings.md` (an existing 21-word stub) promoted
+to the section's first nav position as its landing page, now linking to
+every sub-page including three brand new stubs -- Origami & Paper,
+Lasercutting, Drawing Machines -- created to match `cabinet-entries.tsv`
+rows that had stood `wip`/blank-href since the section was first built.
+3D Printing's mkdocs-only sub-page cluster (Mecha/Flexures/PolyHedra/
+2019, one combined TSV/map entry) stays exactly as it was -- direct
+instruction to leave that "level 2" clustering question for later.
+
+**Swatch Fields**: turns out to be a genuinely intersectional entry, not
+a duplicate -- dyed fabric swatches read equally as Machines & Makings
+(making process) and Interfaces, Data & Texts (colour/material data).
+Given a second `cabinet-entries.tsv` row (`swatch-fields-interfaces`),
+a second island, and a second `mkdocs.yml` nav entry, deliberately, on
+the same precedent already set by `dataviz`'s existing cross-listing
+from Bookshelf's Christie page. This needed a brand new `Interfaces,
+Data & Texts` section in `mkdocs.yml` -- didn't exist as its own nav
+grouping before, holds only Swatch Fields for now. The three actual
+1:1 duplicates flagged in the audit table (Twine/WebTech/Tracery Bots,
+still living under `Wild wild web`) are unresolved and distinct from
+this case -- same href, same title, no differentiating landing page or
+cross-category reasoning behind either listing.
+
+Verified: `mkdocs build` clean after fixing `makings.md`'s new internal
+links to the `.md`-suffixed form MkDocs' own build output suggested
+(directory-style links to real local pages don't get validated, the
+`.md` form does); `build-cabinet-content.js` (8 sections, 32 entries);
+Playwright screenshot confirms both new stub islands under Machines &
+Makings and the second Swatch Fields island under Interfaces, Data &
+Texts render correctly, zero console errors.
 
 ### v3.7.58 -- Working with AI, Prompt Generator, Oblique Strategies, SSD Creative Coding become real map entries (#71)
 

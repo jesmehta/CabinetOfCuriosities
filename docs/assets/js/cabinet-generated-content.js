@@ -61,16 +61,16 @@ export const sections = [
     "id": "teaching",
     "title": "Teaching",
     "subtitle": "Teaching history, approach, and student work.",
-    "href": "https://jesmehta.github.io/SSD_CreativeCodingPage/",
+    "href": "teaching/",
     "order": 30,
     "weight": 2,
-    "status": "wip",
+    "status": true,
     "kind": "region",
     "tags": [
       "teaching",
       "students"
     ],
-    "location": "external",
+    "location": "mkdocs",
     "map": {
       "islandId": "island-teaching",
       "mapForm": "medium-island",
@@ -80,7 +80,7 @@ export const sections = [
       "ry": 120
     },
     "extraCount": 3,
-    "notes": "No dedicated Cabinet Teaching page yet; href is a placeholder pointing at the real student showcase until one exists."
+    "notes": "Real dedicated Teaching landing page (docs/teaching.md) added 2026-08-24 -- href was a placeholder pointing at the external SSD Creative Coding showcase before this."
   },
   {
     "id": "visual-field-notes",
@@ -571,10 +571,10 @@ export const entries = [
     "section": "machines-makings",
     "title": "Origami & Paper",
     "subtitle": "Paper structures, folds, surfaces, and material logic.",
-    "href": "",
+    "href": "makings/origami-paper/",
     "order": 20,
     "weight": 2,
-    "status": "wip",
+    "status": true,
     "kind": "making-notes",
     "tags": [
       "origami",
@@ -588,17 +588,18 @@ export const entries = [
       "x": 16.5,
       "y": 87.2
     },
-    "icon": "icon-origami"
+    "icon": "icon-origami",
+    "notes": "Stub page, 2026-08-24 -- content coming later."
   },
   {
     "id": "makings-lasercutting",
     "section": "machines-makings",
     "title": "Lasercutting",
     "subtitle": "Laser cutting notes, examples, and making references.",
-    "href": "",
+    "href": "makings/lasercutting/",
     "order": 30,
     "weight": 2,
-    "status": "wip",
+    "status": true,
     "kind": "making-notes",
     "tags": [
       "lasercutting",
@@ -612,7 +613,8 @@ export const entries = [
       "x": 36,
       "y": 87.2
     },
-    "icon": "icon-laser"
+    "icon": "icon-laser",
+    "notes": "Stub page, 2026-08-24 -- content coming later."
   },
   {
     "id": "looms",
@@ -644,10 +646,10 @@ export const entries = [
     "section": "machines-makings",
     "title": "Drawing Machines",
     "subtitle": "Drawing machines, plotters, and mechanical mark-making systems.",
-    "href": "",
+    "href": "makings/drawing-machines/",
     "order": 50,
     "weight": 2,
-    "status": "wip",
+    "status": true,
     "kind": "machine-collection",
     "tags": [
       "plotters",
@@ -661,7 +663,8 @@ export const entries = [
       "anchor": "south",
       "order": 2
     },
-    "icon": "icon-gear"
+    "icon": "icon-gear",
+    "notes": "Stub page, 2026-08-24 -- content coming later."
   },
   {
     "id": "branching-narrative",
@@ -962,5 +965,30 @@ export const entries = [
     },
     "icon": "icon-cards",
     "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
+  },
+  {
+    "id": "swatch-fields-interfaces",
+    "section": "interfaces-data-texts",
+    "title": "Swatch Fields",
+    "subtitle": "An atlas of material swatches and colour fields -- dye and colour work, cross-listed from Machines & Makings.",
+    "href": "https://jesmehta.github.io/swatchFields/",
+    "order": 60,
+    "weight": 2,
+    "status": true,
+    "kind": "web-experiment",
+    "tags": [
+      "materials",
+      "swatches",
+      "colour",
+      "dye"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-swatch",
+    "notes": "Intersectional entry (2026-08-24) -- same repo as machines-makings's swatch-fields, cross-listed here since it's equally a colour/data-texture piece. Two separate TSV rows, two islands, deliberate."
   }
 ];

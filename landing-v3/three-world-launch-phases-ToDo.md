@@ -806,9 +806,52 @@ marked as such.*
       assembled path. `mkdocs.yml`'s `Teaching` nav section (added a few
       hours earlier, same session) was then removed entirely -- the map
       is the canonical listing now, a second copy in the docs sidebar was
-      redundant. Still needs the live GitHub Actions run confirmed (no
-      `gh` CLI here) and each assembled path fetched directly, same
-      content-aware verification as `#43`/`#46`.
+      redundant. **Live-confirmed, same day**: all four assembled paths
+      fetched directly after the `main` push, 200 with real titles each.
+- [x] **#72** Bookshelf/FFFX nav split, real Teaching/Makings landing pages,
+      Swatch Fields cross-listing -- **done, 2026-08-24**, direct
+      follow-up to `#71`'s table:
+    - `mkdocs.yml`: Bookshelf and Form follows f(x) reduced to a single
+      external link each, to their own world root
+      (`bookshelf`/`fffx.cabinetofcuriosities.in`) -- their sub-page nav
+      entries belong in THEIR OWN mkdocs, not duplicated here. The 5 local
+      `docs/fffx/*.md` files (2 with real content --
+      `VeraMolnarRetrospective.md` 311w, `PackingShapes.md` 819w -- 3
+      placeholder) are now orphaned from nav rather than deleted; worth
+      migrating the real ones into the fffx repo itself later rather than
+      leaving them stranded here.
+    - `docs/teaching.md` created as a real Teaching landing page, first
+      entry under a restored `mkdocs.yml` Teaching section (this time
+      genuinely non-duplicate: the section's landing page doesn't exist
+      on the map, only the 4 entries under it do). `cabinet-sections.tsv`'s
+      `teaching` row `href` switched from the placeholder external SSD URL
+      to `teaching/`, `status` promoted `wip` -> `true`.
+    - `docs/makings.md` (already existed, 21w stub) promoted to first
+      position under `Machines & Makings`; three new stub pages created --
+      `docs/makings/origami-paper.md`, `lasercutting.md`,
+      `drawing-machines.md` -- linked from both `makings.md` and their
+      `cabinet-entries.tsv` rows (`status` `wip` -> `true`, `href` filled
+      in). 3D Printing's mkdocs sub-page cluster (Mecha/Flexures/
+      PolyHedra/2019) deliberately left as mkdocs-only, one TSV/map entry
+      -- direct instruction to revisit that level-2 clustering question
+      later, not a gap to fix now.
+    - Swatch Fields made a deliberate two-TSV-row, two-island,
+      two-nav-entry cross-listing (`swatch-fields` under
+      `machines-makings`, new `swatch-fields-interfaces` under
+      `interfaces-data-texts`) -- same precedent as `dataviz`'s existing
+      cross-listing from Bookshelf's Christie page. New minimal
+      `Interfaces, Data & Texts` `mkdocs.yml` section created to hold its
+      nav copy (previously didn't exist as a section at all) -- currently
+      holds only Swatch Fields; the `Wild wild web` duplicates (Twine/
+      WebTech/Tracery Bots, see the content-audit table) would be the
+      natural next things to move in if that consolidation is ever
+      wanted, not done here.
+    - Verified: `mkdocs build` clean (zero warnings after fixing
+      `makings.md`'s internal links to the `.md`-suffixed form MkDocs
+      itself suggested), `node tools/build-cabinet-content.js` (8
+      sections, 32 entries), `build-static.mjs`, Playwright screenshot
+      confirms Machines & Makings and the new second Swatch Fields island
+      both render correctly.
 
 ---
 
