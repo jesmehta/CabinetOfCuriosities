@@ -2055,6 +2055,27 @@ live), so it was reconstructed on the already-fixed page by setting the
 same two broken values back and re-screenshotting the same island,
 rather than skipped for not having an original.
 
+Confirmed working, then a question that doubled as approval to continue:
+**"landside bands are visible, the flat blue blend is intentional I
+presume? Go ahead with the rest as well."** The flat wash was confirmed
+intentional -- Part A only ever built real LAND fidelity, never
+attempted sea texture in the halo, still a placeholder. "The rest"
+(mechanism 3 proper) started with the piece most directly matching the
+original spec's own words -- "Medieval effects disappear - wave
+contours, etc." -- which Part A had never actually done: hovering still
+showed Medieval's wave-ring/coastal-band contours sitting visibly
+underneath/around the Topology-coloured overlay, never genuinely
+removed. Built as a shared, dynamically-updated clip-path (CSS `:hover`
+can't construct an arbitrary "everywhere except this hovered shape" hole
+on its own), reusing the same halo geometry the colour-preview already
+computes -- no new tracing, just a new consumer of it.
+
+![The wave-ring contours around neighbouring islands stay visible, but are genuinely absent within the hovered island's own halo](landing-v3/dev-screenshots/v3.7.36-mechanism3-wave-rings-clipped-on-hover.png)
+
+Still open from the original spec: Topology's directional shadow doesn't
+yet replace Medieval's own shadow within the hovered region -- a
+separate, larger computation than clipping away contour lines.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

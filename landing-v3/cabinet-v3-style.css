@@ -834,6 +834,22 @@ body[data-label-style="glow"] .v3-compass-direction-label {
    cabinet-v3-islandshape.js), stroked rather than filled. Same stroke
    progression the v3.6.4 noise-based rings borrowed from v2's
    coast-ripples-global -- nearest darkest/heaviest, fading outward. */
+/* Mechanism 3, first slice: "Medieval effects disappear" within the
+   hovered region, on top of what Part A already did (a Topology-coloured
+   overlay). #v3-medieval-effects-clip (cabinet-v3-layout.js's
+   setupMedievalEffectsHoverClip()) is a shared clip-path whose "hole"
+   moves to whichever island/section is currently hovered -- applying it
+   here means these three layers vanish inside that hole and stay fully
+   visible everywhere else, with no per-element clip-path bookkeeping.
+   Shadow layers deliberately NOT included yet -- swapping Medieval's
+   shadow for Topology's directional taper within the region is a
+   separate, larger piece, still open. */
+.v3-wave-ring,
+.v3-coast-outward-band,
+.v3-coast-inward-band {
+  clip-path: url(#v3-medieval-effects-clip);
+}
+
 .v3-wave-ring {
   fill: none;
   stroke: var(--v3-ring-ink);

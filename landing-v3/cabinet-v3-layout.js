@@ -2510,9 +2510,64 @@ export function retraceThemePreviews() {
 // render()'s ~70-100ms is entirely the island retrace step every other
 // slider in this panel already pays per tick, so this reuses that same
 // cost rather than trying to shortcut it.
+// Mechanism 3, first slice: "Medieval effects disappear -- wave
+// contours, etc." within the hovered region, not just a Topology-
+// coloured overlay on top of them (that's all Part A/v3.7.32-35 did --
+// see the "theme x hover" to-do item). CSS `:hover` alone can style
+// EXISTING elements but can't construct a dynamic "everywhere except
+// this hovered shape" clip region, so this is a JS-driven exception to
+// every other reveal in this feature (all pure CSS opacity transitions
+// so far) -- delegated pointerover/pointerout on #v3-stage (same "one
+// listener, not one per element" pattern startCurrentAnimation() already
+// uses for click-to-launch), not per-element, so it survives every
+// retraceIslands() call without needing re-binding (those never touch
+// the island/section <a> elements this listens on).
+//
+// The clip itself is one shared <clipPath>: a single evenodd path with
+// an oversized outer rect (covering the canvas regardless of its actual
+// size, so no bounds tracking needed) as one subpath, plus the currently
+// hovered island's/section's OWN halo shape as a second, nested subpath
+// -- same "two subpaths, evenodd, ring/hole" technique
+// drawCoastalInwardBands() already uses. That halo shape is read
+// straight off the ALREADY-COMPUTED .v3-island-theme-preview/
+// .v3-section-theme-preview element's own `d` attribute -- no new
+// geometry, and it stays correct automatically since
+// retraceThemePreviews() already keeps that attribute in sync.
+const MEDIEVAL_EFFECTS_CLIP_ID = "v3-medieval-effects-clip";
+const MEDIEVAL_EFFECTS_CLIP_OUTER_D = "M -100000,-100000 H 100000 V 100000 H -100000 Z";
+
+function updateMedievalEffectsClip(holeD) {
+  const hole = document.querySelector(`#${MEDIEVAL_EFFECTS_CLIP_ID} .v3-medieval-effects-hole`);
+  if (hole) hole.setAttribute("d", holeD ? `${MEDIEVAL_EFFECTS_CLIP_OUTER_D} ${holeD}` : MEDIEVAL_EFFECTS_CLIP_OUTER_D);
+}
+
+function setupMedievalEffectsHoverClip(stage) {
+  const defs = el("defs");
+  const clipPath = el("clipPath", { id: MEDIEVAL_EFFECTS_CLIP_ID });
+  clipPath.appendChild(el("path", { class: "v3-medieval-effects-hole", "fill-rule": "evenodd", d: MEDIEVAL_EFFECTS_CLIP_OUTER_D }));
+  defs.appendChild(clipPath);
+  stage.appendChild(defs);
+
+  if (stage.dataset.medievalClipWired) return;
+  stage.dataset.medievalClipWired = "1";
+
+  stage.addEventListener("pointerover", e => {
+    const target = e.target.closest(".v3-island[data-id], .v3-section-link");
+    if (!target) return;
+    const previewEl = target.querySelector(".v3-island-theme-preview, .v3-section-theme-preview");
+    updateMedievalEffectsClip(previewEl ? previewEl.getAttribute("d") : "");
+  });
+  stage.addEventListener("pointerout", e => {
+    const target = e.target.closest(".v3-island[data-id], .v3-section-link");
+    if (!target || target.contains(e.relatedTarget)) return;
+    updateMedievalEffectsClip("");
+  });
+}
+
 export function render() {
   const stage = document.querySelector("#v3-stage");
   stage.innerHTML = "";
+  setupMedievalEffectsHoverClip(stage);
 
   const sectionMetas = buildSectionMetas();
   const { width: targetWidth, height: targetHeight } = resolveCanvasDimensions(sectionMetas, v3Config.canvas);

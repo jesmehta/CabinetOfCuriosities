@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.36 -- Mechanism 3, first slice: Medieval's own wave-rings/coastal-bands genuinely disappear on hover, not just get painted over](#v3736----mechanism-3-first-slice-medievals-own-wave-ringscoastal-bands-genuinely-disappear-on-hover-not-just-get-painted-over)
   - [v3.7.35 bugfix -- theme-preview sand band was camouflaged, coastline outline missing entirely](#v3735-bugfix----theme-preview-sand-band-was-camouflaged-coastline-outline-missing-entirely)
   - [v3.7.34 -- Theme preview grows real per-band fidelity (sand/veg/peak), plus a generalized sync fix](#v3734----theme-preview-grows-real-per-band-fidelity-sandvegpeak-plus-a-generalized-sync-fix)
   - [v3.7.33 bugfix -- Island/Section halo sliders were a silent no-op at any value](#v3733-bugfix----islandsection-halo-sliders-were-a-silent-no-op-at-any-value)
@@ -95,7 +96,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.35** (domain warping for real concave coastlines,
+Currently on **v3.7.36** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -152,16 +153,24 @@ v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
--> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35
+-> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35 -> v3.7.36
 progression and why each pass changed what it did. Most recently
-(v3.7.35): two bugs in v3.7.34's new per-band preview, both caught live
-and fixed same-session -- the sand band was camouflaged (mapped to the
-same colour as the wash sitting directly underneath it) and the
-coastline outline had quietly gone missing once real bands were added
-(the wash's own stroke was deliberately dropped a version earlier for a
-different reason). Full detail, with a before/after screenshot, in the
-changelog below. Before that (v3.7.34): the theme-preview overlay grew
-real per-band fidelity -- a
+(v3.7.36): the first real slice of "mechanism 3" proper -- hovering an
+island or section doesn't just overlay Topology's colours on top of
+Medieval's own wave-ring/coastal-band contours any more, it makes those
+Medieval-only decorations genuinely disappear within that hovered
+region, via a shared JS-driven clip-path (CSS `:hover` alone can style
+existing elements but can't construct a dynamic "everywhere except this
+shape" hole). Topology's own directional shadow swap within the region
+is the one piece of the original spec still open. Full detail, with a
+screenshot, in the changelog below. Before that (v3.7.35): two bugs in
+v3.7.34's new per-band preview, both caught live and fixed same-session
+-- the sand band was camouflaged (mapped to the same colour as the wash
+sitting directly underneath it) and the coastline outline had quietly
+gone missing once real bands were added (the wash's own stroke was
+deliberately dropped a version earlier for a different reason). Before
+that (v3.7.34): the theme-preview overlay grew real per-band fidelity --
+a
 hovered island/section now previews its ACTUAL sand/veg/peak contours at
 Topology's colours (traced at the same shared thresholds every real
 island uses, not an approximation), not one flat wash. Also fixed the
@@ -1438,6 +1447,51 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.36 -- Mechanism 3, first slice: Medieval's own wave-rings/coastal-bands genuinely disappear on hover, not just get painted over
+
+Confirmed working, then direct approval to continue toward the full
+mechanism: "Go ahead with the rest as well." (A question just before
+that -- "the flat blue blend is intentional I presume?", re: the outer
+halo wash's flat, textureless colour -- confirmed yes: Part A never
+attempted real sea texture in the halo, only real per-band LAND
+fidelity; still a placeholder, not addressed by this pass either.)
+
+Until now, hovering revealed a Topology-coloured overlay SITTING ON TOP
+of Medieval's own wave-ring/coastal-band contours -- those global,
+canvas-wide decorations kept rendering underneath/around the overlay,
+visible at its edges, never actually removed. The original spec's own
+words -- "Medieval effects disappear - wave contours, etc." -- meant
+something CSS `:hover` alone can't build: `:hover` can style elements
+that already exist, but constructing a dynamic "everywhere except this
+one arbitrary hovered shape" hole needs real geometry computed at
+interaction time, not a fixed selector.
+
+![Golden Age SciFi hovered while Medieval Map is the active theme: the wave-ring contours around every neighbouring island are visible, but genuinely absent within the hovered island's own teal halo, not just painted over](landing-v3/dev-screenshots/v3.7.36-mechanism3-wave-rings-clipped-on-hover.png)
+
+Mechanism: one shared `<clipPath>` (`#v3-medieval-effects-clip`) -- an
+oversized outer rect plus the CURRENTLY-hovered shape as a second,
+nested subpath, same evenodd ring/hole technique
+`drawCoastalInwardBands()` already uses elsewhere in this file. Applied
+via a plain CSS `clip-path` rule to `.v3-wave-ring`/
+`.v3-coast-outward-band`/`.v3-coast-inward-band`, so those three layers
+simply vanish inside the hole and stay fully visible everywhere else,
+with no per-element bookkeeping. The hole itself updates via ONE
+delegated `pointerover`/`pointerout` listener on `#v3-stage` (matching
+`startCurrentAnimation()`'s existing click-to-launch precedent for "JS
+listener where CSS genuinely can't reach," not a new pattern invented
+for this), reading the hovered island's/section's own
+`.v3-island-theme-preview`/`.v3-section-theme-preview` element's
+ALREADY-COMPUTED `d` attribute directly -- no new geometry, and it stays
+correct automatically since `retraceThemePreviews()` already keeps that
+attribute in sync. Delegated rather than bound per-element specifically
+so it survives every `retraceIslands()` call without re-binding (those
+never touch the island/section `<a>` elements it listens on).
+
+Deliberately NOT in this slice: Topology's directional shadow doesn't
+yet replace Medieval's own shadow within the hovered region -- that's a
+separate, larger computation (generating a real taper stack per hover
+target) than clipping away a few flat contour lines, still open.
 
 ### v3.7.35 bugfix -- theme-preview sand band was camouflaged, coastline outline missing entirely
 
