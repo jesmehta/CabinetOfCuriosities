@@ -310,19 +310,31 @@ export const v3Config = {
     // showCoastalBands just above.
     showSeaShadow: true,
     seaRadialShadowDistances: [2.5, 5, 8, 11],
-    // v3.7.9 -- directional cast shadow ("drop shadows from the islands
-    // onto the sea"), light from the NE per direct instruction. OFF by
-    // default (empty array) as of v3.7.10 -- direct feedback: "looks
-    // beautiful... we'll use it elsewhere" (not here, where the straight
-    // trailing edge reads as a cliff face). Kept, not deleted: the
-    // technique (drawIslandsPath()'s own comment) and these exact tuned
-    // values are what produced that reaction, for whenever a real
-    // light-direction cue suits a future use. Distances are translate
-    // offsets (px), not contour levels. Angle convention matches
-    // drawGeoGrid()'s diagonals: 0=E, 90=S, 180=W, 270=N, clockwise (SVG
-    // y grows downward) -- 135 = shadow cast toward SW = light from NE.
-    seaShadowDistances: [],
-    seaShadowAngleDeg: 135
+    // v3.7.24 -- which sea-shadow shape drawIslandsPath() renders when
+    // showSeaShadow is on: "radial" (the all-around coastline-offset
+    // band above, every theme's default) or "directional" (translated,
+    // tapering copies of the terrain's own nested contour levels, angled
+    // toward seaShadowAngleDeg below -- see that function's own comment).
+    // Set per-theme via THEME_PRESETS (cabinet-v3-controls.js), not
+    // edited here directly -- this default ("radial") only matters for
+    // whichever theme is active before the user ever touches the Theme
+    // dropdown (Medieval Map, the tool's own default theme).
+    seaShadowStyle: "radial",
+    // Angle convention matches drawGeoGrid()'s diagonals: 0=E, 90=S,
+    // 180=W, 270=N, clockwise (SVG y grows downward) -- 135 = shadow cast
+    // toward SW = light from NE. Shared by both shadow styles above,
+    // though only "directional" actually uses a single fixed angle (the
+    // radial style is, by definition, angle-independent).
+    seaShadowAngleDeg: 135,
+    // v3.7.28 -- dev-only visualisation of buildIslandHeightmap()'s own H
+    // field (drawIslandNoiseDebug(), cabinet-v3-layout.js) -- same
+    // "tint a grid by the raw field value" treatment flow.showPotential
+    // already uses for the current's potential field. Direct request:
+    // "can the underlying noise that make the islands and topo be made
+    // visible on toggle." Off by default -- a tuning aid, not part of
+    // the shipped visual, same as every other Diagnostics toggle
+    // (cabinet-v3-controls.js).
+    showNoise: false
   },
 
   // v3.6.16 -- precomputed vector flow field (currents), see

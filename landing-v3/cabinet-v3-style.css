@@ -763,17 +763,31 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   fill-opacity: 0.16;
 }
 
-/* v3.7.9 -- directional cast shadow, translated copies of the coastline
-   shape (drawIslandsPath()), not a contour offset -- see that function's
-   comment for why. OFF by default as of v3.7.10 (seaShadowDistances: []
-   in cabinet-v3-data.js) -- kept for reuse elsewhere, not deleted. Low
-   per-copy opacity so the same overlap-stacking trick as the bands above
-   does the actual fading; black (not --v3-halo-ink or any theme accent)
-   per direct instruction ("shadows are black with the requisite opacity
-   play"). */
-.v3-sea-shadow {
+/* v3.7.24 -- directional TAPERED cast shadow, Topology theme only
+   (seaShadowStyle: "directional", THEME_PRESETS in cabinet-v3-controls.js)
+   -- supersedes the old single-shape v3.7.9 directional block (translated
+   copies of one shape, shelved at v3.7.10 for looking like a straight
+   cliff edge). drawIslandsPath() now builds this as copies of FIVE
+   different nested contour levels (coastline, both sand thresholds, both
+   vegetation thresholds), so the shadow's own outline shrinks as it
+   recedes instead of staying a fixed-size parallel block. Low per-copy
+   opacity, same overlap-stacking-as-gradient trick as every other band
+   here (15 copies at this opacity layers up to a comparable peak
+   darkness to the old 4-copy version's 0.1). Black, same "shadows are
+   black with the requisite opacity play" instruction as the radial
+   version above.
+   The blur that feathers the boundary between one level's copies and the
+   next ("the edges need to be blurred enough that it doesnt look like a
+   series of steps") is applied in drawIslandsPath() itself, via a real
+   SVG <filter filterUnits="userSpaceOnUse"> referenced off the group's
+   `filter` attribute -- NOT a CSS rule here. A `filter: blur()` class
+   rule on the group was the first attempt and looked right in isolation,
+   but rendered fully invisible once real map content actually surrounded
+   it -- see that function's own comment for how this was confirmed and
+   why the CSS route was abandoned. */
+.v3-sea-shadow-taper-copy {
   fill: #000;
-  fill-opacity: 0.1;
+  fill-opacity: 0.08;
 }
 
 /* v3.6.7 -- flatColourMode's single land fill (see drawIslandsPath() in

@@ -1304,7 +1304,7 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   // active, not an alternative to it. Empty distance lists (the default
   // if a theme doesn't set them) prune to nothing via placeBand(), same
   // as every other optional layer here.
-  const { showCoastalBands, coastOutwardBandDistances, showSeaShadow, seaRadialShadowDistances, seaShadowDistances, seaShadowAngleDeg } = v3Config.island;
+  const { showCoastalBands, coastOutwardBandDistances, showSeaShadow, seaRadialShadowDistances, seaShadowStyle, seaShadowAngleDeg } = v3Config.island;
   const traceOutward = D => traceContourFromHeightmap(distanceField, cols, rows, cellSize, paddedBounds, -D);
   anchor = placeBand(anchor, "v3-coast-outward-band", showCoastalBands ? (coastOutwardBandDistances || []) : [], traceOutward);
 
@@ -1316,61 +1316,159 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   // another coastline-offset band (same traceOutward/distanceField as
   // coast-outward-band just above -- true fixed-pixel offset in every
   // direction, so it always follows the actual coastline shape, never a
-  // straight edge), painted black instead of --v3-sea-shallow. This is
-  // the one actually active by default now; the directional block right
-  // below is kept for later ("we'll use it elsewhere") -- see its own
-  // comment.
-  anchor = placeBand(anchor, "v3-sea-shadow-radial", showSeaShadow ? (seaRadialShadowDistances || []) : [], traceOutward);
+  // straight edge), painted black instead of --v3-sea-shallow. The
+  // default for every theme except Topology (seaShadowStyle, per-theme via
+  // THEME_PRESETS -- see cabinet-v3-controls.js) -- the directional block
+  // right below is Topology's own alternative, not a replacement for this
+  // one everywhere.
+  anchor = placeBand(anchor, "v3-sea-shadow-radial", (showSeaShadow && seaShadowStyle !== "directional") ? (seaRadialShadowDistances || []) : [], traceOutward);
 
-  // v3.7.9 -- directional cast shadow ("light coming from the NE").
-  // Direct feedback once seen live: "looks beautiful... we'll use it
-  // elsewhere" -- kept fully intact (technique + the exact tuned
-  // parameters that produced that reaction) for reuse somewhere a real
-  // light-direction cue suits better (e.g. a single hero island, not a
-  // whole archipelago where every coastline segment needs the shadow to
-  // hug it). OFF by default: seaShadowDistances is [] in
-  // cabinet-v3-data.js, so this whole block is a no-op until some other
-  // call site opts back in. The technique itself: translate copies of the
-  // coastline shape toward the shadow direction (angle convention matches
-  // drawGeoGrid()'s diagonals: 0=E, 90=S, 180=W, 270=N, clockwise, since
-  // SVG y grows downward -- 135 = SW, i.e. light from the NE) instead of
-  // tracing a new contour level -- a real cast shadow isn't radially
-  // symmetric the way a coastline offset is. Same "many translucent
-  // overlapping copies = a gradient" trick every band here relies on,
-  // just built by shifting one shape instead of re-tracing at different
-  // levels -- alpha-blending stacked equal-opacity fills is order-
-  // independent, so paint order among the copies themselves doesn't
-  // matter. Placed UNDER the land fill (next) so the portion directly
-  // beneath the island stays hidden and only the spill past the
-  // coastline into open water shows, like a real cast shadow. Tuned
-  // parameters that produced the praised look: seaShadowDistances
-  // [4, 9, 16, 26], seaShadowAngleDeg 135, .v3-sea-shadow at
-  // fill-opacity 0.1 (cabinet-v3-style.css).
-  if (seaShadowDistances && seaShadowDistances.length) {
+  // v3.7.9 -- directional cast shadow ("light coming from the NE"), OFF
+  // by default since it was shelved: "looks beautiful... makes the
+  // islands look like straight cliffs... we'll use it elsewhere." v3.7.24
+  // is that "elsewhere" -- Topology theme, direct request ("bring back
+  // the directional shadow"). But translating N copies of the SAME shape
+  // (coastD) is exactly what produced the cliff-face complaint in the
+  // first place, and a follow-up complaint on this first pass ("too
+  // uniform... stack all the topological layers... so the shadow is
+  // tapering not a parallel block") asked for something better: instead
+  // of one shape repeated outward, translate a few copies of EACH of the
+  // terrain's real nested contour levels in turn -- coastline, both sand
+  // thresholds, both vegetation thresholds (outermost/largest to
+  // innermost/smallest, same ordering buildIslandHeightmap's threshold <
+  // sandThresholds < vegThresholds already gives every other band here).
+  // Each level is already a smaller, more inland shape than the one
+  // before it -- stacking them at increasing distance shrinks the
+  // shadow's own silhouette as it recedes, a real taper from the
+  // GEOMETRY, not just fading opacity over one fixed outline. Angle
+  // convention matches drawGeoGrid()'s diagonals: 0=E, 90=S, 180=W,
+  // 270=N, clockwise, since SVG y grows downward -- 135 = SW, i.e. light
+  // from the NE, the same angle the original shelved version used.
+  // Grouped into one <g> (v3-sea-shadow-taper) so a single blur feathers
+  // the boundary between one level's copies and the next, rather than
+  // leaving each level's edge a crisp visible step -- direct feedback,
+  // "the edges need to be blurred enough that it doesnt look like a
+  // series of steps." Placed UNDER the land fill (next) so the portion
+  // directly beneath the island stays hidden and only the spill past the
+  // coastline into open water shows, like a real cast shadow.
+  // copiesPerLevel/levelStep/copyStep are first-guess values, meant to be
+  // eyeballed live and retuned directly here -- "lets try and finetune."
+  //
+  // v3.7.24 bugfix -- a plain CSS `filter: blur()` class rule on the <g>
+  // (cabinet-v3-style.css) rendered the group fully INVISIBLE once it sat
+  // among this map's real content, even though the exact same class+blur
+  // rendered fine in isolation against a blank page. Confirmed via a
+  // throwaway script rather than guessing: same opacity, same copies,
+  // `filter: none` -> visible; `filter: blur(4px)` -> nothing. CSS
+  // filters on SVG elements get their region from an auto-computed
+  // object-bounding-box, and that computation is evidently unreliable
+  // here (many overlapping children, each with its OWN translate
+  // transform) -- Chromium was very likely clipping the filter's output
+  // to a region that doesn't actually cover the translated content. An
+  // explicit SVG <filter> with `filterUnits="userSpaceOnUse"` and a
+  // region set from paddedBounds (already computed above, generous
+  // enough to hold every copy's translation) sidesteps that auto-
+  // computation entirely -- applied via the `filter` PRESENTATION
+  // ATTRIBUTE on the group, not a CSS class, so there's no bounding-box
+  // guesswork left for the browser to get wrong.
+  if (showSeaShadow && seaShadowStyle === "directional") {
+    let defs = stage.querySelector("#v3-geo-defs");
+    if (!defs) {
+      defs = el("defs", { id: "v3-geo-defs" });
+      stage.insertBefore(defs, stage.firstChild);
+    }
+    let blurFilter = defs.querySelector("#v3-sea-shadow-taper-blur");
+    if (!blurFilter) {
+      blurFilter = el("filter", { id: "v3-sea-shadow-taper-blur", filterUnits: "userSpaceOnUse" });
+      // v3.7.27 -- 4 -> 1.5: direct feedback once the reach was lengthened
+      // (v3.7.25), "less blurred, I'd like to see some hint of the
+      // topology heights through the shadow contour" -- at the old 4px
+      // blur the 5 nested terrain levels fully smeared into one solid
+      // gradient; a lighter blur still feathers the copy-to-copy steps
+      // (the original complaint this filter exists to fix) without
+      // erasing the shape of the terrain casting the shadow.
+      blurFilter.appendChild(el("feGaussianBlur", { stdDeviation: 1.5 }));
+      defs.appendChild(blurFilter);
+    }
+    blurFilter.setAttribute("x", paddedBounds.x);
+    blurFilter.setAttribute("y", paddedBounds.y);
+    blurFilter.setAttribute("width", paddedBounds.width);
+    blurFilter.setAttribute("height", paddedBounds.height);
+
+    // v3.7.30 -- direct feedback: "I'd like the tall bits to cast longer
+    // shadows... a multiplying or exponential number of stacks be better
+    // than each outline gets a fixed number of stack layers?" The OLD
+    // formula (dist = 3 + li*levelStep + c*copyStep, v3.7.25) was purely
+    // arithmetic in LAYER INDEX, not height: every level got the same
+    // fixed-size bundle of copies, just shifted further out by a constant
+    // per level -- "tall" (veg/peak) and "short" (sand) terrain cast
+    // equally LONG shadows, only offset differently, which is the
+    // opposite of what a real cast shadow does.
+    // Neither option offered is quite right, though: real shadow length
+    // scales roughly LINEARLY with height (length = height / tan(sun
+    // angle), for one fixed sun angle) -- exponential would turn a
+    // modest height difference between e.g. sand and veg into a wildly
+    // exaggerated shadow-length difference, not a plausible one. So:
+    // linear, but in actual HEIGHT ABOVE THE COASTLINE (level -
+    // threshold, floored at 0 for any level at-or-below coastline height
+    // -- sandThresholds[0] currently sits slightly BELOW threshold after
+    // the latest retune, see that array's own v3.7.29 comment in
+    // cabinet-v3-data.js), not in ordinal layer position. Also now
+    // includes peakThresholds ("Land 5," v3.7.28) in the taper sequence
+    // -- it was missing before, the one genuinely "tall" level this
+    // request is really about.
+    const taperLevels = [threshold, ...(sandThresholds || []), ...(vegThresholds || []), ...(peakThresholds || [])];
+    const heights = taperLevels.map(level => Math.max(0, level - threshold));
+    const maxHeight = Math.max(1e-6, ...heights);
     const rad = (seaShadowAngleDeg * Math.PI) / 180;
     const sdx = Math.cos(rad);
     const sdy = Math.sin(rad);
-    seaShadowDistances.forEach((dist, i) => {
-      const className = `v3-sea-shadow-${i + 1}`;
-      let node = stage.querySelector(`.${className}`);
-      if (!node) node = el("path", { class: `v3-sea-shadow ${className}`, "fill-rule": "evenodd" });
-      stage.insertBefore(node, anchor ? anchor.nextSibling : stage.firstChild);
-      node.setAttribute("d", coastD);
-      node.setAttribute("transform", `translate(${(sdx * dist).toFixed(2)},${(sdy * dist).toFixed(2)})`);
-      anchor = node;
+    const copiesPerLevel = 4;
+    // baseReach/maxReach: shortest (coastline, height 0) vs longest (the
+    // tallest level present) total shadow reach -- maxReach matches the
+    // old fixed ~46px reach (v3.7.25) so the TALLEST terrain casts
+    // roughly what everything cast uniformly before; shorter terrain now
+    // casts less, not the same.
+    const baseReach = 8;
+    const maxReach = 46;
+    // Small per-level start stagger (NOT the main driver of reach any
+    // more, just keeps every level's bundle from launching off the exact
+    // same point) -- the linear height interpolation above is what
+    // actually varies each level's shadow length.
+    const levelStagger = 1.5;
+    let group = stage.querySelector(".v3-sea-shadow-taper");
+    if (!group) group = el("g", { class: "v3-sea-shadow-taper", filter: "url(#v3-sea-shadow-taper-blur)" });
+    stage.insertBefore(group, anchor ? anchor.nextSibling : stage.firstChild);
+    while (group.firstChild) group.removeChild(group.firstChild);
+    taperLevels.forEach((level, li) => {
+      const d = trace(level);
+      const reach = baseReach + (heights[li] / maxHeight) * (maxReach - baseReach);
+      const start = 3 + li * levelStagger;
+      const step = Math.max(0.5, (reach - start) / (copiesPerLevel - 1));
+      for (let c = 0; c < copiesPerLevel; c++) {
+        const dist = start + c * step;
+        group.appendChild(el("path", {
+          class: "v3-sea-shadow-taper-copy",
+          "fill-rule": "evenodd",
+          d,
+          transform: `translate(${(sdx * dist).toFixed(2)},${(sdy * dist).toFixed(2)})`
+        }));
+      }
     });
+    anchor = group;
+  } else {
+    const stale = stage.querySelector(".v3-sea-shadow-taper");
+    if (stale) stale.remove();
   }
-  stage.querySelectorAll(".v3-sea-shadow").forEach(node => {
-    const idxClass = [...node.classList].find(c => c.startsWith("v3-sea-shadow-"));
-    if (idxClass && Number(idxClass.slice("v3-sea-shadow-".length)) > (seaShadowDistances || []).length) node.remove();
-  });
 
   if (flatColourMode) {
-    // Empty-list placeBand() calls prune any .v3-sand-band-N/.v3-veg-band-N
-    // left over from a previous non-flat retrace; neither call advances
-    // anchor (nothing to place), so it's safe to just discard the return.
+    // Empty-list placeBand() calls prune any .v3-sand-band-N/.v3-veg-band-N/
+    // .v3-peak-band-N left over from a previous non-flat retrace; none of
+    // these calls advance anchor (nothing to place), so it's safe to just
+    // discard the return.
     placeBand(anchor, "v3-sand-band", [], trace);
     placeBand(anchor, "v3-veg-band", [], trace);
+    placeBand(anchor, "v3-peak-band", [], trace);
     anchor = placeOne(anchor, "v3-islands-land-flat", coastD);
   } else {
     // No placeBand() equivalent for a single non-array element -- remove

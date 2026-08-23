@@ -303,7 +303,8 @@ function buildControlPanel() {
     latSpacing: v3Config.geo.latSpacing,
     lonSpacing: v3Config.geo.lonSpacing,
     showCoastalBands: v3Config.island.showCoastalBands,
-    showSeaShadow: v3Config.island.showSeaShadow
+    showSeaShadow: v3Config.island.showSeaShadow,
+    seaShadowStyle: v3Config.island.seaShadowStyle
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -363,8 +364,13 @@ function buildControlPanel() {
     v3Config.island.showCoastalBands = coastalBandCheck.checked;
     retraceIslands();
   });
+  // v3.7.25 -- direct feedback: "(in + out)" describes the two-subpath
+  // ring construction (drawCoastalInwardBands()'s own comment -- an
+  // evenodd hole punched in the coastline shape), an implementation
+  // detail, not the concept -- reads as if there are two independent
+  // things to toggle when there's one band. Dropped the suffix.
   const coastalBandCheckLabel = document.createElement("span");
-  coastalBandCheckLabel.textContent = "Coastal bands (in + out)";
+  coastalBandCheckLabel.textContent = "Coastal band";
   coastalBandCheckRow.appendChild(coastalBandCheck);
   coastalBandCheckRow.appendChild(coastalBandCheckLabel);
   visualsSection.appendChild(coastalBandCheckRow);
@@ -383,6 +389,40 @@ function buildControlPanel() {
   seaShadowCheckRow.appendChild(seaShadowCheck);
   seaShadowCheckRow.appendChild(seaShadowCheckLabel);
   visualsSection.appendChild(seaShadowCheckRow);
+
+  // v3.7.25 -- direct design discussion: two separate on/off checkboxes
+  // (one per shadow style) would allow an invalid both-on state nothing
+  // currently renders correctly for, and breaks the "one boolean per
+  // effect" pattern every other toggle here uses. A style SELECTOR
+  // instead -- same "theme seeds a starting value via THEME_PRESETS, the
+  // control stays freely editable afterward" pattern the Theme dropdown
+  // above already established -- gives the same flexibility (try the
+  // directional style on a theme that doesn't default to it) without
+  // that invalid state. Lives next to the Sea shadow checkbox it
+  // modifies, not folded into the Theme row itself -- it's a property of
+  // the shadow, not of the theme switch.
+  const seaShadowStyleRow = document.createElement("label");
+  seaShadowStyleRow.className = "v3-controls-row";
+  const seaShadowStyleName = document.createElement("span");
+  seaShadowStyleName.className = "v3-controls-name";
+  seaShadowStyleName.textContent = "Shadow style";
+  const seaShadowStyleSelect = document.createElement("select");
+  seaShadowStyleSelect.style.gridArea = "input";
+  seaShadowStyleSelect.style.width = "100%";
+  [["radial", "Radial (all-around)"], ["directional", "Directional (tapered)"]].forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    seaShadowStyleSelect.appendChild(opt);
+  });
+  seaShadowStyleSelect.value = v3Config.island.seaShadowStyle;
+  seaShadowStyleSelect.addEventListener("change", () => {
+    v3Config.island.seaShadowStyle = seaShadowStyleSelect.value;
+    retraceIslands();
+  });
+  seaShadowStyleRow.appendChild(seaShadowStyleName);
+  seaShadowStyleRow.appendChild(seaShadowStyleSelect);
+  visualsSection.appendChild(seaShadowStyleRow);
 
   // -- Theme (v3.6.14, expanded v3.6.15) -- seven parallel colour/type
   // treatments, meant to be compared against each other rather than one
@@ -409,30 +449,67 @@ function buildControlPanel() {
     themeSelect.appendChild(opt);
   });
   themeSelect.value = document.body.dataset.theme || THEME_OPTIONS[0][0];
+  // v3.7.24 -- extended with showCoastalBands/seaShadowStyle, same
+  // pattern as flatColourMode/showWaveRings above (a per-theme starting
+  // point, not a lock -- both new checkboxes stay independently editable
+  // after switching). Direct request: Topology's coastal bands read as
+  // visual noise on top of its own directional shadow ("no coastal
+  // bands"), and that shadow itself should be the tapering directional
+  // style rather than every other theme's all-around radial one -- see
+  // drawIslandsPath()'s own comment (cabinet-v3-layout.js) for the
+  // "why directional, why tapered" reasoning. Every other theme keeps
+  // exactly its previous behaviour (bands on, radial shadow) by listing
+  // those same defaults explicitly rather than leaving them to fall back.
   const THEME_PRESETS = {
-    satellite: { flatColourMode: false, showWaveRings: false },
-    "medieval-map": { flatColourMode: true, showWaveRings: true },
-    riso: { flatColourMode: false, showWaveRings: false },
-    cyanotype: { flatColourMode: false, showWaveRings: false },
+    satellite: { flatColourMode: false, showWaveRings: false, showCoastalBands: false, seaShadowStyle: "directional" },
+    "medieval-map": { flatColourMode: true, showWaveRings: true, showCoastalBands: true, seaShadowStyle: "radial" },
+    riso: { flatColourMode: false, showWaveRings: false, showCoastalBands: true, seaShadowStyle: "radial" },
+    cyanotype: { flatColourMode: false, showWaveRings: false, showCoastalBands: true, seaShadowStyle: "radial" },
     // v3.6.28 -- bands AND rings on together, both carrying real weight:
     // bands carry the dark sepia depth, rings lay a riso iso-line accent
     // on top.
-    medieRiso: { flatColourMode: false, showWaveRings: true }
+    medieRiso: { flatColourMode: false, showWaveRings: true, showCoastalBands: true, seaShadowStyle: "radial" }
+  };
+  // v3.7.27 -- pulled out of the change handler so the SAME preset logic
+  // can also run once at panel-build time, below, for whichever theme the
+  // page actually loaded on. Before this, a fresh load only got the right
+  // flatColourMode/showWaveRings/etc. state because cabinet-v3-data.js's
+  // own raw defaults happened to already match the page's default theme
+  // (medieval-map) -- true by coincidence, not by construction, and it
+  // silently broke the moment the default theme changed to Topology
+  // (direct request) without also hand-editing data.js to match. Calling
+  // this once on load makes any future default-theme change safe on its
+  // own, without a matching data.js edit.
+  const applyThemePreset = themeValue => {
+    const preset = THEME_PRESETS[themeValue];
+    if (!preset) return;
+    v3Config.island.flatColourMode = preset.flatColourMode;
+    v3Config.island.showWaveRings = preset.showWaveRings;
+    v3Config.island.showCoastalBands = preset.showCoastalBands;
+    v3Config.island.seaShadowStyle = preset.seaShadowStyle;
+    bandCheck.checked = !preset.flatColourMode;
+    waveCheck.checked = preset.showWaveRings;
+    coastalBandCheck.checked = preset.showCoastalBands;
+    seaShadowStyleSelect.value = preset.seaShadowStyle;
   };
   themeSelect.addEventListener("change", () => {
     if (themeSelect.value) document.body.dataset.theme = themeSelect.value;
     else delete document.body.dataset.theme;
     applyThemeTokens(themeSelect.value);
-
-    const preset = THEME_PRESETS[themeSelect.value];
-    if (preset) {
-      v3Config.island.flatColourMode = preset.flatColourMode;
-      v3Config.island.showWaveRings = preset.showWaveRings;
-      bandCheck.checked = !preset.flatColourMode;
-      waveCheck.checked = preset.showWaveRings;
-      retraceIslands();
-    }
+    applyThemePreset(themeSelect.value);
+    retraceIslands();
   });
+  // v3.7.27 -- the page's very first render() already ran (top-level call
+  // in cabinet-v3-layout.js, which finishes evaluating before this
+  // module's own top-level buildControlPanel() call below even starts --
+  // ES module import order) using whatever raw v3Config.island defaults
+  // cabinet-v3-data.js shipped with. If those don't match the page's
+  // actual default theme, that first render is visually wrong until
+  // something else happens to call retraceIslands(). applyThemePreset()
+  // above only just now corrected v3Config.island itself -- this retrace
+  // is what makes the very first frame match it, not just the checkboxes.
+  applyThemePreset(themeSelect.value);
+  retraceIslands();
   themeRow.appendChild(themeName);
   themeRow.appendChild(themeSelect);
   visualsSection.appendChild(themeRow);
@@ -937,8 +1014,10 @@ function buildControlPanel() {
     lonSpacingWidget.refresh();
     v3Config.island.showCoastalBands = visualsDefaults.showCoastalBands;
     v3Config.island.showSeaShadow = visualsDefaults.showSeaShadow;
+    v3Config.island.seaShadowStyle = visualsDefaults.seaShadowStyle;
     coastalBandCheck.checked = v3Config.island.showCoastalBands;
     seaShadowCheck.checked = v3Config.island.showSeaShadow;
+    seaShadowStyleSelect.value = v3Config.island.seaShadowStyle;
   }
 
   addButton(visualsSection, "Reset visuals", () => {
