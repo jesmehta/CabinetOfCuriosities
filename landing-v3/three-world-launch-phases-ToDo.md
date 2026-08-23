@@ -331,22 +331,45 @@ own numbering note near the top) -- a move, not a re-add.
       section -- real directional shadow, real band tracing, real
       coastline (`v3Config.themePreview.previewTheme` is hardcoded
       `"satellite"`) -- just scoped to reveal on a per-element `:hover`
-      instead of canvas-wide. **v3.7.50, actually done**: two small CSS
-      rules keyed off `data-theme="satellite"` (already set by the
-      existing click handler, no new state needed) -- reveal every
-      `*-theme-preview*` layer at once (the same `opacity: 1` the
-      `:hover` rules already set), and hide the 5 "Medieval effects"
-      elements (`.v3-wave-ring`/`.v3-coast-outward-band`/`.v3-coast-
-      inward-band-group`/`.v3-sea-shadow-radial`/`.v3-sea-shadow-taper`)
-      outright rather than relying on the single-hole hover-clip
-      mechanism, which was built for one local area, not the whole
-      canvas. Zero new JS, zero added payload, zero rebuild. Verified
-      visually (Playwright): real textured/shaded islands, directional
-      drop-shadows, correctly zero wave rings, and a clean round-trip
-      back to Medieval's original flat/banded look on a second click.
-      Same "check what already exists before reaching for a rebuild"
-      lesson as the boats/dragons cost correction (`#64`) -- this time
-      caught by the user, not self-corrected.
+      instead of canvas-wide. **v3.7.50's first attempt at this (globally
+      revealing the theme-preview layers via CSS) was itself wrong**,
+      caught by testing the very next round: **"neightbourig islands,
+      esp non-entry ones, and the sectional boundaries, are being
+      occluded. Dont render individual islands. Maybe have a full
+      topology also built alongside the per island and per section
+      builds."** The theme-preview mechanism builds each island's
+      preview in ISOLATION (its own circle data only, with a generous
+      halo meant to blend into open water around exactly ONE hovered
+      island) -- correct for one island hovered at a time, wrong once
+      every island's isolated halo is revealed simultaneously and starts
+      bleeding across nearby fillers (which never got a preview built at
+      all -- only `c.kind === "entry"` does) and the dashed section
+      boundaries. **v3.7.51, the actual fix**: a new function,
+      `drawTopologyStructuralLayer()`, builds Topology's bands and
+      directional shadow the same way `drawIslandsPath()` already builds
+      Medieval's -- ONE shared heightmap across every island together,
+      reusing `islandTrace`'s already-computed geometry rather than
+      rebuilding it per-island, correct for fillers and section
+      boundaries by construction because it IS the real map's own
+      geometry, just retraced at Topology's levels. Scope stayed narrow:
+      only bands + directional shadow needed building (the two things
+      Medieval's own build never produces), since wave rings/coastal
+      bands stay off for Topology either way and v3.7.50's "hide
+      Medieval effects" CSS already covers those (kept, minus
+      `.v3-sea-shadow-taper` -- that class now belongs to the new
+      function's real content, not a dead Medieval-effects target).
+      Reuses the real (non-preview) band/shadow class names directly, so
+      no new colour rules were needed either. Static payload grew from
+      ~4.7MB to ~6.2MB (roughly +33%, not the ~2x a full second render
+      would have cost) since only the missing structural layer was
+      added, not a duplicate of everything. Verified visually
+      (Playwright, both directions, same crop as the bug report): real
+      textured/shaded islands, directional drop-shadows, zero wave
+      rings, section boundaries and filler islands fully intact, clean
+      round-trip back to Medieval. Same "check what already exists
+      before reaching for a rebuild" lesson as the boats/dragons cost
+      correction (`#64`) -- caught by the user both times now, not
+      self-corrected.
       In-topology hover preview (hovering an island while already
       swapped to Topology should preview Medieval, currently still shows
       Topology's own now-redundant preview) stays unfixed, per direct

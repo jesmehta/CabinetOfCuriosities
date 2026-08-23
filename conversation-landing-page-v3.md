@@ -2751,6 +2751,40 @@ that one (`#64`) was self-corrected after a challenge to go re-check;
 this one the user identified outright, by name, pointing at code that
 had already shipped rather than waiting to be asked where to look.
 
+## The fix for the fix: a screenshot, and a sharper instruction than "build something"
+
+The v3.7.50 fix looked right in isolation -- clean round-trip, real
+bands, real shadows, verified with Playwright before shipping. It broke
+on the very next real look, with a screenshot attached:
+
+> "neightbourig islands, esp non-entry ones, and the sectional
+> boundaries, are being occluded. Dont render individual islands. Maybe
+> have a full topology also built alongside the per island and per
+> section builds."
+
+The screenshot showed exactly what the sentence described: a small
+filler island between Vera Molnar and Circle Packing Library reduced to
+an unreadable smear, and the dashed line marking the Bookshelf/fffx
+section boundary gone entirely under a wash of blue. The theme-preview
+mechanism v3.7.50 leaned on was built to isolate ONE island at a time
+for a hover effect -- generous halo, no awareness of anything else on
+the map -- and that isolation, invisible when only one island was ever
+revealed at once, became the whole problem the moment every island's
+copy was revealed simultaneously.
+
+The instruction wasn't just "it's broken" -- it named the mechanism
+("full topology... built alongside") and ruled out the wrong direction
+("Dont render individual islands") in the same breath, which is most of
+why the actual fix landed in one pass: reuse `drawIslandsPath()`'s own
+already-computed shared heightmap (the same geometry every real
+coastline and band on the map already traces from) instead of
+`buildIsolatedHeightmap()`'s per-island copies. Scope stayed narrow --
+checking `THEME_PRESETS` again showed only bands and the directional
+shadow were actually missing, not a whole second copy of the map --
+static payload grew by about a third, not doubled. Verified against the
+same crop the bug report used: filler island and section boundary both
+intact this time.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
