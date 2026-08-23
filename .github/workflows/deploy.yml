@@ -78,6 +78,16 @@ jobs:
         test -f public/teaching/working-with-ai/index.html || (echo "ERROR: assembled Working with AI is missing its index.html" && exit 1)
         test -f public/teaching/working-with-ai/working-with-ai/01.html || (echo "ERROR: assembled Working with AI is missing its own content" && exit 1)
 
+    # #61 -- archived-landing-pages/ lives at the repo root, outside
+    # docs_dir, so it was never part of `mkdocs build`'s output at all;
+    # the colophon page (docs/colophon.md) links straight to v1/v2, so
+    # this makes those links actually resolve once deployed instead of
+    # 404ing. Same "copy after the mkdocs build, into a path mkdocs
+    # itself never touches" pattern as the Working with AI assembly
+    # above, just a local directory instead of an external checkout.
+    - name: Copy archived landing pages
+      run: cp -r archived-landing-pages public/archived-landing-pages
+
     - name: Setup Pages
       uses: actions/configure-pages@v5
 

@@ -24,5 +24,5 @@ webtech	interfaces-data-texts	WebTech	Web pieces that do not belong inside fffx.
 tracery-bots	interfaces-data-texts	Tracery Bots	Generative text bots built with Tracery.	traceryBots/	50	2	true	web-experiment	tracery;bots;generative-text	mkdocs		icon-bot		coast			east	1	medium	port-card		
 compass-n	compass	About Me			10	1	true	compass-direction									N					href intentionally blank for now -- set directly in this TSV when ready.
 compass-e	compass	Contact me			20	1	true	compass-direction									E					href intentionally blank for now -- set directly in this TSV when ready.
-compass-s	compass	Colophon			30	1	true	compass-direction									S					href intentionally blank for now -- set directly in this TSV when ready.
+compass-s	compass	Colophon		colophon/	30	1	true	compass-direction									S					Dummy page for now (docs/colophon.md) -- links straight to the v1/v2 archive; user will add the actual writing later.
 compass-w	compass	CV		https://www.jesalmehta.com	40	1	true	compass-direction									W					

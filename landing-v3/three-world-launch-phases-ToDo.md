@@ -217,17 +217,38 @@ freely.
       renders in full). `v2-history/` also holds the map's four earlier
       visual eras (`c384a11` through `a3887b0`), each rebuilt standalone
       from git history, for anyone who wants to see how it got there.
-- [ ] **#61** Link `archived-landing-pages/` from the live site's own
+- [x] **#61** Link `archived-landing-pages/` from the live site's own
       navigation -- split out from #18 above, which now only covers
       building the archive itself. Deliberately deferred until #40
       (promoting `landing-v3` into production) settles deploy structure,
       since the current `docs/`-only `mkdocs build --site-dir public`
       deploy wouldn't even package `archived-landing-pages/` as-is (it
-      lives outside `docs_dir`) regardless of how it's linked.
+      lives outside `docs_dir`) regardless of how it's linked. **Done,
+      v3.7.54, 2026-08-24**: resolved together with #20 and #62 below --
+      `deploy.yml` gained a "Copy archived landing pages" step (`cp -r
+      archived-landing-pages public/archived-landing-pages`, after the
+      mkdocs build, same pattern as #43's Working with AI assembly just
+      above it), so it's finally part of the deployed site at all; the
+      new `docs/colophon.md` page links straight to `v1/`/`v2/` from
+      there, and the compass's own S/Colophon direction (`content/
+      cabinet-entries.tsv`'s `compass-s` row, previously blank) now
+      points to it. Verified end to end with Playwright against the
+      full assembled output tree: colophon page renders with the right
+      nav placement, both archive links resolve to real archived
+      content (correct titles, zero failed requests, zero console
+      errors) -- not just checked in isolation.
+- [x] **#20** Write the colophon and creation notes. **Scaffolding done,
+      v3.7.54, 2026-08-24** -- `docs/colophon.md` exists, is in
+      `mkdocs.yml`'s nav, and is reachable from the compass's S
+      direction, but is a deliberate placeholder ("Writing on how this
+      site is made -- coming soon") plus the two archive links, direct
+      request: "make a dummy colophon page... I'll add the writing
+      later." Marking done at the scaffolding level since that's what
+      was actually asked for this round; the real writing itself is
+      still open, just no longer blocked on any plumbing.
 - [x] **#19** Launch the page -- **superseded by Phase 1 below -- but also
       genuinely done now, 2026-08-23**: cabinetofcuriosities.in is live
       on v3 (#40/#45/#47-50), not just tracked elsewhere.
-- [ ] **#20** Write the colophon and creation notes.
 
 ### Found via documentation survey (v3.6.6 doc audit)
 
@@ -542,14 +563,19 @@ own numbering note near the top) -- a move, not a re-add.
       auto-loaded override file (all live-tunable state in one object)
       so nothing needs hand-pasting into source at all. Needs a decision
       before implementing, not a guess.
-- [ ] **#62** Rework `archived-landing-pages/index.html` (the archive landing
+- [x] **#62** Rework `archived-landing-pages/index.html` (the archive landing
       page) -- direct reaction, 2026-08-23: "I dont like the lander, feels
       iffy." Two directions raised, not yet chosen between: (a) redesign
       it as its own real page, or (b) skip a standalone landing page
       entirely and link `v1/`/`v2/` directly from the colophon (#20)
       instead, treating archive access as a footnote rather than a
-      promoted destination. Not yet built either way -- needs a decision
-      first.
+      promoted destination. **Resolved, v3.7.54, 2026-08-24**: option
+      (b) -- the direct request to "link the archive subpages there
+      directly" on the new colophon page settled this implicitly.
+      `archived-landing-pages/index.html` itself is untouched, still
+      exists, just no longer the intended path to the archive -- the
+      compass's Colophon direction and `docs/colophon.md` bypass it
+      entirely and link straight to `v1/`/`v2/`.
 
 ---
 
