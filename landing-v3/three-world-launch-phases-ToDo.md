@@ -381,10 +381,11 @@ failures remain.*
         currently architected. Boats stay `islands-tool.html`-only, a dev
         tool, unless the static-build approach itself changes later.
   - [ ] **#39** desktop/mobile QA
-- [ ] **#40** Promote `landing-v3-prototype` into the production Cabinet
+- [x] **#40** Promote `landing-v3-prototype` into the production Cabinet
       structure (see the Branch/production transition checklist below,
       and `three-world-launch-phases-Notes.md` for why this is a normal merge, not a
-      default-branch switch)
+      default-branch switch) -- **done, 2026-08-23**, see the
+      Branch/production transition entries below for the full mechanics.
 - [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml`
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch
@@ -395,15 +396,50 @@ failures remain.*
 
 ### Branch / production transition
 
-- [ ] **#45** Complete and test V3 on `landing-v3-prototype`
+- [x] **#45** Complete and test V3 on `landing-v3-prototype` -- **done,
+      2026-08-23**: `data-theme` fix verified, full `mkdocs build`
+      passed pre-merge, Playwright confirmed zero console/request
+      errors on the promoted page.
 - [ ] **#46** Test the Working with AI assembly there without replacing the
-      current production site
-- [ ] **#47** Tag/archive the current `main` state before launch (see Phase 0's
+      current production site -- **explicitly deferred, 2026-08-23**:
+      not built at all yet (`#43`/`#44`). Deliberately sequenced after
+      `#48` rather than before it -- bundling a new deploy-workflow
+      mechanism into the same merge as the homepage promotion would
+      have compounded risk in one untested change; better as its own
+      isolated, separately-testable change against a known-good `main`.
+- [x] **#47** Tag/archive the current `main` state before launch (see Phase 0's
       "create a history section" item -- give archived pages a real
-      linked home, not just a tag)
-- [ ] **#48** Merge `landing-v3-prototype` into `main`
-- [ ] **#49** Ensure the Pages workflow is triggered from `main`
-- [ ] **#50** Deploy the assembled `public/` artifact from `main`
+      linked home, not just a tag) -- **done, 2026-08-23**: archival
+      itself covered by `#18`/`#61` above (`archived-landing-pages/`);
+      additionally tagged `main`'s exact pre-merge HEAD as
+      `cabinet-v2-before-v3` (commit `6364fce`), matching the existing
+      `cabinet-v1-before-map` convention, so it's recoverable by tag as
+      well as by being folder-archived.
+- [x] **#48** Merge `landing-v3-prototype` into `main` -- **done,
+      2026-08-23**, commit `7f3a638`. Not a simple merge: `main` had
+      diverged independently since the branch split (2 commits from
+      2026-08-14, not on `landing-v3-prototype` -- a Teaching nav entry
+      and CNAME handling for the custom domain under the *old*
+      gh-pages-branch deploy mechanism). The nav entry merged cleanly.
+      The CNAME handling needed real reconciliation: `landing-v3-
+      prototype` had already independently rewritten `deploy.yml` onto
+      the newer artifact-based Pages mechanism, which has no equivalent
+      `cname:` parameter, so the two versions were flatly incompatible,
+      not just textually conflicting. Resolved by keeping the artifact-
+      based workflow and adding `docs/CNAME` (`d39fec4`) instead, added
+      *before* the merge specifically so the custom domain wasn't
+      silently dropped -- caught only because it was checked rather
+      than assumed.
+- [x] **#49** Ensure the Pages workflow is triggered from `main` -- **done**:
+      `deploy.yml` already triggers `on: push: branches: - main`;
+      pushing the merge (`7f3a638`) to `origin/main` triggered it
+      directly, nothing separate needed.
+- [ ] **#50** Deploy the assembled `public/` artifact from `main` -- pushed
+      and the workflow should be running; **not independently confirmed
+      green** -- no `gh` CLI available in this environment to check the
+      Actions run status. Worth a manual look at the Actions tab (and at
+      cabinetofcuriosities.in once it's had a minute) before calling
+      this fully done.
 
 ### Bookshelf + FFFX
 

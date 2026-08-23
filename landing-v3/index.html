@@ -12,6 +12,20 @@
   <title>Cabinet of Curiosities</title>
   <meta name="description" content="An explorable archipelago map of Jesal Mehta's worlds and projects: Bookshelf of Curiosities, Form follows f(x), Teaching, Visual Field Notes, Machines &amp; Makings, Interfaces Data &amp; Texts, and About Me." />
   <link rel="icon" href="images/favicon.svg" />
+  <!-- Medieval Map (the shipped default theme) needs Cinzel/IM Fell
+       English/EB Garamond -- see cabinet-v3-style.css's
+       [data-theme="medieval-map"] font-family rules. Topology
+       (satellite), the only other production-bound theme, has no font
+       override at all and falls back to --cab-font-heading/body
+       (Georgia), so nothing else is needed here. Was missing entirely
+       until v3.0's production promotion surfaced it -- islands-tool.html
+       loads a much wider scheme-comparison set (see its own comment)
+       that was never meant to ship, but this file loaded none of it,
+       silently falling back to Georgia everywhere even after #36 (final
+       colour/type choice) was marked done. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=IM+Fell+English:ital@0&family=EB+Garamond&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../docs/assets/css/cabinet-tokens.css" />
   <link rel="stylesheet" href="cabinet-v3-style.css" />
 </head>
