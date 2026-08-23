@@ -172,7 +172,18 @@ freely.
 - [ ] **#18** Create a history section and place archival pages there --
       `archived-landing-pages/` already exists as a filesystem
       convention; this is about giving it a real, linked home on the
-      site itself, not just a folder.
+      site itself, not just a folder. **Partially done, 2026-08-23**:
+      `archived-landing-pages/` now has its own `index.html` landing
+      page linking two fully-built, browsable archives -- `v1/` (the
+      original MkDocs site, built from the now-real `cabinet-v1-before-
+      map` tag) and `v2/` (the archipelago-map stub that briefly
+      replaced it, copied standalone with its real JS/CSS dependency
+      chain so it still renders). Still open: linking this FROM the live
+      site -- deliberately deferred until #40 (promoting `landing-v3`
+      into production) settles how/where that link belongs, since the
+      current `docs/`-only `mkdocs build --site-dir public` deploy
+      wouldn't even package `archived-landing-pages/` (it lives outside
+      `docs_dir`) without that promotion changing things anyway.
 - [ ] **#19** Launch the page -- **superseded by Phase 1 below.**
 - [ ] **#20** Write the colophon and creation notes.
 
