@@ -96,6 +96,30 @@
     line-height: 1.55;
     color: var(--cab-ink-soft);
   }
+  .archive-card p.sub-label {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--cab-ink-faint);
+  }
+  .sub-links {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+  }
+  .sub-links a {
+    font-size: 0.85rem;
+    color: var(--cab-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .sub-links a:hover {
+    border-bottom-color: var(--cab-accent);
+  }
   footer {
     margin-top: 3.5rem;
     font-size: 0.8rem;
@@ -134,9 +158,15 @@
         A hand-built SVG archipelago map that briefly replaced the v1
         homepage, then was itself quickly superseded before it was ever
         linked into the rest of the site. Preserved standalone with its
-        own styles and scripts, not connected onward. See also its
-        <a href="v2-history/index.html">intermediate states</a>.
+        own styles and scripts, not connected onward.
       </p>
+      <p class="sub-label">Earlier states along the way:</p>
+      <ul class="sub-links">
+        <li><a href="v2-history/01-initial/index.html">01 -- initial</a></li>
+        <li><a href="v2-history/02-round1-visual-pass/index.html">02 -- Round 1 visual pass</a></li>
+        <li><a href="v2-history/03-coastline-regen/index.html">03 -- coastline regen</a></li>
+        <li><a href="v2-history/04-serpent-redesign/index.html">04 -- serpent redesign</a></li>
+      </ul>
     </div>
   </div>
   <footer>
