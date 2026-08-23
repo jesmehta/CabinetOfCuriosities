@@ -8,9 +8,18 @@ nav:
     - About Me : about.md
     - Colophon : colophon.md
     - Now : now.md
+  - Teaching :
+    - Teaching : teaching.md
+    - SSD Creative Coding : https://cabinetofcuriosities.in/teaching/ssd-creative-coding/
+    - Working with AI : https://cabinetofcuriosities.in/teaching/working-with-ai/
+    - Prompt Generator : https://cabinetofcuriosities.in/teaching/prompt-generator/
+    - Oblique Strategies : https://cabinetofcuriosities.in/teaching/oblique-strategies/
   - Machines & Makings :
-    - MiniLoom : mini_loom.md
     - Makings : makings.md
+    - MiniLoom : mini_loom.md
+    - Origami & Paper : makings/origami-paper.md
+    - Lasercutting : makings/lasercutting.md
+    - Drawing Machines : makings/drawing-machines.md
     - Swatch Fields : https://jesmehta.github.io/swatchFields/
     - 3D Printing :
       - Print Projects :
@@ -25,24 +34,19 @@ nav:
         # - 3DP in 2023 : 3dp/3DP_2023.md
         # - 3DP in 2024 : 3dp/3DP_2024.md
         # - 3DP in 2025 : 3dp/3DP_2025.md
+  - Interfaces, Data & Texts :
+    - Swatch Fields : https://jesmehta.github.io/swatchFields/
   - Wild wild web :
     - Dot Mandala Generator : dotMandalaTool.md
-    - Tracery Bots :  
+    - Tracery Bots :
       - Tracery Bots : traceryBots.md
       # - Trippy Gourmet : trippyGourmet.md
       - Trippy Gourmet : https://jesmehta.github.io/TraceryBots/TrippyGourmetBot/
       - Mad Solutionist : https://jesmehta.github.io/TraceryBots/MadSolutionistBot/
     - Twine : emergent_twine.md
     - Creative Coding : creative_code.md
-  - Form follows f(x) :  
-    - Form follows f(x) : fffx/fffx.md
-    - Particle systems : fffx/particleSystems.md
-    - 100 Gradients : fffx/100Gradients.md
-    - Vera Molnar : fffx/VeraMolnarRetrospective.md
-    - From Bookclubs to Libraries (Circle Packing with Code) : fffx/PackingShapes.md
-  - Teaching :
-    - Emergent Tech - Working with Ai : https://jesmehta.github.io/working-with-ai/
-
+  - Bookshelf of Curiosities : https://bookshelf.cabinetofcuriosities.in/
+  - Form follows f(x) : https://fffx.cabinetofcuriosities.in/
 
   - Notes on this site : site_notes.md
 
