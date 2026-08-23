@@ -5,6 +5,7 @@
 - [Phase 0 -- v3-prototype punch list](#phase-0----v3-prototype-punch-list)
   - [Punch list (sea serpent through colophon)](#punch-list-sea-serpent-through-colophon)
   - [Found via documentation survey (v3.6.6 doc audit)](#found-via-documentation-survey-v366-doc-audit)
+  - [Additional ideas -- visual/theme work extras (optional, not launch-critical)](#additional-ideas----visualtheme-work-extras-optional-not-launch-critical)
 - [Phase 1 -- Go for Launch](#phase-1----go-for-launch)
   - [Cabinet](#cabinet)
   - [Branch / production transition](#branch--production-transition)
@@ -17,7 +18,7 @@
 Live checklist. Check items off as they land; don't renumber or reorder
 on completion -- history matters more than a tidy list. Companion files:
 
-Phase 0's punch list (both subsections below, 2026-08-23) carries a
+Phase 0's punch list (all three subsections below, 2026-08-23) carries a
 stable `**#N**` tag right after each item's checkbox, so items can be
 referred to by number ("#12") instead of by description. Assigned once,
 in the order items appeared at the time -- a NEW item added later gets
@@ -122,13 +123,19 @@ freely.
       one item's own shape. A real fix needs an aspect-ratio-aware
       constraint back in `squarify()` -- not something to build without
       discussing scope first.
-- [ ] **#10** A real pass on fonts, colours, sizes, and readability --
-      **partially done, v3.6.12-v3.6.13**: header type/size, section-
-      label size, and island-label legibility (live-switchable, see
-      below) are addressed. The map's overall colour scheme itself
-      (sea/sand/veg band hues, ink tones) is still the original
-      first-guess palette from v3.6.5 -- untouched, still on hold.
-- [ ] **#11** Other small details -- compass rose, easter eggs, etc.
+- [x] **#10** A real pass on fonts, colours, sizes, and readability --
+      **done, v3.6.12-v3.6.13** (header type/size, section-label size,
+      island-label legibility, live-switchable) **-- marked fully done
+      per direct confirmation, 2026-08-23.** The map's overall colour
+      scheme itself (sea/sand/veg band hues, ink tones) is still the
+      original first-guess palette from v3.6.5, technically untouched --
+      noted here rather than silently dropped, but no longer blocking
+      this item.
+- [ ] **#11** Other small details -- compass rose, easter eggs, etc. --
+      **partially done, 2026-08-23**: the compass rose itself is real,
+      themed, and functional (see the v3.7.1-v3.7.8 changelog entries).
+      The "easter eggs" half is still open -- see #21 below, the one
+      concrete easter-egg idea currently on record.
 - [x] **#12** Expand the canvas to full-bleed window size -- **done, v3.6.10.**
       Adapts to the viewport ONCE at load, not on a live drag-resize
       afterward.
@@ -147,27 +154,25 @@ freely.
       options to take: scale it with the map, clamp its size within a
       range, or leave it fixed as-is (current behaviour, by default
       rather than decision).
-- [ ] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
+- [x] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
       About Me / Contact Me links, rather than those existing as regular
       islands -- see the doc-audit item below (WORLD-SYSTEMS.md's
       FabAcademy-is-not-a-world rule) for a directly relevant constraint
-      on what About Me should even link to.
-- [ ] **#17** Merge branches -- **superseded by Phase 1's "Promote
+      on what About Me should even link to. **Marked done per direct
+      confirmation, 2026-08-23** -- the compass rose's own direction
+      labels are the real link targets now (`kind: compass-direction`
+      entries in `content/cabinet-entries.tsv`; see #24 below for the
+      commit that moved the old CV entry onto this same mechanism).
+- [x] **#17** Merge branches -- **superseded by Phase 1's "Promote
       landing-v3-prototype into the production Cabinet structure" and
-      the Branch/production transition checklist below.**
+      the Branch/production transition checklist below -- marked done
+      here, tracked there instead.**
 - [ ] **#18** Create a history section and place archival pages there --
       `archived-landing-pages/` already exists as a filesystem
       convention; this is about giving it a real, linked home on the
       site itself, not just a folder.
 - [ ] **#19** Launch the page -- **superseded by Phase 1 below.**
 - [ ] **#20** Write the colophon and creation notes.
-- [ ] **#21** Easter egg: clicking within the compass rose's inner circle
-      switches the WHOLE canvas's theme, Medieval <-> Topology, and back
-      on a second click. Direct request: "Its too nice a piece of work to
-      be seen only in bits." Depends on the theme x hover feature (see
-      the doc-audit list below) enough to make sense built after it, not
-      before -- same two themes, same colour data, just a click-triggered
-      whole-canvas swap instead of a hover-scoped local one.
 
 ### Found via documentation survey (v3.6.6 doc audit)
 
@@ -182,7 +187,19 @@ overall site.
 - [ ] **#23** Real thumbnails owed for entries still on generated placeholder
       tiles -- e.g. Circle Packing Library already has one sitting in
       the fffx repo, just never copied over.
-- [ ] **#24** CV entry's "scroll" icon reads ambiguous at card size.
+- [x] **#24** CV entry's "scroll" icon reads ambiguous at card size. --
+      **superseded, marked done, 2026-08-23**: the `cv` entry itself
+      (`cardType: thumbnail-plaque`, `icon: icon-scroll`) was deleted in
+      commit `1f1b9a5` ("v3.7.1: compass rose replaces About Me in the
+      content pipeline") and replaced by `compass-w` -- `kind:
+      compass-direction`, no icon/cardType/thumbnail at all, rendered as
+      a plain text label on the compass rose, not a card (see #16
+      above). No entry anywhere in `content/cabinet-entries.tsv` uses
+      `icon-scroll` any more -- confirmed by scanning the full `icon`
+      column. "Ambiguous at card size" is moot: there's no card left to
+      be ambiguous. The `<symbol id="icon-scroll">` sprite still sits
+      unreferenced in `docs/index.html`, harmless dead weight, not worth
+      a separate cleanup item on its own.
 - [ ] **#25** Verify fffx's DNS/CNAME is actually live before treating fffx
       links from Cabinet as production (no committed `CNAME` confirmed
       as of the v2.1 follow-up that raised this).
@@ -190,13 +207,52 @@ overall site.
       dashed border, leader-line to a card sitting off the island
       entirely) is fully built and supported by the renderer but no
       entry currently uses it -- available for future content that needs
-      it.
+      it. **Checked, 2026-08-23: NOT a v1/superseded artifact, still a
+      live discrepancy.** `DESIGN-SYSTEM.md` describes the CURRENT
+      renderer (`docs/index.html`/`cabinet-render.js`/
+      `cabinet-landing.css`), not an old system -- but the description
+      itself overclaims: `cabinet-render.js`'s `placement === "external"`
+      handling only sets `x`/`y` position, no leader-line drawing exists
+      anywhere in the codebase (`leaderTo` returns zero matches), and
+      `cabinet-landing.css` has an explicit comment that card-type is "a
+      content classification... not a shape variant -- every card reads
+      as the same plaque" today. So "no entry uses it" is true, but
+      "fully built and supported by the renderer" isn't -- only bare
+      positioning exists, not the dashed-border/leader-line treatment
+      the doc describes. Real open decision, not busywork: either build
+      the missing visual treatment, or correct `DESIGN-SYSTEM.md`'s
+      claim to match what actually exists.
 - [ ] **#27** `WORLD-SYSTEMS.md` standing rule: FabAcademy/Fabricademy
       documentation sites are NOT Level-1 worlds and should not become
       Cabinet islands -- link them from About Me or a relevant
       essay/reflection page instead, if at all. Bears directly on the
       compass-rose/About-Me idea above and on the history-section item
       above.
+- [x] **#33** Update `index.html` to match current development -- the shipped
+      static build needs to reflect everything landed on
+      `islands-tool.html`/the dev panel. **Done** -- `42c5734 build:
+      regenerate index.html for v3.7.23-v3.7.30` postdates every code
+      commit from that phase (Land 5, shadow taper, Diagnostics, z-order
+      fix, dragon fix, theme defaults); no code commits have landed
+      since.
+
+### Additional ideas -- visual/theme work extras (optional, not launch-critical)
+
+Session additions (2026-08-23), moved here from wherever they first
+landed -- not required for launch, not from the original v3.6.6 doc
+audit either, but closely related to/stemming from the visual and
+theme work above rather than the Phase 1 launch work below. Numbers
+carried over unchanged from wherever each item started (see this file's
+own numbering note near the top) -- a move, not a re-add.
+
+- [ ] **#21** Easter egg: clicking within the compass rose's inner circle
+      switches the WHOLE canvas's theme, Medieval <-> Topology, and back
+      on a second click. Direct request: "Its too nice a piece of work to
+      be seen only in bits." Depends on the theme x hover feature (now
+      built, v3.7.32-v3.7.44 above) enough to make sense built after it,
+      not before -- same two themes, same colour data, just a
+      click-triggered whole-canvas swap instead of a hover-scoped local
+      one.
 - [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale
       (still describes Cabinet as having no islands of its own, and
@@ -216,10 +272,14 @@ overall site.
       - Topology: top view, current ellipse shape kept, lighter outline,
         a more intense/saturated version of the same hue (vs. Medieval's
         muted one).
-- [ ] **#31** Merge themes x hover -- **meaning corrected by the user, not yet
+- [x] **#31** Merge themes x hover -- **meaning corrected by the user, not yet
       re-explained.** Not "reconcile hover CSS across theme presets"
       (that was a wrong guess, struck from scope). Actual intent still
-      TBD. Placeholder title only.
+      TBD, placeholder title only -- **marked done per direct
+      confirmation, 2026-08-23**, superseded by the theme x hover
+      mechanism itself now being complete (v3.7.32-v3.7.44 above);
+      whatever this placeholder was originally meant to track no longer
+      needs separate action.
 - [ ] **#32** Rework "Copy config" -- direct question, 2026-08-23: "What does
       copy config do now, with multiple themes and specific
       applications? Does it need to be reworked, or the place where the
@@ -248,13 +308,6 @@ overall site.
       auto-loaded override file (all live-tunable state in one object)
       so nothing needs hand-pasting into source at all. Needs a decision
       before implementing, not a guess.
-- [x] **#33** Update `index.html` to match current development -- the shipped
-      static build needs to reflect everything landed on
-      `islands-tool.html`/the dev panel. **Done** -- `42c5734 build:
-      regenerate index.html for v3.7.23-v3.7.30` postdates every code
-      commit from that phase (Land 5, shadow taper, Diagnostics, z-order
-      fix, dragon fix, theme defaults); no code commits have landed
-      since.
 
 ---
 
