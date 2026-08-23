@@ -215,6 +215,17 @@ body.v3-proto[data-theme="medieval-map"] {
      all-warm palette" logic the violet was chosen for, just a hue the
      user actually wants to see here. */
   --v3-compass-accent: #1f2c52;
+  /* v3.7.60 -- direct report: the glow/halo label style "seems to not be
+     working anymore." Mechanism was never broken (filter: drop-shadow
+     was firing) -- v3.7.16 repainted --v3-veg to #fbf0ee (a pale blush
+     cream) as a direct colour request, unrelated to labels, but
+     --v3-label-outline still defaulted to --cab-land-light (#f4ead0) --
+     two near-identical pale creams, so the glow had almost no contrast
+     against medieval-map's own land fill specifically. Reuses
+     --v3-sea-shallow's existing amber (already in this theme's palette,
+     not a new colour) for real contrast against both the pale veg/sea
+     fills and the label's own dark ink. */
+  --v3-label-outline: var(--v3-sea-shallow);
 }
 
 body.v3-proto[data-theme="medieval-map"] .v3-header h1 {

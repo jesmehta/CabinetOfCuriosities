@@ -696,17 +696,17 @@ export const entries = [
     "section": "interfaces-data-texts",
     "title": "Data Visualisations",
     "subtitle": "Charts, maps, datasets, and visual systems.",
-    "href": "https://bookshelf.cabinetofcuriosities.in/agatha/",
+    "href": "",
     "order": 20,
     "weight": 3,
-    "status": true,
+    "status": "wip",
     "kind": "dataviz",
     "tags": [
       "dataviz",
       "maps",
       "data"
     ],
-    "location": "subdomain",
+    "location": "mkdocs",
     "visual": {
       "placement": "land",
       "size": "medium",
@@ -715,7 +715,7 @@ export const entries = [
       "y": 79.4
     },
     "icon": "icon-chart",
-    "notes": "Cross-listed from Bookshelf's Christie geography-of-murder dataviz page."
+    "notes": "Direct correction, 2026-08-24: was cross-listed to Bookshelf's Christie/agatha page, but that's not actually Data Visualisations content -- reverted to a real stub (no page yet) like the section's other wip entries."
   },
   {
     "id": "writings",
