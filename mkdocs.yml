@@ -4,25 +4,33 @@ site_author: Jesal Mehta
 copyright: Copyright 2024 Jesal Mehta - Creative Commons Attribution Non Commercial
 
 nav:
-  - About Me: about.md
-  - Colophon: colophon.md
-  - Thingamajigs :
+  - Compass :
+    - About Me : about.md
+    - Colophon : colophon.md
+    - Now : now.md
+  - Teaching :
+    - SSD Creative Coding : https://jesmehta.github.io/SSD_CreativeCodingPage/
+    - Working with AI : https://cabinetofcuriosities.in/teaching/working-with-ai/
+    - Prompt Generator : https://jesmehta.github.io/PromptGenerator/
+    - Oblique Strategies : https://jesmehta.github.io/ObliqueStrategies/
+  - Machines & Makings :
     - MiniLoom : mini_loom.md
     - Makings : makings.md
+    - Swatch Fields : https://jesmehta.github.io/swatchFields/
     - 3D Printing :
       - Print Projects :
         - Mecha : 3dp/3DP_mecha.md
         - Flexures : 3dp/3DP_flexures.md
         - PolyHedra : 3dp/3DP_polyhedra.md
       - The year in printing :
-        - 3DP in 2019 : 3dp/3DP_2019.md  
+        - 3DP in 2019 : 3dp/3DP_2019.md
         # - 3DP in 2020 : 3dp/3DP_2020.md
         # - 3DP in 2021 : 3dp/3DP_2021.md
         # - 3DP in 2022 : 3dp/3DP_2022.md
         # - 3DP in 2023 : 3dp/3DP_2023.md
         # - 3DP in 2024 : 3dp/3DP_2024.md
         # - 3DP in 2025 : 3dp/3DP_2025.md
-  - Wild wild web :  
+  - Wild wild web :
     - Dot Mandala Generator : dotMandalaTool.md
     - Tracery Bots :  
       - Tracery Bots : traceryBots.md
@@ -32,7 +40,7 @@ nav:
     - Twine : emergent_twine.md
     - Creative Coding : creative_code.md
   - Form follows f(x) :  
-    - Form follows f(x) : fffx/formFollowsFx.md
+    - Form follows f(x) : fffx/fffx.md
     - Particle systems : fffx/particleSystems.md
     - 100 Gradients : fffx/100Gradients.md
     - Vera Molnar : fffx/VeraMolnarRetrospective.md

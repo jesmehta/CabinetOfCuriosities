@@ -179,6 +179,33 @@ export const sections = [
     },
     "extraCount": 0,
     "notes": "SE-reserved compass rose section -- kind: compass triggers a dedicated render path in landing-v3 (no archipelago growth, no filler islands); cx/cy/rx/ry are unused placeholders, real placement comes from the deterministic SE-corner square carve in cabinet-v3-layout.js."
+  },
+  {
+    "id": "wild-wild-web",
+    "title": "Wild wild web",
+    "subtitle": "Generative bots, mandalas, twine and other web ephemera.",
+    "href": "",
+    "order": 70,
+    "weight": 2,
+    "status": false,
+    "kind": "region",
+    "tags": [
+      "creative-coding",
+      "bots",
+      "generative",
+      "web"
+    ],
+    "location": "mkdocs",
+    "map": {
+      "islandId": "",
+      "mapForm": "",
+      "cx": 0,
+      "cy": 0,
+      "rx": 0,
+      "ry": 0
+    },
+    "extraCount": 3,
+    "notes": "status: false -- has an mkdocs nav section already (TraceryBots/Dot Mandala/Twine/Creative Coding) but no map placement yet; the 6-region + compass grid is currently full (see machines-makings/interfaces-data-texts/visual-field-notes/teaching cx/cy). Needs a layout decision before flipping to wip/true -- see ToDo #69."
   }
 ];
 

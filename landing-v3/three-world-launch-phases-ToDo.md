@@ -613,9 +613,14 @@ failures remain.*
       and `three-world-launch-phases-Notes.md` for why this is a normal merge, not a
       default-branch switch) -- **done, 2026-08-23**, see the
       Branch/production transition entries below for the full mechanics.
-- [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml`
+- [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml` -- **first pass,
+      2026-08-24**: `mkdocs.yml` nav restructured to mirror the compass/world
+      names -- new `Compass` (About/Colophon/Now) and `Teaching` sections
+      added, `Thingamajigs` renamed to `Machines & Makings` to match
+      `cabinet-sections.tsv`'s `machines-makings` title. `Wild wild web` is
+      still nav-only with no TSV section of its own -- see #69.
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
-      necessary for the site to feel complete at launch
+      necessary for the site to feel complete at launch -- see #66 (About).
 - [x] **#43** Implement the first multi-repo assembly, beginning with Working
       with AI (see `three-world-launch-phases-Notes.md` for the mechanism).
       **Done, v3.7.54, 2026-08-24**: `deploy.yml` gained a second
@@ -642,14 +647,13 @@ failures remain.*
       loads clean, zero failed requests, zero console errors. The live
       GitHub Actions run itself still needs confirming -- no `gh` CLI in
       this environment to read run logs directly.
-- [ ] **#44** Change public links from Working with AI's external GitHub Pages
-      URL to the Cabinet-local path once assembled and tested. Not
-      started -- there's currently no existing Cabinet link to Working
-      with AI to update in the first place (not in `cabinet-
-      entries.tsv`, not in `mkdocs.yml`) -- #43's assembly makes
-      `/teaching/working-with-ai/` reachable but nothing points to it
-      yet. Holding on adding a fresh link until #43's live deploy is
-      actually confirmed working, not just locally simulated.
+- [x] **#44** Change public links from Working with AI's external GitHub Pages
+      URL to the Cabinet-local path once assembled and tested --
+      **done, 2026-08-24**: confirmed `https://cabinetofcuriosities.in/
+      teaching/working-with-ai/` live (200, real title) before adding it,
+      so the new `mkdocs.yml` Teaching entry links straight to the
+      Cabinet-local path -- there was never an external link to change,
+      this is the first link in either direction.
 
 ### Branch / production transition
 
@@ -657,19 +661,13 @@ failures remain.*
       2026-08-23**: `data-theme` fix verified, full `mkdocs build`
       passed pre-merge, Playwright confirmed zero console/request
       errors on the promoted page.
-- [ ] **#46** Test the Working with AI assembly there without replacing the
-      current production site -- **in progress, 2026-08-24, #43 shipped
-      to `main`**: the assembly step is self-protecting by construction
-      (all-or-nothing -- `deploy` needs `build`, so a failed assembly
-      step means no new artifact and the current live site stays up
-      untouched), and nothing in Cabinet links to
-      `/teaching/working-with-ai/` yet, so even a SUCCESSFUL run just
-      adds an inert, unlinked path -- either outcome leaves the current
-      production site's actual visible content unaffected. Still needs
-      the live GitHub Actions run itself confirmed (this environment has
-      no `gh` CLI to read run logs), and the deployed URL fetched to
-      confirm the assembled content actually rendered end to end, not
-      just the local pre-push simulation.
+- [x] **#46** Test the Working with AI assembly there without replacing the
+      current production site -- **done, confirmed live, 2026-08-24**:
+      `https://cabinetofcuriosities.in/teaching/working-with-ai/` fetched
+      directly, 200 with the real page title ("Working With AI - 15
+      Principles"), not just the local pre-push simulation. Current
+      production site's visible content was unaffected throughout, as
+      predicted (all-or-nothing assembly, nothing linked to it until #44).
 - [x] **#47** Tag/archive the current `main` state before launch (see Phase 0's
       "create a history section" item -- give archived pages a real
       linked home, not just a tag) -- **done, 2026-08-23**: archival
@@ -727,6 +725,43 @@ marked as such.*
 - [ ] **#58** Confirm failed builds do not replace the last successful live
       deployment
 - [ ] **#59** Merge/tag/deploy the launch version
+
+### Content audit, 2026-08-24
+
+- [ ] **#66** About needs to be written properly -- currently 30 words of
+      placeholder text (`docs/about.md`). Part of #42.
+- [ ] **#67** Nav content audit: most `mkdocs.yml`-linked pages are stub/
+      "coming soon" text even though the file exists -- word counts taken
+      2026-08-24: `about.md` 30, `makings.md` 21, `creative_code.md` 42,
+      `emergent_twine.md` 12, `trippyGourmet.md` 12, `fffx/100Gradients.md`
+      23, `fffx/fffx.md` 19, `fffx/particleSystems.md` 22, all three
+      `3dp/3DP_*.md` prints pages under 20 -- these count as empty for
+      launch purposes even though `mkdocs build` sees them as real pages.
+      Real content exists at `mini_loom.md` (1019w), `site_notes.md`
+      (1583w), `dotMandalaTool.md` (1029w), `traceryBots.md` (681w),
+      `fffx/PackingShapes.md` (819w), `fffx/VeraMolnarRetrospective.md`
+      (311w). Separately, there are `.md` files under `docs/` with no
+      corresponding `cabinet-entries.tsv` row at all -- decided to leave
+      these alone for now, especially the empty ones, rather than force a
+      TSV entry for a stub. Feeds #52/#53's TSV-vs-existing-work audit.
+      In passing: `mkdocs.yml` had a stale nav reference to
+      `fffx/formFollowsFx.md` (file is actually `fffx/fffx.md`, a 404 in
+      production) -- fixed same day since it was a one-line typo, not a
+      content decision.
+- [ ] **#68** Update the MkDocs theme's colour scheme to match the landing
+      page, and add some light background graphics -- currently plain
+      Material defaults, wants to feel like the same site as the v3
+      landing page rather than a bolted-on docs theme. Related to #41.
+- [ ] **#69** `wild-wild-web` added to `cabinet-sections.tsv` (2026-08-24,
+      `status: false` so it doesn't render) -- has an `mkdocs.yml` nav
+      section already (TraceryBots, Dot Mandala Generator, Twine,
+      Creative Coding) but no map placement. The archipelago grid is
+      currently full: 2 large islands (bookshelf, fffx) + 4 medium
+      (teaching, visual-field-notes, machines-makings,
+      interfaces-data-texts) + the compass's reserved SE corner --
+      adding an 8th region needs a layout decision (resize the grid?
+      demote an existing region? different mapForm entirely?) before
+      flipping `status` to `wip`/`true`.
 
 ---
 
