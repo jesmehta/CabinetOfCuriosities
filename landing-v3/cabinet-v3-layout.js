@@ -1704,6 +1704,66 @@ function drawFlowFieldDebug(stage, canvasBounds, field) {
   }
 }
 
+// v3.7.28 -- dev-only visualisation of buildIslandHeightmap()'s H field
+// (the raw noise-minus-falloff terrain driving every contour drawn here
+// -- coastline, wave rings, sea/sand/veg/peak bands, all of it), toggled
+// via v3Config.island.showNoise. Same "tint a grid by the field value"
+// treatment as drawFlowFieldDebug()'s Flow potential view just above,
+// just over the island terrain field instead of the current's. Direct
+// request: "just like the flow potential, vectors, being made visible as
+// a diagnostic, can the underlying noise that make the islands and topo
+// be made visible on toggle."
+//
+// H is sampled at island.cellSize (3px by default) over the PADDED
+// bounds -- one <rect> per cell at that native resolution would be tens
+// of thousands of SVG nodes for a dev toggle nobody needs pixel-exact
+// from. Strides through the SAME already-built H array at
+// NOISE_DEBUG_CELL_PX-sized steps instead (same coarse-grid idea Flow
+// potential already uses at its own field.cellSize, 24px) rather than
+// resampling anything -- H doesn't need rebuilding, just reading
+// sparsely.
+const NOISE_DEBUG_CELL_PX = 24;
+function drawIslandNoiseDebug(stage, paddedBounds, H, cols, rows, cellSize) {
+  let group = stage.querySelector(".v3-noise-debug");
+
+  if (!v3Config.island.showNoise) {
+    if (group) group.remove();
+    return;
+  }
+
+  if (!group) {
+    group = el("g", { class: "v3-noise-debug", "aria-hidden": "true" });
+  } else {
+    group.innerHTML = "";
+  }
+  stage.appendChild(group);
+
+  let min = Infinity, max = -Infinity;
+  for (let i = 0; i < H.length; i++) {
+    const v = H[i];
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
+  const range = Math.max(1e-6, max - min);
+  const stride = Math.max(1, Math.round(NOISE_DEBUG_CELL_PX / cellSize));
+
+  for (let gy = 0; gy < rows; gy += stride) {
+    for (let gx = 0; gx < cols; gx += stride) {
+      const t = (H[gy * cols + gx] - min) / range;
+      group.appendChild(
+        el("rect", {
+          class: "v3-noise-debug-cell",
+          x: paddedBounds.x + gx * cellSize,
+          y: paddedBounds.y + gy * cellSize,
+          width: stride * cellSize,
+          height: stride * cellSize,
+          style: `fill-opacity:${(0.12 + t * 0.55).toFixed(2)}`
+        })
+      );
+    }
+  }
+}
+
 // v3.6.17 -- particle animation state. Deliberately NOT part of
 // islandLayoutState -- that cache exists for cheap slider retraces, this
 // exists for the separate concern of a running requestAnimationFrame
@@ -2207,6 +2267,7 @@ export function retraceIslands() {
   const islandTrace = drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
   lastIslandTrace = islandTrace;
   drawCoastalInwardBands(stage, islandLayoutState.layout, islandTrace, islandLayoutState.grown);
+  drawIslandNoiseDebug(stage, islandTrace.paddedBounds, islandTrace.H, islandTrace.cols, islandTrace.rows, v3Config.island.cellSize);
 
   // v3.7.7 -- redraw the lat/long grid too (cheap: drawGeoGrid() replaces
   // its own group rather than accumulating one per call, see its own
@@ -2362,6 +2423,7 @@ export function render() {
   const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
   lastIslandTrace = islandTrace;
   drawCoastalInwardBands(stage, layout, islandTrace, grown);
+  drawIslandNoiseDebug(stage, islandTrace.paddedBounds, islandTrace.H, islandTrace.cols, islandTrace.rows, v3Config.island.cellSize);
 
   // v3.7.2 bugfix -- this used to run BEFORE drawIslandsPath() on the
   // (wrong) assumption that JS call order determines DOM/paint order.

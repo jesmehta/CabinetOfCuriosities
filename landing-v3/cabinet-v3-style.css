@@ -449,6 +449,21 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
   opacity: 0.85;
 }
 
+/* v3.7.28 -- dev-only island-heightmap debug view (Visuals > Diagnostics:
+   Island noise, cabinet-v3-controls.js -- see drawIslandNoiseDebug() in
+   cabinet-v3-layout.js). Same "deliberately garish, off-palette" rule as
+   .v3-flow-debug above -- unmistakably a debug overlay -- but its OWN
+   colour (gold, not Flow potential's magenta) so the two read as
+   distinct fields if ever toggled on together. */
+.v3-noise-debug {
+  pointer-events: none;
+}
+
+.v3-noise-debug-cell {
+  fill: #ffd42f;
+  stroke: none;
+}
+
 /* v3.6.17 -- particles drifting along the flow field (islands-tool.html
    only -- see startCurrentAnimation()'s comment in cabinet-v3-layout.js).
    Small ellipses, per the design conversation's own "start simple"

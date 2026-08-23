@@ -640,14 +640,27 @@ function buildControlPanel() {
   labelStyleRow.appendChild(labelStyleSelect);
   visualsSection.appendChild(labelStyleRow);
 
-  // -- Flow field debug (v3.6.16) -- see drawFlowFieldDebug() in
-  // cabinet-v3-layout.js and the field notes in cabinet-v3-data.js.
-  // Dev-only visualisation of the (not-yet-animated) flow field: Flow
-  // potential tints a grid by the base current's own scalar potential
-  // ("the noise field" itself, before curl is taken), Flow vectors draws
-  // the full composite field (current + coast avoidance) as arrows.
-  // Both cheap retraceIslands() toggles, same as Wave contours/Colour
-  // bands above.
+  // -- Diagnostics (v3.6.16, folded into one subsection at v3.7.28) --
+  // raw simulation-field views, not part of the shipped look -- peeking
+  // at what's actually driving the rendered shapes, not another visual
+  // treatment of them. Flow potential/vectors (v3.6.16, see
+  // drawFlowFieldDebug() in cabinet-v3-layout.js and the field notes in
+  // cabinet-v3-data.js): Flow potential tints a grid by the base
+  // current's own scalar potential ("the noise field" itself, before
+  // curl is taken), Flow vectors draws the full composite field (current
+  // + coast avoidance) as arrows. Island noise (v3.7.28, direct request:
+  // "just like the flow potential, vectors... can the underlying noise
+  // that make the islands and topo be made visible on toggle... a
+  // under-the-hood dropdown that can then contain the flow potential and
+  // vector checkboxes as well") -- same tint-a-grid treatment as Flow
+  // potential, over buildIslandHeightmap()'s own H field instead of the
+  // current's. Previously two loose checkboxes sitting directly in
+  // Visuals; a real collapsible subsection (same makeSubsection() nesting
+  // every other cluster here uses) reads better as a group and gives the
+  // new one a home instead of adding a third loose row. All three are
+  // cheap retraceIslands() toggles, same as Wave contours/Colour bands
+  // above.
+  const diagnosticsSubsection = makeSubsection(visualsSection, "Diagnostics", false);
   const addFlowCheckbox = (key, label) => {
     const row = document.createElement("label");
     row.className = "v3-controls-checkbox-row";
@@ -662,11 +675,26 @@ function buildControlPanel() {
     span.textContent = label;
     row.appendChild(check);
     row.appendChild(span);
-    visualsSection.appendChild(row);
+    diagnosticsSubsection.appendChild(row);
     return check;
   };
   const flowPotentialCheck = addFlowCheckbox("showPotential", "Flow potential (noise field)");
   const flowVectorsCheck = addFlowCheckbox("showVectors", "Flow vectors (directions)");
+
+  const noiseCheckRow = document.createElement("label");
+  noiseCheckRow.className = "v3-controls-checkbox-row";
+  const noiseCheck = document.createElement("input");
+  noiseCheck.type = "checkbox";
+  noiseCheck.checked = v3Config.island.showNoise;
+  noiseCheck.addEventListener("change", () => {
+    v3Config.island.showNoise = noiseCheck.checked;
+    retraceIslands();
+  });
+  const noiseCheckLabel = document.createElement("span");
+  noiseCheckLabel.textContent = "Island noise (heightmap)";
+  noiseCheckRow.appendChild(noiseCheck);
+  noiseCheckRow.appendChild(noiseCheckLabel);
+  diagnosticsSubsection.appendChild(noiseCheckRow);
 
   // -- Particle counts (v3.6.22) -- direct request: "I want to try out
   // the look and feel of more and less particles." Base count is the
@@ -989,6 +1017,8 @@ function buildControlPanel() {
     v3Config.flow.showVectors = visualsDefaults.showFlowVectors;
     flowPotentialCheck.checked = v3Config.flow.showPotential;
     flowVectorsCheck.checked = v3Config.flow.showVectors;
+    v3Config.island.showNoise = visualsDefaults.showNoise;
+    noiseCheck.checked = v3Config.island.showNoise;
     v3Config.particles.count = visualsDefaults.particleCount;
     v3Config.particles.maxCount = visualsDefaults.particleMaxCount;
     particleCountWidget.refresh();
