@@ -182,6 +182,11 @@ freely.
       production page. Fixed by defaulting all three to `--v3-ink`
       (already dark and theme-correct everywhere, it's the map's own
       text-ink token) instead of carrying a medieval-only override.
+      **v3.7.49 follow-up, direct feedback**: `max-width: 640px` dropped
+      so the sticky bar spans the full page width instead of just its
+      left ~640px, leaving room for possible right-corner content later
+      ("i may add some text on the right corner later, maybe" -- not
+      built, just left room for it).
 - [x] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
       About Me / Contact Me links, rather than those existing as regular
       islands -- see the doc-audit item below (WORLD-SYSTEMS.md's
@@ -298,26 +303,72 @@ theme work above rather than the Phase 1 launch work below. Numbers
 carried over unchanged from wherever each item started (see this file's
 own numbering note near the top) -- a move, not a re-add.
 
-- [x] **#21** Easter egg: clicking within the compass rose's inner circle
+- [ ] **#21** Easter egg: clicking within the compass rose's inner circle
       switches the WHOLE canvas's theme, Medieval <-> Topology, and back
       on a second click. Direct request: "Its too nice a piece of work to
       be seen only in bits." Depends on the theme x hover feature (now
       built, v3.7.32-v3.7.44 above) enough to make sense built after it,
       not before -- same two themes, same colour data, just a
       click-triggered whole-canvas swap instead of a hover-scoped local
-      one. **Done, v3.7.48**: a small invisible circle at the rose's
-      centre (`.v3-compass-theme-hit`, `renderCompassRegion()`) toggles
-      `document.body.dataset.theme` between `medieval-map`/`satellite` on
-      click -- both themes' CSS ship unconditionally already, so this is
-      just the attribute flip, no colour logic needed. Currently shipping
-      with a CROSS-FADE (450ms `transition` on every fill/stroke/
-      background/color under `#v3-stage` plus the header text), not an
-      instant snap -- direct request to see the fade live before
-      finalizing between the two ("I want to see the transition before
-      the switch version"), instant was the original lean going in.
-      Known limitation, inherited from #64/v3.7.47: boats/dragons only
-      have Medieval colours defined, so they won't re-tint on swap to
-      Topology (already-flagged future scope, not fixed here).
+      one. **Mechanically done, v3.7.48-v3.7.49, but NOT actually
+      correct yet -- reopened by direct testing feedback.** A small
+      invisible circle at the rose's centre (`.v3-compass-theme-hit`,
+      `renderCompassRegion()`) toggles `document.body.dataset.theme`
+      between `medieval-map`/`satellite` on click, with a CROSS-FADE
+      (450ms `transition`) rather than an instant snap, per direct
+      request to see it live before choosing between the two. Two
+      real problems found once actually tested:
+      1. **Structural, not just colour.** `document.body.dataset.theme`
+         only flips the CSS custom-property LAYER (fill/stroke tokens).
+         Whether wave rings/coastal bands draw at all, and whether
+         islands render flat or shaded, is controlled by
+         `v3Config.island.flatColourMode`/`showWaveRings`/
+         `showCoastalBands`/`seaShadowStyle` -- baked into the static
+         SVG once, at BUILD time, from whichever theme
+         `build-render.html` had active (`medieval-map`, hardcoded).
+         `THEME_PRESETS` (`cabinet-v3-controls.js`) sets these
+         DIFFERENTLY per theme (`satellite: flatColourMode: false,
+         showWaveRings: false, showCoastalBands: false, seaShadowStyle:
+         "directional"` vs medieval's `true/true/true/"radial"`) --
+         real structural differences a runtime attribute flip cannot
+         retroactively add or remove. Direct report: **"it shows
+         topology as a flat version... topo bands are missing, etc."**
+         Confirmed by screenshot: swapped-to-Topology still renders
+         with medieval's flat-fill-plus-ring island style, just
+         recoloured, not Topology's own directional-shadow/textured
+         look. Real options, not yet chosen between: (a) accept this as
+         a deliberate "Topology colours on Medieval structure" partial
+         swap and stop calling it a full theme swap; (b) bake BOTH
+         themes' full structural variants into the static build and
+         toggle visibility via `data-theme` -- roughly doubles the
+         static HTML payload (currently ~4.7MB of SVG markup); (c) reuse
+         the already-serialized `grown`+`canvasBounds` (same data
+         v3.7.47's boats/dragons already reads) to re-run just the
+         island-drawing/coastline-tracing portion of
+         `cabinet-v3-layout.js` client-side on swap -- NOT the full
+         170KB+ engine (treemap/circlepack only decide positions, which
+         don't change between themes), but still real added JS and a
+         genuine recompute pause on click, not instant.
+      2. **Hover-preview mismatch, secondary per direct confirmation
+         ("The In-topology hover behaviour is secondary").** The
+         per-island theme-preview hover wash is a static, pre-baked
+         decoration representing "hover shows what the OTHER production
+         theme would look like" relative to build time -- not reactive
+         to whichever theme is CURRENTLY active after a swap. Once
+         swapped into Topology, hovering should preview Medieval, but
+         still shows Topology's own (now-redundant) preview. Same root
+         cause as (1) above, likely resolved by whichever option is
+         chosen there rather than needing its own separate fix.
+      **Fixed in the same pass**: the ~10px page-jump on swap
+      (`.v3-header h1`'s font-family swaps to Cinzel for medieval-map,
+      a different typeface with different natural line-height metrics
+      -- explicit `line-height: 1.2` now forces the same line-box
+      height regardless of which font is actually rendering inside it;
+      verified identical `.v3-header` height in px before/after swap).
+      Known limitation, inherited from #64/v3.7.47, unaffected by the
+      above: boats/dragons only have Medieval colours defined, so they
+      won't re-tint on swap to Topology either way (already-flagged
+      future scope).
 - [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale
       (still describes Cabinet as having no islands of its own, and
@@ -338,9 +389,22 @@ own numbering note near the top) -- a move, not a re-add.
       rotate(-360deg)` via a `:has()` rule when the ring is hovered;
       `transform-box: fill-box` centres the spin on the group's own
       bounding box without needing to compute the rose's centre by hand.
-      The diagonals radiating from the compass (the lat/long grid's
-      ordinal rays, drawn separately in `render()`) do NOT rotate with
-      it -- out of scope for this pass, not attempted.
+      **v3.7.49 follow-up, direct feedback ("can the diagonal lines
+      also rotate with the compass?")**: they now do. The rays
+      (`drawGeoGrid()`) moved into their own nested [translate ->
+      rotate] pair, same reasoning as the rose's own spinGroup -- an
+      inline SVG `transform="translate(...)"` and a CSS `transform:
+      rotate()` can't coexist on one element, CSS replaces the
+      attribute outright rather than composing with it. Drawn relative
+      to local (0,0), which the outer translate already pins to the
+      compass's true centre, so the spin rule's `transform-origin: 0 0`
+      is a constant rather than needing the compass's per-render
+      coordinates baked into the stylesheet. `.v3-geo-grid` (and this
+      group inside it) is a SIBLING of `.v3-compass`, not a descendant,
+      so its `:has()` trigger is rooted at `#v3-stage` -- their nearest
+      common ancestor -- instead of `.v3-compass`. Verified via
+      computed-style inspection (not just a screenshot) that both spin
+      groups share the same live rotation matrix mid-animation.
 - [ ] **#63** Compass arms: hovering one reveals intricate scrollwork
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be

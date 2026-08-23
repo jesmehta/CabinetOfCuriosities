@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.49 -- full-width header, diagonals now spin with the compass, and a real structural gap found in the theme swap](#v3749----full-width-header-diagonals-now-spin-with-the-compass-and-a-real-structural-gap-found-in-the-theme-swap)
   - [v3.7.48 -- sticky header, compass click to swap theme, compass hover to spin](#v3748----sticky-header-compass-click-to-swap-theme-compass-hover-to-spin)
   - [v3.7.47 -- boats and dragons, live, on the production build](#v3747----boats-and-dragons-live-on-the-production-build)
   - [v3.7.46 -- production's H1/section/island labels were never loading their actual fonts](#v3746----productions-h1sectionisland-labels-were-never-loading-their-actual-fonts)
@@ -108,7 +109,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.48**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.49**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1528,6 +1529,105 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.49 -- full-width header, diagonals now spin with the compass, and a real structural gap found in the theme swap
+
+Follow-up round after actually testing v3.7.48's three items live.
+
+**#60 follow-up.** `.v3-header`'s `max-width: 640px` dropped -- the
+sticky bar only covered the left ~640px of the row, direct feedback:
+"needs to be full width - i may add some text on the right corner later,
+maybe." Not building a flex/right-corner layout now since that content
+is still hypothetical; a plain full-width block is a smaller diff to
+extend later than a flex row would be to have guessed wrong now.
+
+**#29 follow-up.** Direct question: "can the diagonal lines also rotate
+with the compass?" They now do. The rays (`drawGeoGrid()`) moved into
+their own nested `[translate -> rotate]` pair, same reasoning as the
+rose's own spin group: an inline SVG `transform="translate(...)"`
+attribute and a CSS `transform: rotate()` can't coexist on one element
+-- CSS replaces the attribute outright rather than composing with it.
+Each ray is drawn relative to local `(0,0)`, which the outer translate
+already pins to the compass's true centre, so the spin rule's
+`transform-origin: 0 0` is a constant rather than needing the compass's
+actual per-render coordinates computed into the stylesheet.
+`.v3-geo-grid` (and the diagonal spin group inside it) is a SIBLING of
+`.v3-compass`, not a descendant, so its `:has()` trigger is rooted at
+`#v3-stage` -- their nearest common ancestor -- rather than
+`.v3-compass` like the rose's own rule. Verified via computed-style
+inspection mid-hover (not just a screenshot) that both groups carry the
+same live rotation matrix.
+
+*(An earlier verification pass using guessed screen coordinates for the
+hover point wrongly suggested the spin wasn't triggering at all --
+turned out the mouse was landing on one of the existing direction-label
+hit-rects instead of the ring. Re-tested with coordinates derived from
+the actual hit-circle geometry at a 45-degree off-axis angle: works
+correctly. Recorded here since it could easily have been reported as a
+bug that didn't exist.)*
+
+**#21 -- real problems found, not yet resolved.** Direct report after
+actually using the swap: **"theme swap - doesnt work fully - the
+transition over 450 ms is ok, but it shows topology as a flat version...
+topo bands are missing, etc."** Root cause: `document.body.dataset.theme`
+only flips the CSS custom-property layer (fill/stroke colour tokens).
+Whether wave rings or coastal bands draw at all, and whether islands
+render flat or shaded, is controlled by
+`v3Config.island.flatColourMode`/`showWaveRings`/`showCoastalBands`/
+`seaShadowStyle` -- baked into the static SVG once, at BUILD time, from
+whichever theme `build-render.html` had active (`medieval-map`,
+hardcoded). `THEME_PRESETS` (`cabinet-v3-controls.js`) sets these
+genuinely differently per theme (`satellite: flatColourMode: false,
+showWaveRings: false, showCoastalBands: false, seaShadowStyle:
+"directional"` vs medieval's `true/true/true/"radial"`) -- a runtime
+attribute flip cannot retroactively add or remove structural SVG
+content that was never drawn (or was drawn under different flags) at
+build time. Confirmed by screenshot: swapped-to-Topology still renders
+with medieval's flat-fill-plus-ring island style, just recoloured.
+
+Real options laid out, not yet chosen between:
+- **(a) Reframe, don't rebuild.** Accept this as a deliberate "Topology
+  colours on Medieval structure" partial swap and stop describing it as
+  a full theme swap. Zero additional cost, but doesn't give Topology its
+  own actual look.
+- **(b) Double-bake.** Render both themes' full structural variants at
+  build time, toggle visibility via `data-theme`. No added runtime JS or
+  compute cost, swap stays instant/fadeable -- but roughly doubles the
+  static HTML payload (currently ~4.7MB of SVG markup for one theme).
+- **(c) Partial live re-render.** Reuse the already-serialized
+  `grown`+`canvasBounds` (the same data v3.7.47's boats/dragons already
+  reads out of `#v3-anim-data`) to re-run just the island-drawing/
+  coastline-tracing portion of `cabinet-v3-layout.js` client-side on
+  swap -- deliberately NOT the full 170KB+ engine, since
+  treemap/circlepack only decide island POSITIONS, which don't change
+  between themes, only their structural rendering flags do. Still real
+  added JS and a genuine recompute pause on click, though, not instant.
+
+A second, smaller issue was flagged as secondary by direct confirmation
+("The In-topology hover behaviour is secondary, but the colours applied
+are off, topo bands are missing, etc."): the per-island theme-preview
+hover wash is a static, pre-baked decoration meaning "hover shows what
+the OTHER production theme would look like," fixed relative to build
+time -- not reactive to whichever theme is CURRENTLY active after a
+swap. Once swapped into Topology, hovering should preview Medieval, but
+still shows Topology's own now-redundant preview. Same root cause as the
+structural gap above; likely resolved by whichever option is chosen
+there rather than needing a separate fix.
+
+**Fixed in the same pass, unrelated to the above.** A ~10px page-jump on
+every swap, direct report: **"if youre scrolled to the top of the page,
+then the H1 frame is different sizes in both themes, and so the page
+moves up and down by 10ish px everytime its swapped because it's
+attached to the upper frame."** Root cause: medieval-map's `.v3-header
+h1` override swaps `font-family` to Cinzel, a different typeface with
+different natural line-height metrics than the base heading font --
+left at the default `line-height: normal`, that swap changed the
+header's total rendered height, and since `.v3-header` is `position:
+sticky` in normal document flow, that height change showed up as the
+whole page shifting. An explicit `line-height: 1.2` forces the same
+line-box height regardless of which font is actually rendering inside
+it. Verified identical `.v3-header` height in px immediately before and
+immediately after a swap.
 
 ### v3.7.48 -- sticky header, compass click to swap theme, compass hover to spin
 

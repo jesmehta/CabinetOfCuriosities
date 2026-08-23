@@ -2642,6 +2642,81 @@ representation in that nav despite `cabinet-entries.tsv` entries
 pointing at pages meant to live under it. Not started; real
 reconciliation work, not a rename.
 
+## "theme swap - doesnt work fully" -- testing v3.7.48 live surfaced a real architecture gap, not a polish pass
+
+Three follow-ups, delivered as short, direct feedback after actually
+using what had just shipped:
+
+**"60 - needs to be full width - i may add some text on the right corner
+later, maybe"** and **"29 - can the diagonal lines also rotate with the
+compass?"** were both real but genuinely small: the sticky header's
+`max-width: 640px` had never been removed (it only covered the left
+portion of the row), and the diagonal rays radiating from the compass
+had been left out of the rotation entirely, drawn in a separate function
+(`drawGeoGrid()`) that the rose's own spin group never touched. Both
+fixed the same way the rose's own spin was built -- a nested translate/
+rotate pair so the CSS-driven rotation doesn't fight the SVG
+positioning transform already on the element.
+
+Verifying the diagonal fix nearly produced a false bug report of its
+own: a first Playwright check, hovering at a guessed screen coordinate,
+showed no rotation happening on either the rose or the diagonals --
+looked like the whole mechanism was broken. Re-deriving the hover point
+from the actual hit-circle geometry (rather than a guessed fraction of
+the compass's bounding box) showed it was working correctly the whole
+time; the guessed coordinate had simply landed on one of the existing
+direction-label hit-rects ("Contact me"'s hit box) instead of the new
+spin ring. Worth recording precisely because it's the kind of thing that
+could have been reported back as "fixed" or "still broken" on bad
+evidence either way.
+
+**#21 was the real one.** The third item wasn't a small miss:
+
+> "21 - theme swap - doesnt work fully - the transition over 450 ms is
+> ok, but it shows topology as a flat version, and the hover still shows
+> the correct topology colours, when hover should show the original
+> cloudy glow when within topology. The In-topology hover behaviour is
+> secondary, but the colours applied are off, topo bands are missing,
+> etc. Also, if the page is mid scroll then it swaps in the correct
+> place, but if youre scrolled to the top of the page, then the H1 frame
+> is different sizes in both themes, and so the page moves up and down
+> by 10ish px everytime its swapped because it's attached to the upper
+> frame."
+
+Four distinct things in one message, and they split cleanly by cause.
+The page-jump was genuinely small -- Cinzel (Medieval's H1 font) and the
+default heading font have different natural line-height metrics, and
+with `line-height` left unset that difference showed up as a ~10px
+height change on the sticky header, visible as the whole page jumping
+whenever there was no scroll slack to absorb it. An explicit
+`line-height` fixed it outright, verified by comparing `.v3-header`'s
+pixel height immediately before and after a swap -- identical.
+
+The "flat version, bands missing" complaint was not small. It traced
+back to something the click-to-swap feature was never actually built to
+handle: `document.body.dataset.theme` only flips CSS colour tokens.
+Whether wave rings or coastal bands draw AT ALL, and whether islands
+render flat or shaded, comes from `v3Config.island.flatColourMode` and
+three sibling flags -- baked into the static SVG once, at build time,
+under whichever theme was active when `build-static.mjs` ran (Medieval,
+always, since that's what `build-render.html` hardcodes). Topology's own
+`THEME_PRESETS` entry sets every one of those flags differently. A
+runtime attribute swap was never going to be able to retroactively draw
+structure that was never captured -- the same category of question as
+the boats/dragons decision (`#64`, "how much of the real engine does
+this actually need"), just discovered by testing rather than raised in
+advance. Laid out three honest options (accept it as a colour-only
+reskin; double the static payload to bake both themes' structure;
+selectively reuse the already-serialized `grown`/`canvasBounds` data
+-- the same data boats/dragons already reads -- to re-run just the
+coastline/band drawing client-side, not the full 170KB+ layout engine)
+rather than picking one and building it, since the cost/tradeoff is real
+enough that it isn't a call to make alone. The hover-preview mismatch
+("hover should show the original cloudy glow when within topology") was
+flagged by its own reporter as secondary, and shares the identical root
+cause -- likely resolved by whichever option gets picked for the main
+issue, not something to chase separately.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

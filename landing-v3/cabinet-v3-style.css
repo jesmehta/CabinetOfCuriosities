@@ -368,10 +368,19 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    no JS changes needed. Needs an opaque background now that content
    scrolls behind it -- the page itself has never had one set (still
    plain browser-default white), so this just makes that existing
-   default explicit rather than picking a new colour. */
+   default explicit rather than picking a new colour.
+   v3.7.49 -- max-width: 640px dropped: the sticky bar itself only
+   covered the left ~640px of the row, the rest of the top strip had no
+   backing at all and just showed whatever was scrolling underneath.
+   Direct request: "needs to be full width - i may add some text on the
+   right corner later, maybe" -- h1/.v3-subtitle keep their own natural
+   width regardless (.v3-subtitle already caps at 60ch), this only
+   widens the bar/background, not the text block. Not building a
+   flex/right-corner layout now since the corner content is still
+   hypothetical ("maybe") -- a plain block is a smaller diff to extend
+   later than a flex row would be to have guessed wrong now. */
 .v3-header {
   padding: 28px 24px 14px;
-  max-width: 640px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -392,9 +401,22 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    (it's the map's own text-ink token), so it's the right default here
    too -- removes the need for the medieval-only override this used to
    require. */
+/* v3.7.49 -- explicit line-height: medieval-map's h1 override below
+   swaps font-family to Cinzel, a different typeface with different
+   natural line-height metrics than the base heading font. Left at
+   "normal" (the default), that swap changes the header's total
+   rendered height by ~10px, and since .v3-header is position: sticky
+   in normal document flow, that height change shows up as the whole
+   page jumping up/down on every #21 theme swap -- most visible at
+   scroll position 0, where there's no scroll slack to absorb it.
+   Direct report: "if youre scrolled to the top of the page... the page
+   moves up and down by 10ish px everytime its swapped." A fixed
+   line-height forces the same line-box height regardless of which
+   font is actually rendering inside it. */
 .v3-header h1 {
   font-family: var(--cab-font-heading);
   font-size: 2.1rem;
+  line-height: 1.2;
   margin: 0 0 6px;
   color: var(--v3-ink);
 }
@@ -639,6 +661,26 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    above -- no JS state to track. */
 .v3-compass:has(.v3-compass-spin-hit:hover) .v3-compass-rose-spin,
 .v3-compass:has(.v3-compass-spin-hit:focus-visible) .v3-compass-rose-spin {
+  animation: v3-compass-spin 900ms ease-in-out;
+}
+
+/* v3.7.49 -- direct request: "can the diagonal lines also rotate with
+   the compass?" .v3-geo-diagonal-spin (cabinet-v3-layout.js's
+   drawGeoGrid()) sits in its own [translate -> rotate] group, drawn
+   relative to its own local (0,0) which the outer translate already
+   pins to the compass's true centre -- so transform-origin: 0 0 is a
+   constant here, not something that needs the compass's actual
+   per-render coordinates baked into this stylesheet. .v3-geo-grid (and
+   therefore this) is a SIBLING of .v3-compass, not a descendant, so the
+   :has() trigger is rooted at #v3-stage -- their nearest common
+   ancestor -- instead of .v3-compass like the rule above. */
+.v3-geo-diagonal-spin {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+#v3-stage:has(.v3-compass-spin-hit:hover) .v3-geo-diagonal-spin,
+#v3-stage:has(.v3-compass-spin-hit:focus-visible) .v3-geo-diagonal-spin {
   animation: v3-compass-spin 900ms ease-in-out;
 }
 
