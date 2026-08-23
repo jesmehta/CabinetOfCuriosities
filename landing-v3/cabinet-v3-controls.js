@@ -313,7 +313,17 @@ function buildControlPanel() {
     lonSpacing: v3Config.geo.lonSpacing,
     showCoastalBands: v3Config.island.showCoastalBands,
     showSeaShadow: v3Config.island.showSeaShadow,
-    seaShadowStyle: v3Config.island.seaShadowStyle
+    seaShadowStyle: v3Config.island.seaShadowStyle,
+    coastInwardBandDistances: [...v3Config.island.coastInwardBandDistances],
+    seaRadialShadowDistances: [...v3Config.island.seaRadialShadowDistances],
+    // v3.7.43 -- Hover theme's own defaults, for its new local Reset
+    // button (see that subsection's own comment) -- never previously
+    // captured or restorable at all; the panel had no reset path for
+    // v3Config.themePreview whatsoever until now.
+    previewTheme: v3Config.themePreview.previewTheme,
+    islandHaloPx: v3Config.themePreview.islandHaloPx,
+    sectionHaloPx: v3Config.themePreview.sectionHaloPx,
+    blurPx: v3Config.themePreview.blurPx
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -432,6 +442,59 @@ function buildControlPanel() {
   seaShadowStyleRow.appendChild(seaShadowStyleName);
   seaShadowStyleRow.appendChild(seaShadowStyleSelect);
   visualsSection.appendChild(seaShadowStyleRow);
+
+  // v3.7.42 -- direct request: individual width controls for the coastal
+  // band and the radial sea shadow -- until now these arrays (fixed pixel
+  // distances, NOT the noise-threshold-based seaBandThresholds
+  // "Topological offset parameters" further down) were only ever
+  // hand-edited in cabinet-v3-data.js, reachable from the panel as a
+  // whole-effect on/off toggle (the two checkboxes/selector just above)
+  // but never at the individual-distance level. One slider per array
+  // element, same "wholesale array replacement, not index mutation"
+  // pattern addBandGroup() (Topological offset parameters, below) uses,
+  // for the same reason: an in-place mutation would corrupt
+  // visualsDefaults' own cloned snapshot. Plain px values, not relative to
+  // Threshold like addBandGroup()'s sliders -- these were never framed
+  // relative to the coastline in the first place (coastInward/
+  // seaRadialShadow are already explicitly "distance FROM the
+  // coastline"), so there's no equivalent "0 = coast" reading to
+  // preserve.
+  // v3.7.42 also dropped the coastOutwardBandDistances group this
+  // originally shipped with (3 more sliders, "outward"): direct feedback,
+  // "land baseline should be coastline by default, to subtract from,
+  // shouldnt be extending out to sea" -- the coastal band is a land-side
+  // effect now, full stop, so "inward" is the only direction left and the
+  // qualifier is dropped from the label. See coastOutwardBandDistances'
+  // own comment in cabinet-v3-data.js for why the array itself stays
+  // (now empty) rather than being deleted outright.
+  // v3.7.43 -- renamed "Coastal / sea band widths (px)" -> "Bands width
+  // (px)" and repositioned (see the reorder pass at the end of the
+  // Visuals section) -- purely cosmetic, matches the control-panel
+  // reorganization's own shorter naming.
+  const bandWidthSubsection = makeSubsection(visualsSection, "Bands width (px)", false);
+  const bandWidthSliders = [];
+  const addWidthGroup = (arrayKey, label) => {
+    v3Config.island[arrayKey].forEach((_, i) => {
+      bandWidthSliders.push(
+        buildSlider(bandWidthSubsection, {
+          label: `${label} ${i + 1}`,
+          min: 0, max: 60, step: 0.5,
+          get: () => v3Config.island[arrayKey][i],
+          set: v => {
+            v3Config.island[arrayKey] = v3Config.island[arrayKey].map((x, idx) => (idx === i ? v : x));
+          }
+        })
+      );
+    });
+  };
+  addWidthGroup("coastInwardBandDistances", "Coastal band");
+  addWidthGroup("seaRadialShadowDistances", "Sea shadow, radial");
+  function resetBandWidths() {
+    v3Config.island.coastInwardBandDistances = [...visualsDefaults.coastInwardBandDistances];
+    v3Config.island.seaRadialShadowDistances = [...visualsDefaults.seaRadialShadowDistances];
+    bandWidthSliders.forEach(s => s.refresh());
+  }
+  addButton(bandWidthSubsection, "Reset", () => { resetBandWidths(); retraceIslands(); }, { block: true });
 
   // -- Theme (v3.6.14, expanded v3.6.15) -- seven parallel colour/type
   // treatments, meant to be compared against each other rather than one

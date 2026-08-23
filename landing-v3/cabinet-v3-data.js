@@ -287,7 +287,18 @@ export const v3Config = {
     // so turning it back on doesn't lose whatever's been tuned. Direct
     // request: "give me a toggle for the coastal bands and sea shadows."
     showCoastalBands: true,
-    coastOutwardBandDistances: [2, 4, 7],
+    // v3.7.42 -- was [2, 4, 7], same as coastInwardBandDistances below --
+    // direct feedback: "land baseline should be coastline by default, to
+    // subtract from, shouldnt be extending out to sea." The "coastal
+    // band" effect is now purely a LAND-side thing, subtracting inward
+    // from the coastline; the sea side already has its own depth
+    // gradient (seaBandThresholds) and shadow (seaRadialShadowDistances
+    // below) doing that job, so a third sea-ward fade here was redundant.
+    // Left as a real (empty, not deleted) array rather than removing the
+    // mechanism outright -- placeBand() already treats an empty distance
+    // list as a no-op, same as every other optional layer, so this stays
+    // the one place to re-enable it later if ever wanted back.
+    coastOutwardBandDistances: [],
     coastInwardBandDistances: [2, 4, 7],
     // v3.7.10 -- the actual active shadow: all-around (radially
     // symmetric), same coastline-offset mechanism (traceOutward,
