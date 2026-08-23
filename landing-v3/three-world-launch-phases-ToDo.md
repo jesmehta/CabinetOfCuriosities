@@ -232,11 +232,14 @@ overall site.
       above.
 - [x] **#33** Update `index.html` to match current development -- the shipped
       static build needs to reflect everything landed on
-      `islands-tool.html`/the dev panel. **Done** -- `42c5734 build:
-      regenerate index.html for v3.7.23-v3.7.30` postdates every code
-      commit from that phase (Land 5, shadow taper, Diagnostics, z-order
-      fix, dragon fix, theme defaults); no code commits have landed
-      since.
+      `islands-tool.html`/the dev panel. **Done, re-confirmed
+      2026-08-23** -- `42c5734` covered v3.7.23-v3.7.30; twelve more
+      commits landed after it (the whole theme x hover mechanism,
+      band-width sliders, panel reorg, debug-overlay resolution bump,
+      v3.7.32-v3.7.44) before `index.html` was regenerated again to
+      match, `ae36f4e build: regenerate index.html for v3.7.32-v3.7.44`.
+      Re-run `node build-static.mjs` from `landing-v3/` whenever code
+      lands ahead of it again.
 
 ### Additional ideas -- visual/theme work extras (optional, not launch-critical)
 
@@ -324,13 +327,19 @@ failures remain.*
 
 - [ ] **#34** Finish the V3 landing-page launch pass:
   - [x] **#35** integrate sea serpent -- done, v3.6.24 (Phase 0 above)
-  - [ ] **#36** final colour/type choice (Phase 0 above -- partially done, the
-        map's overall colour scheme is still on hold)
+  - [x] **#36** final colour/type choice -- **done, 2026-08-23**, per direct
+        confirmation. Closes the caveat #10 (Phase 0) left open about the
+        map's overall colour scheme.
   - [ ] **#37** fix obvious label overflow on the map itself (distinct from the
         doc-audit item above about production-page card/label overlap)
-  - [ ] **#38** decide whether flowfield/particle boats ship in the production
-        build or are consciously deferred (currently
-        `islands-tool.html`-only, see Phase 0 above)
+  - [x] **#38** decide whether flowfield/particle boats ship in the production
+        build or are consciously deferred -- **decided, 2026-08-23:
+        consciously deferred.** Confirmed via `build-static.mjs`/
+        `index.template.html`: the production build is a single static SVG
+        snapshot with no client-side script at all, so the flowfield/
+        particle system (an animation loop) has no path into it as
+        currently architected. Boats stay `islands-tool.html`-only, a dev
+        tool, unless the static-build approach itself changes later.
   - [ ] **#39** desktop/mobile QA
 - [ ] **#40** Promote `landing-v3-prototype` into the production Cabinet
       structure (see the Branch/production transition checklist below,
