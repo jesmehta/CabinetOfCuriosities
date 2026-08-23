@@ -186,9 +186,43 @@ export const v3Config = {
     // (widest reach) first so overlap count -- not hue -- creates the
     // gradient (see drawIslandsPath() in cabinet-v3-layout.js). Order
     // matters: each array is loose-to-tight, i.e. draw/bottom-to-top order.
-    seaBandThresholds: [-0.97, -0.87, -0.77, -0.67],
-    sandThresholds: [-0.6, -0.35],
-    vegThresholds: [-0.1, 0.15],
+    // v3.7.29 -- retuned live against the real site content via the dev
+    // panel's now-relative "Topological offset parameters" sliders (see
+    // that section's own v3.7.26 comment for the raw<->relative
+    // conversion these values are still stored in RAW form despite),
+    // then pasted back in via "Copy config": "USe these Topological
+    // offset params, other settings are default anyway." Note
+    // seaBandThresholds[0] (-1.38) now sits only 0.02 above waterLevel
+    // (-1.4) -- deliberately close to that floor, not accidentally past
+    // it (see waterLevel's own v3.7.28 comment for what happens if a
+    // level crosses it). sandThresholds[0] (-0.66) is also, unusually,
+    // slightly LOOSER than threshold (-0.62) -- Land 1 now extends a
+    // hair past the coastline into the sea, same as every seaBand level
+    // already does; the loose-to-tight nesting property this whole
+    // scheme depends on ({H>L} superset of {H>L'} for L<L') doesn't
+    // require staying on one named group's "expected" side of the
+    // coastline, so this is a valid, live-tuned choice, not a bug.
+    seaBandThresholds: [-1.38, -1.04, -0.88, -0.8],
+    sandThresholds: [-0.66, -0.22],
+    vegThresholds: [-0.06, 0.02],
+    // v3.7.28 -- "Land 5," direct request: "a very high contour seen only
+    // on some of the islands, a mountain peak of sorts." Own array (not
+    // just another vegThresholds entry) because it needs its own colour
+    // (--v3-peak, white, cabinet-v3-style.css) distinct from veg's green.
+    // 0.13 was the first empirically-picked value, chosen by bisecting
+    // the dev panel's own "Land 5" slider against real site content
+    // (reading .v3-peak-band's rendered path length at each step) after
+    // a synthetic single-circle sample's suggested ~0.2 turned out to hit
+    // ZERO real islands -- buildIslandHeightmap() caps h at n - fall, and
+    // each circle's OWN realised peak (a per-circle-seeded sample of the
+    // shared noise, not a guaranteed climb to noiseAmplitude's 0.38
+    // ceiling) varies a lot by actual circle size/seed, not just
+    // theoretical amplitude. 0.13 was where real content first showed a
+    // modest handful of small caps rather than none (0.16) or nearly
+    // every island's whole interior (0.05 turns almost the entire map
+    // white). v3.7.29 -- nudged to 0.14 by further live tuning ("Copy
+    // config" pasted back in) -- same reasoning, just one more notch up.
+    peakThresholds: [0.14],
     // v3.6.6 -- the actual "wave" effect (see cabinet-v3-islandshape.js's
     // buildCoastlineDistanceField()): genuine fixed pixel distances from
     // the coastline, via a Euclidean distance transform, NOT another

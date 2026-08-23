@@ -16,6 +16,12 @@ body.v3-proto {
   --v3-sea-shallow: #9fc3d1;
   --v3-veg: #a8c478;
   --v3-sand: #e8d9a0;
+  /* v3.7.28 -- "Land 5" mountain-peak accent (.v3-peak-band below), a
+     literal white default per direct request ("colour it white") --
+     themeable rather than hardcoded so a theme CAN override it later
+     (same reasoning as every other land tone here), it just has no
+     reason to yet. */
+  --v3-peak: #fff;
   /* v3.6.15 -- ink used by wave rings/coastline outline, themeable
      separately from the land/sea fills below. --v3-ring-ink defaults to
      following --v3-ink, but a theme can split them ("medieRiso" below
@@ -705,6 +711,16 @@ body[data-label-style="glow"] .v3-compass-direction-label {
 .v3-veg-band {
   fill: var(--v3-veg);
   fill-opacity: 0.55;
+}
+
+/* v3.7.28 -- "Land 5," a mountain-peak accent above vegThresholds'
+   innermost level -- see peakThresholds' own comment in
+   cabinet-v3-data.js. Higher opacity than sand/veg above: a snow-cap
+   accent wants to read as a crisp, distinct pop, not another translucent
+   layer blending into the ones under it. */
+.v3-peak-band {
+  fill: var(--v3-peak);
+  fill-opacity: 0.75;
 }
 
 /* v3.7.9 -- coast-hugging fade pair, independent of flatColourMode --

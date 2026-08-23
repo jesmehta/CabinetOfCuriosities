@@ -92,6 +92,7 @@ const COLOR_TOKENS = [
   { key: "--v3-sea-shallow", label: "Sea (shallow)" },
   { key: "--v3-veg", label: "Vegetation" },
   { key: "--v3-sand", label: "Sand" },
+  { key: "--v3-peak", label: "Peak (Land 5)" },
   { key: "--v3-ink", label: "Ink" },
   { key: "--v3-ring-ink", label: "Ring / contour ink" },
   { key: "--v3-halo-ink", label: "Hover halo" },
@@ -282,9 +283,11 @@ function buildControlPanel() {
     seaBandThresholds: [...v3Config.island.seaBandThresholds],
     sandThresholds: [...v3Config.island.sandThresholds],
     vegThresholds: [...v3Config.island.vegThresholds],
+    peakThresholds: [...v3Config.island.peakThresholds],
     waveDistances: [...v3Config.island.waveDistances],
     showFlowPotential: v3Config.flow.showPotential,
     showFlowVectors: v3Config.flow.showVectors,
+    showNoise: v3Config.island.showNoise,
     particleCount: v3Config.particles.count,
     particleMaxCount: v3Config.particles.maxCount,
     coastSpawnFraction: v3Config.particles.coastSpawnFraction,
@@ -835,6 +838,7 @@ function buildControlPanel() {
     v3Config.island.seaBandThresholds = [...visualsDefaults.seaBandThresholds];
     v3Config.island.sandThresholds = [...visualsDefaults.sandThresholds];
     v3Config.island.vegThresholds = [...visualsDefaults.vegThresholds];
+    v3Config.island.peakThresholds = [...visualsDefaults.peakThresholds];
     v3Config.island.waveDistances = [...visualsDefaults.waveDistances];
     waveCheck.checked = v3Config.island.showWaveRings;
     bandCheck.checked = !v3Config.island.flatColourMode;

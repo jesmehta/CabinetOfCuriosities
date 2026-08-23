@@ -1201,7 +1201,7 @@ function drawGeoGrid(stage, canvasBounds, origin) {
 // cabinet-v3-data.js's field notes for why nested level-sets guarantee
 // that stacking order.
 function drawIslandsPath(stage, canvasBounds, grown) {
-  const { cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds, waveDistances, showWaveRings, flatColourMode, warpStrength } = v3Config.island;
+  const { cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds, peakThresholds, waveDistances, showWaveRings, flatColourMode, warpStrength } = v3Config.island;
 
   // v3.6.7 -- sample the heightmap/distance-field over a PADDED area
   // that extends past the visible canvas, not the exact visible
@@ -1380,6 +1380,10 @@ function drawIslandsPath(stage, canvasBounds, grown) {
     if (staleFlat) staleFlat.remove();
     anchor = placeBand(anchor, "v3-sand-band", sandThresholds, trace);
     anchor = placeBand(anchor, "v3-veg-band", vegThresholds, trace);
+    // v3.7.28 -- "Land 5," topmost/innermost land layer, drawn last (on
+    // top of veg) same as every nested band here -- see peakThresholds'
+    // own comment in cabinet-v3-data.js.
+    anchor = placeBand(anchor, "v3-peak-band", peakThresholds, trace);
   }
 
   // v3.7.16 -- the inland half of the coast-hugging fade pair used to be
