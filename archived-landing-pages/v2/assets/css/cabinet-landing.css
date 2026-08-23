@@ -1,0 +1,656 @@
+/* Cabinet of Curiosities -- v2 archipelago map landing page.
+   Consumes cabinet-tokens.css. Renders on top of a data-driven card layer
+   built by cabinet-render.js from cabinet-generated-content.js. */
+
+@import url("cabinet-tokens.css");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--cab-paper-deep);
+  color: var(--cab-ink);
+  font-family: var(--cab-font-body);
+}
+
+.cabinet-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 48px;
+}
+
+.cabinet-page h1 {
+  font-family: var(--cab-font-heading);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Visually-hidden heading (real H1 for a11y/SEO, cartouche carries the
+   visible title on desktop) */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Map shell */
+
+.map-shell {
+  position: relative;
+  width: 100%;
+  max-width: 1600px;
+}
+
+.cabinet-map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.map-paper {
+  fill: var(--cab-paper);
+}
+
+.map-paper-texture {
+  opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Islands */
+
+.island {
+  cursor: pointer;
+}
+
+.island-land {
+  fill: var(--cab-land-light);
+  stroke: var(--cab-ink);
+  stroke-width: 1.4;
+  transition: fill var(--cab-transition-fast), stroke-width var(--cab-transition-fast);
+}
+
+.island.status-wip .island-land {
+  fill: var(--cab-land);
+  opacity: 0.7;
+}
+
+/* Global ripple rings -- a single distance-transform contour of the
+   combined land mask across the whole map (assets/map/source/
+   generate-cabinet-map.js), not per-island scaled copies. Closest ring is
+   darkest/heaviest, fading to the faintest, thinnest line farthest out. */
+.ripple-ring path {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+}
+
+.ripple-ring-1 path {
+  stroke-width: 1.1;
+  opacity: 0.85;
+}
+
+.ripple-ring-2 path {
+  stroke-width: 0.7;
+  opacity: 0.5;
+}
+
+.ripple-ring-3 path {
+  stroke-width: 0.4;
+  opacity: 0.28;
+}
+
+.islet {
+  fill: var(--cab-land-light);
+  stroke: var(--cab-ink);
+  stroke-width: 1;
+}
+
+.island-label {
+  font-family: var(--cab-font-heading);
+  fill: var(--cab-ink);
+  text-anchor: middle;
+  letter-spacing: 0.04em;
+  paint-order: stroke;
+  stroke: var(--cab-paper);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.island-label-title {
+  font-size: 22px;
+  font-variant: small-caps;
+}
+
+.island-label-sub {
+  font-size: 12px;
+  fill: var(--cab-ink-soft);
+}
+
+.island-link:hover .island-land,
+.island-link:focus-visible .island-land {
+  fill: var(--cab-land-hover);
+  stroke-width: 2;
+}
+
+.island-link {
+  outline: none;
+}
+
+.island-link:focus-visible .island-land {
+  stroke: var(--cab-focus-ring);
+  stroke-width: 2.5;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Decorative marks: buildings, ships, routes */
+
+.building {
+  fill: var(--cab-ink-soft);
+  stroke: var(--cab-ink);
+  stroke-width: 0.6;
+}
+
+.ship {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cab-bob 6s ease-in-out infinite;
+}
+
+.ship-group .ship:nth-child(2) {
+  animation-duration: 7.5s;
+  animation-delay: -2s;
+}
+
+.ship-group .ship:nth-child(3) {
+  animation-duration: 5.2s;
+  animation-delay: -1s;
+}
+
+@keyframes cab-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2px) rotate(0.6deg); }
+}
+
+.route-line {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 1.1;
+  stroke-dasharray: 7 8;
+}
+
+.route-line.route-active,
+.map-shell.has-hover .route-line.route-highlighted {
+  stroke: var(--cab-accent);
+  opacity: 0.9;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Mood motifs -- enrich the space without carrying information. All muted,
+   all aria-hidden in the markup, all covered by the reduced-motion rule
+   at the bottom of this file. */
+
+.sea-texture path {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.5;
+  opacity: 0.35;
+  stroke-dasharray: 2 6;
+  animation: cab-drift 40s linear infinite;
+}
+
+@keyframes cab-drift {
+  to { stroke-dashoffset: -160; }
+}
+
+.cloud {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.7;
+  opacity: 0.4;
+}
+
+.sea-serpent {
+  opacity: 0.85;
+}
+
+.serpent-body {
+  fill: var(--cab-ink-soft);
+  stroke: var(--cab-ink);
+  stroke-width: 0.6;
+}
+
+.serpent-eye {
+  fill: var(--cab-paper);
+  stroke: none;
+}
+
+.serpent-frill {
+  fill: none;
+  stroke: var(--cab-ink);
+  stroke-width: 0.7;
+}
+
+.serpent-ripple {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 0.5;
+  opacity: 0.6;
+}
+
+.compass {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 1;
+}
+
+.compass-ring-outer {
+  stroke-width: 0.8;
+}
+
+.compass-ticks {
+  stroke-width: 0.6;
+}
+
+.compass-spoke {
+  stroke-width: 0.5;
+  opacity: 0.7;
+}
+
+.compass-fleur {
+  fill: none;
+  stroke: var(--cab-ink);
+  stroke-width: 0.9;
+}
+
+.compass-star-major {
+  fill: var(--cab-ink);
+}
+
+.compass-star-minor {
+  fill: var(--cab-paper);
+  stroke: var(--cab-ink);
+  stroke-width: 0.6;
+}
+
+.compass-needle {
+  fill: var(--cab-ink);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Cartouche / title frame */
+
+.cartouche-frame {
+  fill: var(--cab-paper);
+  stroke: var(--cab-ink);
+  stroke-width: 2;
+}
+
+.cartouche-frame-inner {
+  fill: none;
+  stroke: var(--cab-ink);
+  stroke-width: 0.8;
+}
+
+.cartouche-ticks {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 0.7;
+}
+
+.cartouche-corner {
+  fill: none;
+  stroke: var(--cab-ink);
+  stroke-width: 1.1;
+}
+
+.cartouche-fleuron {
+  fill: var(--cab-ink);
+}
+
+.cartouche-fleuron-ring {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 0.8;
+}
+
+.cartouche-title {
+  font-family: var(--cab-font-heading);
+  font-size: 34px;
+  font-variant: small-caps;
+  fill: var(--cab-ink);
+  text-anchor: middle;
+}
+
+.cartouche-rule {
+  fill: none;
+  stroke: var(--cab-ink-soft);
+  stroke-width: 1;
+}
+
+.cartouche-rule-swash {
+  fill: var(--cab-ink-soft);
+  stroke: none;
+}
+
+.cartouche-subtitle {
+  font-family: var(--cab-font-heading);
+  font-style: italic;
+  font-size: 15px;
+  fill: var(--cab-ink-soft);
+  text-anchor: middle;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Card layer (HTML overlay on top of the SVG) */
+
+.map-card-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.map-card {
+  position: absolute;
+  left: var(--card-x);
+  top: var(--card-y);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 6.5%;
+  min-width: 64px;
+  max-width: 120px;
+  padding: 6px 8px 8px;
+  background: var(--cab-card-bg);
+  border: 1px solid var(--cab-card-border);
+  border-radius: 3px;
+  box-shadow: 0 2px 5px var(--cab-card-shadow);
+  font-family: var(--cab-font-body);
+  color: var(--cab-ink);
+  text-decoration: none;
+  text-align: center;
+  pointer-events: auto;
+  transition: transform var(--cab-transition-fast), box-shadow var(--cab-transition-fast), filter var(--cab-transition-fast);
+  z-index: 5;
+}
+
+.map-card.size-small {
+  width: 5%;
+  min-width: 50px;
+  max-width: 90px;
+  padding: 4px 6px 6px;
+}
+
+/* card-type is a content classification (thumbnail-plaque / port-card /
+   callout-card), not a shape variant -- every card reads as the same
+   plaque so the map doesn't mix "tombstone" and "polaroid" silhouettes. */
+
+.map-card .card-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--cab-card-border);
+  background: var(--cab-land-light);
+}
+
+/* Line-icon tile: the normal case for an entry with no real thumbnail --
+   a topic-matched icon (see the icon-* <symbol> defs in index.html and the
+   `icon` column in cabinet-entries.tsv), not a photo, not a broken <img>. */
+.card-icon {
+  display: block;
+  width: 62%;
+  height: 62%;
+  stroke: var(--cab-ink);
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--cab-ink);
+}
+
+.card-thumb.card-icon-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cab-land-light);
+}
+
+.status-wip .card-icon {
+  stroke: var(--cab-ink-soft);
+  color: var(--cab-ink-soft);
+}
+
+/* Generated placeholder tile used only when an entry has neither a real
+   thumbnail nor an assigned icon -- a parchment monogram, not a broken
+   <img>. See cabinet-render.js. */
+.card-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cab-font-heading);
+  font-variant: small-caps;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--cab-paper);
+  background: repeating-linear-gradient(
+    135deg,
+    var(--cab-ink-soft),
+    var(--cab-ink-soft) 6px,
+    var(--cab-ink) 6px,
+    var(--cab-ink) 12px
+  );
+}
+
+.map-card .card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.map-card.size-small .card-title {
+  font-size: 11px;
+}
+
+.map-card .card-subtitle {
+  font-size: 10.5px;
+  color: var(--cab-ink-soft);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height var(--cab-transition-fast), opacity var(--cab-transition-fast);
+}
+
+.map-card:hover .card-subtitle,
+.map-card:focus-visible .card-subtitle,
+.map-card.pinned .card-subtitle {
+  max-height: 4.5em;
+  opacity: 1;
+}
+
+.map-card:hover,
+.map-card:focus-visible {
+  transform: translate(-50%, -50%) scale(1.08);
+  z-index: 20;
+  box-shadow: 0 6px 16px var(--cab-card-shadow-hover);
+}
+
+.map-card:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: 2px;
+}
+
+/* wip / coming-soon cards render as non-navigating spans, not fake links */
+.map-card.status-wip {
+  background: var(--cab-card-bg-wip);
+  color: var(--cab-ink-soft);
+  cursor: default;
+  font-style: italic;
+}
+
+.map-card.status-wip:hover,
+.map-card.status-wip:focus-visible {
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 5px var(--cab-card-shadow);
+}
+
+.map-card.status-wip .card-badge {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cab-ink-soft);
+}
+
+/* island <-> entry hover linking, toggled by cabinet-interactions.js */
+.map-shell.has-hover .map-card.is-related {
+  transform: translate(-50%, -50%) translateY(-3px);
+  box-shadow: 0 6px 14px var(--cab-card-shadow-hover);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Legend */
+
+.map-legend {
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: var(--cab-ink-soft);
+  text-align: center;
+  max-width: 560px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Mobile stacked fallback -- shown instead of the map below the breakpoint */
+
+.map-stack {
+  display: none;
+  width: 100%;
+  max-width: 640px;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.map-stack-title {
+  font-family: var(--cab-font-heading);
+  font-variant: small-caps;
+  font-size: 30px;
+  text-align: center;
+  margin: 4px 0 0;
+}
+
+.map-stack-subtitle {
+  text-align: center;
+  font-style: italic;
+  color: var(--cab-ink-soft);
+  margin: 0 0 8px;
+}
+
+.stack-island {
+  background: var(--cab-paper);
+  border: 1.5px solid var(--cab-ink);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.stack-island.status-wip {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.stack-island-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--cab-font-heading);
+  font-size: 18px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.stack-island-title .card-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--cab-ink-soft);
+}
+
+.stack-island-subtitle {
+  margin: 4px 0 10px;
+  font-size: 13px;
+  color: var(--cab-ink-soft);
+}
+
+.stack-entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stack-entry {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid var(--cab-card-border);
+  border-radius: 4px;
+  background: var(--cab-card-bg);
+  text-decoration: none;
+  color: var(--cab-ink);
+  font-size: 13.5px;
+}
+
+.stack-entry.status-wip {
+  background: var(--cab-card-bg-wip);
+  color: var(--cab-ink-soft);
+  font-style: italic;
+}
+
+.stack-entry .card-thumb {
+  width: 40px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .map-shell {
+    display: none;
+  }
+
+  .map-stack {
+    display: flex;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
