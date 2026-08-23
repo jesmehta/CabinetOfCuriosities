@@ -1609,6 +1609,219 @@ approach/hover for 1 revolution." Logged as punch-list item 26 in
 user's own phrasing ("add todo") was the signal to record intent, not
 build it immediately.
 
+## Small fixes first: text you can't read, blue on blue, and a hover that didn't grow
+
+Three quick, independent asks opened this round. "H1/title Cabinet Text
+in Medieval theme is invisible, update the colours" -- the header/
+subtitle colour token was tuned for the DARK-sea themes and Medieval Map
+is the one theme with a light sea, so it was cream text on a
+near-identical cream background. "Violet is too out of place, try Navy"
+-- straightforward swap on the compass accent. Then, mid-message, a
+second theme's compass got the same kind of complaint: "Topology theme:
+compass rose white parts can be the colour of the glow or any other pale
+shade already in use, blue on blue is too little contrast." The
+"white" fill had always just been `--v3-sea-deep` (the original "white =
+deep sea" design decision), which is fine everywhere except a theme
+whose ink ALSO happens to be a shade of blue -- broken out into its own
+token so this could be fixed per-theme without touching the site-wide
+default. Last one: "Entry Text enlarges on hover for all themes" -- a
+new ask, not a bug, landed with an SVG-specific gotcha noted directly in
+the code: CSS `transform-origin` on an SVG element defaults to the
+current viewport's origin, not the element's own, unless
+`transform-box: fill-box` is set too -- without it every label would
+have visibly drifted toward the map's corner as it scaled instead of
+growing in place.
+
+## The directional shadow, take two: a real geometry bug, then a real CSS bug, then a real design question
+
+"Topology theme: no coastal bands sea bands / bring back the directional
+shadow / however, directional shadow is too uniform - instead of
+stacking the primary island outline in the chosen direction, stack all
+the topological layers... so the shadow is tapering not a parallel
+block." This picked back up the v3.7.9 directional shadow that had been
+shelved specifically for looking like "straight cliffs rising from the
+sea" -- the request was, in effect, "bring back the thing we killed, but
+fix the reason we killed it." The fix turned out to be almost free once
+named: the terrain already has five nested contour levels (coastline,
+sand, veg) sitting around, each smaller than the last -- translating
+copies of THOSE instead of one repeated shape gives a taper for free,
+since the shapes themselves shrink.
+
+It didn't work on the first try, and the cause wasn't obvious from
+reading the code. A `filter: blur()` CSS rule on the shadow's `<g>`
+looked completely correct -- right blur radius, right selector -- and
+rendered a clean soft blob when tested in isolation against a blank
+page. In the actual scene, surrounded by real map content, it rendered
+NOTHING. Confirmed with a disposable script rather than guessed at:
+same setup, `filter: none` -> visible shadow, `filter: blur(4px)` ->
+empty. The eventual fix (an explicit SVG `<filter
+filterUnits="userSpaceOnUse">` instead of a CSS class) sidesteps
+whatever bounding-box computation the browser was getting wrong for a
+blurred group full of individually-transformed children, rather than
+explaining it.
+
+Two rounds of pure feel-tuning followed -- "the shadows need to be
+longer," then, after that landed, "maybe the extended shadow should be
+less blurred, i'd like to see some hint of the topology heights through
+the shadow contour" -- each a same-day live-tested change.
+
+Then a genuinely interesting design question, asked directly rather than
+just requested: "is it better to have 2 different sea shadow toggles...
+or is it better to have the two - coastal and sea, and it is baked into
+the theme what sea shadow means visually?" Neither option as posed was
+quite right -- two independent checkboxes would allow both shadow styles
+on at once, which nothing renders correctly for, but fully baking the
+style into the theme with zero override removes exactly the kind of
+try-it-elsewhere flexibility the Theme dropdown itself already
+demonstrates is worth having. Landed on a third option: one on/off
+checkbox (matching every other toggle here) plus a small style
+SELECTOR, theme-seeded but freely editable -- the same pattern the Theme
+dropdown itself already uses, just for the shadow's own style property
+instead of the whole palette.
+
+The last round on this feature was the most interesting technically: "is
+it an arithmetic increment or an exponential one? I'd like the tall bits
+to cast longer shadows." The existing formula WAS arithmetic already,
+just arithmetic in layer INDEX rather than height -- every level cast an
+equally long shadow, just shifted further out, so "tall" and "short"
+terrain looked the same length, only offset. Neither of the two options
+offered was actually correct: real cast-shadow length scales linearly
+with height for one fixed sun angle, so exponential would have produced
+an implausible result (a modest height difference between sand and the
+tallest peak reads, physically, as a modest shadow-length difference,
+not a dramatic one). The answer given back was a third option again --
+linear, but in actual height above the coastline, not layer position --
+with the reasoning stated plainly rather than just picking one of the
+two choices offered.
+
+## "Land 5": a feature that needed real measurement, not a guess, to calibrate
+
+"Can I have a land 5, and colour it white - a very high contour seen
+only on some of the islands, a mountain peak of sorts." Mechanically
+simple -- one more nested threshold level, its own colour token -- but
+picking the actual NUMBER took two rounds of real verification instead
+of eyeballing. A synthetic test (one circle, several radii and seeds)
+suggested a threshold around 0.2 would show up on "some but not all"
+islands. Tried against the real page: zero islands crossed it. The
+synthetic sample's assumption (that a bigger circle reliably samples
+closer to the noise field's theoretical ceiling) didn't hold for the
+site's actual circle sizes. Bisected the dev panel's own new slider
+directly against the live content instead -- reading the rendered
+path's length at each step -- and landed on 0.13, later nudged to 0.14
+by the user's own further live tuning.
+
+## "What is the stacking formula... in what units using what baselines?" -- and the two bugs that follow-up questions surfaced
+
+A genuinely technical question, asked plainly: what do the Topological
+offset parameter numbers (`-0.97`, `-0.35`, etc.) actually mean, in what
+units, relative to what? The honest answer required walking through
+`buildIslandHeightmap()`'s actual formula (`h = noise - falloff`) rather
+than just restating variable names -- and surfaced that `-0.62` (the
+coastline threshold) functions as a notional zero for the whole system,
+even though nothing in the code treats it that way explicitly.
+
+That understanding led directly to a concrete ask: "would it be simpler
+to have the topo offsets relative to this... or is that too
+complicated?" Answered with a recommendation rather than just picking a
+side -- a full rescale onto a fixed `-1..1` span was flagged as the
+WRONG amount of engineering, since only the sea side has a real
+principled floor (`waterLevel`) to anchor a rescale against; a plain
+offset from the coastline gets the actual usability win (0 = coast)
+without inventing an arbitrary land-side ceiling. Landed on that,
+plus a direct renumbering request in the same message: "sea 1 being
+deeper than sea 4 is notionally dissonant" -- fixed by counting sea
+DOWN from the array and land UP, so "1" means "nearest the coast" in
+both directions, the way a person actually thinking about elevation
+would expect.
+
+Once the sliders were genuinely readable, real questions followed
+almost immediately: "why does Sea 4 (and others) blink out beyond -0.38
+or so - does it hit the raw -1 limit?" Verified rather than assumed --
+a disposable script confirmed `waterLevel` is a real cliff, not a
+gradual fade: `traceContourFromHeightmap()` returns a literally EMPTY
+path the instant a level crosses the floor, because a value that can
+never be recorded below `-1` makes the field trivially "all inside"
+everywhere, with no crossing left to trace. `waterLevel` loosened from
+`-1` to `-1.4` in direct response, exactly the kind of fix that a vague
+"blinks out sometimes" report would never have led to without measuring
+first.
+
+## "Just like the flow potential, vectors" -- a diagnostic view for the terrain that drives everything else
+
+A well-scoped feature request that named its own precedent: "can the
+underlying noise that make the islands and topo be made visible on
+toggle, either under the island shape dropdown, or a under-the-hood
+dropdown that can then contain the flow potential and vector checkboxes
+as well." The existing Flow potential debug view (a coarse tinted grid
+over the current field) was the template to copy, almost exactly --
+except the island heightmap is sampled at 3px, not the flow field's
+24px, so drawing one rect per native cell would have meant tens of
+thousands of SVG nodes for a dev-only toggle. Solved by striding through
+the SAME already-built array at a coarser step rather than resampling
+anything. The "under-the-hood dropdown" half of the request was taken
+literally: Flow potential and Flow vectors, previously two loose
+checkboxes sitting directly in Visuals, got pulled into a new
+"Diagnostics" subsection alongside the new one.
+
+## Two bugs found by direct, casual observation, not by testing
+
+"There is a mild glitch - when the page reloads, part of the dragon svg
+is momentarily visible on the upper left corner at a very large size -
+i suspect it is loaded full size at 0,0 before being resized and
+relocated - can something be done about it, or is this not something
+the user will see, in which case i can live with it." The user's own
+diagnosis was exactly right, and reading the code confirmed it
+precisely: the dragon's outer group carried no transform at all until
+its first ANIMATION FRAME, and `animationFrame()` explicitly skips
+`tickDragon()` on its very first call. Fixed by computing the same
+transform once, synchronously, at spawn time, before the element ever
+touches the DOM.
+
+Separately: "diagonals beneath the compass not above." A z-order bug
+with a specific, findable cause once looked for directly: the lat/long
+grid function always re-appended itself as the stage's LAST child on
+every redraw, which is invisible on a fresh page load (the compass
+happens to render after it there anyway) but breaks the instant any dev
+-panel slider triggers a lighter retrace that redraws the grid without
+touching the compass. Fixed by anchoring the grid's insertion point to
+just before the compass explicitly, rather than relying on call order
+to keep working by accident -- the same category of bug, structurally,
+as the theme-preset-on-load issue below.
+
+## Two more small requests, one of which caught a second "worked by accident" bug
+
+"Label style = soft glow as default, and change default on control panel
+to topo since we are working on that one now" -- the label-style half
+applied everywhere (it's pure CSS, no cost either way), the theme half
+was explicitly scoped to the dev tool only, not the shipped page.
+Wiring the theme-default change up properly surfaced a second version of
+the exact same "worked by accident" bug pattern as the grid/compass
+z-order issue: the page's very first render runs before the control
+panel's own theme-preset logic even has a chance to execute (plain ES
+module import order), so a fresh load only ever showed the right
+band/wave-ring/shadow-style state because `cabinet-v3-data.js`'s raw
+defaults happened to already match whichever theme was hardcoded as
+default. Nobody had asked for that to be fixed -- it surfaced purely
+from trying to change the default theme and finding the checkboxes and
+the actual render disagreeing on load. Fixed generally (a forced retrace
+right after the preset logic runs once at panel-build time), not just
+patched for this one theme swap, so it can't recur the next time the
+default changes.
+
+## Screenshots: catching up a stale archive, not just this round's work
+
+"We've been saving screenshots to dev-screenshots folder - have a look,
+and salvage what you can from the scratchpad." The folder's last entry
+predated this entire session (and the one before it) -- every
+screenshot taken while verifying the compass rework, the theme-roster
+cleanup, and this round's Topology/shadow/Land-5/Diagnostics work had
+been landing in a temp scratchpad directory that doesn't survive past
+the session, never archived. Salvaged a representative set (not every
+debug variant -- multiple near-duplicate hover/dive screenshots existed
+per feature) back into `dev-screenshots/`, cross-checking version
+numbers against the actual changelog entries and commit timestamps
+rather than guessing at which screenshot belonged to which release.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

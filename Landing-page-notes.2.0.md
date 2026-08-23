@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.22** (domain warping for real concave coastlines,
+Currently on **v3.7.31** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -60,26 +60,34 @@ v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
 v3.6.28 -> v3.6.29 -> v3.6.30 -> v3.7 -> v3.7.1 -> v3.7.2 -> v3.7.3 ->
 v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
--> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22
-progression and why each pass changed what it did. Most recently (v3.7.9
--> v3.7.22): the coastal shadow/band pair the original scheme note asked
-for finally landed (an all-around sea shadow plus inward/outward
-coast-hugging colour bands, each section now generating its own hue),
-after two real geometry bugs -- a directional-shadow-reads-as-cliffs
-issue and an inward-offset-contour-fills-the-wrong-side issue -- were
-found and fixed along the way; the compass rose's cardinal rays now work
-independent of the lat/long grid toggle, its white/black/blue fills got
-re-pointed to more meaningful theme tokens (plus a new dedicated
-`--v3-compass-accent`), and its 4 direction labels got recentred as one
-unit with the rose rather than pinned to fixed square-relative fractions
-(which surfaced a grid-origin sync bug, also fixed); the theme roster
-shrank from 10 to 6 (dropped the no-attribute default, "medieval,"
-"neon," "ukiyo"; merged "Topology draft"/"Bathymetric" into one,
-recolouring `medieRiso` with the discarded palette rather than losing it
-outright); and the dev panel picked up toggles for the new coastal
-bands/sea shadow, a lat/long-off default, and `islands-tool.html` now
-opens straight onto Medieval Map. Full detail (including both bugs'
-actual root causes) in the changelog below.
+-> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
+v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
+-> v3.7.31
+progression and why each pass changed what it did. Most recently
+(v3.7.23 -> v3.7.31): the Topology theme got its own real identity
+instead of sharing every other theme's treatment -- coastal bands off,
+and (after the original v3.7.9 directional shadow was shelved for
+looking like a cliff edge) a REBUILT directional cast shadow, this time
+built from copies of the terrain's own five (then six, once "Land 5"
+landed) nested contour levels rather than one repeated shape, so it
+genuinely tapers as it recedes, and -- after a real CSS-filter-vs-SVG-
+filter bug was caught by testing rather than guessing -- its length now
+scales with actual terrain HEIGHT rather than a fixed per-layer step
+("tall bits cast longer shadows"); a new "Land 5" mountain-peak accent
+(white, seen only on some islands, calibrated against the real site
+content after a synthetic sample turned out unrepresentative); a new
+Diagnostics subsection folding the existing flow-field debug views
+together with a new raw island-heightmap tint view; every Topological
+offset parameter slider now reads/writes relative to the coastline
+threshold instead of an opaque absolute noise value, renumbered so "1"
+always means nearest the coast in both directions; `waterLevel` loosened
+for more sea-floor headroom after empirically confirming the old floor
+produced a real cliff, not a fade, the moment a level crossed it; a
+dragon-flashing-at-native-size-on-load bug fixed; a lat/long-grid-drawn-
+above-the-compass z-order bug fixed; and the dev tool's own defaults
+flipped to Topology theme / glow label style. Full detail (including
+the shadow feature's several real rounds and the empirical verification
+behind both bugfixes) in the changelog below.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1469,8 +1477,210 @@ they're real open items on the same overall site.
     -- either at random or triggered by approach/hover -- for one full
     revolution. Not started; direct request, logged as a to-do rather
     than implemented immediately.
+27. Theme-specific boat artwork: swap the boat graphic between themes
+    (islands-tool.html's dev panel boat toggle -- the current ellipses are
+    a top-down view, fitted for Topology's satellite-map register).
+    Medieval Map wants a side-view boat instead. Not started; direct
+    request, blocked on the user either describing the side-view shape in
+    enough detail to build it, or supplying an actual SVG.
 
 ## Changelog
+
+### v3.7.24-v3.7.30 -- Topology's directional cast shadow: cliff-edge fix, a real CSS-filter bug, then a height-aware taper
+
+The original v3.7.9 directional shadow (translated copies of one shape)
+was shelved at v3.7.10 for making islands "look like straight cliffs
+rising from the sea." Direct request this round: bring it back
+specifically for the Topology theme, whose satellite-map register suits
+a real light-direction cue better than every other theme's all-around
+radial shadow.
+
+`seaShadowStyle` (`"radial"` | `"directional"`) added to
+`v3Config.island`, set per-theme via `THEME_PRESETS`
+(`cabinet-v3-controls.js`) -- Topology defaults to directional, every
+other theme keeps the existing radial one. A dev-panel "Shadow style"
+SELECTOR (not two independent checkboxes) lets it be tried on any theme
+-- two checkboxes would have allowed an invalid both-on state nothing
+renders correctly for.
+
+First pass at the geometry avoided the old cliff-edge problem by
+translating copies of the terrain's own five nested contour levels
+(coastline, both sand thresholds, both vegetation thresholds -- later
+six, once "Land 5" landed) instead of one repeated shape: each level is
+already smaller than the one before it, so stacking them at increasing
+distance shrinks the shadow's own silhouette as it recedes, a taper
+from the geometry itself rather than from fading opacity alone.
+
+A real bug surfaced once this was checked live, not just eyeballed in
+isolation: a `filter: blur()` CSS class rule on the shadow's wrapping
+`<g>` rendered correctly on a blank page but went fully INVISIBLE once
+real map content actually surrounded it. Confirmed with a throwaway
+script (same setup, `filter: none` -> visible, `filter: blur(4px)` ->
+nothing) before touching anything -- CSS filters on SVG elements derive
+their region from an auto-computed bounding box, and that computation
+turned out unreliable for a group whose children each carry their own
+translate transform. Replaced with an explicit SVG
+`<filter filterUnits="userSpaceOnUse">`, sized off the already-computed
+padded bounds and referenced via the group's `filter` PRESENTATION
+ATTRIBUTE -- no bounding-box guesswork left for the browser to get
+wrong.
+
+Reach lengthened (~29px -> ~46px) per direct feedback it needed to be
+longer, then blur pulled back (4px -> 1.5px) per feedback it was
+smearing away too much of the underlying terrain shape ("I'd like to
+see some hint of the topology heights through the shadow contour").
+
+Final pass, direct question: should the stack-count formula be
+arithmetic or exponential? Neither, really -- the OLD formula was
+already arithmetic, just in LAYER INDEX rather than height, so every
+level cast an equally long shadow, just offset further out; exponential
+would turn a modest height gap into an implausibly large shadow-length
+gap. Landed on linear in actual HEIGHT ABOVE THE COASTLINE (each
+level's `value - threshold`, floored at 0), which is how real cast-
+shadow length actually scales for one fixed sun angle -- short terrain
+now casts a short shadow, tall terrain (veg, and especially the new
+Land 5 peak) casts a long one.
+
+Folded in along the way: "Coastal bands (in + out)" relabelled to just
+"Coastal band" (the "(in + out)" suffix described the ring's internal
+two-subpath construction, not the concept, and read as two independent
+things to toggle); coastline outline stroke thinned 2px -> 1.2px; and
+the `THEME_PRESETS`/`applyThemePreset` refactor that made preset
+application reusable at both the Theme dropdown's change handler and
+(v3.7.27, below) page load.
+
+### v3.7.28 -- "Land 5": a mountain-peak accent, calibrated against real content, not a guess
+
+Direct request: "can I have a land 5, and colour it white - a very high
+contour seen only on some of the islands, a mountain peak of sorts." New
+`peakThresholds` array/`--v3-peak` colour token (white, themeable),
+rendered as the topmost land layer at higher opacity than sand/veg (a
+snow-cap accent wants to read as a crisp pop, not another blended
+layer), with its own dev-panel slider continuing the "Land" numbering
+after veg.
+
+The threshold value needed real calibration: a synthetic single-circle
+sample suggested ~0.2 as "upper edge, some islands only" (per-island
+realised noise peaks turn out to vary a lot by actual circle size/seed,
+not just theoretical `noiseAmplitude`), but bisecting the dev panel's
+own slider against the ACTUAL site content (reading `.v3-peak-band`'s
+rendered path length at each step) showed 0.2 hits ZERO real islands --
+the synthetic sample wasn't representative. Landed on 0.13 empirically
+against real content, then 0.14 after further live tuning via a pasted
+"Copy config."
+
+### v3.7.28 -- Diagnostics subsection: island-noise heightmap view alongside the existing flow-field debug
+
+Direct request: "just like the flow potential, vectors being made
+visible as a diagnostic, can the underlying noise that make the islands
+and topo be made visible on toggle." `drawIslandNoiseDebug()` tints a
+grid by `buildIslandHeightmap()`'s own H field -- the raw noise-minus-
+falloff terrain driving every contour in the file -- same treatment
+`drawFlowFieldDebug()`'s existing Flow potential view already uses for
+the current's own scalar field. H is sampled at 3px native resolution
+over the padded bounds; the debug view strides through the same
+already-built array at a coarser 24px step (matching Flow potential's
+own debug resolution) instead of drawing tens of thousands of individual
+`<rect>`s.
+
+Flow potential/Flow vectors, previously two loose checkboxes sitting
+directly in Visuals, folded into this same new "Diagnostics" collapsible
+subsection alongside the new Island noise toggle -- one home for "peek
+at the raw field driving this," not three scattered rows.
+
+### v3.7.26, v3.7.28 -- Topological offset sliders relative to the coastline; waterLevel floor loosened
+
+Direct feedback after walking through what the raw heightmap thresholds
+actually mean: "-0.62 is a notional zero... sea 1 being deeper than sea
+4 is notionally dissonant." Every Sea/Land slider now gets/sets relative
+to the live Base coastline Threshold -- 0 always reads as "exactly the
+coastline," negative sea-ward, positive inland -- while the underlying
+arrays keep storing raw heightmap values (`drawIslandsPath()` and
+everything else still expects that); the conversion happens only at the
+slider's own get/set boundary. Deliberately not a full rescale onto a
+fixed -1..1 span: the sea side has a real floor (`waterLevel`) to
+rescale against, the land side doesn't, so that would trade one
+arbitrary anchor for another.
+
+Renumbered so "1" always means nearest the coast in both directions --
+Sea counts down from the array (index 0, loosest/deepest, now the
+HIGHEST number), Land counts up continuously across the sand/veg array
+boundary, with a "(sand)"/"(veg)" suffix keeping that distinction
+visible now the number alone doesn't carry it. A plain read-only row
+between the two groups marks the coastline itself (always exactly 0 in
+these units).
+
+Separate but related: a direct question about why "Sea 4" blinked out
+past a certain point led to empirically confirming `waterLevel` is a
+real cliff, not a gradual fade -- `traceContourFromHeightmap()` returns
+a genuinely EMPTY path the instant a level crosses it (H can never
+register below the floor, so the field becomes trivially "all inside"
+with no crossing left to trace). The old floor (-1) sat only 0.03 below
+the loosest default Sea level; loosened to -1.4 for real headroom, with
+the dev-panel slider range widened to match.
+
+### v3.7.27 -- dev tool defaults to Topology theme; glow becomes the site-wide default label style
+
+Direct request: "label style = soft glow as default, and change default
+on control panel to topo since we are working on that one now."
+`islands-tool.html`'s default theme flips to Topology; `glow` becomes
+the default label style everywhere (unlike the theme default, not
+scoped to "the control panel" -- it's pure CSS presentation with no
+effect on the static page's baked SVG geometry either way, so it applies
+to the shipped `index.html` too).
+
+Caught a real latent bug while wiring this up: the page's very first
+`render()` runs before the control panel's own theme-preset logic ever
+gets a chance to run (ES module import order), so a fresh load only
+ever got the right `flatColourMode`/`showWaveRings`/etc. state because
+`cabinet-v3-data.js`'s raw defaults happened to already match whichever
+theme was hardcoded as default -- true by coincidence, not by
+construction, and it broke silently the moment the default theme
+changed without a matching hand-edit to `data.js`. `applyThemePreset()`
+now runs once at panel-build time too, followed by a forced
+`retraceIslands()`, so any future default-theme change is safe on its
+own.
+
+### v3.7.28 bugfix -- dragon no longer flashes at native size in the corner on load
+
+Direct bug report: "part of the dragon svg is momentarily visible on the
+upper left corner at a very large size" on reload. Cause:
+`buildDragonElement()`'s outer `<g>` carried no position/scale transform
+of its own -- only the inner group, which just centres the artwork's
+local coordinate space. The real translate+scale was only ever applied
+inside `tickDragon()`, which `animationFrame()` skips entirely on its
+very first call (`lastFrameTime` starts null) -- so `ensureDragon()`
+could append the outer group to the live stage and let the browser
+paint one or more real frames of it sitting at raw, untranslated,
+unscaled `DRAGON_PATH_D` coordinates. Factored the transform math into
+`applyDragonTransform()`, called once synchronously at spawn time
+(before the element is ever appended) as well as every frame.
+
+### v3.7.31 bugfix -- lat/long grid and compass diagonals pinned beneath the compass, not above
+
+Direct feedback: "diagonals beneath the compass not above." Cause:
+`drawGeoGrid()` always appended its group as the stage's LAST (topmost)
+child -- harmless on a fresh `render()` (the compass renders after the
+grid there regardless) but wrong the moment any Visuals slider triggers
+`retraceIslands()`, which redraws the grid via that same unconditional
+`appendChild` without ever re-rendering the compass, silently
+re-promoting the grid above it on every single slider tick. Now inserts
+before `.v3-compass` when present, pinning the grid to a stable position
+under the compass regardless of which function last redrew what.
+
+### v3.7.23 -- small visual fixes: Medieval Map text visibility, Topology compass contrast, entry-label hover scale
+
+Medieval Map's header/subtitle used the site-wide light-parchment colour
+token, invisible against that theme's own light `--v3-sea-deep`
+background -- overridden to the theme's own ink. Topology's compass rose
+read as "blue on blue" (white fill defaulting to `--v3-sea-deep`, a mid
+blue, next to an also-blue ink) -- broken out into its own
+`--v3-compass-white` token, pointed at the glow colour for Topology.
+Medieval Map's compass accent swapped violet for navy per direct
+feedback. Island entry labels now scale up in place on hover
+(`transform-box: fill-box` + `transform-origin: center`, needed so SVG
+text scales about its own centre rather than the viewport's origin),
+site-wide, independent of which label-style is active.
 
 ### v3.7.1-v3.7.8 -- compass rose (reserved SE section, TSV-driven links, colour-token mapping), lat/long grid, section-label small caps
 
