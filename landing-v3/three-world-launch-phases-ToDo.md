@@ -152,6 +152,13 @@ freely.
       site itself, not just a folder.
 - [ ] Launch the page -- **superseded by Phase 1 below.**
 - [ ] Write the colophon and creation notes.
+- [ ] Easter egg: clicking within the compass rose's inner circle
+      switches the WHOLE canvas's theme, Medieval <-> Topology, and back
+      on a second click. Direct request: "Its too nice a piece of work to
+      be seen only in bits." Depends on the theme x hover feature (see
+      the doc-audit list below) enough to make sense built after it, not
+      before -- same two themes, same colour data, just a click-triggered
+      whole-canvas swap instead of a hover-scoped local one.
 
 ### Found via documentation survey (v3.6.6 doc audit)
 

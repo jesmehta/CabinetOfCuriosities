@@ -640,6 +640,12 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
     ? v3Config.island.waveDistances[v3Config.island.waveDistances.length - 1]
     : 0;
   const sectionShapeD = traceIsolatedShape(circles, v3Config.island, coastalZoneWidth);
+  // Theme-preview prototype, section level -- its OWN halo (see
+  // v3Config.themePreview's doc comment for why this doesn't just reuse
+  // coastalZoneWidth above), so tuning "how much sea shows on preview"
+  // doesn't also move the hit/glow shape calibrated for a different
+  // purpose.
+  const sectionThemePreviewD = traceIsolatedShape(circles, v3Config.island, v3Config.themePreview.sectionHaloPx);
 
   // v3.6.26 -- clipPath restricted to this section's own region.inner:
   // "if an island or its coastal zone intrude into another section, ...
@@ -671,6 +677,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   const glowGroup = el("g", { class: "v3-section-glow-group" });
   glowGroup.appendChild(el("rect", { class: "v3-section-glow", x: band.x, y: band.y, width: band.width, height: band.height }));
   if (sectionShapeD) glowGroup.appendChild(el("path", { class: "v3-section-glow", d: sectionShapeD, "fill-rule": "evenodd" }));
+  if (sectionThemePreviewD) glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: sectionThemePreviewD, "fill-rule": "evenodd" }));
   sectionLink.appendChild(glowGroup);
 
   group.appendChild(sectionLink);
@@ -717,7 +724,9 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       const link = el("a", { class: "v3-island", href: c.href || "#" });
       link.setAttribute("data-id", c.id);
       const islandD = traceIsolatedShape([c], v3Config.island, 0);
+      const themePreviewD = traceIsolatedShape([c], v3Config.island, v3Config.themePreview.islandHaloPx);
       link.appendChild(el("path", { d: islandD, class: "v3-island-glow", "fill-rule": "evenodd" }));
+      link.appendChild(el("path", { d: themePreviewD, class: "v3-island-theme-preview", "fill-rule": "evenodd" }));
       link.appendChild(el("path", { d: islandD, class: "v3-island-hit", "fill-rule": "evenodd" }));
       link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
       group.appendChild(link);

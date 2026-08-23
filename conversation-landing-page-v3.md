@@ -47,6 +47,7 @@
 - [Two bugs found by direct, casual observation, not by testing](#two-bugs-found-by-direct-casual-observation-not-by-testing)
 - [Two more small requests, one of which caught a second "worked by accident" bug](#two-more-small-requests-one-of-which-caught-a-second-worked-by-accident-bug)
 - [Screenshots: catching up a stale archive, not just this round's work](#screenshots-catching-up-a-stale-archive-not-just-this-rounds-work)
+- ["Theme x hover": three mechanisms compared before writing any code, then a real Part A](#theme-x-hover-three-mechanisms-compared-before-writing-any-code-then-a-real-part-a)
 - [This handoff](#this-handoff)
 
 This is a narrative record of the design conversation behind the
@@ -1870,6 +1871,102 @@ debug variant -- multiple near-duplicate hover/dive screenshots existed
 per feature) back into `dev-screenshots/`, cross-checking version
 numbers against the actual changelog entries and commit timestamps
 rather than guessing at which screenshot belonged to which release.
+
+## "Theme x hover": three mechanisms compared before writing any code, then a real Part A
+
+New feature, described in detail up front rather than as a vague idea:
+"On hover, the island + a certain distance beyond - say 20 px - convert
+from Medieval theme to Topology theme... And Medieval effects disappear -
+wave contours, etc." Two mechanisms offered directly ("Can the topo theme
+components be underneath the medieval theme and on hover, the medieval
+theme components become invisible... Can the topo theme be layered on
+top but kept invisible until the element is hovered upon?") plus an open
+question: "What other mechanisms can make this happen, how complex and
+costly will they be?"
+
+Answered with three real options, not just the two offered: live
+on-hover regeneration (re-trace the hovered region's geometry into
+Topology's config on `mouseenter`, revert on `mouseleave`); a dual
+full-scene layer with a dynamic clip-path reveal (both themes always
+rendered, hover just moves a mask); and CSS-only recolouring with no
+geometry swap (cheap, but doesn't get the structural differences). Cost
+compared across build/runtime/user-facing axes for each, not just picked.
+Direct reaction: "2 sounds like its costly while still not being ideal...
+3 sounds ideal... I suspect I'll come back to one of the other two" --
+correctly identifying that 2's specific risk was debounce-vs-latency
+under a wandering mouse, not raised as a hypothetical but as the user's
+own instinct, confirmed rather than just agreed with.
+
+A follow-up question caught a real overstatement: "why do we need to go
+back to circlepacking all the way? The island coast svgs are constant to
+all the themes - what varies is colours, offset bands, topology bands
+etc." Checked `THEME_PRESETS` directly rather than defending the earlier
+claim from memory -- confirmed only four properties vary per theme
+(`flatColourMode`, `showWaveRings`, `showCoastalBands`, `seaShadowStyle`),
+not geometry or thresholds. The "run render() twice, risk two different
+layouts" concern was real only for a NAIVE double-invocation, not for
+deliberately sharing one layout pass and skinning it twice -- corrected
+in place rather than defended.
+
+Before building, checked what the EXISTING section hover-glow actually
+does, prompted directly: "is that a composite of individual halos... or
+one shape?" Reading `renderRegion()` found `traceIsolatedShape()` already
+traces a real union (every circle in a section, one call, since the
+underlying heightmap fuses circles via `max()` anyway) and bakes it into
+the SVG once per `retraceIslands()`, never on hover -- confirming the
+user's own guess ("this shape can be pre-computed and kept... similar to
+the entry islands, since it's not going to change anyway") was already
+how the codebase worked, and that the SAME function already supported
+the dilation ("island + 20px") the feature needed, via its existing
+`extraDistance` parameter.
+
+Part A built on that: a Topology-coloured overlay per island (a fresh
+dilated `traceIsolatedShape` call) and per section (its own dedicated
+dilation, not reusing the glow's `coastalZoneWidth` by coincidence),
+revealed via CSS on hover/focus. Verified via a Playwright smoke test
+(page loads clean, `.v3-island-theme-preview`/`.v3-section-theme-preview`
+counts match expected) before handing back -- not a visual judgement
+call, which stayed the user's to make.
+
+Feedback after trying it live: distance too tight ("maybe 40-50px"), a
+hard outline where blur was wanted, flat colour reading as "a no show"
+(expected, already flagged as deferred), and a direct architecture
+question -- "both effects will be controlled and edited by their
+respective theme dropdowns, right? ... Or are you creating a third
+theme?" Answered by reading the ACTUAL colour-editor mechanism rather
+than assuming: `themeTokenState` already holds every theme's live-edited
+colours regardless of which is active, only pushing to `<body>` when
+that theme IS active -- meaning the first pass's hardcoded colour
+snapshot was the wrong choice, replaced with `applyThemePreviewTokens()`
+reading that same live state, plus a new `v3Config.themePreview` block
+and dev-panel subsection for the mechanism's OWN parameters (which theme
+previews, both halo distances, blur), kept separate from either theme's
+colour definition since they aren't colours.
+
+Also found, precisely, while reading `cabinet-v3-layout.js` for other
+reasons: the exact root cause of the earlier `<use>`/`<symbol>` Chromium
+bug (an SVG `<use>` referencing a `<symbol>` with a closed bezier path,
+created during initial synchronous render, silently failing to paint) --
+directly relevant to a `<use>`-based sharing optimization floated for
+mechanism 3, flagged as a real risk to test early rather than assume away,
+per the user's own request to "keep an eye on the use/symbol issue... you
+can give me context and clarity if you need me to make a decision."
+
+Alongside this: a theme-roster cleanup, direct request ("riso can go...
+cyano and medieriso will never be applied, only topo + medieval"). First
+pass misread "cyanotype... kept as an archive" as "pull it from the
+dropdown," removing it from `THEME_OPTIONS`/`THEME_PRESETS` entirely --
+corrected immediately on direct feedback ("Cyanotype was supposed to be
+kept"): riso alone was disposable and deleted outright (CSS included);
+Cyanotype and MedieRiso both stay live/selectable, since "archive" and
+"scratchpad" describe their eventual production fate, not their present
+reachability in the dev tool.
+
+Also logged, mid-turn, an easter egg idea rather than built immediately:
+"Clicking within the inner circle of the compass switches the theme for
+the whole canvas from medieval to topo and back. Its too nice a piece of
+work to be seen only in bits" -- added to `three-world-launch-phases-ToDo.md`'s
+Phase 0, sequenced after this feature rather than before it.
 
 ## This handoff
 

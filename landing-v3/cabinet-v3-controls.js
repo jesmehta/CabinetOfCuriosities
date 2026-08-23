@@ -79,10 +79,19 @@ function formatValue(v, step) {
 // merge reasoning) and dropped from this list too; its colours weren't
 // discarded, they were copied into "medieRiso" instead (also that CSS
 // comment).
+// Direct request: only Topology + Medieval Map will go forward to
+// PRODUCTION. Riso dropped entirely here (CSS removed too -- its
+// reasoning stays in v3-scheme-candidates.md and git history if ever
+// wanted back) since it was explicitly disposable ("can go"). Cyanotype
+// and MedieRiso both stay live/selectable here even though neither will
+// ship -- "archive" and "scratchpad" describe their FUTURE, not present
+// reachability: Cyanotype is a kept reference worth comparing against
+// (not actively developed further), MedieRiso is an ongoing experiment.
+// Corrected after first removing Cyanotype from this list too, which was
+// wrong -- direct feedback: "Cyanotype was supposed to be kept."
 const THEME_OPTIONS = [
   ["satellite", "Topology"],
   ["medieval-map", "Medieval Map"],
-  ["riso", "Riso"],
   ["cyanotype", "Cyanotype"],
   ["medieRiso", "MedieRiso"]
 ];
@@ -463,7 +472,6 @@ function buildControlPanel() {
   const THEME_PRESETS = {
     satellite: { flatColourMode: false, showWaveRings: false, showCoastalBands: false, seaShadowStyle: "directional" },
     "medieval-map": { flatColourMode: true, showWaveRings: true, showCoastalBands: true, seaShadowStyle: "radial" },
-    riso: { flatColourMode: false, showWaveRings: false, showCoastalBands: true, seaShadowStyle: "radial" },
     cyanotype: { flatColourMode: false, showWaveRings: false, showCoastalBands: true, seaShadowStyle: "radial" },
     // v3.6.28 -- bands AND rings on together, both carrying real weight:
     // bands carry the dark sepia depth, rings lay a riso iso-line accent
@@ -542,6 +550,24 @@ function buildControlPanel() {
     COLOR_TOKENS.forEach(t => document.body.style.setProperty(t.key, values[t.key]));
   }
 
+  // Theme-preview-on-hover prototype -- pushes v3Config.themePreview's
+  // TARGET theme's live colours (themeTokenState, not a hardcoded
+  // snapshot) onto the --v3-preview-* custom properties
+  // cabinet-v3-style.css's .v3-island-theme-preview/
+  // .v3-section-theme-preview read. Same "inline style outranks the
+  // static CSS block" mechanism as applyThemeTokens() above, just against
+  // its OWN token names so the preview never gets overwritten by whatever
+  // applyThemeTokens() happens to be doing for the ACTIVE theme at the
+  // same time -- the two run independently, on purpose (Medieval can be
+  // active while Topology is what's being edited/previewed). Only two
+  // tokens mapped so far (ink, sand -> the flat land wash Part A uses) --
+  // extend this alongside the eventual per-band preview fidelity.
+  function applyThemePreviewTokens() {
+    const values = themeTokenState[v3Config.themePreview.previewTheme] || themeTokenState[THEME_OPTIONS[0][0]];
+    document.body.style.setProperty("--v3-preview-ink", values["--v3-ink"]);
+    document.body.style.setProperty("--v3-preview-land", values["--v3-sand"]);
+  }
+
   // Nested one level deeper than the outer "Theme colours" subsection --
   // one collapsible group per theme, all closed by default, so browsing
   // to compare/copy a value between two themes doesn't mean scrolling
@@ -574,6 +600,13 @@ function buildControlPanel() {
       const commit = hex => {
         themeTokenState[themeValue][token.key] = hex;
         if ((document.body.dataset.theme || "") === themeValue) applyThemeTokens(themeValue);
+        // Theme-preview-on-hover prototype: keep the hover preview in
+        // sync with live edits to whichever theme it's currently
+        // targeting, even while a DIFFERENT theme is the page's own
+        // active/base look (that's the whole point -- Medieval stays
+        // resting, Topology previews on hover, so this fires while
+        // Topology is very likely NOT the active theme).
+        if (v3Config.themePreview.previewTheme === themeValue) applyThemePreviewTokens();
       };
 
       swatch.addEventListener("input", () => {
@@ -606,9 +639,67 @@ function buildControlPanel() {
     Object.keys(themeTokenDefaults).forEach(k => { themeTokenState[k] = { ...themeTokenDefaults[k] }; });
     colorRowWidgets.forEach(w => w.refresh());
     applyThemeTokens(document.body.dataset.theme || "");
+    applyThemePreviewTokens();
   }, { block: true });
 
   applyThemeTokens(document.body.dataset.theme || "");
+
+  // -- Theme-preview-on-hover prototype -- parameters of the CROSS-theme
+  // transition itself (which theme reveals, how far past the coastline,
+  // how blurred the edge is), deliberately separate from either theme's
+  // own colour block above: these aren't colours, they're behaviour of
+  // the hover mechanism, and belong to neither theme individually.
+  const themePreviewSubsection = makeSubsection(visualsSection, "Theme hover preview", false);
+
+  const previewThemeRow = document.createElement("label");
+  previewThemeRow.className = "v3-controls-row";
+  const previewThemeName = document.createElement("span");
+  previewThemeName.className = "v3-controls-name";
+  previewThemeName.textContent = "Preview theme";
+  const previewThemeSelect = document.createElement("select");
+  previewThemeSelect.style.gridArea = "input";
+  previewThemeSelect.style.width = "100%";
+  THEME_OPTIONS.forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    previewThemeSelect.appendChild(opt);
+  });
+  previewThemeSelect.value = v3Config.themePreview.previewTheme;
+  previewThemeSelect.addEventListener("change", () => {
+    v3Config.themePreview.previewTheme = previewThemeSelect.value;
+    applyThemePreviewTokens();
+  });
+  previewThemeRow.appendChild(previewThemeName);
+  previewThemeRow.appendChild(previewThemeSelect);
+  themePreviewSubsection.appendChild(previewThemeRow);
+
+  buildSlider(themePreviewSubsection, {
+    label: "Island halo (px)", min: 0, max: 100, step: 1,
+    get: () => v3Config.themePreview.islandHaloPx,
+    set: v => { v3Config.themePreview.islandHaloPx = v; }
+  });
+  buildSlider(themePreviewSubsection, {
+    label: "Section halo (px)", min: 0, max: 100, step: 1,
+    get: () => v3Config.themePreview.sectionHaloPx,
+    set: v => { v3Config.themePreview.sectionHaloPx = v; }
+  });
+  // onChange overridden -- pure CSS, no geometry change, so a full
+  // retraceIslands() would be wasted work for what's just a filter value.
+  buildSlider(themePreviewSubsection, {
+    label: "Edge blur (px)", min: 0, max: 30, step: 1,
+    get: () => v3Config.themePreview.blurPx,
+    set: v => { v3Config.themePreview.blurPx = v; },
+    onChange: () => document.body.style.setProperty("--v3-preview-blur", `${v3Config.themePreview.blurPx}px`)
+  });
+
+  // Sync both live-editable pieces (colours + blur) to whatever
+  // v3Config.themePreview shipped with, at panel-build time -- same
+  // load-order lesson v3.7.27's applyThemePreset() fix already
+  // established: don't rely on the static CSS fallback happening to
+  // match data.js's defaults by coincidence.
+  applyThemePreviewTokens();
+  document.body.style.setProperty("--v3-preview-blur", `${v3Config.themePreview.blurPx}px`);
 
   // -- Label style (v3.6.12) -- picks which .v3-island-label halo
   // treatment cabinet-v3-style.css applies, via a data-label-style

@@ -672,6 +672,39 @@ export const v3Config = {
     showDiagonals: true,
     latSpacing: 120,
     lonSpacing: 120
+  },
+
+  // Theme-preview-on-hover prototype ("theme x hover" to-do item) --
+  // parameters of the CROSS-theme transition itself, deliberately kept
+  // separate from either theme's own colour tokens (those stay owned by
+  // the existing per-theme colour editor/themeTokenState in
+  // cabinet-v3-controls.js -- this feature reads them live, doesn't
+  // duplicate them). previewTheme names which THEME_OPTIONS key hovering
+  // reveals, regardless of whichever theme is currently the page's base
+  // -- direct spec was a fixed Medieval-resting / Topology-reveal
+  // pairing, but making it a real dropdown costs little and avoids
+  // hardcoding "satellite" into the render path.
+  themePreview: {
+    previewTheme: "satellite",
+    // Direct feedback: 20px read as too tight to pick up any surrounding
+    // sea; "maybe 40-50px." 45 splits that range, both ends still live
+    // via the dev panel.
+    islandHaloPx: 45,
+    // Independent from islandHaloPx -- a section's preview already reuses
+    // traceIsolatedShape() the same way the section glow/hit shape does,
+    // but with its OWN halo rather than inheriting the glow's
+    // coastalZoneWidth (that value is calibrated for hit-testing/glow,
+    // not this feature; the two happening to share a number would be
+    // coincidence, not a real coupling).
+    sectionHaloPx: 45,
+    // Direct feedback: "the edges need to be blurred between the two
+    // themes, not a hard outline." Matches .v3-island-glow's own existing
+    // blur(6px)/.v3-section-glow's blur(14px) technique -- CSS
+    // filter:blur() on a plain unstroked fill, already proven reliable in
+    // this codebase for a single non-grouped path (the bug found earlier
+    // this project was specific to a GROUP of individually-transformed
+    // children, not this shape).
+    blurPx: 8
   }
 };
 

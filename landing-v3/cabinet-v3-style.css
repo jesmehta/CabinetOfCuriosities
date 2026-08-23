@@ -53,6 +53,23 @@ body.v3-proto {
      theme already had hardcoded, so nothing else changes. */
   --v3-halo-ink: var(--cab-land-hover);
   --v3-label-outline: var(--cab-land-light);
+  /* Theme-preview-on-hover prototype -- deliberately NOT themeable like
+     everything else above (a hovered island/section always previews
+     v3Config.themePreview.previewTheme's colours regardless of whichever
+     theme the page is actually showing; using var(--v3-sand) etc.
+     directly here would resolve to the ACTIVE theme's own tone instead,
+     the one thing this needs to avoid). These are STATIC FALLBACKS only
+     -- Topology's ("satellite") literal values, for index.html's static
+     build, which carries no controls.js/dev panel to set anything at
+     runtime. islands-tool.html's dev panel overrides these live, the
+     same way applyThemeTokens() already overrides the real per-theme
+     tokens -- see applyThemePreviewTokens() in cabinet-v3-controls.js --
+     so editing Topology's colours there, or switching which theme
+     previews, updates the hover effect too, with no separate "preview
+     colour" editor and no risk of these two colour sets drifting apart. */
+  --v3-preview-ink: #0d2436;
+  --v3-preview-land: #f2c94c;
+  --v3-preview-blur: 8px;
 
   margin: 0;
   /* v3.6.12 -- was var(--cab-sea) (a different, greyer tone than the
@@ -198,30 +215,17 @@ body.v3-proto[data-theme="medieval-map"] .v3-island-label {
   font-family: "EB Garamond", var(--cab-font-body);
 }
 
-/* "riso" -- v3-scheme-candidates.md scheme 3a. Colours only for now --
-   the doc's halftone dot pattern and mis-registration ink offset are
-   print-process texture, not just token swaps, and need their own SVG
-   rendering pass. Flagged here rather than silently skipped: a fast-
-   follow once the colour direction itself is confirmed as a contender,
-   not part of this comparison-ready pass. */
-body.v3-proto[data-theme="riso"] {
-  --v3-sea-deep: #0078bf;
-  --v3-sea-shallow: #46bdb1;
-  --v3-veg: #ff48b0;
-  --v3-sand: #ffe800;
-  --v3-ink: #131313;
-}
-
-body.v3-proto[data-theme="riso"] .v3-header h1 {
-  font-family: "Archivo Black", var(--cab-font-heading);
-}
-
-body.v3-proto[data-theme="riso"] .v3-island-label,
-body.v3-proto[data-theme="riso"] .v3-section-label {
-  font-family: "Space Mono", var(--cab-font-body);
-}
-
-/* "cyanotype" -- v3-scheme-candidates.md scheme 3b. Every tier below is
+/* "cyanotype" -- kept live/selectable (direct request: "Cyanotype was
+   supposed to be kept," correcting an earlier pass here that wrongly
+   pulled it from THEME_OPTIONS entirely). Only Topology + Medieval Map
+   will go forward to PRODUCTION, but that's about what eventually SHIPS,
+   not what stays reachable in this dev tool now -- Cyanotype remains a
+   kept reference worth comparing against, same as MedieRiso's own
+   "scratchpad" status; neither is archived out of the dropdown. ("riso"
+   itself, a separate/plainer theme, WAS deleted outright, since that one
+   was explicitly disposable -- its reasoning still lives in
+   v3-scheme-candidates.md and git history if ever wanted back.)
+   v3-scheme-candidates.md scheme 3b. Every tier below is
    the same pigment (#003153, Prussian blue) at reduced alpha over the
    paper tone (#f2ead9), precomposited by hand into flat hexes since
    --v3-sea-deep etc feed solid backgrounds, not translucent fills -- see
@@ -897,6 +901,35 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   opacity: 0.65;
 }
 
+/* Theme-preview-on-hover prototype (Part A: colour only, no band/wave/
+   shadow structure yet -- see the "theme x hover" to-do item). Sits on
+   top of the shared global coastline/band paths (painted once, underneath
+   every region -- see renderRegion()'s own comment), so an opaque wash
+   visually replaces that patch without touching the shared geometry at
+   all. --v3-preview-land is a flat stand-in for Topology's whole land
+   body (sand/veg/peak aren't separately previewed yet -- that needs
+   per-band isolated traces, a follow-up once this mechanism itself is
+   validated, not this pass). Fill only, no stroke -- direct feedback:
+   "the edges need to be blurred between the two themes, not a hard
+   outline." blur() alone already does this: the interior stays ~fully
+   opaque (blurring a large uniform fill doesn't visibly change it away
+   from any edge) while the boundary itself ramps down to transparent
+   over the blur radius, letting the Medieval content underneath show
+   through increasingly at the edge -- a stroke would still read as a
+   hard line even blurred, so it's dropped rather than also blurred. */
+.v3-island-theme-preview {
+  fill: var(--v3-preview-land);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(var(--v3-preview-blur));
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview,
+.v3-island:focus-visible .v3-island-theme-preview {
+  opacity: 1;
+}
+
 .v3-island-label {
   font-family: var(--cab-font-body);
   font-size: 13px;
@@ -1077,6 +1110,28 @@ body[data-label-style="glow"] .v3-section-label {
 .v3-section-link:hover .v3-section-glow,
 .v3-section-link:focus-visible .v3-section-glow {
   opacity: 0.22;
+}
+
+/* Theme-preview-on-hover prototype (Part A), section level -- same
+   mechanism as .v3-island-theme-preview, reusing renderRegion()'s
+   existing sectionShapeD (already the label band + every component
+   island + the coastal-zone buffer, unioned) instead of tracing anything
+   new. Slightly under full opacity, same reasoning .v3-section-glow's own
+   comment gives for its dimmer wash: this covers a much bigger area than
+   one island, so a flat full-opacity fill across the whole union would
+   read as a single hard block rather than "islands plus their
+   surrounding sea," even before per-band fidelity exists. */
+.v3-section-theme-preview {
+  fill: var(--v3-preview-land);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(var(--v3-preview-blur));
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview,
+.v3-section-link:focus-visible .v3-section-theme-preview {
+  opacity: 0.85;
 }
 
 /* v3.6: dev-only island-shape tuning panel (cabinet-v3-controls.js) --

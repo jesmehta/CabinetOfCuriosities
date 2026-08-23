@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.32 -- Theme x hover, Part A: a real colour-preview prototype, plus the theme roster narrowed toward Medieval + Topology](#v3732----theme-x-hover-part-a-a-real-colour-preview-prototype-plus-the-theme-roster-narrowed-toward-medieval--topology)
   - [v3.7.24-v3.7.30 -- Topology's directional cast shadow: cliff-edge fix, a real CSS-filter bug, then a height-aware taper](#v3724-v3730----topologys-directional-cast-shadow-cliff-edge-fix-a-real-css-filter-bug-then-a-height-aware-taper)
   - [v3.7.28 -- "Land 5": a mountain-peak accent, calibrated against real content, not a guess](#v3728----land-5-a-mountain-peak-accent-calibrated-against-real-content-not-a-guess)
   - [v3.7.28 -- Diagnostics subsection: island-noise heightmap view alongside the existing flow-field debug](#v3728----diagnostics-subsection-island-noise-heightmap-view-alongside-the-existing-flow-field-debug)
@@ -91,7 +92,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.31** (domain warping for real concave coastlines,
+Currently on **v3.7.32** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -148,32 +149,46 @@ v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
--> v3.7.31
+-> v3.7.31 -> v3.7.32
 progression and why each pass changed what it did. Most recently
-(v3.7.23 -> v3.7.31): the Topology theme got its own real identity
-instead of sharing every other theme's treatment -- coastal bands off,
-and (after the original v3.7.9 directional shadow was shelved for
-looking like a cliff edge) a REBUILT directional cast shadow, this time
-built from copies of the terrain's own five (then six, once "Land 5"
-landed) nested contour levels rather than one repeated shape, so it
-genuinely tapers as it recedes, and -- after a real CSS-filter-vs-SVG-
-filter bug was caught by testing rather than guessing -- its length now
-scales with actual terrain HEIGHT rather than a fixed per-layer step
-("tall bits cast longer shadows"); a new "Land 5" mountain-peak accent
-(white, seen only on some islands, calibrated against the real site
-content after a synthetic sample turned out unrepresentative); a new
-Diagnostics subsection folding the existing flow-field debug views
-together with a new raw island-heightmap tint view; every Topological
-offset parameter slider now reads/writes relative to the coastline
-threshold instead of an opaque absolute noise value, renumbered so "1"
-always means nearest the coast in both directions; `waterLevel` loosened
-for more sea-floor headroom after empirically confirming the old floor
-produced a real cliff, not a fade, the moment a level crossed it; a
-dragon-flashing-at-native-size-on-load bug fixed; a lat/long-grid-drawn-
-above-the-compass z-order bug fixed; and the dev tool's own defaults
-flipped to Topology theme / glow label style. Full detail (including
-the shadow feature's several real rounds and the empirical verification
-behind both bugfixes) in the changelog below.
+(v3.7.32): a first real prototype of "theme x hover" -- hovering an
+island or section reveals a Topology-coloured overlay of its own real
+traced shape (reusing the same isolated-trace mechanism that already
+powers hover glow/hit-testing), coloured from the SAME live
+`themeTokenState` the existing per-theme colour editor writes to, not a
+separate hardcoded snapshot, so editing Topology's colours updates the
+hover effect immediately. Halo distance and edge blur are both new live
+dev-panel sliders (45px / a `filter: blur()` with no stroke, both tuned
+from direct feedback after the first pass). Colour fidelity is
+deliberately flat for now (no per-band sand/veg/peak distinction yet) --
+a known, flagged limit of this pass, not a bug. Also: the theme roster
+narrowed toward an eventual Medieval + Topology production pair -- Riso
+removed outright, Cyanotype and MedieRiso both stay live/selectable as a
+kept reference and an ongoing scratchpad respectively. Full detail
+(including the three mechanisms compared before picking this one, and a
+wrong first guess at what "Cyanotype archived" meant, corrected on direct
+feedback) in the changelog below. Before that (v3.7.23 -> v3.7.31): the
+Topology theme got its own real identity instead of sharing every other
+theme's treatment -- coastal bands off, and (after the original v3.7.9
+directional shadow was shelved for looking like a cliff edge) a REBUILT
+directional cast shadow, this time built from copies of the terrain's own
+five (then six, once "Land 5" landed) nested contour levels rather than
+one repeated shape, so it genuinely tapers as it recedes, and -- after a
+real CSS-filter-vs-SVG-filter bug was caught by testing rather than
+guessing -- its length now scales with actual terrain HEIGHT rather than
+a fixed per-layer step ("tall bits cast longer shadows"); a new "Land 5"
+mountain-peak accent (white, seen only on some islands, calibrated
+against the real site content after a synthetic sample turned out
+unrepresentative); a new Diagnostics subsection folding the existing
+flow-field debug views together with a new raw island-heightmap tint
+view; every Topological offset parameter slider now reads/writes
+relative to the coastline threshold instead of an opaque absolute noise
+value, renumbered so "1" always means nearest the coast in both
+directions; `waterLevel` loosened for more sea-floor headroom after
+empirically confirming the old floor produced a real cliff, not a fade,
+the moment a level crossed it; a dragon-flashing-at-native-size-on-load
+bug fixed; a lat/long-grid-drawn-above-the-compass z-order bug fixed; and
+the dev tool's own defaults flipped to Topology theme / glow label style.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1397,6 +1412,75 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.32 -- Theme x hover, Part A: a real colour-preview prototype, plus the theme roster narrowed toward Medieval + Topology
+
+New feature, discussed at length before any code: "on hover, the island
+[...] convert from Medieval theme to Topology theme [...] wave contours,
+etc. disappear." Three candidate mechanisms were compared (live on-hover
+regeneration; a dual full-scene layer with a dynamic clip-path; CSS-only
+recolouring with no geometry swap) before settling on building the
+CSS-only piece first as "Part A" of the full mechanism -- genuinely
+useful groundwork, not throwaway, since the full version needs this same
+colour-scoping layer regardless.
+
+Mechanism: both an island's and a section's real traced shape were
+already available -- `traceIsolatedShape()` already powers each island's
+hover glow/hit-circle and each section's glow/hit union (label band +
+every component island + a coastal-zone buffer). A new theme-coloured
+overlay path reuses that exact geometry (a fresh dilated trace for
+islands; its own dedicated dilated trace for sections, decoupled from the
+existing glow/hit halo rather than reusing it by coincidence), sits on
+top of the shared global coastline/band paths, and reveals on
+`:hover`/`:focus-visible` via a CSS opacity transition -- no per-hover
+computation at all.
+
+Colour correctness needed a real check, not an assumption: the existing
+per-theme colour editor (`themeTokenState` in `cabinet-v3-controls.js`)
+already holds every theme's live-edited colours in memory regardless of
+which is the page's active theme, only pushing an edited theme's values
+onto `<body>`'s inline styles when THAT theme is active. A first pass
+hardcoded Topology's colours as a static snapshot to sidestep this,
+correctly flagged by direct question ("both effects will be controlled
+and edited by their respective theme dropdowns, right?") as the wrong
+long-term choice -- replaced with `applyThemePreviewTokens()`, which
+reads `themeTokenState` directly, called on panel build, on every colour
+edit to the active preview theme, and on preview-theme switch, so editing
+Topology's colours (or picking a different preview theme) updates the
+hover effect immediately even while Medieval is what's actually showing.
+
+Mashup-specific parameters (which theme previews, island halo distance,
+section halo distance, edge blur) got their own `v3Config.themePreview`
+config block and "Theme hover preview" dev-panel subsection, deliberately
+NOT folded into either theme's own colour definition -- they're
+parameters of the transition itself, not colours belonging to either
+theme. Two rounds of direct feedback already folded in: halo distance
+20px -> 45px (a live slider, "maybe 40-50px may be better to get some of
+the sea nicely as well") and a hard stroke replaced with `filter:
+blur()` and no stroke at all ("the edges need to be blurred... not a
+hard outline"), reusing `.v3-island-glow`/`.v3-section-glow`'s own
+already-proven blur technique. Deliberately NOT done yet: per-band
+colour fidelity (sand/veg/peak, not one flat wash) -- flagged explicitly
+as Part A's known limit, not a surprise once seen live ("the colours are
+a no show").
+
+Also logged: an easter egg idea, direct request -- clicking inside the
+compass rose's inner circle swaps the WHOLE canvas's theme, Medieval <->
+Topology and back, "too nice a piece of work to be seen only in bits."
+Added to `three-world-launch-phases-ToDo.md`'s Phase 0, explicitly
+sequenced after this feature (same two themes, same colour data, just a
+click-triggered whole-canvas swap instead of a hover-scoped local one).
+
+Theme roster: direct request, only Topology + Medieval Map will go
+forward to PRODUCTION eventually. Riso was explicitly disposable ("can
+go") and is removed outright -- CSS block, dropdown entry, preset entry
+all gone; its reasoning stays in `v3-scheme-candidates.md` and git
+history. Cyanotype and MedieRiso are NOT shipping either, but both stay
+live/selectable in this dev tool regardless -- "archive" and "scratchpad"
+describe their eventual fate, not present reachability. (A first pass
+here wrongly pulled Cyanotype out of the dropdown entirely, treating
+"archive" as "no longer reachable" -- corrected immediately on direct
+feedback: "Cyanotype was supposed to be kept.")
 
 ### v3.7.24-v3.7.30 -- Topology's directional cast shadow: cliff-edge fix, a real CSS-filter bug, then a height-aware taper
 
