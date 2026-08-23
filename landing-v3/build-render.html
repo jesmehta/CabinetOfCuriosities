@@ -32,5 +32,15 @@
     <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
   </main>
   <script type="module" src="cabinet-v3-layout.js"></script>
+  <!-- v3.7.47 -- exposes getIslandLayoutState() on window so
+       build-static.mjs's page.evaluate() can pull grown/canvasBounds
+       out after render() finishes, to serialize for
+       cabinet-v3-production-animate.js. Only exists here, in the
+       build-time capture page -- never shipped to production, never
+       loaded by islands-tool.html either. -->
+  <script type="module">
+    import { getIslandLayoutState } from "./cabinet-v3-layout.js";
+    window.__v3GetIslandLayoutState = getIslandLayoutState;
+  </script>
 </body>
 </html>

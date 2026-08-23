@@ -299,23 +299,49 @@ own numbering note near the top) -- a move, not a re-add.
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be
       built -- same shape of blocker as #30's boats.
-- [ ] **#64** Decide what to do about boats/dragons never appearing on the
+- [x] **#64** Decide what to do about boats/dragons never appearing on the
       production build -- **#38's "consciously deferred" made concrete,
       2026-08-23**: seeing the live site with no boats/dragons at all
       ("none of the boats and dragons have turned up") is a different
-      experience than reading the abstract deferral. Real options, not
-      yet chosen between: (a) leave it as-is, matching #38's decision;
-      (b) a cheap middle ground -- have `build-render.html` trigger a
-      one-time spawn (same functions `cabinet-v3-controls.js`'s
-      `startCurrentAnimation()` calls) before capture, so the static
-      build bakes in a frozen initial snapshot of boats/dragons at their
-      spawn positions, no runtime script required, consistent with how
-      everything else in the static build already works; (c) ship the
-      real animation loop to production as live runtime script -- a
-      bigger change, adds real JS payload/perf cost to every visitor,
-      and cuts against the "zero script" static-page architecture
-      already chosen deliberately elsewhere (the theme x hover mechanism
-      also doesn't work in production for the same reason).
+      experience than reading the abstract deferral. Direct pushback on
+      treating #38 as settled: **"I never agreed to not having the boats
+      and dragons - they make the page alive... It's going on the live
+      page."** Three options were laid out (leave as-is; a frozen build-
+      time snapshot; ship the real animation loop live) with an initial
+      cost estimate for the third that turned out to be wrong -- assumed
+      reusing `cabinet-v3-layout.js`'s functions meant loading the whole
+      170KB+ file (with `cabinet-v3-treemap.js`/`cabinet-v3-circlepack.js`,
+      needed only to DECIDE island layout, not to animate on top of an
+      already-decided one). Corrected after a direct challenge --
+      **"Isnt the real engine just a particle system and a noise field?
+      The islands are already there as svgs. What is the problem?"** --
+      by actually checking what `startCurrentAnimation()` needs: just
+      `grown` (circle-packing output, tiny) + canvasBounds, not the
+      treemap/circlepack algorithms themselves. **Done, v3.7.47**:
+      `build-static.mjs` now also serializes `grown`+`canvasBounds` into
+      the static build; a new `cabinet-v3-production-animate.js` reuses
+      `cabinet-v3-flowfield.js`/`cabinet-v3-particles.js`/`cabinet-v3-
+      dragon.js`/`cabinet-v3-islandshape.js`'s `buildIslandHeightmap`
+      UNMODIFIED (zero duplication of the actual physics), with only the
+      DOM-rendering glue freshly written and trimmed per direct
+      confirmation: no click-to-launch ("not a serious/core feature,"
+      "we can get rid of mouseclick to new boat"), no MedieRiso colour
+      branching (that theme doesn't ship to production), dragon dive/
+      resurface slide-and-clip kept as-is ("dragon slide-sink is a
+      keeper though, that works nicely"). ~150KB uncompressed added
+      payload, not the ~350KB+ first estimated. Verified via Playwright
+      on both `landing-v3/index.html` and the promoted `docs/index.html`:
+      130 particles, 1-3 dragons, positions genuinely change frame to
+      frame, zero console/request errors, full `mkdocs build` still
+      clean. Also corrected in the process: this entry originally also
+      claimed the theme x hover mechanism "doesn't work in production
+      for the same reason" -- wrong, direct pushback caught it
+      ("it does work, what are you talking about?"), checked directly:
+      every hover-preview rule (`.v3-island:hover .v3-island-theme-
+      preview` etc., `cabinet-v3-style.css`) is a pure CSS `:hover`
+      selector revealing already-baked SVG paths via opacity, zero
+      JavaScript involved -- not analogous to boats/dragons at all,
+      which genuinely need a `requestAnimationFrame` loop.
 - [ ] **#30** Theme-specific boat artwork: swap the boat graphic between themes
       (islands-tool.html's dev panel boat toggle -- the current ellipses
       are a top-down view, fitted for Topology's satellite-map

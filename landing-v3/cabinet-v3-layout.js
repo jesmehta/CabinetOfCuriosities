@@ -65,6 +65,16 @@ let islandLayoutState = null;
 // heightmap trace itself.
 let lastIslandTrace = null;
 
+// v3.7.47 -- exported so build-static.mjs can pull just the circle-
+// packing output (grown) + canvasBounds out of a finished render(),
+// to serialize into the static build for cabinet-v3-production-
+// animate.js's own use -- see that file's own header comment for why:
+// treemap/circlepack only need to run ONCE (here, at build time), not
+// again in every visitor's browser.
+export function getIslandLayoutState() {
+  return islandLayoutState;
+}
+
 // v3.6.8 -- bumped by cabinet-v3-controls.js's "Reroll positions" button,
 // folded into every section's scatter seed below (sectionSeed()) so a
 // reroll produces a genuinely different archipelago layout while staying
