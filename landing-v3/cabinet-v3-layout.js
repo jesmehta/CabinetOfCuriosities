@@ -1827,7 +1827,12 @@ function hashHue(str) {
 // bands don't reach here) and guarantees the true coastline stays fully
 // inside the clip.
 function drawCoastalInwardBands(stage, layout, islandTrace, grown) {
-  stage.querySelectorAll(".v3-coast-inward-band, .v3-coast-inward-band-defs").forEach(node => node.remove());
+  // v3.7.39 -- .v3-coast-inward-band-group added to this cleanup query
+  // too, now that bands live inside it rather than as direct stage
+  // children -- otherwise a retrace leaves the OLD (now-empty) group
+  // behind while inserting a fresh one, accumulating stale empty groups
+  // every tick.
+  stage.querySelectorAll(".v3-coast-inward-band-group, .v3-coast-inward-band, .v3-coast-inward-band-defs").forEach(node => node.remove());
 
   const { showCoastalBands, coastInwardBandDistances, cellSize, threshold } = v3Config.island;
   if (!showCoastalBands || !coastInwardBandDistances || !coastInwardBandDistances.length) return;
@@ -1850,6 +1855,24 @@ function drawCoastalInwardBands(stage, layout, islandTrace, grown) {
 
   const defs = el("defs", { class: "v3-coast-inward-band-defs" });
   stage.insertBefore(defs, coastlineEl);
+
+  // v3.7.39 bugfix -- every band path already carries its OWN per-section
+  // clip-path ATTRIBUTE below (essential: ringData's `d` spans every
+  // section's geometry combined, see this function's own doc comment, so
+  // this is the only thing confining one section's band to that section).
+  // The medieval-effects hover clip (v3.7.36) was wrongly applied via a
+  // CSS class rule targeting .v3-coast-inward-band directly -- one
+  // element can only resolve ONE `clip-path` value, so the stylesheet
+  // rule (higher cascade priority than a presentation attribute) SILENTLY
+  // REPLACED each band's section-confinement clip instead of adding to
+  // it, un-confining every section's band across the whole map. Direct
+  // report caught it: hovering one island showed a DIFFERENT section's
+  // inward-band content bleeding through. Fixed by wrapping every band in
+  // a shared group and moving the hover clip there instead -- SVG applies
+  // an ancestor's clip-path and an element's own clip-path attribute
+  // together (intersected), so both confinements now hold at once.
+  const hoverClipGroup = el("g", { class: "v3-coast-inward-band-group" });
+  stage.insertBefore(hoverClipGroup, coastlineEl);
 
   layout.forEach(({ sectionMeta }) => {
     const circles = grownBySection.get(sectionMeta.id) || [];
@@ -1877,7 +1900,7 @@ function drawCoastalInwardBands(stage, layout, islandTrace, grown) {
       // v3.7.17 -- 42%/22% -> 58%/32%, direct request ("make the colours
       // slightly brighter/more intense").
       node.style.fill = `hsl(${hue}, 58%, 32%)`;
-      stage.insertBefore(node, coastlineEl);
+      hoverClipGroup.appendChild(node);
     });
   });
 }

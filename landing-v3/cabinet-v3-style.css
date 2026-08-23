@@ -851,10 +851,22 @@ body[data-label-style="glow"] .v3-compass-direction-label {
    v3.7.37 -- extended to both shadow classes too, now that
    .v3-island-theme-preview-shadow/.v3-section-theme-preview-shadow exist
    to replace what's clipped away with Topology's own directional taper
-   instead of just removing Medieval's shadow and leaving a gap. */
+   instead of just removing Medieval's shadow and leaving a gap.
+   v3.7.39 bugfix -- .v3-coast-inward-band removed from this list: each
+   one already carries its OWN per-section clip-path ATTRIBUTE (essential
+   -- see drawCoastalInwardBands()'s own doc comment), and a stylesheet
+   `clip-path` rule silently REPLACES a presentation attribute rather
+   than composing with it, so this was un-confining every section's band
+   across the whole map instead of just poking a hover-hole in it. Direct
+   report caught it live ("wave contours are still visible in the section
+   hover... not visible correctly in the Island hover"). Fixed by
+   applying the hover clip to .v3-coast-inward-band-group (a wrapping
+   group, cabinet-v3-layout.js) instead -- an ancestor's clip-path and an
+   element's own clip-path attribute both apply, intersected, so neither
+   confinement is lost. */
 .v3-wave-ring,
 .v3-coast-outward-band,
-.v3-coast-inward-band,
+.v3-coast-inward-band-group,
 .v3-sea-shadow-radial,
 .v3-sea-shadow-taper {
   clip-path: url(#v3-medieval-effects-clip);
@@ -941,15 +953,19 @@ body[data-label-style="glow"] .v3-compass-direction-label {
 
 /* v3.7.37 -- mechanism 3's last piece: Topology's own directional taper
    shadow, isolated to one island, painted first/underneath (see
-   buildIsolatedShadowTaper()'s own comment in cabinet-v3-layout.js).
-   Same fill/opacity as the real .v3-sea-shadow-taper-copy -- reads as
-   the same shadow, just isolated and theme-swapped. No separate blur
-   here -- the group carries its own SVG filter (filter attribute, set in
-   JS) rather than a CSS class, same "explicit filterUnits, no
-   auto-bounding-box guesswork" fix the real shadow needed. */
+   buildIsolatedShadowTaper()'s own comment in cabinet-v3-layout.js). No
+   separate blur here -- the group carries its own SVG filter (filter
+   attribute, set in JS) rather than a CSS class, same "explicit
+   filterUnits, no auto-bounding-box guesswork" fix the real shadow
+   needed. v3.7.39 -- 0.08 -> 0.18: the real shadow's own value read as
+   basically invisible in this smaller, more saturated preview context
+   ("no Sea Topology visible anywhere," and separately "reads as quite
+   subtle" noted but left at v3.7.37) -- boosted for the preview
+   specifically rather than deferred again, the real map's own shadow is
+   untouched. */
 .v3-island-theme-preview-shadow-copy {
   fill: #000;
-  fill-opacity: 0.08;
+  fill-opacity: 0.18;
 }
 
 .v3-island-theme-preview-shadow {
@@ -997,10 +1013,14 @@ body[data-label-style="glow"] .v3-compass-direction-label {
    same paint-order slot the real .v3-sea-band occupies relative to
    .v3-coast-outward-band/shadow and the land bands in drawIslandsPath().
    Crisp, no blur -- same "only the outer wash softens" logic as the land
-   bands. */
+   bands. v3.7.39 -- 0.24 -> 0.45: direct report, "No Sea Topology
+   visible anywhere" -- the real map's own value read as effectively
+   invisible in this smaller, more saturated preview context; boosted for
+   the preview specifically, the real map's own .v3-sea-band is
+   untouched. */
 .v3-island-theme-preview-sea {
   fill: var(--v3-preview-sea);
-  fill-opacity: 0.24;
+  fill-opacity: 0.45;
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--cab-transition-fast);
@@ -1254,9 +1274,11 @@ body[data-label-style="glow"] .v3-section-label {
 
 /* v3.7.37 -- mechanism 3's last piece, section level. Same reasoning as
    the island-level rules above. */
+/* v3.7.39 -- 0.08 -> 0.18, same reasoning as the island-level rule
+   above. */
 .v3-section-theme-preview-shadow-copy {
   fill: #000;
-  fill-opacity: 0.08;
+  fill-opacity: 0.18;
 }
 
 .v3-section-theme-preview-shadow {
@@ -1294,9 +1316,11 @@ body[data-label-style="glow"] .v3-section-label {
 
 /* v3.7.38 -- real sea-depth bands, section level. Same reasoning as the
    island-level rule above. */
+/* v3.7.39 -- 0.24 -> 0.45, same reasoning as the island-level rule
+   above. */
 .v3-section-theme-preview-sea {
   fill: var(--v3-preview-sea);
-  fill-opacity: 0.24;
+  fill-opacity: 0.45;
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--cab-transition-fast);

@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.39 bugfix -- inward-band clip conflict was the real cause behind three of four reported problems](#v3739-bugfix----inward-band-clip-conflict-was-the-real-cause-behind-three-of-four-reported-problems)
   - [v3.7.38 -- Wave-ring blur bleed fixed; Topology's own sea-depth bands added to the preview](#v3738----wave-ring-blur-bleed-fixed-topologys-own-sea-depth-bands-added-to-the-preview)
   - [v3.7.37 -- Mechanism 3 complete for now: Topology's directional shadow swaps in on hover; default theme reverted to Medieval](#v3737----mechanism-3-complete-for-now-topologys-directional-shadow-swaps-in-on-hover-default-theme-reverted-to-medieval)
   - [v3.7.36 -- Mechanism 3, first slice: Medieval's own wave-rings/coastal-bands genuinely disappear on hover, not just get painted over](#v3736----mechanism-3-first-slice-medievals-own-wave-ringscoastal-bands-genuinely-disappear-on-hover-not-just-get-painted-over)
@@ -98,7 +99,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.38** (domain warping for real concave coastlines,
+Currently on **v3.7.39** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -156,9 +157,24 @@ v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
 -> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35 -> v3.7.36 -> v3.7.37
--> v3.7.38
+-> v3.7.38 -> v3.7.39
 progression and why each pass changed what it did. Most recently
-(v3.7.38): two real problems caught from one screenshot -- Medieval's
+(v3.7.39): the REAL cause of v3.7.38's "still visible" report -- one
+`.v3-coast-inward-band` (each section's own colour-hued inland band,
+the actual biggest source of visible land colour in Medieval Map) was
+silently losing its ESSENTIAL per-section confinement clip every time
+the hover mechanism's CSS rule overwrote it, un-confining every
+section's band across the whole map. Explains three of the four things
+reported at once -- wave/band bleed on both islands and sections, AND
+the separately-reported "Medieval island colour is gone, inland is
+white" (the confined, colour-hued bands ARE most of that colour). Fixed
+by moving the hover clip onto a wrapping group instead of the individual
+band elements, so both clips (confinement + hover-hole) now compose
+instead of one replacing the other. Also boosted the preview's sea-band
+and shadow opacity -- the real map's own subtle values read as
+effectively invisible in this smaller, more saturated context. Full
+detail, with screenshots, in the changelog below. Before that (v3.7.38):
+two real problems caught from one screenshot -- Medieval's
 wave-ring contours were still visibly showing through the wash's own
 blurred, semi-transparent edge (the clip GEOMETRY was already correct,
 confirmed by zeroing the blur and watching the artifact vanish
@@ -1476,6 +1492,72 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.39 bugfix -- inward-band clip conflict was the real cause behind three of four reported problems
+
+Direct report against v3.7.38, sharper and more specific than "still a
+bit off": "Wave contours are still visible in the section hover, and NOT
+visible CORRECTLY in the Island hover. No Sea Topology visible anywhere.
+And now the Medival theme island colour is gone, inland is white no
+colour beyond the coastal band."
+
+Investigated by elimination, not by re-guessing at the blur fix again.
+First isolated whether Medieval's OWN full-page rendering was broken at
+all, independent of hover: `--v3-veg` for medieval-map resolved to
+`#fbf0ee`, a very pale cream -- confirmed via `git log -S` this exact
+value has been unchanged since a commit from well before this session
+(v3.7.13-v3.7.22), ruling it out as something this work broke. Forced
+`clip-path: none` on the wave-ring/band layers entirely as a diagnostic
+-- the pale, flat-looking land PERSISTED even with the hover clip fully
+disabled, meaning something else was suppressing colour, not the clip
+mechanism itself.
+
+Sampled every element actually painted within a hovered island's own
+halo area (`document.elementFromPoint` across a grid of points, not a
+single spot check) and found `.v3-coast-inward-band` -- each section's
+own colour-hued inland band, the real primary source of visible land
+colour in Medieval Map -- showing content that didn't belong to the
+hovered island's own section. Root cause: `drawCoastalInwardBands()`
+gives every inward-band path its own ESSENTIAL per-section `clip-path`
+ATTRIBUTE (the raw `d` for every copy spans the WHOLE map's combined
+geometry -- see that function's own doc comment -- so this attribute is
+the ONLY thing confining one section's copy to that section). v3.7.36's
+hover-clip CSS rule targeted `.v3-coast-inward-band` directly, and a
+stylesheet `clip-path` declaration SILENTLY REPLACES a presentation
+attribute rather than composing with it -- so every section's band lost
+its confinement the moment the hover mechanism shipped, each one now
+showing the full-map geometry (minus only a small hover-hole), stacked
+across all six section-hued copies. This explains all three symptoms at
+once: wave/band bleed on both islands and sections (the unconfined
+bands, not wave-rings, were what was actually showing through in most
+cases), and the separately-reported "Medieval island colour is gone" --
+un-confining the bands didn't just leak them elsewhere, it broke their
+correct appearance on their OWN sections too.
+
+![Before the fix: every section's inland colour band reads flat and washed-out, none of the six sections' colour hues distinct](landing-v3/dev-screenshots/v3.7.38-theme-preview-band-fidelity-fixed.png)
+
+![After: each section's own colour-hued band correctly confined -- blue (Bookshelf), olive/green, pink/brown -- restoring Medieval Map's actual land colour](landing-v3/dev-screenshots/v3.7.39-medieval-baseline-restored.png)
+
+Fixed by moving the hover clip off the individual band paths and onto a
+new wrapping `<g class="v3-coast-inward-band-group">` instead -- SVG
+composes an ancestor's `clip-path` with an element's own `clip-path`
+attribute (both apply, intersected), so the per-section confinement and
+the hover-hole now both hold at once, neither replacing the other.
+Verified the fix doesn't leave stale groups behind across both a slider
+retrace and a full "Reroll positions" render.
+
+![Island hover, re-verified clean: no cross-section band bleed inside the wash](landing-v3/dev-screenshots/v3.7.39-inward-band-clip-bug-fixed-island.png)
+
+**Sea-depth/shadow opacity boosted for the preview.** The fourth report
+("no Sea Topology visible anywhere") was real independent of the clip
+bug -- confirmed via an isolated diagnostic that the geometry was always
+correct, just at the real map's own subtle opacity (0.24 sea-band, 0.08
+shadow) in a smaller, more saturated preview context. Two rounds of
+"can't see it" is a real signal, not a coincidence -- rather than defer
+this a third time, boosted the PREVIEW's own opacity (sea-band 0.24 ->
+0.45, shadow 0.08 -> 0.18) without touching the real map's own values:
+
+![Sea-depth bands and a hint of directional shadow now clearly visible at real (non-forced) opacity](landing-v3/dev-screenshots/v3.7.39-boosted-sea-shadow-opacity.png)
 
 ### v3.7.38 -- Wave-ring blur bleed fixed; Topology's own sea-depth bands added to the preview
 
