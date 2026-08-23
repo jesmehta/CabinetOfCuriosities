@@ -613,6 +613,28 @@ function clipMarginFor(blurPx) {
   return Math.max(12, Math.round(blurPx * 2));
 }
 
+// v3.7.41 -- the section-level theme-preview wash (and its hover-clip
+// hole) was traced from `circles` alone, same as the per-island version --
+// but a section's OWN hit/glow shape (sectionShapeD above) is deliberately
+// the label band rect UNIONED with the islands trace, not the islands
+// trace alone (direct request, v3.6.26: "union of the section label +
+// unused islands + the coastal zone"). The preview wash never got that
+// same union, so hovering a section left its label rectangle uncovered --
+// no deep-sea fill painted there, and no hover-clip hole either, so
+// whatever Medieval content sits under the label (wave-rings included)
+// stayed fully visible and unclipped. Direct feedback: "it takes a
+// composite shape of all the islands but not the section label textbox."
+// Same "extra sibling subpath, no boolean union needed" trick as
+// sectionShapeD's own rect+path sibling pair -- concatenated onto an
+// evenodd `d` string, a rect that doesn't overlap the island blob just
+// punches/paints a second independent region, not a modification of the
+// first. Only the wash/clip-hole get this -- the graduated sea/land bands
+// are per-island fade rings and have no meaning painted over a text label,
+// same reasoning the real per-island coastline/bands never needed it.
+function rectSubpathD(x, y, width, height) {
+  return `M ${x},${y} H ${x + width} V ${y + height} H ${x} Z`;
+}
+
 function traceIsolatedShape(circles, islandConfig, extraDistance = 0) {
   if (!circles.length) return "";
   const { cellSize, threshold } = islandConfig;
@@ -714,6 +736,50 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
     ? v3Config.island.waveDistances[v3Config.island.waveDistances.length - 1]
     : 0;
   const sectionShapeD = traceIsolatedShape(circles, v3Config.island, coastalZoneWidth);
+
+  // v3.7.41 -- the section label's own text, built here (rather than at
+  // its previous spot, right before the final stage.appendChild(group))
+  // so its rendered bbox is available before the theme-preview wash below
+  // needs it. Actual DOM placement (sectionLink.appendChild(labelGroup))
+  // still happens at the original spot, after every island -- this is
+  // only an early CONSTRUCTION, not an early attach, so z-order (label
+  // painted on top of islands) is unchanged.
+  const { lines, fontSize, lineHeight } = label;
+  const labelGroup = el("g", { class: "v3-section-label-group" });
+  const labelX = band.x + 14;
+  const blockHeight = lines.length * lineHeight;
+  const firstBaselineY = band.y + (band.height - blockHeight) / 2 + fontSize * 0.85;
+  lines.forEach((line, i) => {
+    labelGroup.appendChild(
+      el(
+        "text",
+        { x: labelX, y: firstBaselineY + i * lineHeight, "font-size": fontSize.toFixed(1), class: "v3-section-label" },
+        line
+      )
+    );
+  });
+  // getBBox() needs the element attached to a rendered SVG document to
+  // return real glyph metrics -- `stage` is already live, so attach here
+  // just long enough to measure, then detach; the group itself (with its
+  // already-fully-determined x/y/text) is unchanged and reused for real
+  // below. Direct feedback, after the first attempt used the full label
+  // BAND (a generous full-region-width strip reserved so packing never
+  // touches it, NOT the visible text's own size): "I dont need the entire
+  // section band highlighted, just the textbox + proportional margins."
+  stage.appendChild(labelGroup);
+  const labelBBox = labelGroup.getBBox();
+  stage.removeChild(labelGroup);
+  // Proportional to the label's own scale (fontSize), not a fixed pixel
+  // pad -- a section with a small/short label gets a small margin, a
+  // large/long one gets a bigger one, same "halo scales with what it's
+  // haloing" logic islandHaloPx/sectionHaloPx already follow elsewhere.
+  const labelMarginX = fontSize * 0.7;
+  const labelMarginY = fontSize * 0.5;
+  const labelWashD = rectSubpathD(
+    labelBBox.x - labelMarginX, labelBBox.y - labelMarginY,
+    labelBBox.width + labelMarginX * 2, labelBBox.height + labelMarginY * 2
+  );
+
   // Theme-preview prototype, section level -- its OWN halo (see
   // v3Config.themePreview's doc comment for why this doesn't just reuse
   // coastalZoneWidth above), so tuning "how much sea shows on preview"
@@ -777,6 +843,24 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   glowGroup.appendChild(el("rect", { class: "v3-section-glow", x: band.x, y: band.y, width: band.width, height: band.height }));
   if (sectionShapeD) glowGroup.appendChild(el("path", { class: "v3-section-glow", d: sectionShapeD, "fill-rule": "evenodd" }));
   if (sectionThemePreviewD) glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: sectionThemePreviewD, "fill-rule": "evenodd", "data-clip-d": sectionThemePreviewClipD }));
+  // v3.7.41 -- the label's own small wash patch, a SEPARATE sibling
+  // element rather than a second subpath appended onto the composite
+  // wash's own `d` string (an earlier attempt at that -- direct feedback:
+  // "the textbox inclusion is behaving weirdly... white patches over all
+  // textboxes"). Concatenating two closed shapes into one evenodd `d`
+  // only unions them where they DON'T overlap; wherever the label's rect
+  // happened to overlap the (often much bigger) islands-halo blob, the
+  // shared fill-rule XORed the overlap back OUT, punching a hole exactly
+  // there -- a real self-intersection bug, not a winding-direction one
+  // (evenodd doesn't look at direction at all), but the same class of
+  // "don't merge shapes into one path unless you're sure they never
+  // touch" mistake this codebase's own sibling-element convention
+  // (sectionShapeD next to the band rect, above) already exists to avoid.
+  // No data-clip-d here: the label band is a reserved packing-free strip
+  // by construction (splitLabelBand()), so real coastline effects
+  // (wave-rings, coastal bands) never reach it in the first place -- only
+  // the visible wash tint needs to cover it, not the hover-clip hole.
+  glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: labelWashD, "fill-rule": "evenodd" }));
   if (sectionPreviewHM) {
     // Real sea-depth bands, section level (v3.7.38) -- see the matching
     // per-island comment.
@@ -997,23 +1081,8 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
     // render()) and needs no element of its own here.
   });
 
-  const { lines, fontSize, lineHeight } = label;
-  const labelGroup = el("g", { class: "v3-section-label-group" });
-  const labelX = band.x + 14;
-  // Vertically centers the whole line block within the band: first
-  // line's baseline sits half a block above center, each subsequent
-  // line one lineHeight further down.
-  const blockHeight = lines.length * lineHeight;
-  const firstBaselineY = band.y + (band.height - blockHeight) / 2 + fontSize * 0.85;
-  lines.forEach((line, i) => {
-    labelGroup.appendChild(
-      el(
-        "text",
-        { x: labelX, y: firstBaselineY + i * lineHeight, "font-size": fontSize.toFixed(1), class: "v3-section-label" },
-        line
-      )
-    );
-  });
+  // labelGroup was already built above (before the theme-preview wash,
+  // which needs its rendered bbox) -- real DOM placement happens here.
   // v3.6.27 -- appended to sectionLink itself, not group -- .v3-section-
   // label needs to be a DOM descendant of .v3-section-link for its own
   // hover-colour rule (cabinet-v3-style.css) to reach it via a plain
@@ -2690,6 +2759,11 @@ export function retraceThemePreviews() {
     const halo = region.querySelector(".v3-section-theme-preview");
     if (halo) {
       const distanceField = buildCoastlineDistanceField(previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold);
+      // Only the islands composite -- the label's own small wash patch is
+      // a separate, static sibling element (see renderRegion()'s own
+      // v3.7.41 comment) that never needs retracing: its geometry depends
+      // on the label's rendered bbox and font size, neither of which any
+      // retrace-triggering slider touches.
       halo.setAttribute("d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -sectionHaloPx));
       halo.setAttribute("data-clip-d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -(sectionHaloPx + clipMargin)));
     }

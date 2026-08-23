@@ -68,13 +68,22 @@ body.v3-proto {
      previews, updates the hover effect too, with no separate "preview
      colour" editor and no risk of these two colour sets drifting apart. */
   --v3-preview-ink: #0d2436;
-  /* v3.7.35 -- the OUTER halo wash, past the coastline into the sea, not
-     land -- was wrongly Topology's sand tone (same source as the real
-     sand band painted on top of it, so the sand band was invisible:
-     identical colour, opaque wash directly underneath). Topology's own
-     shallow-sea tone instead, direct feedback: "sand is either not
-     happenning or more likely hidden under the yellow blob." */
-  --v3-preview-land: #43d6d6;
+  /* v3.7.40 -- was --v3-preview-land, Topology's shallow-sea tone -- the
+     SAME colour seaBandThresholds' own bands paint on top of it (see
+     --v3-preview-sea below), so this bottommost layer was invisibly
+     fusing with the tier directly above it: correct hue, wrong depth.
+     Direct feedback, after finally seeing the mechanism with the wash's
+     old blanket reveal turned off: "the last layer of the sea, the part
+     that should be visible with the halo outline and the colour for the
+     -1.4 sea anchor level, is missing." In the real map this deepest tier
+     is never its own element at all -- it's just .v3-stage's own
+     background colour (--v3-sea-deep), showing through everywhere the
+     seaBandThresholds contours (down to -0.8) don't reach. The preview
+     has no infinite backdrop to borrow, so this shape (already traced at
+     islandHaloPx/sectionHaloPx past the coastline -- the "outer bound" a
+     real canvas-wide colour doesn't need) stands in for it: Topology's own
+     --v3-sea-deep, layered bottommost under every other preview tier. */
+  --v3-preview-sea-deep: #1c5f8a;
   /* v3.7.34 -- Topology's own sand/veg/peak, for real per-band preview
      fidelity (see .v3-island-theme-preview-sand/-veg/-peak below)
      instead of the one flat --v3-preview-land wash alone. */
@@ -979,24 +988,30 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   opacity: 1;
 }
 
-/* Theme-preview-on-hover prototype (Part A: colour only, no band/wave/
-   shadow structure yet -- see the "theme x hover" to-do item). Sits on
-   top of the shared global coastline/band paths (painted once, underneath
-   every region -- see renderRegion()'s own comment), so an opaque wash
-   visually replaces that patch without touching the shared geometry at
-   all. --v3-preview-land is a flat stand-in for Topology's whole land
-   body (sand/veg/peak aren't separately previewed yet -- that needs
-   per-band isolated traces, a follow-up once this mechanism itself is
-   validated, not this pass). Fill only, no stroke -- direct feedback:
-   "the edges need to be blurred between the two themes, not a hard
-   outline." blur() alone already does this: the interior stays ~fully
-   opaque (blurring a large uniform fill doesn't visibly change it away
-   from any edge) while the boundary itself ramps down to transparent
-   over the blur radius, letting the Medieval content underneath show
-   through increasingly at the edge -- a stroke would still read as a
-   hard line even blurred, so it's dropped rather than also blurred. */
+/* Theme-preview-on-hover prototype -- the bottommost tier, painted first
+   (see renderRegion()'s append order) so every other preview layer stacks
+   on top of it, same role .v3-stage's own background plays for the real
+   map's deepest sea tier (see --v3-preview-sea-deep's own comment above).
+   Sits on top of the shared global coastline/band paths (painted once,
+   underneath every region -- see renderRegion()'s own comment), so an
+   opaque wash visually replaces that patch without touching the shared
+   geometry at all. Fill only, no stroke -- direct feedback: "the edges
+   need to be blurred between the two themes, not a hard outline." blur()
+   alone already does this: the interior stays ~fully opaque (blurring a
+   large uniform fill doesn't visibly change it away from any edge) while
+   the boundary itself ramps down to transparent over the blur radius,
+   letting the Medieval content underneath show through increasingly at
+   the edge -- a stroke would still read as a hard line even blurred, so
+   it's dropped rather than also blurred.
+   v3.7.40 -- briefly disabled entirely (opacity forced to 0) while
+   diagnosing "no sea topology visible anywhere": with the wash gone, the
+   seaBandThresholds tiers (--v3-preview-sea) turned out to already be
+   there, just fused into one flat blob with this layer -- both were the
+   same --v3-sea-shallow colour. Re-enabled now that this layer has its
+   own correct, distinct colour (--v3-preview-sea-deep, not
+   --v3-preview-land). */
 .v3-island-theme-preview {
-  fill: var(--v3-preview-land);
+  fill: var(--v3-preview-sea-deep);
   opacity: 0;
   pointer-events: none;
   filter: blur(var(--v3-preview-blur));
@@ -1292,26 +1307,42 @@ body[data-label-style="glow"] .v3-section-label {
   opacity: 0.85;
 }
 
-/* Theme-preview-on-hover prototype (Part A), section level -- same
-   mechanism as .v3-island-theme-preview, reusing renderRegion()'s
-   existing sectionShapeD (already the label band + every component
-   island + the coastal-zone buffer, unioned) instead of tracing anything
-   new. Slightly under full opacity, same reasoning .v3-section-glow's own
-   comment gives for its dimmer wash: this covers a much bigger area than
-   one island, so a flat full-opacity fill across the whole union would
-   read as a single hard block rather than "islands plus their
-   surrounding sea," even before per-band fidelity exists. */
+/* Theme-preview-on-hover prototype, section level -- same mechanism and
+   same v3.7.40 fix as .v3-island-theme-preview above (bottommost tier,
+   Topology's deep-sea colour, not the shallow tone the sea bands above it
+   already use). Reuses renderRegion()'s existing sectionShapeD (already
+   the label band + every component island + the coastal-zone buffer,
+   unioned) instead of tracing anything new. Slightly under full opacity,
+   same reasoning .v3-section-glow's own comment gives for its dimmer
+   wash: this covers a much bigger area than one island, so a flat
+   full-opacity fill across the whole union would read as a single hard
+   block rather than "islands plus their surrounding sea." */
 .v3-section-theme-preview {
-  fill: var(--v3-preview-land);
+  fill: var(--v3-preview-sea-deep);
   opacity: 0;
   pointer-events: none;
   filter: blur(var(--v3-preview-blur));
   transition: opacity var(--cab-transition-fast);
 }
 
+/* v3.7.41 -- 0.85 -> 1, this layer only: direct feedback, "wave contour
+   lines are still visible underneath the deep sea colour for section
+   hovers, but not for island hovers" -- the island wash is fully opaque
+   on hover (opacity: 1 above) and hides everything clipped away
+   underneath it completely; this one was left at the dimmer 0.85 every
+   OTHER section-level preview layer uses (deliberately, so a big flat
+   fill doesn't read as "a single hard block" -- see this rule's own
+   comment above), which was exactly opaque enough to let Medieval's
+   clipped-but-still-blurred-at-the-edge wave-rings read faintly through.
+   That "single hard block" concern doesn't actually apply to this
+   specific layer: it's standing in for the real map's own literal single
+   flat deep-sea backdrop (see --v3-preview-sea-deep's comment in this
+   file), so reading as one flat block is correct here, not a flaw --
+   every band painted on top of it still varies in opacity/hue same as
+   before. */
 .v3-section-link:hover .v3-section-theme-preview,
 .v3-section-link:focus-visible .v3-section-theme-preview {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /* v3.7.38 -- real sea-depth bands, section level. Same reasoning as the
