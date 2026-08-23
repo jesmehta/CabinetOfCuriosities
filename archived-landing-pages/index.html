@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cabinet of Curiosities -- Archive</title>
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --cab-paper: #ead9b8;
+    --cab-paper-deep: #c9ad7b;
+    --cab-ink: #2e2418;
+    --cab-ink-soft: #6d5a3f;
+    --cab-ink-faint: rgba(46, 36, 24, 0.55);
+    --cab-card-bg: rgba(238, 222, 184, 0.95);
+    --cab-card-border: rgba(46, 36, 24, 0.55);
+    --cab-accent: #7a4b2a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--cab-paper);
+    color: var(--cab-ink);
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 1.5rem 5rem;
+  }
+  .home-link {
+    align-self: flex-start;
+    margin-left: max(1.5rem, calc(50% - 22rem));
+    margin-bottom: 2.5rem;
+    font-size: 0.9rem;
+    color: var(--cab-ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .home-link:hover { border-bottom-color: var(--cab-ink-soft); }
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    letter-spacing: 0.02em;
+    margin: 0 0 0.5rem;
+  }
+  .intro {
+    max-width: 44rem;
+    text-align: center;
+    color: var(--cab-ink-soft);
+    line-height: 1.6;
+    margin: 0 0 3rem;
+  }
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 1.75rem;
+    width: 100%;
+    max-width: 44rem;
+  }
+  .archive-card {
+    display: block;
+    background: var(--cab-card-bg);
+    border: 1px solid var(--cab-card-border);
+    border-radius: 4px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 6px rgba(46, 36, 24, 0.15);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .archive-card:hover {
+    box-shadow: 0 4px 12px rgba(46, 36, 24, 0.22);
+    transform: translateY(-2px);
+  }
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .archive-card p a {
+    color: var(--cab-accent);
+  }
+  .archive-card .eyebrow {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cab-accent);
+    margin-bottom: 0.5rem;
+  }
+  .archive-card h2 {
+    margin: 0 0 0.6rem;
+    font-size: 1.25rem;
+  }
+  .archive-card p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--cab-ink-soft);
+  }
+  .archive-card p.sub-label {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--cab-ink-faint);
+  }
+  .sub-links {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+  }
+  .sub-links a {
+    font-size: 0.85rem;
+    color: var(--cab-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .sub-links a:hover {
+    border-bottom-color: var(--cab-accent);
+  }
+  footer {
+    margin-top: 3.5rem;
+    font-size: 0.8rem;
+    color: var(--cab-ink-faint);
+    text-align: center;
+    max-width: 30rem;
+  }
+</style>
+</head>
+<body>
+  <a class="home-link" href="../index.html">&larr; Cabinet of Curiosities</a>
+  <h1>Archive</h1>
+  <p class="intro">
+    Earlier homepages of this site, kept navigable rather than deleted.
+    Each iteration is preserved as it last stood before being superseded.
+  </p>
+  <div class="archive-grid">
+    <div class="archive-card">
+      <a class="card-link" href="v1/index.html">
+        <span class="eyebrow">v1</span>
+        <h2>The original MkDocs site</h2>
+      </a>
+      <p>
+        The first Cabinet of Curiosities homepage: a plain MkDocs Material
+        content page linking out to jesalmehta.com and other worlds, with
+        the full site of pages beneath it. Fully navigable, built as it
+        stood at its last commit before the archipelago-map rebuild.
+      </p>
+    </div>
+    <div class="archive-card">
+      <a class="card-link" href="v2/index.html">
+        <span class="eyebrow">v2</span>
+        <h2>The archipelago-map stub</h2>
+      </a>
+      <p>
+        A hand-built SVG archipelago map that briefly replaced the v1
+        homepage, then was itself quickly superseded before it was ever
+        linked into the rest of the site. Preserved standalone with its
+        own styles and scripts, not connected onward.
+      </p>
+      <p class="sub-label">Earlier states along the way:</p>
+      <ul class="sub-links">
+        <li><a href="v2-history/01-initial/index.html">01 -- initial</a></li>
+        <li><a href="v2-history/02-round1-visual-pass/index.html">02 -- Round 1 visual pass</a></li>
+        <li><a href="v2-history/03-coastline-regen/index.html">03 -- coastline regen</a></li>
+        <li><a href="v2-history/04-serpent-redesign/index.html">04 -- serpent redesign</a></li>
+      </ul>
+    </div>
+  </div>
+  <footer>
+    v3, the archipelago-tool rebuild of the map above, is the current
+    homepage.
+  </footer>
+</body>
+</html>

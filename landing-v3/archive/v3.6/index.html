@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cabinet Islands -- v3.6 archive</title>
+  <link rel="stylesheet" href="../../../docs/assets/css/cabinet-tokens.css" />
+  <link rel="stylesheet" href="../../cabinet-v3-style.css" />
+</head>
+<body class="v3-proto">
+  <header class="v3-header">
+    <h1>Cabinet Islands -- v3.6 archive</h1>
+    <p class="v3-subtitle">A frozen snapshot: content, config, and the noise/domain-warp coastline
+      generator (<code>cabinet-v3-islandshape.js</code>) exactly as they stood at v3.6, before
+      interactive tuning moved to the live tool page. Content and tuning parameters are pinned here
+      independent of <code>cabinet-v3-data.js</code> -- editing that file does not change what this
+      page renders. The shared algorithm modules are NOT pinned (a bug fix should still reach every
+      page). No live links; dragging the sliders here explores this archive's own frozen baseline
+      only. For the live, currently-tuned version, see <code>../../islands-tool.html</code>. See
+      <code>Landing-page-notes.2.0.md</code> for the full "Three pages" design conversation.</p>
+  </header>
+
+  <main class="v3-stage-wrap">
+    <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+  </main>
+
+  <script type="module" src="layout.js"></script>
+  <script type="module" src="controls.js"></script>
+</body>
+</html>

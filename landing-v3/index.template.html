@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cabinet of Curiosities</title>
+  <meta name="description" content="An explorable archipelago map of Jesal Mehta's worlds and projects: Bookshelf of Curiosities, Form follows f(x), Teaching, Visual Field Notes, Machines &amp; Makings, Interfaces Data &amp; Texts, and About Me." />
+  <link rel="icon" href="images/favicon.svg" />
+  <link rel="stylesheet" href="../docs/assets/css/cabinet-tokens.css" />
+  <link rel="stylesheet" href="cabinet-v3-style.css" />
+</head>
+<body class="v3-proto" data-theme="medieval-map" data-label-style="glow">
+  <!-- v3.6.12 -- header reverted to a normal top-of-flow row (v3.6.10
+       had briefly overlaid it on the canvas's own corner -- see
+       Landing-page-notes.2.0.md's changelog for why that was undone).
+       Real, semantic HTML either way (not SVG-drawn text -- see that
+       same doc's "Canvas + legend" entry for why that matters for
+       crawlers/screen readers); cabinet-v3-layout.js's render() just
+       reads wherever .v3-stage-wrap actually starts, so this alone
+       reserves the header's full-width row with no extra bookkeeping. -->
+  <header class="v3-header">
+    <h1>Cabinet of Curiosities</h1>
+    <p class="v3-subtitle">A map of worlds, of explorations across them, of curiosities followed, and the rabbitholes at the end of the rainbow.</p>
+  </header>
+  <main class="v3-stage-wrap">
+    <!-- V3_ISLANDS_SVG -->
+  </main>
+
+  <p class="v3-footnote">Static build -- see <code>build-static.mjs</code>. Same island tuning as
+    <code>islands-tool.html</code> (live tuning panel, recomputes on every load);
+    <code>archive/v3.6/</code> is a frozen snapshot for comparison. See
+    <code>Landing-page-notes.2.0.md</code> for the design conversation behind this.</p>
+</body>
+</html>

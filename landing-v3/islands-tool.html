@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cabinet Islands -- live tuning tool</title>
+  <link rel="stylesheet" href="../docs/assets/css/cabinet-tokens.css" />
+  <link rel="stylesheet" href="cabinet-v3-style.css" />
+  <!-- v3.6.14-v3.6.15 -- scheme-comparison fonts, one family set per
+       theme (dev panel: Visuals > Theme). Only loaded here, not
+       index.html/index.template.html -- nothing has been chosen as
+       final yet, see Landing-page-notes.2.0.md punch-list item 10 and
+       v3-scheme-candidates.md.
+       v3.7.19 -- trimmed to just the remaining themes' fonts after
+       dropping medieval/neon/ukiyo (cabinet-v3-controls.js,
+       cabinet-v3-style.css): IM+Fell+English+SC (medieval only),
+       Poppins (neon only), Shippori+Mincho/Zen+Old+Mincho (ukiyo only)
+       all removed -- nothing left references them. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=IM+Fell+English:ital@0&family=EB+Garamond&family=Fraunces:wght@600&family=Space+Grotesk&family=Archivo+Black&family=Space+Mono&family=Cormorant:wght@600&family=Caveat&display=swap" rel="stylesheet" />
+</head>
+<body class="v3-proto" data-theme="medieval-map" data-label-style="glow">
+  <!-- v3.6.12 -- header reverted to a normal top-of-flow row, same as
+       index.template.html (see that file's own comment) -- real HTML,
+       not SVG-drawn text. Tool-specific notes that don't apply to
+       index.html moved to a footnote below the map. -->
+  <header class="v3-header">
+    <h1>Cabinet of Curiosities</h1>
+    <p class="v3-subtitle">A map of worlds, of explorations across them, of curiosities followed, and the rabbitholes at the end of the rainbow.</p>
+  </header>
+  <main class="v3-stage-wrap">
+    <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+  </main>
+
+  <p class="v3-footnote">Same live content and config as <code>index.html</code> -- this page
+    just keeps the tuning panel permanently. Reload any time content or sections change: layout
+    and coastlines recompute from scratch on every load, nothing here is cached across edits.
+    "Copy config" writes straight back into <code>cabinet-v3-data.js</code>. See
+    <code>Landing-page-notes.2.0.md</code> for the full "Three pages" design conversation.</p>
+
+  <script type="module" src="cabinet-v3-layout.js"></script>
+  <script type="module" src="cabinet-v3-controls.js"></script>
+</body>
+</html>

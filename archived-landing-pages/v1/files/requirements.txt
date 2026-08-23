@@ -1,0 +1,5 @@
+mkdocs>=1.4.2
+mkdocs-material
+pymdown-extensions
+mkdocs-mermaid2-plugin
+mkdocs-video

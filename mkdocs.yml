@@ -4,7 +4,6 @@ site_author: Jesal Mehta
 copyright: Copyright 2024 Jesal Mehta - Creative Commons Attribution Non Commercial
 
 nav:
-  - Home: index.md
   - About Me: about.md
   - Thingamajigs :
     - MiniLoom : mini_loom.md
@@ -88,6 +87,7 @@ plugins:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/cabinet-material.css
 
 extra_javascript:
   - js/extra.js

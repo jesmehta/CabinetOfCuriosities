@@ -1,0 +1,1628 @@
+/* v3 layout prototype styling. Reuses cabinet-tokens.css (the real
+   parchment/ink palette) for continuity while the LAYOUT is what's under
+   review here -- deliberately not restyling color/type from scratch too,
+   see Landing-page-notes.2.0.md's "why reuse tokens" note. */
+
+/* v3.6.5 -- local colour tokens for sea-depth and beach/vegetation
+   banding (see drawIslandsPath() in cabinet-v3-layout.js). Deliberately
+   NOT added to the shared cabinet-tokens.css yet -- the overall colour
+   scheme is still on hold, this is a scoped exception for the specific
+   bands requested, not a repalette. Muted/desaturated rather than
+   saturated cartoon tones, to stay in the same register as the existing
+   parchment palette; first-guess values, meant to be eyeballed and
+   retuned directly in this file. */
+body.v3-proto {
+  --v3-sea-deep: #5b7f93;
+  --v3-sea-shallow: #9fc3d1;
+  --v3-veg: #a8c478;
+  --v3-sand: #e8d9a0;
+  /* v3.7.28 -- "Land 5" mountain-peak accent (.v3-peak-band below), a
+     literal white default per direct request ("colour it white") --
+     themeable rather than hardcoded so a theme CAN override it later
+     (same reasoning as every other land tone here), it just has no
+     reason to yet. */
+  --v3-peak: #fff;
+  /* v3.6.15 -- ink used by wave rings/coastline outline, themeable
+     separately from the land/sea fills below. --v3-ring-ink defaults to
+     following --v3-ink, but a theme can split them ("medieRiso" below
+     does: a magenta ring accent while the coastline outline stays
+     heavy/near-black for legibility). */
+  --v3-ink: var(--cab-ink);
+  --v3-ring-ink: var(--v3-ink);
+  /* v3.7.17 -- the compass rose's "blue" fill (.v3-compass-blue,
+     cabinet-v3-style.css below) -- see that rule's own comment for why
+     this couldn't stay --v3-ring-ink. Defaults to following it anyway so
+     every theme without its own tuned value renders unchanged; only
+     medieval-map (below) currently overrides it. */
+  --v3-compass-accent: var(--v3-ring-ink);
+  /* v3.7.23 -- the compass rose's "white" fill (.v3-compass-white below).
+     Defaults to following --v3-sea-deep, the original "white = deep sea"
+     direct request (v3.7.17, see .v3-compass-white's own comment) -- kept
+     as the default for every theme that hasn't complained, only broken
+     out into its own token because "satellite" (below) needs a real
+     override: its ink is ALSO a shade of blue, so white-as-sea-deep and
+     black-as-ink read as two dark-ish blues next to each other. */
+  --v3-compass-white: var(--v3-sea-deep);
+  /* v3.6.28 -- hover-halo fill (islands, sections, and a section label's
+     own hover colour) and label-outline colour (the "halo"/"glow" label
+     styles' stroke/drop-shadow, and what an entry's label INVERTS to on
+     hover -- see .v3-island-label below), both broken out into their own
+     themeable tokens for medieRiso (riso neon accents on a dark base
+     needs these to be vivid, not the light parchment tones every other
+     theme is happy reusing) -- default to the exact values every other
+     theme already had hardcoded, so nothing else changes. */
+  --v3-halo-ink: var(--cab-land-hover);
+  --v3-label-outline: var(--cab-land-light);
+  /* Theme-preview-on-hover prototype -- deliberately NOT themeable like
+     everything else above (a hovered island/section always previews
+     v3Config.themePreview.previewTheme's colours regardless of whichever
+     theme the page is actually showing; using var(--v3-sand) etc.
+     directly here would resolve to the ACTIVE theme's own tone instead,
+     the one thing this needs to avoid). These are STATIC FALLBACKS only
+     -- Topology's ("satellite") literal values, for index.html's static
+     build, which carries no controls.js/dev panel to set anything at
+     runtime. islands-tool.html's dev panel overrides these live, the
+     same way applyThemeTokens() already overrides the real per-theme
+     tokens -- see applyThemePreviewTokens() in cabinet-v3-controls.js --
+     so editing Topology's colours there, or switching which theme
+     previews, updates the hover effect too, with no separate "preview
+     colour" editor and no risk of these two colour sets drifting apart. */
+  --v3-preview-ink: #0d2436;
+  /* v3.7.40 -- was --v3-preview-land, Topology's shallow-sea tone -- the
+     SAME colour seaBandThresholds' own bands paint on top of it (see
+     --v3-preview-sea below), so this bottommost layer was invisibly
+     fusing with the tier directly above it: correct hue, wrong depth.
+     Direct feedback, after finally seeing the mechanism with the wash's
+     old blanket reveal turned off: "the last layer of the sea, the part
+     that should be visible with the halo outline and the colour for the
+     -1.4 sea anchor level, is missing." In the real map this deepest tier
+     is never its own element at all -- it's just .v3-stage's own
+     background colour (--v3-sea-deep), showing through everywhere the
+     seaBandThresholds contours (down to -0.8) don't reach. The preview
+     has no infinite backdrop to borrow, so this shape (already traced at
+     islandHaloPx/sectionHaloPx past the coastline -- the "outer bound" a
+     real canvas-wide colour doesn't need) stands in for it: Topology's own
+     --v3-sea-deep, layered bottommost under every other preview tier. */
+  --v3-preview-sea-deep: #1c5f8a;
+  /* v3.7.34 -- Topology's own sand/veg/peak, for real per-band preview
+     fidelity (see .v3-island-theme-preview-sand/-veg/-peak below)
+     instead of the one flat --v3-preview-land wash alone. */
+  --v3-preview-sand: #f2c94c;
+  --v3-preview-veg: #4caf3f;
+  --v3-preview-peak: #fff;
+  /* v3.7.38 -- Topology's own sea-depth bands were missing from the
+     preview entirely (only the flat halo wash stood in for the whole
+     sea side) -- direct feedback: "sea contours arent visible." Same
+     single token the real .v3-sea-band uses (--v3-sea-shallow), not a
+     deep/shallow split -- multiple opacity-stacked instances are what
+     create the depth gradient, same as the real map. */
+  --v3-preview-sea: #43d6d6;
+  --v3-preview-blur: 8px;
+
+  margin: 0;
+  /* v3.6.12 -- was var(--cab-sea) (a different, greyer tone than the
+     map's own sea fill below), which is why the page never actually
+     read as full-bleed: .v3-stage's opaque backdrop and the body around
+     it were two visibly different colours. Matching them here is what
+     makes the canvas's edge disappear into the page. */
+  background: var(--v3-sea-deep);
+  color: var(--cab-ink);
+  font-family: var(--cab-font-body);
+}
+
+/* v3.6.14-v3.6.15 -- originally seven parallel colour/type treatments,
+   explicitly meant to be compared against each other rather than one
+   replacing the other (see Landing-page-notes.2.0.md's punch-list item 10
+   and v3-scheme-candidates.md for the full reasoning behind each one) --
+   switched live via a `data-theme` attribute on <body> (dev panel:
+   Visuals > Theme, cabinet-v3-controls.js), same pattern as
+   `data-label-style`. Overriding the map's own tokens here only ever
+   affects descendants of body.v3-proto -- the shared cabinet-tokens.css
+   file itself, and every other page that reads those tokens, is
+   untouched.
+
+   v3.7.19 -- direct request, "start eliminating": the no-attribute
+   default, "medieval" (Wave Contour draft), "neon" (Memphis-Milano), and
+   "ukiyo" (woodblock) dropped from both this stylesheet and the dropdown
+   (THEME_OPTIONS/THEME_PRESETS, cabinet-v3-controls.js) -- their full
+   descriptions stay in v3-scheme-candidates.md regardless, since that
+   doc records the DESIGN candidates, not which ones happen to still have
+   a live CSS block. "medieval" was the rough v3.6.14 first-guess reusing
+   the site's pre-existing --cab-paper/--cab-land tokens rather than the
+   doc's own tuned hex values -- "medieval-map" below is its doc-accurate,
+   since-heavily-customised replacement, so nothing about that direction
+   is actually lost.
+
+   "satellite" (dropdown label "Topology") -- the rough v3.6.14
+   first-guess draft, same register "medieval" was for scheme 1. Doc
+   scheme 2 also had a doc-accurate sibling, "bathymetric" -- v3.7.22
+   merged the two into this one ("Topology Draft and Bathymetric -
+   merge/keep one"): kept this theme's own draft colours (not
+   bathymetric's), no font override (bathymetric's Fraunces/Space Grotesk
+   dropped -- "keep the serif font from draft not the sans serif one in
+   bathy," and this theme never had a font override to begin with, so it
+   already falls back to the site's own serif default,
+   --cab-font-heading/-body = Georgia). bathymetric's own colours weren't
+   discarded outright -- copied into "medieRiso" instead, see that
+   theme's own comment below. Pairs with colour bands on, wave rings off
+   -- the bands are the effect this theme is about. */
+body.v3-proto[data-theme="satellite"] {
+  --v3-sea-deep: #1c5f8a;
+  --v3-sea-shallow: #43d6d6;
+  --v3-veg: #4caf3f;
+  --v3-sand: #f2c94c;
+  /* v3.7.22 -- this theme had no --v3-ink/--v3-compass-accent of its own
+     before the merge (relied entirely on generic fallbacks), which the
+     compass rose ("colour the compass appropriately") would have shown
+     up as: black and blue reading near-identical, same latent issue
+     medieval-map had before its own v3.7.17 fix. Dark blue-black ink
+     (distinct from every saturated body colour here) plus a warm coral
+     accent -- the one hue family (red/orange) this palette (blue/cyan/
+     green/yellow) doesn't already have, same "give the compass a hue
+     nothing else in the theme uses" logic as medieval-map's violet. */
+  --v3-ink: #0d2436;
+  --v3-compass-accent: #c1440e;
+  /* v3.7.23 -- direct feedback: "compass rose white parts can be the
+     colour of the glow or any other pale shade already in use, blue on
+     blue is too little contrast" -- --v3-compass-white defaults to
+     --v3-sea-deep (#1c5f8a, a mid blue), which next to this theme's own
+     --v3-ink (#0d2436, a dark blue) read as two blues rather than a
+     white/black pair. --v3-halo-ink is "the colour of the glow" the
+     request names -- this theme doesn't override it, so it's still the
+     shared warm parchment tone (--cab-land-hover, #faf3dc), a genuinely
+     pale colour with plenty of separation from both blues. */
+  --v3-compass-white: var(--v3-halo-ink);
+}
+
+/* "medieval-map" -- v3-scheme-candidates.md scheme 1 (Tolkien / plain
+   engraved-map linework). Three-tier type: Cinzel for the title, IM Fell
+   English (not its small-caps cut) for section labels, EB Garamond for
+   the small dense island labels.
+
+   v3.7.8 -- section labels' italic dropped per direct feedback ("make
+   section heads text not italic"). Small-caps (the follow-up request,
+   "make them small caps to differentiate though") turned out to be a
+   SITE-WIDE change, not specific to this theme's own type choice -- see
+   the base .v3-section-label rule below, not here.
+
+   v3.7 -- sea-deep/veg retuned to explicit direction ("islands - a
+   darker brown, rich and intense, with reddish tones / sea - a lighter
+   sepia/brown, amber tones"), moving off the original all-close-in-value
+   parchment palette. flatColourMode is on for this theme (THEME_PRESETS,
+   cabinet-v3-controls.js), so --v3-veg (flat land fill) and --v3-sea-deep
+   (.v3-stage's own background) are what actually render; --v3-sand/
+   --v3-sea-shallow (the non-flat band tiers) are tuned as a lighter step
+   toward the same two hue families so the theme still reads coherently
+   if flat mode is switched off from the dev panel. */
+body.v3-proto[data-theme="medieval-map"] {
+  /* v3.7.14 -- direct value: "Deep sea - #f4ebdd" (was #c9974f, a
+     darker amber -- this is a much lighter cream/parchment). */
+  --v3-sea-deep: #f4ebdd;
+  --v3-sea-shallow: #ddbd82;
+  /* v3.7.16 -- direct value: "#fbf0ee for vegetation" (was #5c2417, the
+     reddish-brown -- this is a pale blush cream). */
+  --v3-veg: #fbf0ee;
+  --v3-sand: #7d3a24;
+  --v3-ink: #1c1712;
+  /* v3.7.17 -- compass rose "blue" rings: direct request, "a dark-midtone
+     hue, darker than the ink, lighter than the sea, either deep violet or
+     brick red." Went with deep violet at first -- medieval-map's palette
+     is already all warm reds/browns/ambers (--v3-veg, --v3-sand, both
+     --v3-sea-* tones), so a brick red accent would read as one more shade
+     of the same hue family instead of a distinct compass accent.
+     v3.7.23 -- direct feedback, "Violet is too out of place, try Navy":
+     swapped for a deep navy -- still the same "cool contrast against an
+     all-warm palette" logic the violet was chosen for, just a hue the
+     user actually wants to see here. */
+  --v3-compass-accent: #1f2c52;
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-header h1 {
+  font-family: "Cinzel", var(--cab-font-heading);
+  letter-spacing: 0.04em;
+  /* v3.7.23 bugfix -- .v3-header h1/.v3-subtitle (below) are coloured
+     --cab-land-light (#f4ead0, a light parchment cream) site-wide, sized
+     for the dark-sea themes (satellite/riso/cyanotype/medieRiso) they
+     were designed against. medieval-map is the one theme with a LIGHT
+     --v3-sea-deep (#f4ebdd) -- direct feedback, "H1/title Cabinet Text in
+     Medieval theme is invisible": near-identical cream-on-cream. Override
+     to this theme's own --v3-ink instead of a one-off hex so it tracks
+     any future retune of that token. */
+  color: var(--v3-ink);
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-subtitle {
+  color: var(--v3-ink);
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-section-label {
+  font-family: "IM Fell English", var(--cab-font-body);
+}
+
+body.v3-proto[data-theme="medieval-map"] .v3-island-label {
+  font-family: "EB Garamond", var(--cab-font-body);
+}
+
+/* "cyanotype" -- kept live/selectable (direct request: "Cyanotype was
+   supposed to be kept," correcting an earlier pass here that wrongly
+   pulled it from THEME_OPTIONS entirely). Only Topology + Medieval Map
+   will go forward to PRODUCTION, but that's about what eventually SHIPS,
+   not what stays reachable in this dev tool now -- Cyanotype remains a
+   kept reference worth comparing against, same as MedieRiso's own
+   "scratchpad" status; neither is archived out of the dropdown. ("riso"
+   itself, a separate/plainer theme, WAS deleted outright, since that one
+   was explicitly disposable -- its reasoning still lives in
+   v3-scheme-candidates.md and git history if ever wanted back.)
+   v3-scheme-candidates.md scheme 3b. Every tier below is
+   the same pigment (#003153, Prussian blue) at reduced alpha over the
+   paper tone (#f2ead9), precomposited by hand into flat hexes since
+   --v3-sea-deep etc feed solid backgrounds, not translucent fills -- see
+   the doc's own revision history for why a fully-saturated pigment (not
+   just a dark one) is what's needed for the dilution to hold its hue
+   instead of drifting grey. Island labels stay on the shared body font
+   rather than Caveat -- the doc's own caveat (its word) is that
+   handwriting faces degrade below ~14px, and island labels render at
+   13px, so only the larger, sparser section labels get the script face. */
+body.v3-proto[data-theme="cyanotype"] {
+  --v3-sea-deep: #0c3a5a;
+  --v3-sea-shallow: #4d6c7e;
+  --v3-veg: #b8beb9;
+  --v3-sand: #8c9ca1;
+  --v3-ink: #003153;
+}
+
+body.v3-proto[data-theme="cyanotype"] .v3-header h1 {
+  font-family: "Cormorant", var(--cab-font-heading);
+  font-weight: 600;
+}
+
+body.v3-proto[data-theme="cyanotype"] .v3-section-label {
+  font-family: "Caveat", var(--cab-font-body);
+}
+
+/* "medieRiso" -- v3.6.28, direct request: originally a dark warm-brown/
+   sepia base (the medieval-map register, pushed all the way to a
+   night-time old-leather-atlas depth rather than that theme's light
+   parchment) with EVERY highlight -- wave rings, band boundaries, hover
+   halos, label outlines, boat fills, dragon fills -- pulled from a
+   riso-style neon palette. Like the (since-removed) "ukiyo," both wave
+   rings AND colour bands are on together (THEME_PRESETS,
+   cabinet-v3-controls.js) -- the bands carry the base depth, the rings
+   lay neon iso-lines on top, distinct roles rather than either replacing
+   the other.
+
+   v3.6.29 -- --v3-sea-deep and --v3-ink swapped from warm brown to a
+   near-black indigo/deep-blue pair (explicit hex values given), and
+   --v3-halo-ink/--v3-label-outline split apart (were both riso pink;
+   now magenta vs. purple) so hover reads as a distinct hue shift, not
+   just the same pink again. --v3-sea-shallow/--v3-veg/--v3-sand stayed
+   the original sepia tones at that point -- untouched, no new colour was
+   given for them THEN.
+
+   v3.7.22 -- base 5 tokens (sea-deep/sea-shallow/veg/sand/ink) replaced
+   wholesale with "bathymetric"'s exact values, direct request as part of
+   merging that theme into "satellite"/Topology ("Topology Draft and
+   Bathymetric - merge/keep one... copy bathymetric colours into
+   medieriso") rather than letting bathymetric's palette disappear
+   outright when its own theme block was deleted. The riso-neon accent
+   layer below (--v3-ring-ink/--v3-halo-ink/--v3-label-outline, band-
+   boundary strokes, boat/dragon hues) is UNCHANGED -- still the same
+   "electric highlights over a dark, cool base" structure this theme was
+   built on, just a bathymetric-blue base instead of the sepia/indigo one
+   above. If this reads as too big an identity shift for "medieRiso" as a
+   name, the previous sepia/indigo values are preserved in git history
+   (this comment, pre-v3.7.22) to restore easily.
+
+   Colour roles, so a change to one doesn't have to be reasoned out
+   again from scratch:
+   - --v3-ring-ink (wave rings AND, below, band boundaries): neon
+     teal/mint -- the single dominant "electric contour" accent, highest
+     contrast against the dark base of anything in the palette.
+   - --v3-halo-ink (hover halos, a section label's solid hover colour):
+     neon magenta.
+   - --v3-label-outline (an island label's ambient outline AND what it
+     inverts to on hover): neon purple -- distinct from --v3-halo-ink so
+     ambient label styling and active hover read as different accents.
+   - Boat fills, dragon fills (JS-side, cabinet-v3-layout.js's
+     buildParticleElement()/ensureDragon()): drawn from the riso theme's
+     hues (blue/teal/orange) when this theme is active, still
+     independent per-boat/per-dragon randomisation, same mechanism every
+     other theme's boats/dragons already use -- just a different colour
+     pool. Outlines stay the existing dark palette (PARTICLE_COLORS) --
+     already dark brown/black/violet/navy, no change needed for "outlines
+     are dark" to already hold true here.
+   - Band boundaries: sea/sand/veg bands are fill-only everywhere else
+     (see .v3-sea-band etc. below) -- this is the one purely NEW
+     treatment, not a token swap of an existing rule, adding a thin
+     --v3-ring-ink stroke so each band's own edge reads as an iso-line
+     too, not just the wave rings. */
+body.v3-proto[data-theme="medieRiso"] {
+  --v3-sea-deep: #14588a;
+  --v3-sea-shallow: #7ec8e3;
+  --v3-veg: #4f7942;
+  --v3-sand: #f0dfa8;
+  --v3-ink: #16324a;
+  --v3-ring-ink: #f21d92;
+  --v3-halo-ink: #1bf2b5;
+  --v3-label-outline: #e031eb;
+}
+
+body.v3-proto[data-theme="medieRiso"] .v3-sea-band,
+body.v3-proto[data-theme="medieRiso"] .v3-sand-band,
+body.v3-proto[data-theme="medieRiso"] .v3-veg-band {
+  stroke: var(--v3-ring-ink);
+  stroke-width: 0.6;
+  stroke-opacity: 0.8;
+}
+
+body.v3-proto[data-theme="medieRiso"] .v3-header h1 {
+  font-family: "Cinzel", var(--cab-font-heading);
+  letter-spacing: 0.04em;
+}
+
+body.v3-proto[data-theme="medieRiso"] .v3-island-label,
+body.v3-proto[data-theme="medieRiso"] .v3-section-label {
+  font-family: "Space Mono", var(--cab-font-body);
+}
+
+/* v3.6.12 -- header reverted to a normal top-of-flow row (was: absolute
+   overlay on the canvas's own corner, v3.6.10-v3.6.11 -- see the
+   changelog entry for why). Back in normal document flow, the header
+   simply pushes .v3-stage-wrap down the page; cabinet-v3-layout.js's
+   resolveCanvasDimensions() already measures wherever .v3-stage-wrap
+   actually starts to size the canvas, so this alone reserves the whole
+   top row for the header with no separate obstacle-registration code
+   needed (that mechanism, specific to the overlay approach, is removed
+   in cabinet-v3-layout.js). No background/card styling any more either
+   -- it sits directly on the full-bleed sea colour above. */
+.v3-header {
+  padding: 28px 24px 14px;
+  max-width: 640px;
+}
+
+.v3-header h1 {
+  font-family: var(--cab-font-heading);
+  font-size: 2.1rem;
+  margin: 0 0 6px;
+  color: var(--cab-land-light);
+}
+
+.v3-subtitle {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--cab-land-light);
+  opacity: 0.85;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.v3-subtitle code {
+  background: var(--cab-card-bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.v3-warning {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  background: var(--cab-card-bg-wip);
+  border: 1px solid var(--cab-card-border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  max-width: 640px;
+}
+
+.v3-stage-wrap {
+  padding: 0 16px 40px;
+}
+
+.v3-stage {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--v3-sea-deep);
+}
+
+/* v3.6.10 -- dev/build notes that don't belong in the map's own legend
+   (build-script pointers, "this page recomputes on every load," etc.) --
+   moved below the map instead of sitting above it in a large header
+   block, out of the way of the full-bleed canvas.
+   v3.6.12 -- colour switched from --cab-ink-soft to the light land tone:
+   this text sits directly on the page's own sea background (now
+   var(--v3-sea-deep), notably darker than the old var(--cab-sea)), not
+   on parchment, so the dark-ink colour it inherited from the rest of
+   the site's palette lost contrast here. */
+.v3-footnote {
+  max-width: 900px;
+  margin: 12px 16px 0;
+  color: var(--cab-land-light);
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+
+.v3-footnote code {
+  background: var(--cab-card-bg);
+  color: var(--cab-ink);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Section region outline -- faint, just enough to show the weighted
+   partition itself during layout review. Not part of the final visual
+   design; a production pass would likely drop this entirely once the
+   archipelagos read clearly enough on their own. */
+.v3-region-outline {
+  fill: none;
+  stroke: var(--cab-ink-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 6;
+}
+
+/* v3.6.16 -- dev-only flow-field debug view (Visuals section: Flow
+   potential / Flow vectors, cabinet-v3-controls.js -- see
+   drawFlowFieldDebug() in cabinet-v3-layout.js). Deliberately garish,
+   off-palette colours -- unmistakably a debug overlay, never
+   confusable with the map's real content. pointer-events: none on the
+   group so it can never intercept an island/section hover even though
+   it happens to sit under them in paint order already. */
+.v3-flow-debug {
+  pointer-events: none;
+}
+
+.v3-flow-potential-cell {
+  fill: #ff2fa0;
+  stroke: none;
+}
+
+.v3-flow-vector {
+  stroke: #00e5ff;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+/* v3.7.28 -- dev-only island-heightmap debug view (Visuals > Diagnostics:
+   Island noise, cabinet-v3-controls.js -- see drawIslandNoiseDebug() in
+   cabinet-v3-layout.js). Same "deliberately garish, off-palette" rule as
+   .v3-flow-debug above -- unmistakably a debug overlay -- but its OWN
+   colour (gold, not Flow potential's magenta) so the two read as
+   distinct fields if ever toggled on together. */
+.v3-noise-debug {
+  pointer-events: none;
+}
+
+.v3-noise-debug-cell {
+  fill: #ffd42f;
+  stroke: none;
+}
+
+/* v3.6.17 -- particles drifting along the flow field (islands-tool.html
+   only -- see startCurrentAnimation()'s comment in cabinet-v3-layout.js).
+   Small ellipses, per the design conversation's own "start simple"
+   direction -- rotated per-particle (cabinet-v3-layout.js's
+   tickParticles()) to lean along its direction of travel, a cheap
+   directional cue without a trail. pointer-events: none -- decorative
+   only, never blocks an island/section hover underneath. */
+.v3-particles {
+  pointer-events: none;
+}
+
+/* v3.6.20 -- STROKE set per-particle inline (a random pick off a small
+   dark palette, see PARTICLE_COLORS in cabinet-v3-layout.js's
+   ensureParticles()) -- inline style wins the cascade over this class
+   rule for that property. FILL stays fixed here, a light cream/parchment
+   tone (the map's own --cab-land-light) so a dark outline actually
+   reads as an outline instead of vanishing into a same-colour body. */
+.v3-particle {
+  fill: var(--cab-land-light);
+  stroke-width: 1.1;
+  opacity: 0.6;
+}
+
+/* 2-3 short strokes per particle, parallel to the ellipse's minor axis
+   (i.e. crossing its width, perpendicular to travel), placed in
+   ensureParticles(). Same per-particle colour as the body outline so
+   they read as texture, not a second competing shape. */
+.v3-particle-rib {
+  stroke-width: 0.8;
+  opacity: 0.55;
+}
+
+/* v3.6.24 -- 1-3 independent sea-dragons (dragon.svg's artwork,
+   inlined -- see DRAGON_PATH_D in cabinet-v3-layout.js), not part of the
+   particle system. Fill colour set per-instance inline (shuffled off
+   v3Config.dragon.fillColors, fixed strokeColor -- see
+   buildDragonElement()), same inline-wins-the-cascade pattern
+   .v3-particle already uses. vector-effect: non-scaling-stroke keeps the
+   stroke a constant SCREEN px width regardless of the outer <g>'s own
+   scale transform -- without it, dragon.svg's own authored 0.35
+   stroke-width would shrink down to a fraction of a px at this shape's
+   on-canvas size and read as invisible. (A horizontal baseline along the
+   artwork's bottom edge was tried and removed per direct feedback.) */
+.v3-dragon {
+  pointer-events: none;
+}
+
+.v3-dragon-path {
+  stroke-width: 1.4;
+  opacity: 0.88;
+  vector-effect: non-scaling-stroke;
+}
+
+/* v3.7 -- compass rose (cabinet-v3-layout.js's renderCompassRegion(),
+   compass_rose.svg's own shapes inlined as COMPASS_ROSE_SHAPES). The
+   source SVG uses exactly 3 fixed fills (white/black/blue) plus a
+   none-fill+black-stroke outline pass -- remapped here to theme colour
+   tokens.
+   v3.7.17 -- white re-pointed from --v3-sea-shallow to --v3-sea-deep and
+   blue re-pointed from --v3-ring-ink to a new dedicated
+   --v3-compass-accent token, both direct requests: "white = deep sea,
+   black = same as now/whatever ink, and the 2 rings that are blue in the
+   svg = a dark-midtone hue, darker than the ink, lighter than the sea."
+   Black stays --v3-ink, unchanged. --v3-ring-ink wasn't right for the
+   accent any more: it defaults to following --v3-ink (see that token's
+   own comment above), which is exactly why the "blue" rings read as
+   near-identical to black on medieval-map -- no theme had ever given it a
+   real mid-brightness value of its own. --v3-compass-accent defaults to
+   the same var(--v3-ring-ink) fallback (so every OTHER theme's compass
+   looks exactly as it did), with an actual tuned value only where a theme
+   asked for one (medieval-map's own block below). */
+.v3-compass-white {
+  fill: var(--v3-compass-white);
+}
+
+.v3-compass-black {
+  fill: var(--v3-ink);
+}
+
+.v3-compass-blue {
+  fill: var(--v3-compass-accent);
+}
+
+.v3-compass-outline {
+  fill: none;
+  stroke: var(--v3-ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+/* v3.7.1 -- rose shrunk (COMPASS_ROSE_SCALE, cabinet-v3-layout.js),
+   re-centred; the freed margin holds a real text label per direction
+   (.v3-compass-direction-label). The rose artwork and the label text
+   itself never intercept pointer events -- v3.7.4 moved the actual hit
+   target to a bordered card around each label (.v3-compass-label-frame,
+   below), not the rose or the label text directly. */
+.v3-compass-rose,
+.v3-compass-labels {
+  pointer-events: none;
+}
+
+.v3-compass-direction-label {
+  font-family: var(--cab-font-body);
+  font-size: 11px;
+  fill: var(--v3-ink);
+  dominant-baseline: middle;
+  transition: fill var(--cab-transition-fast), filter var(--cab-transition-fast);
+}
+
+/* v3.7.4 -- direct request: give the compass labels "the Entry text
+   treatment with halos etc" -- the same 3-variant data-label-style
+   system (halo/glow/plain, dev panel: Visuals > Label style) already
+   applied to .v3-island-label/.v3-section-label, same selectors/values,
+   just a third target. Ambient only -- the hover-specific fill+glow
+   rules further down (triggered by .v3-compass-hit's own :hover) still
+   take over on top of whichever of these is active, same as islands'
+   own hover-invert layers on top of their ambient halo/glow/plain. */
+body:not([data-label-style]) .v3-compass-direction-label,
+body[data-label-style="halo"] .v3-compass-direction-label {
+  paint-order: stroke;
+  stroke: var(--v3-label-outline);
+  stroke-width: 3px;
+}
+
+/* v3.7.14 -- 1.5px -> 3.5px, all four "glow" label-style rules in this
+   file (compass/island/island-hover/section) -- direct request: "the
+   label style soft glow needs to have a larger glow." */
+body[data-label-style="glow"] .v3-compass-direction-label {
+  filter: drop-shadow(0 0 3.5px var(--v3-label-outline)) drop-shadow(0 0 3.5px var(--v3-label-outline));
+}
+
+.v3-compass-hit {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* v3.7.4 -- direct request tried enclosing each label in a visible
+   bordered rectangle with corner ornaments as the click target.
+   v3.7.5 -- both the border and the ornaments were dropped again on
+   sight ("maybe no rectangular frames"..."not leftover ornaments
+   either") -- .v3-compass-label-frame is back to a plain invisible hit
+   rect, same padded box around the label, just nothing drawn. */
+.v3-compass-label-frame {
+  fill: transparent;
+  stroke: transparent;
+}
+
+.v3-compass-hit:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: -2px;
+}
+
+/* v3.7.1 -- direct request: "I dont want the hover to be the sharp
+   triangles, it should be a similar glow effect on the label text and
+   the one compass arm that is being hovered on." Hit and target aren't
+   DOM siblings (hits need the full-square transform, the arm-glow needs
+   the rose's own shrunk one -- see renderCompassRegion()'s comment), so
+   this uses :has() rather than a sibling combinator; one block per
+   direction since CSS has no "match the sibling's data-* value"
+   selector. .v3-compass-arm-glow is a blurred duplicate of just that
+   one arm's own outline (COMPASS_ARM_HULLS) -- same
+   opacity-0-to-visible-on-hover mechanic .v3-island-glow already uses,
+   just traced to one arm instead of a whole island. */
+.v3-compass-arm-glow {
+  fill: var(--v3-halo-ink);
+  opacity: 0;
+  filter: blur(18px);
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:hover) .v3-compass-arm-glow[data-direction="N"],
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:focus-visible) .v3-compass-arm-glow[data-direction="N"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:hover) .v3-compass-direction-label[data-direction="N"],
+.v3-compass:has(.v3-compass-hit[data-direction="N"]:focus-visible) .v3-compass-direction-label[data-direction="N"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:hover) .v3-compass-arm-glow[data-direction="E"],
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:focus-visible) .v3-compass-arm-glow[data-direction="E"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:hover) .v3-compass-direction-label[data-direction="E"],
+.v3-compass:has(.v3-compass-hit[data-direction="E"]:focus-visible) .v3-compass-direction-label[data-direction="E"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:hover) .v3-compass-arm-glow[data-direction="S"],
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:focus-visible) .v3-compass-arm-glow[data-direction="S"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:hover) .v3-compass-direction-label[data-direction="S"],
+.v3-compass:has(.v3-compass-hit[data-direction="S"]:focus-visible) .v3-compass-direction-label[data-direction="S"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:hover) .v3-compass-arm-glow[data-direction="W"],
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:focus-visible) .v3-compass-arm-glow[data-direction="W"] {
+  opacity: 0.65;
+}
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:hover) .v3-compass-direction-label[data-direction="W"],
+.v3-compass:has(.v3-compass-hit[data-direction="W"]:focus-visible) .v3-compass-direction-label[data-direction="W"] {
+  fill: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 3px var(--v3-halo-ink));
+}
+
+/* v3.7.1 -- faint dotted lat/long grid + compass diagonals
+   (cabinet-v3-layout.js's drawGeoGrid()), ~100px apart. A distinct dot
+   pattern from .v3-region-outline's dashed 6-6 (that one reads as
+   dashes; round linecap + a near-zero dash length here reads as actual
+   round dots) -- direct request: "different dotted pattern than section
+   outlines." No clip-path for "over sea, not on land" -- drawGeoGrid()
+   runs before the landmass trace, so land just paints over it. */
+.v3-geo-grid {
+  pointer-events: none;
+}
+
+.v3-geo-line {
+  stroke: var(--v3-ink);
+  /* v3.7.2 -- direct feedback, two rounds: first that the original
+     near-zero dash length (0.1 9) was effectively invisible at real map
+     scale, then that the fix (3 9) still read too close to
+     .v3-region-outline's own 6 6 dashes. Settled here on a visibly
+     DIFFERENT rhythm from region-outline, not just a different length:
+     smaller dashes, shorter gaps (more frequent), and a hair lighter
+     stroke (1.1 vs region-outline's 1.5) -- reads as a finer, denser
+     texture instead of a bigger/smaller version of the same dash. */
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-dasharray: 2 4;
+  opacity: 0.55;
+}
+
+/* v3.6.5 -- stacked translucent colour bands (replaces the single-ring
+   evenodd approach). Each group is ONE colour at a fixed fill-opacity,
+   drawn as several full (unclipped) nested contours -- overlap count,
+   not per-element hue, is what creates the gradient (see
+   drawIslandsPath() in cabinet-v3-layout.js and the field notes in
+   cabinet-v3-data.js). Sea bands rely on .v3-stage's own opaque
+   background for their "far = darkest" end, so they can stay quite
+   translucent; land bands have no such opaque backdrop of their own, so
+   sand-band opacity is kept fairly high (their outermost contour is the
+   only thing standing between the coastline edge and the sea colour
+   showing through) -- turn it up further if the true edge still reads
+   too watery. */
+.v3-sea-band {
+  fill: var(--v3-sea-shallow);
+  fill-opacity: 0.24;
+}
+
+.v3-sand-band {
+  fill: var(--v3-sand);
+  fill-opacity: 0.6;
+}
+
+.v3-veg-band {
+  fill: var(--v3-veg);
+  fill-opacity: 0.55;
+}
+
+/* v3.7.28 -- "Land 5," a mountain-peak accent above vegThresholds'
+   innermost level -- see peakThresholds' own comment in
+   cabinet-v3-data.js. Higher opacity than sand/veg above: a snow-cap
+   accent wants to read as a crisp, distinct pop, not another translucent
+   layer blending into the ones under it. */
+.v3-peak-band {
+  fill: var(--v3-peak);
+  fill-opacity: 0.75;
+}
+
+/* v3.7.9 -- coast-hugging fade pair, independent of flatColourMode --
+   see drawIslandsPath()'s own comment in cabinet-v3-layout.js. Tight
+   fixed-pixel offsets (coastOutwardBandDistances/coastInwardBandDistances,
+   cabinet-v3-data.js), same "many low-opacity overlapping copies =
+   gradient" trick as .v3-wave-ring/.v3-sea-band above, just off a real
+   coastline-distance field instead of noise levels -- more overlap right
+   at the coastline, fading out (or in) as distance grows. */
+.v3-coast-outward-band {
+  fill: var(--v3-sea-shallow);
+  fill-opacity: 0.22;
+}
+
+/* v3.7.16 -- fill is no longer a shared token: each section gets its own
+   generated hue, set as an inline style per element
+   (drawCoastalInwardBands(), cabinet-v3-layout.js) -- direct request,
+   "for each section, generate a colour hue... not the same colour over
+   all sections." Only fill-opacity stays shared here. */
+.v3-coast-inward-band {
+  fill-opacity: 0.28;
+}
+
+/* v3.7.10 -- the active shadow: all-around, a coastline-offset band
+   (drawIslandsPath()'s traceOutward, same field as .v3-coast-outward-band
+   above) painted black instead of --v3-sea-shallow, so it always follows
+   the true coastline shape rather than the straight trailing edge a
+   translated copy leaves.
+   v3.7.13 -- direct feedback: "too narrow too light and aligns exactly
+   with the first wave contour" -- old reach (seaRadialShadowDistances
+   [2,4,7] in cabinet-v3-data.js) topped out right next to wave ring 1
+   (waveDistances[0] = 6), so the shadow's own fade-to-nothing edge read
+   as coincident with that ring instead of its own distinct shape. Wider
+   reach + one more step (smoother taper, not a bigger single jump) +
+   higher per-copy opacity for genuine darkness; see cabinet-v3-data.js
+   for the actual distances, deliberately not sharing a value with
+   waveDistances so the two don't visually lock together again. */
+.v3-sea-shadow-radial {
+  fill: #000;
+  fill-opacity: 0.16;
+}
+
+/* v3.7.24 -- directional TAPERED cast shadow, Topology theme only
+   (seaShadowStyle: "directional", THEME_PRESETS in cabinet-v3-controls.js)
+   -- supersedes the old single-shape v3.7.9 directional block (translated
+   copies of one shape, shelved at v3.7.10 for looking like a straight
+   cliff edge). drawIslandsPath() now builds this as copies of FIVE
+   different nested contour levels (coastline, both sand thresholds, both
+   vegetation thresholds), so the shadow's own outline shrinks as it
+   recedes instead of staying a fixed-size parallel block. Low per-copy
+   opacity, same overlap-stacking-as-gradient trick as every other band
+   here (15 copies at this opacity layers up to a comparable peak
+   darkness to the old 4-copy version's 0.1). Black, same "shadows are
+   black with the requisite opacity play" instruction as the radial
+   version above.
+   The blur that feathers the boundary between one level's copies and the
+   next ("the edges need to be blurred enough that it doesnt look like a
+   series of steps") is applied in drawIslandsPath() itself, via a real
+   SVG <filter filterUnits="userSpaceOnUse"> referenced off the group's
+   `filter` attribute -- NOT a CSS rule here. A `filter: blur()` class
+   rule on the group was the first attempt and looked right in isolation,
+   but rendered fully invisible once real map content actually surrounded
+   it -- see that function's own comment for how this was confirmed and
+   why the CSS route was abandoned. */
+.v3-sea-shadow-taper-copy {
+  fill: #000;
+  fill-opacity: 0.08;
+}
+
+/* v3.6.7 -- flatColourMode's single land fill (see drawIslandsPath() in
+   cabinet-v3-layout.js) -- reuses --v3-veg opaque rather than
+   introducing a third land tone; water's single colour is just
+   .v3-stage's own background, no element of its own needed. */
+.v3-islands-land-flat {
+  fill: var(--v3-veg);
+}
+
+/* v3.6.6 -- fixed-distance wave rings, a genuine Euclidean-distance
+   offset from the coastline (see buildCoastlineDistanceField() in
+   cabinet-v3-islandshape.js), stroked rather than filled. Same stroke
+   progression the v3.6.4 noise-based rings borrowed from v2's
+   coast-ripples-global -- nearest darkest/heaviest, fading outward. */
+/* Mechanism 3, first slice: "Medieval effects disappear" within the
+   hovered region, on top of what Part A already did (a Topology-coloured
+   overlay). #v3-medieval-effects-clip (cabinet-v3-layout.js's
+   setupMedievalEffectsHoverClip()) is a shared clip-path whose "hole"
+   moves to whichever island/section is currently hovered -- applying it
+   here means these three layers vanish inside that hole and stay fully
+   visible everywhere else, with no per-element clip-path bookkeeping.
+   v3.7.37 -- extended to both shadow classes too, now that
+   .v3-island-theme-preview-shadow/.v3-section-theme-preview-shadow exist
+   to replace what's clipped away with Topology's own directional taper
+   instead of just removing Medieval's shadow and leaving a gap.
+   v3.7.39 bugfix -- .v3-coast-inward-band removed from this list: each
+   one already carries its OWN per-section clip-path ATTRIBUTE (essential
+   -- see drawCoastalInwardBands()'s own doc comment), and a stylesheet
+   `clip-path` rule silently REPLACES a presentation attribute rather
+   than composing with it, so this was un-confining every section's band
+   across the whole map instead of just poking a hover-hole in it. Direct
+   report caught it live ("wave contours are still visible in the section
+   hover... not visible correctly in the Island hover"). Fixed by
+   applying the hover clip to .v3-coast-inward-band-group (a wrapping
+   group, cabinet-v3-layout.js) instead -- an ancestor's clip-path and an
+   element's own clip-path attribute both apply, intersected, so neither
+   confinement is lost. */
+.v3-wave-ring,
+.v3-coast-outward-band,
+.v3-coast-inward-band-group,
+.v3-sea-shadow-radial,
+.v3-sea-shadow-taper {
+  clip-path: url(#v3-medieval-effects-clip);
+}
+
+.v3-wave-ring {
+  fill: none;
+  stroke: var(--v3-ring-ink);
+}
+
+.v3-wave-ring-1 {
+  stroke-width: 1.4;
+  opacity: 0.95;
+}
+
+.v3-wave-ring-2 {
+  stroke-width: 1.0;
+  opacity: 0.75;
+}
+
+.v3-wave-ring-3 {
+  stroke-width: 0.7;
+  opacity: 0.55;
+}
+
+.v3-wave-ring-4 {
+  stroke-width: 0.5;
+  opacity: 0.4;
+}
+
+.v3-wave-ring-5 {
+  stroke-width: 0.35;
+  opacity: 0.3;
+}
+
+/* Crisp ink boundary at the true coastline, drawn last (on top of every
+   fill band) so the edge reads clearly regardless of which fill happens
+   to sit under it. */
+.v3-coastline-outline {
+  fill: none;
+  stroke: var(--v3-ink);
+  /* v3.7.30 -- 2 -> 1.2, direct feedback: "the coastal outline needs to
+     be thinner than current." */
+  stroke-width: 1.2;
+}
+
+/* Invisible hit target at an entry's original (pre-noise) circle --
+   fused/traced coastlines mean the visible shape often isn't a clean
+   per-entry boundary any more, so the clickable region stays anchored to
+   the geometry growCircles() actually decided, not the traced outline.
+   fill: transparent (not none) so SVG hit-testing still fires on the
+   fill area, not just a stroke. */
+.v3-island-hit {
+  fill: transparent;
+}
+
+.v3-island {
+  cursor: pointer;
+}
+
+.v3-island:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: 2px;
+}
+
+/* v3.6.13 -- was a stroked ring on .v3-island-hit: a hard, obviously
+   artificial circle popping up over an organic coastline. Replaced with
+   a blurred glow circle (cabinet-v3-layout.js sizes it a few px larger
+   than the entry's own radius so it bleeds a little past the coastline
+   edge rather than stopping dead at it) -- fill only, no stroke, blurred
+   so it fades out rather than presenting a crisp boundary. */
+.v3-island-glow {
+  fill: var(--v3-halo-ink);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(6px);
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-glow,
+.v3-island:focus-visible .v3-island-glow {
+  opacity: 0.65;
+}
+
+/* v3.7.37 -- mechanism 3's last piece: Topology's own directional taper
+   shadow, isolated to one island, painted first/underneath (see
+   buildIsolatedShadowTaper()'s own comment in cabinet-v3-layout.js). No
+   separate blur here -- the group carries its own SVG filter (filter
+   attribute, set in JS) rather than a CSS class, same "explicit
+   filterUnits, no auto-bounding-box guesswork" fix the real shadow
+   needed. v3.7.39 -- 0.08 -> 0.18: the real shadow's own value read as
+   basically invisible in this smaller, more saturated preview context
+   ("no Sea Topology visible anywhere," and separately "reads as quite
+   subtle" noted but left at v3.7.37) -- boosted for the preview
+   specifically rather than deferred again, the real map's own shadow is
+   untouched. */
+.v3-island-theme-preview-shadow-copy {
+  fill: #000;
+  fill-opacity: 0.18;
+}
+
+.v3-island-theme-preview-shadow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview-shadow,
+.v3-island:focus-visible .v3-island-theme-preview-shadow {
+  opacity: 1;
+}
+
+/* Theme-preview-on-hover prototype -- the bottommost tier, painted first
+   (see renderRegion()'s append order) so every other preview layer stacks
+   on top of it, same role .v3-stage's own background plays for the real
+   map's deepest sea tier (see --v3-preview-sea-deep's own comment above).
+   Sits on top of the shared global coastline/band paths (painted once,
+   underneath every region -- see renderRegion()'s own comment), so an
+   opaque wash visually replaces that patch without touching the shared
+   geometry at all. Fill only, no stroke -- direct feedback: "the edges
+   need to be blurred between the two themes, not a hard outline." blur()
+   alone already does this: the interior stays ~fully opaque (blurring a
+   large uniform fill doesn't visibly change it away from any edge) while
+   the boundary itself ramps down to transparent over the blur radius,
+   letting the Medieval content underneath show through increasingly at
+   the edge -- a stroke would still read as a hard line even blurred, so
+   it's dropped rather than also blurred.
+   v3.7.40 -- briefly disabled entirely (opacity forced to 0) while
+   diagnosing "no sea topology visible anywhere": with the wash gone, the
+   seaBandThresholds tiers (--v3-preview-sea) turned out to already be
+   there, just fused into one flat blob with this layer -- both were the
+   same --v3-sea-shallow colour. Re-enabled now that this layer has its
+   own correct, distinct colour (--v3-preview-sea-deep, not
+   --v3-preview-land). */
+.v3-island-theme-preview {
+  fill: var(--v3-preview-sea-deep);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(var(--v3-preview-blur));
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview,
+.v3-island:focus-visible .v3-island-theme-preview {
+  opacity: 1;
+}
+
+/* v3.7.38 -- real sea-depth bands (see .v3-preview-sea's own comment),
+   sitting on top of the halo wash but under the shadow/land bands --
+   same paint-order slot the real .v3-sea-band occupies relative to
+   .v3-coast-outward-band/shadow and the land bands in drawIslandsPath().
+   Crisp, no blur -- same "only the outer wash softens" logic as the land
+   bands. v3.7.39 -- 0.24 -> 0.45: direct report, "No Sea Topology
+   visible anywhere" -- the real map's own value read as effectively
+   invisible in this smaller, more saturated preview context; boosted for
+   the preview specifically, the real map's own .v3-sea-band is
+   untouched. */
+.v3-island-theme-preview-sea {
+  fill: var(--v3-preview-sea);
+  fill-opacity: 0.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview-sea,
+.v3-island:focus-visible .v3-island-theme-preview-sea {
+  opacity: 1;
+}
+
+/* v3.7.34 -- real per-band preview fidelity, sitting on top of the
+   blurred halo wash above. Crisp (no blur) on purpose: only the OUTER
+   edge blending into the sea needs to soften, same visual logic the real
+   .v3-sand-band/.v3-veg-band/.v3-peak-band already use (sharp band
+   edges, softness only ever at the coastal-shadow/sea-shadow layer, never
+   here) -- opacities copied from those same real rules so a previewed
+   island reads consistently with how the same bands look once the theme
+   actually switches, not a separately-invented preview look. */
+.v3-island-theme-preview-sand {
+  fill: var(--v3-preview-sand);
+  fill-opacity: 0.6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island-theme-preview-veg {
+  fill: var(--v3-preview-veg);
+  fill-opacity: 0.55;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island-theme-preview-peak {
+  fill: var(--v3-preview-peak);
+  fill-opacity: 0.75;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+/* v3.7.35 -- the real coastline boundary, on top of the bands. The wash
+   (.v3-island-theme-preview above) is deliberately unstroked/blurred and
+   never traced a crisp boundary of its own; once real bands existed
+   there was nothing marking the island's actual edge at all -- direct
+   feedback: "the coastal outline isnt there as well." Matches the real
+   .v3-coastline-outline's own fill:none/stroke-width:1.2 treatment,
+   unblurred (only the outer sea-halo wash softens). */
+.v3-island-theme-preview-coastline {
+  fill: none;
+  stroke: var(--v3-preview-ink);
+  stroke-width: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview-sand,
+.v3-island:focus-visible .v3-island-theme-preview-sand,
+.v3-island:hover .v3-island-theme-preview-veg,
+.v3-island:focus-visible .v3-island-theme-preview-veg,
+.v3-island:hover .v3-island-theme-preview-peak,
+.v3-island:focus-visible .v3-island-theme-preview-peak,
+.v3-island:hover .v3-island-theme-preview-coastline,
+.v3-island:focus-visible .v3-island-theme-preview-coastline {
+  opacity: 1;
+}
+
+.v3-island-label {
+  font-family: var(--cab-font-body);
+  font-size: 13px;
+  fill: var(--cab-ink);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  transition: fill var(--cab-transition-fast), stroke var(--cab-transition-fast), filter var(--cab-transition-fast), transform var(--cab-transition-fast);
+  /* v3.7.23 -- transform-box: fill-box + transform-origin: center makes
+     the hover scale below grow the label in place, about its own
+     rendered centre. Without transform-box, CSS transforms on SVG
+     elements default to the current SVG VIEWPORT's origin, not the
+     element's -- every label would visibly drift toward the top-left of
+     the map as it scaled instead of growing in place, since text-anchor:
+     middle/dominant-baseline: middle above only centre the glyphs on the
+     x/y point, they don't affect the transform origin. */
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* v3.7.23 -- direct request: "Entry Text enlarges on hover for all
+   themes." Deliberately its own rule, not folded into the halo/glow/
+   plain hover rules below -- those three already vary fill/stroke/
+   filter per data-label-style and stay that way; this scale applies on
+   top of whichever one is active, so it doesn't need a fourth
+   label-style-specific copy to keep in sync. */
+.v3-island:hover .v3-island-label,
+.v3-island:focus-visible .v3-island-label {
+  transform: scale(1.18);
+}
+
+/* v3.6.12 -- legibility treatment behind each label, needed because the
+   land under it isn't one flat colour (sea/sand/veg bands, wave rings --
+   see drawIslandsPath()). Three variants (v3.6.27 -- "thin" removed, see
+   below), switched live via a data-label-style attribute on <body> (dev
+   panel: Visuals > Label style, cabinet-v3-controls.js) -- pure CSS, no
+   re-render, so they can be compared directly against the real map.
+   "halo" (the original hard 3px stroke) stays the default only because
+   it shipped first, not because it's the chosen look -- see
+   Landing-page-notes.2.0.md punch-list item 13a. */
+body:not([data-label-style]) .v3-island-label,
+body[data-label-style="halo"] .v3-island-label {
+  paint-order: stroke;
+  stroke: var(--v3-label-outline);
+  stroke-width: 3px;
+}
+
+/* v3.6.27 -- "thin stroke" removed per direct feedback -- three
+   remaining variants (halo/glow/plain) already span the range this one
+   sat between. */
+
+body[data-label-style="glow"] .v3-island-label {
+  filter: drop-shadow(0 0 3.5px var(--v3-label-outline)) drop-shadow(0 0 3.5px var(--v3-label-outline));
+}
+
+/* "plain" intentionally adds nothing -- a no-halo baseline to judge the
+   others against. */
+
+/* v3.6.27 -- entry hover: invert halo/glow's dark-fill/light-halo to
+   light-fill/dark-halo, direct request ("invert the label style thick
+   stroke halo... dark fill light halo to have the dark halo and light
+   fill"). Not scoped to "plain" -- there's no halo/glow color there to
+   invert. .v3-island-label has pointer-events: none (see above), so the
+   hover state has to key off .v3-island (the actual <a>), same pattern
+   .v3-island-glow's own opacity toggle already uses.
+   v3.6.28 -- --cab-land-light/--cab-ink swapped for --v3-label-outline/
+   --v3-ink (both already themeable, see body.v3-proto above) so this
+   inversion uses whatever a theme's own outline/ink colours are, not
+   always the site-wide parchment/cab-ink pair. */
+body:not([data-label-style]) .v3-island:hover .v3-island-label,
+body:not([data-label-style]) .v3-island:focus-visible .v3-island-label,
+body[data-label-style="halo"] .v3-island:hover .v3-island-label,
+body[data-label-style="halo"] .v3-island:focus-visible .v3-island-label {
+  fill: var(--v3-label-outline);
+  stroke: var(--v3-ink);
+}
+
+body[data-label-style="glow"] .v3-island:hover .v3-island-label,
+body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
+  fill: var(--v3-label-outline);
+  filter: drop-shadow(0 0 3.5px var(--v3-ink)) drop-shadow(0 0 3.5px var(--v3-ink));
+}
+
+/* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-
+   layout.js no longer draws .v3-status-ring at all) -- wip/dummy entries
+   now have no hover-styled identity of their own, so there's nothing
+   left for this rule to style. See the v3.7 comment in renderRegion()
+   (cabinet-v3-layout.js) for the full reasoning. */
+
+.v3-section-label {
+  font-family: var(--cab-font-heading);
+  fill: var(--cab-ink);
+  letter-spacing: 0.03em;
+  /* v3.7.8 -- direct request ("make them small caps to differentiate
+     though," following "make section heads text not italic"): applies
+     site-wide, not just to medieval-map's italic-prone type choice --
+     every theme's section label gets this same differentiation from
+     island labels, not just the one that happened to prompt it. */
+  font-variant: small-caps;
+  /* v3.6.13 -- sits visually on top of .v3-section-link's hit rect
+     (see cabinet-v3-layout.js) but shouldn't steal the click/hover away
+     from it -- let pointer events pass straight through to the rect
+     underneath, same reasoning as .v3-island-label. */
+  pointer-events: none;
+  transition: fill var(--cab-transition-fast), stroke var(--cab-transition-fast), filter var(--cab-transition-fast);
+}
+
+/* v3.6.30 -- section headings get the same three data-label-style
+   variants .v3-island-label already has (halo/glow/plain, dev panel:
+   Visuals > Label style) -- direct request: "the section headings a
+   thick stroke halo and other treatments like the island entry names."
+   Same attribute, same rules, just a second selector -- a section name
+   sits on the same busy multi-band/wave-ring background an island name
+   does, so it needs the same legibility treatment, not a separate one. */
+body:not([data-label-style]) .v3-section-label,
+body[data-label-style="halo"] .v3-section-label {
+  paint-order: stroke;
+  stroke: var(--v3-label-outline);
+  stroke-width: 3px;
+}
+
+/* v3.7.22 -- direct feedback: section labels' glow "needs to be
+   larger/brighter/less transparent - more prominent in general," singled
+   out from the other 3 glow rules (compass/island/island-hover), which
+   stay at v3.7.14's 3.5px. Bigger radius (6px, "larger") AND a 3rd
+   stacked drop-shadow (not just a bigger 2nd one) -- each pass is a
+   separate blurred copy, so overlap density right at the glyph edge is
+   what actually reads as "brighter/less transparent," not radius alone;
+   3 passes at the same colour compounds like the coastal bands' own
+   overlap-stacking trick. */
+body[data-label-style="glow"] .v3-section-label {
+  filter: drop-shadow(0 0 6px var(--v3-label-outline)) drop-shadow(0 0 6px var(--v3-label-outline)) drop-shadow(0 0 6px var(--v3-label-outline));
+}
+
+/* v3.6.27 -- section hover: label turns the SOLID version of its own
+   glow colour (--v3-halo-ink is already a fully-opaque hex, just used at
+   low opacity -- .v3-section-glow below -- for the wash; this is the
+   same token at full strength). Direct request: "section hover
+   highlight should turn the section name the solid version of the halo
+   colour." v3.6.28 -- was --cab-land-hover directly; now the themeable
+   --v3-halo-ink (see body.v3-proto above), same token .v3-island-glow/
+   .v3-section-glow already use, so a theme only has to set one value for
+   every hover-halo role at once. */
+.v3-section-link:hover .v3-section-label,
+.v3-section-link:focus-visible .v3-section-label {
+  fill: var(--v3-halo-ink);
+}
+
+/* v3.6.13 -- the section's own landing-page link, covering the whole
+   region (see renderRegion() in cabinet-v3-layout.js). fill: transparent
+   (not none) so hit-testing fires across the full rect, not just where
+   islands or the label happen to sit. */
+.v3-section-hit {
+  fill: transparent;
+}
+
+.v3-section-link {
+  cursor: pointer;
+}
+
+.v3-section-link:focus-visible {
+  outline: 2px solid var(--cab-focus-ring);
+  outline-offset: -2px;
+}
+
+/* Same blurred-glow treatment as .v3-island-glow, just softer/dimmer --
+   this covers a much bigger area (the whole section), so a strong wash
+   would compete with the islands sitting inside it rather than reading
+   as "this whole area is one clickable section." */
+.v3-section-glow {
+  fill: var(--v3-halo-ink);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(14px);
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-glow,
+.v3-section-link:focus-visible .v3-section-glow {
+  opacity: 0.22;
+}
+
+/* v3.7.37 -- mechanism 3's last piece, section level. Same reasoning as
+   the island-level rules above. */
+/* v3.7.39 -- 0.08 -> 0.18, same reasoning as the island-level rule
+   above. */
+.v3-section-theme-preview-shadow-copy {
+  fill: #000;
+  fill-opacity: 0.18;
+}
+
+.v3-section-theme-preview-shadow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview-shadow,
+.v3-section-link:focus-visible .v3-section-theme-preview-shadow {
+  opacity: 0.85;
+}
+
+/* Theme-preview-on-hover prototype, section level -- same mechanism and
+   same v3.7.40 fix as .v3-island-theme-preview above (bottommost tier,
+   Topology's deep-sea colour, not the shallow tone the sea bands above it
+   already use). Reuses renderRegion()'s existing sectionShapeD (already
+   the label band + every component island + the coastal-zone buffer,
+   unioned) instead of tracing anything new. Slightly under full opacity,
+   same reasoning .v3-section-glow's own comment gives for its dimmer
+   wash: this covers a much bigger area than one island, so a flat
+   full-opacity fill across the whole union would read as a single hard
+   block rather than "islands plus their surrounding sea." */
+.v3-section-theme-preview {
+  fill: var(--v3-preview-sea-deep);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(var(--v3-preview-blur));
+  transition: opacity var(--cab-transition-fast);
+}
+
+/* v3.7.41 -- 0.85 -> 1, this layer only: direct feedback, "wave contour
+   lines are still visible underneath the deep sea colour for section
+   hovers, but not for island hovers" -- the island wash is fully opaque
+   on hover (opacity: 1 above) and hides everything clipped away
+   underneath it completely; this one was left at the dimmer 0.85 every
+   OTHER section-level preview layer uses (deliberately, so a big flat
+   fill doesn't read as "a single hard block" -- see this rule's own
+   comment above), which was exactly opaque enough to let Medieval's
+   clipped-but-still-blurred-at-the-edge wave-rings read faintly through.
+   That "single hard block" concern doesn't actually apply to this
+   specific layer: it's standing in for the real map's own literal single
+   flat deep-sea backdrop (see --v3-preview-sea-deep's comment in this
+   file), so reading as one flat block is correct here, not a flaw --
+   every band painted on top of it still varies in opacity/hue same as
+   before. */
+.v3-section-link:hover .v3-section-theme-preview,
+.v3-section-link:focus-visible .v3-section-theme-preview {
+  opacity: 1;
+}
+
+/* v3.7.38 -- real sea-depth bands, section level. Same reasoning as the
+   island-level rule above. */
+/* v3.7.39 -- 0.24 -> 0.45, same reasoning as the island-level rule
+   above. */
+.v3-section-theme-preview-sea {
+  fill: var(--v3-preview-sea);
+  fill-opacity: 0.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview-sea,
+.v3-section-link:focus-visible .v3-section-theme-preview-sea {
+  opacity: 0.85;
+}
+
+/* v3.7.34 -- real per-band preview fidelity, section level. Same
+   reasoning as the island-level rules above (crisp, real band opacities,
+   no separately-invented look) -- 0.85 ceiling, not 1, matching
+   .v3-section-theme-preview's own dimmer-than-island wash above (a
+   section covers much more area, so full-strength competes with the
+   islands sitting inside it). */
+.v3-section-theme-preview-sand {
+  fill: var(--v3-preview-sand);
+  fill-opacity: 0.6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-theme-preview-veg {
+  fill: var(--v3-preview-veg);
+  fill-opacity: 0.55;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-theme-preview-peak {
+  fill: var(--v3-preview-peak);
+  fill-opacity: 0.75;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+/* v3.7.35 -- real coastline boundary, section level. Same gap/fix as the
+   island-level rule above. */
+.v3-section-theme-preview-coastline {
+  fill: none;
+  stroke: var(--v3-preview-ink);
+  stroke-width: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview-sand,
+.v3-section-link:focus-visible .v3-section-theme-preview-sand,
+.v3-section-link:hover .v3-section-theme-preview-veg,
+.v3-section-link:focus-visible .v3-section-theme-preview-veg,
+.v3-section-link:hover .v3-section-theme-preview-peak,
+.v3-section-link:focus-visible .v3-section-theme-preview-peak,
+.v3-section-link:hover .v3-section-theme-preview-coastline,
+.v3-section-link:focus-visible .v3-section-theme-preview-coastline {
+  opacity: 0.85;
+}
+
+/* v3.6: dev-only island-shape tuning panel (cabinet-v3-controls.js) --
+   fixed to the viewport corner, above the SVG, deliberately plain/utility
+   styling (not matching the parchment aesthetic) since it's not part of
+   the page's actual design, only a tool for tuning v3Config.island. */
+.v3-controls {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 250px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 10px 12px;
+  background: rgba(20, 20, 24, 0.88);
+  color: #f0f0f0;
+  border-radius: 6px;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* v3.6.25 -- now the outer <details>'s own <summary> (see buildControlPanel()
+   in cabinet-v3-controls.js), so it needs the same "native marker off, custom
+   triangle on" treatment as .v3-controls-summary below, just kept visually
+   distinct (no margin-bottom needed when closed; closed is now the default). */
+.v3-controls-title {
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.v3-controls-title::-webkit-details-marker {
+  display: none;
+}
+
+.v3-controls-title::before {
+  content: "\25b8  ";
+}
+
+.v3-controls[open] > .v3-controls-title {
+  margin-bottom: 8px;
+}
+
+.v3-controls[open] > .v3-controls-title::before {
+  content: "\25be  ";
+}
+
+/* v3.6.9 -- collapsible section wrapper (Visuals / Island shape / Layout).
+   Native <details>/<summary> rather than custom open/close JS -- see
+   cabinet-v3-controls.js's makeSection(). */
+.v3-controls-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin-top: 10px;
+  padding-top: 6px;
+}
+
+.v3-controls-section:first-of-type {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.v3-controls-summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 0 6px;
+  list-style: none;
+}
+
+.v3-controls-summary::-webkit-details-marker {
+  display: none;
+}
+
+.v3-controls-summary::before {
+  content: "\25b8  ";
+}
+
+.v3-controls-section[open] > .v3-controls-summary::before {
+  content: "\25be  ";
+}
+
+.v3-controls-group-label {
+  margin: 10px 0 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.65;
+}
+
+/* v3.6.22 -- nested collapsible groups (Wave ring parameters,
+   Topological offset parameters), one level deeper than
+   .v3-controls-section -- same native <details>/<summary> pattern, see
+   makeSubsection() in cabinet-v3-controls.js. Direct request: these two
+   were taking up a lot of the Visuals section's space even when not
+   being tuned. Typography matches .v3-controls-group-label (the flat
+   heading style this replaces for these two groups) so collapsing them
+   doesn't change how the panel reads when they're closed. */
+.v3-controls-subsection {
+  margin: 10px 0 4px;
+}
+
+.v3-controls-subsection-summary {
+  cursor: pointer;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.65;
+  list-style: none;
+  padding-bottom: 4px;
+}
+
+.v3-controls-subsection-summary::-webkit-details-marker {
+  display: none;
+}
+
+.v3-controls-subsection-summary::before {
+  content: "\25b8  ";
+}
+
+.v3-controls-subsection[open] > .v3-controls-subsection-summary::before {
+  content: "\25be  ";
+}
+
+.v3-controls-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "name value" "input input";
+  align-items: center;
+  gap: 2px 6px;
+  margin-bottom: 6px;
+}
+
+/* v3.6.9 -- Visuals section's Wave contours / Colour bands checkboxes --
+   deliberately not sharing .v3-controls-row's grid (no value/range
+   input to lay out, just a checkbox + label side by side). */
+.v3-controls-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.v3-controls-name {
+  grid-area: name;
+}
+
+.v3-controls-value {
+  grid-area: value;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.v3-controls-row input[type="range"] {
+  grid-area: input;
+  width: 100%;
+}
+
+/* v3.6.30 -- theme colour editor rows (cabinet-v3-controls.js):
+   swatch sits where a slider's numeric readout normally goes (grid-area
+   "value"), the hex text field takes the full-width "input" row below
+   it, same two-row layout every other .v3-controls-row already uses. */
+.v3-controls-row input[type="color"] {
+  grid-area: value;
+  width: 28px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.v3-controls-row input[type="text"] {
+  grid-area: input;
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 11px;
+}
+
+.v3-controls-buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.v3-controls-btn {
+  flex: 1;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.v3-controls-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* v3.6.9 -- single full-width button on its own line (per-section Reset,
+   Reroll positions, Restore position) -- distinct from the default
+   .v3-controls-btn flex:1 sizing, which assumes it's sharing a row
+   (.v3-controls-buttons) with a sibling button. */
+.v3-controls-btn-block {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
