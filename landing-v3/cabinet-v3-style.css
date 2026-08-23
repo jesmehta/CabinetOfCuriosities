@@ -649,9 +649,25 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
   transform-origin: 50% 50%;
 }
 
+/* v3.7.52 -- direct request: slow the spin down overall, and give it a
+   real start-cruise-stop shape instead of one flat ease-in-out curve
+   across the whole 360 degrees. Three explicit segments, each with its
+   OWN animation-timing-function (set per-keyframe -- applies to the
+   segment LEADING OUT of that keyframe, standard CSS, well-supported):
+   ease-in from 0deg to -90deg (accelerate from a stop), linear from
+   -90deg to -270deg (constant cruise -- the middle 180 degrees, so it
+   fully covers the requested "top speed at 180 +/- 45" with room either
+   side), ease-out from -270deg to -360deg (decelerate back to a stop).
+   1350ms total, not 900ms -- chosen so the CRUISE segment's own angular
+   rate matches the OLD flat animation's rate exactly (360deg/900ms =
+   0.4deg/ms; the new cruise covers 180deg in 450ms, the same 0.4deg/ms)
+   -- "speed to current speed," the two ease segments are pure addition
+   on top of that, not a retune of how fast the fast part feels. */
 @keyframes v3-compass-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  0% { transform: rotate(0deg); animation-timing-function: ease-in; }
+  33.33% { transform: rotate(-90deg); animation-timing-function: linear; }
+  66.67% { transform: rotate(-270deg); animation-timing-function: ease-out; }
+  100% { transform: rotate(-360deg); }
 }
 
 /* #29: hover anywhere in the ring/arm area (outside the smaller theme-
@@ -661,7 +677,7 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    above -- no JS state to track. */
 .v3-compass:has(.v3-compass-spin-hit:hover) .v3-compass-rose-spin,
 .v3-compass:has(.v3-compass-spin-hit:focus-visible) .v3-compass-rose-spin {
-  animation: v3-compass-spin 900ms ease-in-out;
+  animation: v3-compass-spin 1350ms;
 }
 
 /* v3.7.49 -- direct request: "can the diagonal lines also rotate with
@@ -681,7 +697,7 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
 
 #v3-stage:has(.v3-compass-spin-hit:hover) .v3-geo-diagonal-spin,
 #v3-stage:has(.v3-compass-spin-hit:focus-visible) .v3-geo-diagonal-spin {
-  animation: v3-compass-spin 900ms ease-in-out;
+  animation: v3-compass-spin 1350ms;
 }
 
 /* v3.7.48 (#21 demo) -- fade-transition preview for the click-to-swap
