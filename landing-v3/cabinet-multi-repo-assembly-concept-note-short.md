@@ -53,7 +53,7 @@ Other projects are substantial enough to remain independent repositories because
 The current issue is that these independent projects may be reached through URLs such as:
 
 ```text
-https://jesalmehta.github.io/working-with-ai/
+https://jesmehta.github.io/working-with-ai/
 ```
 
 This works technically, but breaks the continuity of the Cabinet domain and public information architecture.
@@ -105,7 +105,7 @@ Example:
 ```text
 cabinetofcuriosities.in
     ↓
-jesalmehta.github.io/working-with-ai/
+jesmehta.github.io/working-with-ai/
 ```
 
 **Advantages:** simplest setup; full repository and deployment independence.
@@ -336,7 +336,7 @@ Likewise, landing-page data can change from:
 ```js
 {
   title: "Working with AI",
-  link: "https://jesalmehta.github.io/working-with-ai/"
+  link: "https://jesmehta.github.io/working-with-ai/"
 }
 ```
 
@@ -428,7 +428,7 @@ Projects must also be checked for base-path assumptions.
 For example, when moving from:
 
 ```text
-jesalmehta.github.io/working-with-ai/
+jesmehta.github.io/working-with-ai/
 ```
 
 to:

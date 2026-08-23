@@ -1,5 +1,91 @@
 # Notes: the v3 landing-page layout prototype (`landing-v3/`)
 
+## Table of contents
+
+- [Intent](#intent)
+- [Relationship to fffx's layout (read this first if you haven't seen](#relationship-to-fffxs-layout-read-this-first-if-you-havent-seen)
+- [Design decisions from the conversation](#design-decisions-from-the-conversation)
+  - [Section weight is computed, not authored](#section-weight-is-computed-not-authored)
+  - [Extras: schema-controlled composition, not per-load randomness](#extras-schema-controlled-composition-not-per-load-randomness)
+  - [Real content, not synthetic data](#real-content-not-synthetic-data)
+  - [Region squareness relaxed; growth-based packing ported from the](#region-squareness-relaxed-growth-based-packing-ported-from-the)
+  - [Split modules, fffx-shaped](#split-modules-fffx-shaped)
+- [Three pages (`index.html`, `islands-tool.html`, `archive/`)](#three-pages-indexhtml-islands-toolhtml-archive)
+- [Static build (`build-static.mjs`, v3.6.2)](#static-build-build-staticmjs-v362)
+- [How the layout is built (`cabinet-v3-layout.js`'s `render()`)](#how-the-layout-is-built-cabinet-v3-layoutjss-render)
+- [How archipelagos are packed (`cabinet-v3-circlepack.js`)](#how-archipelagos-are-packed-cabinet-v3-circlepackjs)
+  - [Why growth-based packing, not v3.0's row-flow](#why-growth-based-packing-not-v30s-row-flow)
+  - [Fewer, plainer extras (v3.3)](#fewer-plainer-extras-v33)
+- [How coastlines are traced (`cabinet-v3-islandshape.js`, v3.5)](#how-coastlines-are-traced-cabinet-v3-islandshapejs-v35)
+  - [Circular vs. lobed silhouettes (v3.5.1 - v3.5.4)](#circular-vs-lobed-silhouettes-v351---v354)
+  - [Domain warping for real concavity (v3.6)](#domain-warping-for-real-concavity-v36)
+  - [Falloff tuning: "most of the circle is the island"](#falloff-tuning-most-of-the-circle-is-the-island)
+  - [Fusion behaviour](#fusion-behaviour)
+- [Verification](#verification)
+- [Known limitations (current, not yet fixed)](#known-limitations-current-not-yet-fixed)
+- [About Me: what was going on, and what was done about it](#about-me-what-was-going-on-and-what-was-done-about-it)
+- [Next steps (not started)](#next-steps-not-started)
+- [To-do](#to-do)
+- [Changelog](#changelog)
+  - [v3.7.24-v3.7.30 -- Topology's directional cast shadow: cliff-edge fix, a real CSS-filter bug, then a height-aware taper](#v3724-v3730----topologys-directional-cast-shadow-cliff-edge-fix-a-real-css-filter-bug-then-a-height-aware-taper)
+  - [v3.7.28 -- "Land 5": a mountain-peak accent, calibrated against real content, not a guess](#v3728----land-5-a-mountain-peak-accent-calibrated-against-real-content-not-a-guess)
+  - [v3.7.28 -- Diagnostics subsection: island-noise heightmap view alongside the existing flow-field debug](#v3728----diagnostics-subsection-island-noise-heightmap-view-alongside-the-existing-flow-field-debug)
+  - [v3.7.26, v3.7.28 -- Topological offset sliders relative to the coastline; waterLevel floor loosened](#v3726-v3728----topological-offset-sliders-relative-to-the-coastline-waterlevel-floor-loosened)
+  - [v3.7.27 -- dev tool defaults to Topology theme; glow becomes the site-wide default label style](#v3727----dev-tool-defaults-to-topology-theme-glow-becomes-the-site-wide-default-label-style)
+  - [v3.7.28 bugfix -- dragon no longer flashes at native size in the corner on load](#v3728-bugfix----dragon-no-longer-flashes-at-native-size-in-the-corner-on-load)
+  - [v3.7.31 bugfix -- lat/long grid and compass diagonals pinned beneath the compass, not above](#v3731-bugfix----latlong-grid-and-compass-diagonals-pinned-beneath-the-compass-not-above)
+  - [v3.7.23 -- small visual fixes: Medieval Map text visibility, Topology compass contrast, entry-label hover scale](#v3723----small-visual-fixes-medieval-map-text-visibility-topology-compass-contrast-entry-label-hover-scale)
+  - [v3.7.1-v3.7.8 -- compass rose (reserved SE section, TSV-driven links, colour-token mapping), lat/long grid, section-label small caps](#v371-v378----compass-rose-reserved-se-section-tsv-driven-links-colour-token-mapping-latlong-grid-section-label-small-caps)
+  - [v3.7.11 -- coastline-offset resolution: cellSize 4 -> 3](#v3711----coastline-offset-resolution-cellsize-4---3)
+  - [v3.7.9-v3.7.17 -- coastal shadow & band effects: a real cast shadow, coast-hugging colour bands, two geometry bugs found and fixed](#v379-v3717----coastal-shadow--band-effects-a-real-cast-shadow-coast-hugging-colour-bands-two-geometry-bugs-found-and-fixed)
+  - [v3.7.9, v3.7.17-v3.7.20 -- compass rose, round 2: cardinal-line/grid-toggle bug, colour remap, then label recentring + a grid-origin sync bug it caused](#v379-v3717-v3720----compass-rose-round-2-cardinal-linegrid-toggle-bug-colour-remap-then-label-recentring--a-grid-origin-sync-bug-it-caused)
+  - [v3.7.13-v3.7.22 -- visual clean-up: glow radius (two rounds), Medieval Map colour retints, section-label glow made more prominent](#v3713-v3722----visual-clean-up-glow-radius-two-rounds-medieval-map-colour-retints-section-label-glow-made-more-prominent)
+  - [v3.7.19, v3.7.22 -- theme roster cleanup: 4 themes dropped, Topology draft + Bathymetric merged, medieRiso recoloured](#v3719-v3722----theme-roster-cleanup-4-themes-dropped-topology-draft--bathymetric-merged-medieriso-recoloured)
+  - [v3.7.16, v3.7.21 -- dev panel: lat/long defaults off, coastal-band/sea-shadow toggles, tool opens on Medieval Map](#v3716-v3721----dev-panel-latlong-defaults-off-coastal-bandsea-shadow-toggles-tool-opens-on-medieval-map)
+  - [v3.7 -- WIP/dummy entries lose their dashed ring and their own hover identity; Medieval Map retinted](#v37----wipdummy-entries-lose-their-dashed-ring-and-their-own-hover-identity-medieval-map-retinted)
+  - [v3.6.30 -- section headings get the label-style treatment; a per-theme colour editor on the dev panel](#v3630----section-headings-get-the-label-style-treatment-a-per-theme-colour-editor-on-the-dev-panel)
+  - [v3.6.29 -- MedieRiso token tuning: explicit riso-neon hex values, ring/halo swap, flagged glow note](#v3629----medieriso-token-tuning-explicit-riso-neon-hex-values-ringhalo-swap-flagged-glow-note)
+  - [v3.6.28 -- "MedieRiso" theme: dark sepia base, riso-neon highlights throughout](#v3628----medieriso-theme-dark-sepia-base-riso-neon-highlights-throughout)
+  - [v3.6.27 -- hover label colours invert on hover; "thin stroke" label style removed](#v3627----hover-label-colours-invert-on-hover-thin-stroke-label-style-removed)
+  - [v3.6.26 -- real-shape hover halos and click areas for islands and sections](#v3626----real-shape-hover-halos-and-click-areas-for-islands-and-sections)
+  - [v3.6.25 -- dragon movement fixes: measured (not guessed) bobbing fix, archipelago-scale coast tuning, panel collapsed by default](#v3625----dragon-movement-fixes-measured-not-guessed-bobbing-fix-archipelago-scale-coast-tuning-panel-collapsed-by-default)
+  - [v3.6.24 -- independent sea-dragon wanderers, from a user-supplied `dragon.svg`](#v3624----independent-sea-dragon-wanderers-from-a-user-supplied-dragonsvg)
+  - [v3.6.23 -- per-particle "personality" demo mode (bias / offset / both), for "one giant trash drift"](#v3623----per-particle-personality-demo-mode-bias--offset--both-for-one-giant-trash-drift)
+  - [v3.6.22 -- coastal spawn, wider entry arc, spawn stagger, dev-panel controls for all of it, live-tuned defaults](#v3622----coastal-spawn-wider-entry-arc-spawn-stagger-dev-panel-controls-for-all-of-it-live-tuned-defaults)
+  - [v3.6.21 -- hard land-crossing backstop, click-to-launch with a governed particle pool](#v3621----hard-land-crossing-backstop-click-to-launch-with-a-governed-particle-pool)
+  - [v3.6.20 -- speed/current retune, live debug field, boat styling, and a second structural trapping fix (this time on the STATIC half of the field)](#v3620----speedcurrent-retune-live-debug-field-boat-styling-and-a-second-structural-trapping-fix-this-time-on-the-static-half-of-the-field)
+  - [v3.6.19 -- narrow-channel clumping fix, prevailing SW-NE current, spawn-arc entry, stuck-particle safety net](#v3619----narrow-channel-clumping-fix-prevailing-sw-ne-current-spawn-arc-entry-stuck-particle-safety-net)
+  - [v3.6.18 -- fixes particles trapped in closed orbits; open water gets real speed and variation](#v3618----fixes-particles-trapped-in-closed-orbits-open-water-gets-real-speed-and-variation)
+  - [v3.6.17 -- the particle system: pool, off-canvas spawn/recycle, small rotated ellipses](#v3617----the-particle-system-pool-off-canvas-spawnrecycle-small-rotated-ellipses)
+  - [v3.6.16 -- flow field: math + debug view, no particles yet (first slice of the Flowfield stretch goal)](#v3616----flow-field-math--debug-view-no-particles-yet-first-slice-of-the-flowfield-stretch-goal)
+  - [v3.6.14-v3.6.15 -- eight comparison colour/type schemes wired into the Theme dropdown](#v3614-v3615----eight-comparison-colourtype-schemes-wired-into-the-theme-dropdown)
+  - [v3.6.13 -- islands and sections both link out; hover feedback becomes a blurred glow](#v3613----islands-and-sections-both-link-out-hover-feedback-becomes-a-blurred-glow)
+  - [v3.6.12 -- header back to a top row, full-bleed sea fixed, smaller section labels, live label-style switcher](#v3612----header-back-to-a-top-row-full-bleed-sea-fixed-smaller-section-labels-live-label-style-switcher)
+  - [v3.6.11 -- extraCount moves onto the TSV, coming-soon stubs removed](#v3611----extracount-moves-onto-the-tsv-coming-soon-stubs-removed)
+  - [v3.6.10 -- full-bleed canvas + header overlay (punch-list items 12, 13), item 9 investigated](#v3610----full-bleed-canvas--header-overlay-punch-list-items-12-13-item-9-investigated)
+  - [v3.6.9 -- panel restructure into collapsible sections, topological-offset sliders, a real bug fix](#v369----panel-restructure-into-collapsible-sections-topological-offset-sliders-a-real-bug-fix)
+  - [v3.6.8 -- islands-tool packing controls (reroll, center-bias) + preset-look switcher](#v368----islands-tool-packing-controls-reroll-center-bias--preset-look-switcher)
+  - [v3.6.7 -- wave-ring generator panel, edge-padding fix, flatColourMode land fill](#v367----wave-ring-generator-panel-edge-padding-fix-flatcolourmode-land-fill)
+  - [v3.6 -- domain warping for real concavity + dev tuning panel](#v36----domain-warping-for-real-concavity--dev-tuning-panel)
+  - [v3.6.6 -- fixed-distance wave rings, centroid-pull scatter, flatColourMode](#v366----fixed-distance-wave-rings-centroid-pull-scatter-flatcolourmode)
+  - [v3.6.5 -- stacked-alpha sea/beach/vegetation colour bands](#v365----stacked-alpha-seabeachvegetation-colour-bands)
+  - [v3.6.4 -- offset coastline ripples](#v364----offset-coastline-ripples)
+  - [v3.6.3 -- paste-friendly config, file table grouped by editability](#v363----paste-friendly-config-file-table-grouped-by-editability)
+  - [v3.6.2 -- index.html becomes a zero-JS static build](#v362----indexhtml-becomes-a-zero-js-static-build)
+  - [v3.6.1 -- three pages, first real interactive tuning pass applied](#v361----three-pages-first-real-interactive-tuning-pass-applied)
+  - [v3.5.4 -- ridged noise for sharp inlets, bias-corrected](#v354----ridged-noise-for-sharp-inlets-bias-corrected)
+  - [v3.5.3 -- angular modulation goes multi-octave](#v353----angular-modulation-goes-multi-octave)
+  - [v3.5.2 -- angle-modulated coastline radius (genuinely lobed islands)](#v352----angle-modulated-coastline-radius-genuinely-lobed-islands)
+  - [v3.5.1 -- more fbm octaves, tried first, reverted](#v351----more-fbm-octaves-tried-first-reverted)
+  - [v3.5 -- noise-carved coastlines replace plain circles](#v35----noise-carved-coastlines-replace-plain-circles)
+  - [v3.4.2 -- entries placed and centered first, extras placed after](#v342----entries-placed-and-centered-first-extras-placed-after)
+  - [v3.4.1 -- entry-only centering, first attempt](#v341----entry-only-centering-first-attempt)
+  - [v3.4 -- section minimum weight, point-stage centering, bottom/multiline labels](#v34----section-minimum-weight-point-stage-centering-bottommultiline-labels)
+  - [v3.3 -- fewer/plainer extras, global cross-region growth](#v33----fewerplainer-extras-global-cross-region-growth)
+  - [v3.2 -- minimum circle size, corrected separation, centered archipelagos](#v32----minimum-circle-size-corrected-separation-centered-archipelagos)
+  - [v3.1 -- growth-based packing, ported from `p5-circle-packing`](#v31----growth-based-packing-ported-from-p5-circle-packing)
+  - [v3.0 -- initial weighted-region + circle-pack prototype](#v30----initial-weighted-region--circle-pack-prototype)
+
 This is a **live reference**, kept current as the prototype changes --
 not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
@@ -1297,217 +1383,18 @@ combination produces a bad shape that a weight floor doesn't fix.
   settles on should get copied back into `cabinet-v3-data.js` (the
   panel's own "Copy config" button exists for exactly this) once decided.
 
-## To-do (visual-polish phase, ongoing)
+## To-do
 
-Two lists, kept separate because they came from two different sources.
-Neither is prioritized or sequenced -- pick from either freely. See
-`conversation-landing-page-v3.md` (same directory) for the design
-reasoning and back-and-forth behind the decisions already made in this
-phase (v3.6.4 through v3.6.6) -- this section is deliberately just a
-flat list, not the reasoning.
-
-### Punch list (sea serpent through colophon)
-
-1. ~~Sea-serpent redesign -- on hold pending a hand-drawn reference~~ --
-   **done, v3.6.24**: the blocker was the reference itself, resolved by
-   the user supplying one directly (`dragon.svg`) rather than a
-   hand-drawn sketch. 1-3 independent sea-dragon wanderers, noise-driven
-   movement, coastal avoidance, event-triggered dive/resurface -- see
-   that changelog entry. The arc-based v1 attempt
-   (`cabinet-v3-seaserpent.js` / `_test-serpent.html`) stays untracked,
-   unused, not deleted -- superseded, not merged into this.
-2. Water wave-line texture -- on hold pending a reference image (v2's
-   own wavelines weren't visible/legible as a reference on their own).
-3. Boats sailing in smooth flows (not randomly moving) -- the original
-   attempt was reverted after an unresolved Chromium `<use>`/`<symbol>`
-   rendering bug (see `conversation-landing-page-v3.md` for that
-   account). **Done, v3.6.17-v3.6.21**, via a different mechanism that
-   sidesteps that bug entirely: plain `<ellipse>`+`<line>` particles (no
-   `<use>`/`<symbol>`), advected along the flow field below. See item 4.
-4. Flowfield stretch goal -- a precomputed noise/flow field with live,
-   cheap particle advection along it (waves, boats), obstacles/repulsion
-   around islands, optionally mouse-reactive. **Done, v3.6.16-v3.6.21**
-   (`islands-tool.html` only -- `cabinet-v3-flowfield.js` +
-   `cabinet-v3-particles.js`): curl-noise current + island-avoidance
-   field (v3.6.16), particle pool with off-canvas spawn/recycle
-   (v3.6.17), a fix for curl noise's structural permanent-vortex trapping
-   via time-drift (v3.6.18), a separate fix for the SAME structural
-   property on the static coastal-tangent half of the field causing
-   narrow-channel/bay trapping, via a bounded (not linear -- see that
-   changelog entry for why the first attempt at this was a real
-   regression) oscillating drift (v3.6.19-v3.6.20), a prevailing
-   SW-NE current direction with local variation preserved (v3.6.19), and
-   a HARD land-crossing backstop independent of the field's own soft
-   push, since that push alone still occasionally lost to the current
-   (v3.6.21). Mouse-reactive is done too, just not the originally-scoped
-   idea: click-to-launch adds a boat at the clicked point rather than
-   perturbing the field itself, capped at 1.5x the base particle count
-   (v3.6.21).
-5. ~~islands-tool idea: a control to re-roll/regenerate the circle
-   centres and packing stage itself~~ -- done, v3.6.8: "Reroll
-   positions" button, now in the Layout section (v3.6.9 restructure).
-6. ~~islands-tool idea: switch or layer between the wave contours, the
-   topology noise contour bands, or both~~ -- **tier 1 done** (v3.6.8's
-   three preset buttons, replaced in v3.6.9 by two independent
-   checkboxes in the Visuals section -- Wave contours / Colour bands --
-   which cover the same three combinations plus a fourth the buttons
-   couldn't reach). **Tier 2 also done, v3.6.14-v3.6.15 + v3.6.28**:
-   nine whole look-and-feel presets now exist beyond the original
-   medieval/satellite draft pair (medieval-map, bathymetric, riso,
-   cyanotype, neon, ukiyo, medieRiso), each its own colour token set +
-   type pairing, switched live via the Theme select -- see
-   `v3-scheme-candidates.md` and the changelog for the reasoning behind
-   each.
-7. ~~islands-tool idea: give the topology noise contour bands
-   (`seaBandThresholds`/`sandThresholds`/`vegThresholds`) their own
-   panel section~~ -- done, v3.6.9: "Topological offset parameters" in
-   the Visuals section, one slider per array element.
-8. ~~Strengthen centroid gathering further -- push `centerBias` harder if
-   islands should cluster tighter still~~ -- **counted done**: a live
-   slider exists (v3.6.8, Layout section) so this is now a direct
-   try-values-and-judge action, not something blocked on more code. The
-   actual "how much tighter" call is a judgment call for whoever's
-   driving the panel, not an open engineering task.
-9. Give sections a minimum weight so small sections (About Me, etc.)
-   don't read as visually skewed/collapsed -- **investigated (v3.6.10),
-   confirmed insufficient as-is.** `v3Config.canvas.minSectionWeight`
-   (v3.4) floors a section's AREA for treemap allocation (`about`'s real
-   weight 2 gets clamped to 5), but does nothing about its ASPECT RATIO --
-   measured directly against real content: `about` still squarifies to a
-   92x488px region (aspect 0.19, a genuine sliver), because squarify()
-   optimizes each ROW's aggregate squareness, not any one item's own
-   shape, and a low-weight item can still land as the thin remainder of a
-   row regardless of its floored area. The circles inside aren't
-   undersized (they reach ~31px radius, comparable to other sections --
-   the sliver is tall enough to give them room to grow into) but the
-   region SHAPE itself is a visible thin strip -- confirmed directly in
-   the v3.6.10 full-bleed screenshots (see below), where `about` reads as
-   a visibly cramped column next to its neighbours at every window shape
-   tried. A real fix needs an aspect-ratio-aware constraint back in
-   `squarify()` -- similar in spirit to (but likely narrower than) the
-   9:16-16:9 band contract relaxed back in v3.1 -- not something to build
-   without discussing scope first.
-10. A real pass on fonts, colours, sizes, and readability -- explicitly
-    held back until other bells and whistles landed; that condition is
-    largely met now. **Partially done, v3.6.12-v3.6.13**: header
-    type/size, section-label size, and island-label legibility (now a
-    live-switchable choice, see item 13a) are addressed. The map's
-    overall colour scheme itself (sea/sand/veg band hues, ink tones) is
-    still the original first-guess palette from v3.6.5 -- untouched,
-    still on hold.
-11. Other small details -- compass rose, easter eggs, etc.
-12. ~~Expand the canvas to full-bleed window size~~ -- **done, v3.6.10.**
-    See "Full-bleed canvas + header overlay" below for the mechanism and
-    its real limits (adapts to the viewport ONCE at load, not on a live
-    drag-resize afterward).
-13. ~~Fold the "Cabinet of Curiosities" heading + intro text into the map
-    itself~~ -- **done, v3.6.10, reverted v3.6.12.** Was CSS-positioned
-    over the canvas's own corner (NOT moved into SVG -- tried first,
-    reverted -- see the v3.6.10 changelog entry for why: real `<h1>`/`<p>`
-    matters for crawlers/screen readers in a way JS-drawn SVG text
-    doesn't). v3.6.12 put it back in a normal top-of-page row instead --
-    see that changelog entry for why (bigger H1, and the corner overlay
-    was crowding the map more than it was worth). Still real, unchanged
-    HTML either way.
-13a. ~~Refine the header itself~~ -- **done, v3.6.12**: title/tagline
-    wording (new descriptive tagline), typography/look-and-feel (larger
-    H1, sits directly on the now-matching full-bleed sea colour instead
-    of a card), and position (back to a top row -- see item 13). Space
-    reservation is simpler now too: a normal top-of-flow row reserves
-    itself for free, so the growth-obstacle code that measuring the old
-    corner overlay needed is gone (see the changelog entry). The
-    H1-scale-mismatch sub-question moves to 13b, unresolved either way by
-    this move.
-13b. Still open from 13a: resizing the window scales the map's own text
-    via the SVG viewBox, but the real HTML `<h1>`/tagline don't scale
-    with it, since they sit outside the SVG entirely. Undecided which of
-    three options to take: scale it with the map, clamp its size within a
-    range, or leave it fixed as-is (current behaviour, by default rather
-    than decision).
-14. Idea: the compass rose (or similar map ornamentation) could BE the
-    About Me / Contact Me links, rather than those existing as regular
-    islands -- see item 21 below (WORLD-SYSTEMS.md's FabAcademy-is-not-
-    a-world rule) for a directly relevant constraint on what About Me
-    should even link to.
-15. Merge branches.
-16. Create a history section and place archival pages there (see item
-    20 below -- `archived-landing-pages/` already exists as a
-    filesystem convention; this is about giving it a real, linked home
-    on the site itself, not just a folder).
-17. Launch the page.
-18. Write the colophon and creation notes.
-
-### Found via documentation survey (v3.6.6 doc audit)
-
-Surfaced by reading `LANDING-PAGE-NOTES.md` (top-level, v2/production --
-distinct from this file), `README.md`, `DESIGN-SYSTEM.md`,
-`WORLD-SYSTEMS.md`, and the sibling `TheBookshelfOfCuriosities` repo,
-specifically to catch anything the punch list above had missed. Mostly
-production-page (not v3-prototype) items, included here anyway since
-they're real open items on the same overall site.
-
-19. Card/label overlap on Bookshelf, fffx, and Interfaces/Data/Texts
-    islands -- the widest cards clip the island name label.
-20. Real thumbnails owed for entries still on generated placeholder
-    tiles -- e.g. Circle Packing Library already has one sitting in the
-    fffx repo, just never copied over.
-21. CV entry's "scroll" icon reads ambiguous at card size.
-22. Verify fffx's DNS/CNAME is actually live before treating fffx links
-    from Cabinet as production (no committed `CNAME` confirmed as of
-    the v2.1 follow-up that raised this).
-23. `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
-    dashed border, leader-line to a card sitting off the island
-    entirely) is fully built and supported by the renderer but no
-    entry currently uses it -- available for future content that needs
-    it.
-24. `WORLD-SYSTEMS.md` standing rule, not currently reflected in any
-    to-do above it should touch: FabAcademy/Fabricademy documentation
-    sites are NOT Level-1 worlds and should not become Cabinet islands
-    -- link them from About Me or a relevant essay/reflection page
-    instead, if at all. Bears directly on item 14's compass-rose/
-    About-Me idea and on item 16's history-section scoping.
-25. Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
-    fffx, if accessible) sibling repos -- Bookshelf's copy is stale
-    (still describes Cabinet as having no islands of its own, and
-    carries TODOs, e.g. "stricter CI checks" for section/id validation
-    and "card component unification," that Cabinet's own build already
-    satisfies).
-26. Compass rose rotation: the rose (and the diagonals radiating from its
-    centre, so they keep matching its ordinal arms) rotates anticlockwise
-    -- either at random or triggered by approach/hover -- for one full
-    revolution. Not started; direct request, logged as a to-do rather
-    than implemented immediately.
-27. Theme-specific boat artwork: swap the boat graphic between themes
-    (islands-tool.html's dev panel boat toggle -- the current ellipses are
-    a top-down view, fitted for Topology's satellite-map register).
-    Medieval Map wants a side-view boat instead. Not started; direct
-    request, blocked on the user either describing the side-view shape in
-    enough detail to build it, or supplying an actual SVG.
-28. Merge themes x hover: reconcile hover-state behaviour/styling across
-    all theme presets so it's a single coherent treatment rather than
-    each theme carrying its own drift. Not started.
-29. Update `index.html` to match current development: the shipped static
-    build (`build-static.mjs`'s output) needs a fresh regeneration pass so
-    it reflects everything landed on `islands-tool.html`/the dev panel
-    this phase (topology shadow, Land 5, Diagnostics, theme/label-style
-    defaults, etc.) before launch. Not started.
-30. Merge branches / make v3 the main version -- `landing-v3-prototype`
-    becomes the live default branch, and the site's entry point launches
-    the v3 page directly. Supersedes/absorbs item 15 (merge branches) and
-    item 17 (launch the page) above.
-31. Archive v1 and v2 before overwrite -- before v3 replaces the live
-    page, archive the current v1/v2 production pages (into
-    `archived-landing-pages/`, the existing convention -- see item 16)
-    rather than deleting/overwriting them in place.
-32. Update `mkdocs.yml` and other site structures to match -- once v3 is
-    live, the site's nav/config needs a pass so it reflects the new
-    structure: v3 as the front page, with either mkdocs-generated pages
-    living underneath it, or links out to other standalone HTML pages in
-    this repo or sibling repos.
-33. Make other-repo pages read as Cabinet sub-pages -- the "look like a
-    subpage of Cabinet" treatment (consistent header/nav/styling wrapper)
-    for pages that physically live in other repos, so they feel
-    integrated into the site rather than reading as external links.
+Moved to `landing-v3/three-world-launch-phases-ToDo.md` (2026-08-23) --
+it had grown past what the punch-list format here could hold. That
+file's "Phase 0" is this doc's old punch list (v3-prototype
+visual-polish/feature items); Phases 1-3 cover the Cabinet/Bookshelf/
+FFFX launch sequence, with the supporting rationale (deployment
+mechanism, branch-transition reasoning, TSV editor spec) split out again
+into `landing-v3/three-world-launch-phases-Notes.md`.
+See `conversation-landing-page-v3.md` (same directory as this file) for
+the design reasoning and back-and-forth behind the decisions already
+made in the v3-prototype phase.
 
 ## Changelog
 
