@@ -14,6 +14,7 @@
 - [Phase 2 -- Immediately After Launch](#phase-2----immediately-after-launch)
 - [Phase 3A -- Short-Term / Already Underway](#phase-3a----short-term--already-underway)
 - [Phase 3B+ -- Long-Term Development](#phase-3b----long-term-development)
+- [Content Inventory -- Pages, Entries & Their Statuses](#content-inventory----pages-entries--their-statuses)
 
 Live checklist. Check items off as they land; don't renumber or reorder
 on completion -- history matters more than a tidy list. Companion files:
@@ -970,3 +971,128 @@ section to empty out.*
 - [ ] **#119** Improve search, accessibility, performance and metadata
 - [ ] **#120** Use Cloudflare routing only where a future project genuinely
       needs it
+- [ ] **#121** Organize local files for v3 -- `landing-v3/` has accumulated
+      dev/test artifacts alongside the real prototype over ~60 versions
+      (`islands-tool.html`, `archive/` (old per-version copies),
+      `v3-scheme-candidates.md`, various one-off test HTML) with no pass
+      yet to sort what's still needed for the live build vs. what's
+      historical/dead weight.
+- [ ] **#122** Consolidate documentation for v3 vs. all of Cabinet --
+      `Landing-page-notes.2.0.md`/`conversation-landing-page-v3.md` (v3-
+      prototype-specific) and `three-world-launch-phases-ToDo.md`/`-Notes.md`
+      (whole-Cabinet/Bookshelf/FFFX) already overlap in places (this file's
+      own intro note admits it was two documents smashed together once
+      already, 2026-08-23) -- worth a real pass on what belongs where
+      before the overlap gets worse.
+
+---
+
+## Content Inventory -- Pages, Entries & Their Statuses
+
+Living reference, not a task list -- last regenerated from source
+2026-08-24 (word counts, hrefs, statuses pulled fresh from
+`mkdocs.yml`/`content/cabinet-entries.tsv`/`content/cabinet-sections.tsv`
+directly, not carried over from the earlier #67 audit, which is now
+partly stale). Update this table when the underlying files change
+significantly, don't hand-patch it out of memory.
+
+**mkdocs** = has a `mkdocs.yml` sidebar nav entry · **TSV** = has a
+`cabinet-entries.tsv`/`cabinet-sections.tsv` row · **Map** = actually
+renders on the landing-page archipelago (`true`/`wip`; `false` = built
+but suppressed).
+
+### Bookshelf (own repo/subdomain -- deliberately outside this mkdocs, #72)
+
+| Entry | mkdocs | TSV | Map | Link | Notes |
+|---|---|---|---|---|---|
+| *(section link)* | Y | Y | Y | `bookshelf.cabinetofcuriosities.in` | single external link, #72 |
+| Golden Age SciFi | N | Y | true | `…/scifi/` | |
+| Asimov | N | Y | true | `…/asimov/` | |
+| Christie | N | Y | wip | `…/` (root) | placeholder link, page not live |
+
+### Form follows f(x) / fffx (own repo/subdomain -- deliberately outside this mkdocs, #72)
+
+| Entry | mkdocs | TSV | Map | Link | Notes |
+|---|---|---|---|---|---|
+| *(section link)* | Y | Y | Y | `fffx.cabinetofcuriosities.in` | single external link, #72 |
+| Vera Molnar | N | Y | true | `…/vera-molnar/` | |
+| Circle Packing Library | N | Y | true | `…/circle-packing-library/` | thumbnail owed, #23/#86 |
+| Particle Systems | N | Y | wip | `…/particle-systems/` | |
+| 100 Gradients | N | Y | wip | `…/100-gradients/` | |
+| `fffx/fffx.md` | N *(orphaned)* | N | N | -- | 19w stub, dead since #72 dropped it from nav |
+| `fffx/particleSystems.md` | N *(orphaned)* | N | N | -- | 22w stub, dead |
+| `fffx/100Gradients.md` | N *(orphaned)* | N | N | -- | 23w stub, dead |
+| `fffx/VeraMolnarRetrospective.md` | N *(orphaned)* | N | N | -- | 311w real content, worth migrating into the fffx repo itself (#85) rather than leaving stranded |
+| `fffx/PackingShapes.md` | N *(orphaned)* | N | N | -- | 819w real content, same migration candidate |
+
+### Teaching -- fully consolidated, triple-listed by design (#71/#72)
+
+| Entry | mkdocs | TSV | Map | Link | Notes |
+|---|---|---|---|---|---|
+| Teaching *(landing page)* | Y *(first)* | -- | Y | `teaching.md` -> `teaching/` | 37w stub; section `href` points here |
+| Student Work / SSD Creative Coding | Y | Y | true | `/teaching/ssd-creative-coding/` | assembled, intentional triple-listing |
+| History & Approach | N | Y | wip | -- | no page yet |
+| Research & Interests | N | Y | wip | -- | no page yet |
+| Working with AI | Y | Y | true | `/teaching/working-with-ai/` | assembled, intentional triple-listing |
+| Prompt Generator | Y | Y | true | `/teaching/prompt-generator/` | assembled, intentional triple-listing |
+| Oblique Strategies | Y | Y | true | `/teaching/oblique-strategies/` | assembled, intentional triple-listing |
+
+### Visual Field Notes -- all placeholders, confirmed OK as-is
+
+| Entry | mkdocs | TSV | Map | Notes |
+|---|---|---|---|---|
+| Gujarati Type | N | Y | wip | nothing exists yet -- fine (direct confirmation) |
+| Doors of Kutch | N | Y | wip | nothing exists yet -- fine |
+| Kochi | N | Y | wip | nothing exists yet -- fine |
+| *(section landing page)* | N | -- | -- | `href` blank, no page yet |
+
+### Machines & Makings -- landing page + stubs wired (#72)
+
+| Entry | mkdocs | TSV | Map | Link | Notes |
+|---|---|---|---|---|---|
+| Makings *(landing page)* | Y *(first)* | -- | Y | `makings.md` -> `makings/` | 35w stub; section `href` points here |
+| MiniLoom / Looms | Y | Y | true | `mini_loom/` | 1019w real content |
+| Origami & Paper | Y | Y | true | `makings/origami-paper/` | 14w stub, newly wired |
+| Lasercutting | Y | Y | true | `makings/lasercutting/` | 12w stub, newly wired |
+| Drawing Machines | Y | Y | true | `makings/drawing-machines/` | 13w stub, newly wired |
+| Swatch Fields | Y | Y | true | `jesmehta.github.io/swatchFields/` | intentional cross-listing, see Interfaces below |
+| 3D Printing | Y *(4-page cluster)* | Y *(1 entry)* | true | `3dp/3DP_2019/` | deliberate level-2 mismatch, revisit later, not a gap |
+| `3dp/GCodeBending.md` | N | N | N | -- | untracked, yours, 825w real content, not wired anywhere yet |
+
+### Interfaces, Data & Texts -- one intentional cross-listing, three unresolved duplicates
+
+| Entry | mkdocs | TSV | Map | Link | Notes |
+|---|---|---|---|---|---|
+| Branching Narrative | Y *(as "Twine")* | Y | true | `emergent_twine/` | **unresolved duplicate** -- same href/title, no differentiation |
+| WebTech | Y *(as "Dot Mandala Generator")* | Y | true | `dotMandalaTool/` | **unresolved duplicate** |
+| Tracery Bots | Y *(as "Tracery Bots")* | Y | true | `traceryBots/` | **unresolved duplicate** |
+| Data Visualisations | N | Y | true | `bookshelf…/agatha/` | cross-listed from Bookshelf -- the original precedent for Swatch Fields |
+| Writings | N | Y | wip | -- | no page yet |
+| Swatch Fields | Y | Y | true | `jesmehta.github.io/swatchFields/` | intentional cross-listing (#72), not a duplicate |
+| Creative Coding | Y | N | N | `creative_code.md` | 42w placeholder, orphaned from TSV |
+
+### Wild wild web (mkdocs nav group; TSV section exists but suppressed, #69)
+
+| Entry | mkdocs | TSV | Map | Notes |
+|---|---|---|---|---|
+| *(section itself)* | Y | Y | **N** | `status: false`, no map slot designed yet (#69) |
+| Trippy Gourmet (external) | Y | N | N | external, not on map |
+| Mad Solutionist | Y | N | N | external, not on map |
+| `trippyGourmet.md` (local) | N *(commented out)* | N | N | 12w, dead file -- nav uses the external link of the same name instead |
+
+### Compass
+
+| Entry | mkdocs | TSV | Map | Link | Notes |
+|---|---|---|---|---|---|
+| About Me | Y | Y (compass-n) | true | *(blank href)* | **still unwired** -- About Me page exists, compass needle isn't pointed at it |
+| Contact me | N | Y (compass-e) | true | *(blank href)* | no contact page exists; slated for absorption per #73 |
+| Colophon | Y | Y (compass-s) | true | `colophon/` | wired correctly |
+| CV | N | Y (compass-w) | true | `jesalmehta.com` | wired correctly; slated for absorption per #73 |
+| Now | Y | N | N | `now.md` | 31w stub, no compass slot yet -- planned E/W replacement per #73 |
+| Site IA / Sitemap | N | N | N | -- | doesn't exist yet -- planned E/W replacement per #73 |
+
+### Site-level
+
+| Entry | mkdocs | TSV | Map | Notes |
+|---|---|---|---|---|
+| Notes on this site | Y | N | N | `site_notes.md`, 1583w, intentionally meta -- not meant to be on the map |
