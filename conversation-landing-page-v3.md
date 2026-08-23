@@ -2112,6 +2112,36 @@ live map's own value exactly), the effect reads as quite subtle against
 the halo's saturated teal -- a genuine design question about this
 specific context, not resolved here.
 
+One screenshot, two real problems caught by comparing against what
+Topology's own theme is actually supposed to look like: **"Topo is
+supposed to have only the directional shadow but Sectionals: wave
+contours are visible under the flat blue, sea contours arent visible.
+Entries - no wave contours but no sea topo bands either, shadows are
+directional."**
+
+First, isolated the wave-ring artifact rather than guessing at a fix:
+zeroing `--v3-preview-blur` made it vanish completely, proving the CLIP
+geometry was already correct and the real cause was the wash's own blur
+visually spreading its tint past the clip's crisp (unblurred) edge --
+wave-rings sat unclipped in that thin mismatch ring. Fixed by dilating
+the clip hole a bit further than the wash itself, tracked to the blur
+radius (`clipMarginFor()`), stored as a second `data-clip-d` attribute
+alongside the wash's own `d` rather than reusing it directly.
+
+Second, a real missing feature, not a bug: Topology's own sea-depth
+bands (`.v3-sea-band`) had never been added to the preview at all --
+gated by `flatColourMode`, a completely different mechanism from the
+wave-ring toggle, easy to overlook and overlooked. Added the same way
+sand/veg/peak were, `seaBandThresholds` traced per island/section,
+positioned between the wash and the shadow. Needed real extra heightmap
+padding for the deepest levels to close naturally -- confirmed via an
+isolated, opacity-boosted diagnostic before trusting the real (subtle,
+by design, matching the live map's own 0.24 opacity) version:
+
+![Sea-depth bands isolated with boosted opacity -- real, correctly-nested concentric rings](landing-v3/dev-screenshots/v3.7.38-sea-band-isolated-diagnostic.png)
+
+![Both fixes together on a real section hover -- no wave-ring bleed at the wash's edge, real sea-depth structure inside it](landing-v3/dev-screenshots/v3.7.38-section-hover-clip-and-sea-bands-fixed.png)
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

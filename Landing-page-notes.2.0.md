@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.38 -- Wave-ring blur bleed fixed; Topology's own sea-depth bands added to the preview](#v3738----wave-ring-blur-bleed-fixed-topologys-own-sea-depth-bands-added-to-the-preview)
   - [v3.7.37 -- Mechanism 3 complete for now: Topology's directional shadow swaps in on hover; default theme reverted to Medieval](#v3737----mechanism-3-complete-for-now-topologys-directional-shadow-swaps-in-on-hover-default-theme-reverted-to-medieval)
   - [v3.7.36 -- Mechanism 3, first slice: Medieval's own wave-rings/coastal-bands genuinely disappear on hover, not just get painted over](#v3736----mechanism-3-first-slice-medievals-own-wave-ringscoastal-bands-genuinely-disappear-on-hover-not-just-get-painted-over)
   - [v3.7.35 bugfix -- theme-preview sand band was camouflaged, coastline outline missing entirely](#v3735-bugfix----theme-preview-sand-band-was-camouflaged-coastline-outline-missing-entirely)
@@ -97,7 +98,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.37** (domain warping for real concave coastlines,
+Currently on **v3.7.38** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -155,8 +156,21 @@ v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
 -> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35 -> v3.7.36 -> v3.7.37
+-> v3.7.38
 progression and why each pass changed what it did. Most recently
-(v3.7.37): mechanism 3's last remaining piece -- Topology's own
+(v3.7.38): two real problems caught from one screenshot -- Medieval's
+wave-ring contours were still visibly showing through the wash's own
+blurred, semi-transparent edge (the clip GEOMETRY was already correct,
+confirmed by zeroing the blur and watching the artifact vanish
+completely; the fix dilates the clip hole a bit further than the wash
+itself, tracking the blur radius) -- and Topology's own sea-depth bands
+(`.v3-sea-band`, gated by `flatColourMode`, a completely different
+mechanism from the wave-ring/coastal-band toggle) had never been added
+to the preview at all, so the halo was one flat tone standing in for
+what should be real nested sea-depth rings. Both fixed/added for islands
+and sections alike. Full detail, with diagnostic screenshots, in the
+changelog below. Before that (v3.7.37): mechanism 3's last remaining
+piece -- Topology's own
 directional taper shadow, isolated to the hovered island/section, swaps
 in for Medieval's radial shadow within the hover region (both are now in
 the same clip-path's target list `v3.7.36` introduced). A real z-order
@@ -1462,6 +1476,65 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.38 -- Wave-ring blur bleed fixed; Topology's own sea-depth bands added to the preview
+
+Direct report against one screenshot, comparing section-level hover to
+what Topology's real theme is supposed to look like: "Topo is supposed
+to have only the directional shadow but Sectionals: wave contours are
+visible under the flat blue, sea contours arent visible. Entries - no
+wave contours but no sea topo bands either, shadows are directional."
+
+**Wave-ring blur bleed, both entries and sections.** The clip-path
+mechanism (v3.7.36) hides wave-rings/coastal-bands using the wash's OWN
+exact `d` boundary as the clip hole -- but the wash ELEMENT is blurred
+(`--v3-preview-blur`), and Gaussian blur visually spreads a shape's tint
+past its `d` string without changing what that string says. In the
+resulting ring -- between the crisp clip edge and the wash's own
+softened visual edge -- wave-rings sat fully unclipped underneath the
+wash's still-visible (if fading) tint. Confirmed directly rather than
+guessed: setting the blur to 0px made the artifact disappear completely
+(a perfectly crisp, fully-clipped edge), isolating the bug to
+blur-vs-clip-edge mismatch specifically, not a real clipping failure.
+(Sections showed it more often than entries simply because they cover a
+much longer boundary, not because the underlying mechanism differed --
+confirmed by finding it on a section too once looked for.)
+
+Fixed with a new `clipMarginFor(blurPx)` (`Math.max(12, blurPx * 2)`):
+every island/section now traces a SECOND, slightly-larger shape
+alongside the wash itself -- stored as a `data-clip-d` attribute on the
+same element, read by the hover handler instead of the wash's own `d` --
+so the clip hole fully contains wherever the wash's blur could still be
+tinting anything. The live "Edge blur" slider now also calls
+`retraceThemePreviews()` (previously pure CSS, no geometry involved) so
+the margin stays correct if blur is retuned.
+
+**Topology's own sea-depth bands, previously entirely missing.**
+`.v3-sea-band` is gated by `flatColourMode` (false for Topology, true
+for Medieval), a completely SEPARATE mechanism from `showWaveRings`/
+`showCoastalBands` -- easy to miss, and missed: the preview only ever
+traced LAND bands (sand/veg/peak), leaving the whole sea side as one
+flat wash standing in for what should be real nested sea-depth rings.
+Added the same way sand/veg/peak were: `seaBandThresholds` (confirmed
+theme-invariant, same as every other threshold array) traced per
+island/section via the existing `traceIsolatedShapeAtLevel()`, one
+`.v3-island-theme-preview-sea`/`.v3-section-theme-preview-sea` per level,
+positioned between the wash and the shadow -- the same slot the real
+`.v3-sea-band` occupies relative to `.v3-coast-outward-band`/shadow in
+`drawIslandsPath()`. Needed real extra heightmap padding (+80px) for the
+deepest sea levels to close naturally rather than against the local
+grid's edge-forcing boundary -- confirmed correctly shaped (not
+artificially flattened) via an isolated diagnostic before trusting it at
+real opacity:
+
+![The sea-depth bands isolated with boosted opacity for diagnosis -- real, correctly-nested concentric rings, confirming the geometry itself (not just visibility) is right](landing-v3/dev-screenshots/v3.7.38-sea-band-isolated-diagnostic.png)
+
+At the real 0.24 fill-opacity (matching the live map's own `.v3-sea-band`
+value exactly, same "don't retune away from the real thing" choice
+v3.7.37 made for the shadow), the bands read as subtle -- expected, not
+a bug, same as the shadow's own subtlety.
+
+![Both fixes together on a real section hover -- no wave-ring bleed at the wash's edge, real (if subtle) sea-depth structure inside it](landing-v3/dev-screenshots/v3.7.38-section-hover-clip-and-sea-bands-fixed.png)
 
 ### v3.7.37 -- Mechanism 3 complete for now: Topology's directional shadow swaps in on hover; default theme reverted to Medieval
 

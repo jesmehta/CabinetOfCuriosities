@@ -577,6 +577,9 @@ function buildControlPanel() {
     document.body.style.setProperty("--v3-preview-sand", values["--v3-sand"]);
     document.body.style.setProperty("--v3-preview-veg", values["--v3-veg"]);
     document.body.style.setProperty("--v3-preview-peak", values["--v3-peak"]);
+    // v3.7.38 -- real sea-depth bands, same single token the real
+    // .v3-sea-band uses (not a deep/shallow split).
+    document.body.style.setProperty("--v3-preview-sea", values["--v3-sea-shallow"]);
   }
 
   // Nested one level deeper than the outer "Theme colours" subsection --
@@ -708,13 +711,21 @@ function buildControlPanel() {
     set: v => { v3Config.themePreview.sectionHaloPx = v; },
     onChange: retraceThemePreviews
   });
-  // onChange overridden -- pure CSS, no geometry change, so a full
-  // retraceIslands() would be wasted work for what's just a filter value.
+  // onChange overridden -- mostly pure CSS (a full retraceIslands() would
+  // be wasted work for what's just a filter value), EXCEPT v3.7.38's
+  // clipMarginFor(blurPx) also depends on this same slider (the hover
+  // clip's hole needs to dilate further than the wash for a bigger blur,
+  // so wave-rings/coastal-bands stay fully hidden under the wash's own
+  // wider soft edge -- see that function's own comment) -- so this still
+  // needs retraceThemePreviews(), just not the full retraceIslands().
   buildSlider(themePreviewSubsection, {
     label: "Edge blur (px)", min: 0, max: 30, step: 1,
     get: () => v3Config.themePreview.blurPx,
     set: v => { v3Config.themePreview.blurPx = v; },
-    onChange: () => document.body.style.setProperty("--v3-preview-blur", `${v3Config.themePreview.blurPx}px`)
+    onChange: () => {
+      document.body.style.setProperty("--v3-preview-blur", `${v3Config.themePreview.blurPx}px`);
+      retraceThemePreviews();
+    }
   });
 
   // Sync both live-editable pieces (colours + blur) to whatever

@@ -595,6 +595,24 @@ function buildIsolatedHeightmap(circles, islandConfig, maxExtraDistance = 0) {
   return { ...buildIslandHeightmap(circles, localBounds, islandConfig), localBounds };
 }
 
+// v3.7.38 bugfix -- the Medieval-effects hover clip's "hole" used the
+// wash's own exact (unblurred) shape, but the wash ELEMENT is blurred
+// (CSS filter, v3Config.themePreview.blurPx) -- Gaussian blur visually
+// spreads a shape's tint past its own `d` boundary without changing what
+// that `d` string says, so in the ring between the crisp clip edge and
+// the wash's own softened visual edge, wave-rings/coastal-bands sat
+// UNCLIPPED underneath the wash's still-visible (if fading) tint.
+// Confirmed directly, not guessed: setting --v3-preview-blur to 0px made
+// the artifact disappear completely (a perfectly crisp, fully-clipped
+// edge), confirming the clip GEOMETRY itself was already correct and
+// this was specifically a blur-vs-clip-edge mismatch. Fix: dilate the
+// hole a little further than the wash itself, by roughly the blur's own
+// visual spread, so the clip region fully contains wherever the wash's
+// blur could still be tinting anything.
+function clipMarginFor(blurPx) {
+  return Math.max(12, Math.round(blurPx * 2));
+}
+
 function traceIsolatedShape(circles, islandConfig, extraDistance = 0) {
   if (!circles.length) return "";
   const { cellSize, threshold } = islandConfig;
@@ -704,12 +722,27 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // together, same fused-via-max() trick the real section coastline
   // trace above already relies on) covers the halo wash and every real
   // sand/veg/peak level, same reasoning as the per-island version below.
-  const sectionPreviewHM = circles.length ? buildIsolatedHeightmap(circles, v3Config.island, v3Config.themePreview.sectionHaloPx) : null;
+  // Grid sized for sectionHaloPx + the hover-clip's own extra margin --
+  // see the matching per-island comment/clipMarginFor() for why.
+  const sectionClipMargin = clipMarginFor(v3Config.themePreview.blurPx);
+  // + 80: sea-depth bands need real room to close naturally -- see the
+  // matching per-island comment.
+  const sectionPreviewHM = circles.length ? buildIsolatedHeightmap(circles, v3Config.island, v3Config.themePreview.sectionHaloPx + sectionClipMargin + 80) : null;
+  const sectionPreviewDistanceField = sectionPreviewHM
+    ? buildCoastlineDistanceField(sectionPreviewHM.H, sectionPreviewHM.cols, sectionPreviewHM.rows, v3Config.island.cellSize, v3Config.island.threshold)
+    : null;
   const sectionThemePreviewD = sectionPreviewHM
     ? traceContourFromHeightmap(
-        buildCoastlineDistanceField(sectionPreviewHM.H, sectionPreviewHM.cols, sectionPreviewHM.rows, v3Config.island.cellSize, v3Config.island.threshold),
+        sectionPreviewDistanceField,
         sectionPreviewHM.cols, sectionPreviewHM.rows, v3Config.island.cellSize,
         sectionPreviewHM.localBounds, -v3Config.themePreview.sectionHaloPx
+      )
+    : "";
+  const sectionThemePreviewClipD = sectionPreviewHM
+    ? traceContourFromHeightmap(
+        sectionPreviewDistanceField,
+        sectionPreviewHM.cols, sectionPreviewHM.rows, v3Config.island.cellSize,
+        sectionPreviewHM.localBounds, -(v3Config.themePreview.sectionHaloPx + sectionClipMargin)
       )
     : "";
 
@@ -743,8 +776,15 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   const glowGroup = el("g", { class: "v3-section-glow-group" });
   glowGroup.appendChild(el("rect", { class: "v3-section-glow", x: band.x, y: band.y, width: band.width, height: band.height }));
   if (sectionShapeD) glowGroup.appendChild(el("path", { class: "v3-section-glow", d: sectionShapeD, "fill-rule": "evenodd" }));
-  if (sectionThemePreviewD) glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: sectionThemePreviewD, "fill-rule": "evenodd" }));
+  if (sectionThemePreviewD) glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: sectionThemePreviewD, "fill-rule": "evenodd", "data-clip-d": sectionThemePreviewClipD }));
   if (sectionPreviewHM) {
+    // Real sea-depth bands, section level (v3.7.38) -- see the matching
+    // per-island comment.
+    v3Config.island.seaBandThresholds.forEach((level, i) => {
+      const seaD = traceIsolatedShapeAtLevel(circles, v3Config.island, level, sectionPreviewHM.H, sectionPreviewHM.cols, sectionPreviewHM.rows, sectionPreviewHM.localBounds);
+      glowGroup.appendChild(el("path", { d: seaD, class: `v3-section-theme-preview-sea v3-section-theme-preview-sea-${i + 1}`, "fill-rule": "evenodd" }));
+    });
+
     // Mechanism 3, last piece, section level -- same reasoning and same
     // v3.7.37 z-order bugfix as the per-island version above: appended
     // AFTER the wash (sectionThemePreviewD, just above), not before --
@@ -846,7 +886,17 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       // THEME_PRESETS that these don't vary per theme, only
       // flatColourMode/showWaveRings/showCoastalBands/seaShadowStyle do --
       // so this reproduces the real band structure, not an approximation.
-      const previewHM = buildIsolatedHeightmap([c], v3Config.island, v3Config.themePreview.islandHaloPx);
+      // Grid sized for islandHaloPx + the hover-clip's own extra margin
+      // (clipMarginFor()) so BOTH the wash and the (larger) clip-hole
+      // traced from it fit safely inside this one heightmap build. + 80
+      // on top -- v3.7.38's sea-depth bands trace at seaBandThresholds,
+      // noticeably further from the coastline (in H, not px) than the
+      // halo/clip ever reach, so the local grid needs real extra room to
+      // let those contours close naturally rather than against the
+      // edge-forced boundary (see buildCoastlineDistanceField's own
+      // edge-forcing comment for what that would otherwise flatten).
+      const islandClipMargin = clipMarginFor(v3Config.themePreview.blurPx);
+      const previewHM = buildIsolatedHeightmap([c], v3Config.island, v3Config.themePreview.islandHaloPx + islandClipMargin + 80);
 
       const previewDistanceField = buildCoastlineDistanceField(
         previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold
@@ -855,7 +905,22 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
         previewDistanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize,
         previewHM.localBounds, -v3Config.themePreview.islandHaloPx
       );
-      link.appendChild(el("path", { d: themePreviewD, class: "v3-island-theme-preview", "fill-rule": "evenodd" }));
+      const themePreviewClipD = traceContourFromHeightmap(
+        previewDistanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize,
+        previewHM.localBounds, -(v3Config.themePreview.islandHaloPx + islandClipMargin)
+      );
+      link.appendChild(el("path", { d: themePreviewD, class: "v3-island-theme-preview", "fill-rule": "evenodd", "data-clip-d": themePreviewClipD }));
+
+      // Real sea-depth bands (v3.7.38) -- direct feedback: "sea contours
+      // arent visible." Same seaBandThresholds array real islands trace
+      // at (confirmed theme-invariant, same as sand/veg/peak), painted
+      // between the wash and the shadow -- same slot the real
+      // .v3-sea-band occupies relative to .v3-coast-outward-band/shadow
+      // in drawIslandsPath().
+      v3Config.island.seaBandThresholds.forEach((level, i) => {
+        const seaD = traceIsolatedShapeAtLevel([c], v3Config.island, level, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds);
+        link.appendChild(el("path", { d: seaD, class: `v3-island-theme-preview-sea v3-island-theme-preview-sea-${i + 1}`, "fill-rule": "evenodd" }));
+      });
 
       // Mechanism 3, last piece -- Topology's directional taper shadow,
       // isolated to this one island. Appended AFTER the halo wash above,
@@ -2545,8 +2610,12 @@ export function retraceIslands() {
 export function retraceThemePreviews() {
   if (!islandLayoutState) return;
   const stage = document.querySelector("#v3-stage");
-  const { islandHaloPx, sectionHaloPx } = v3Config.themePreview;
+  const { islandHaloPx, sectionHaloPx, blurPx } = v3Config.themePreview;
+  const clipMargin = clipMarginFor(blurPx);
+  // Same class-name pattern (v3-*-theme-preview-NAME-N) covers sea bands
+  // too (v3.7.38) -- one generic loop below handles all four groups.
   const bandLevels = () => [
+    ["sea", v3Config.island.seaBandThresholds],
     ["sand", v3Config.island.sandThresholds],
     ["veg", v3Config.island.vegThresholds],
     ["peak", v3Config.island.peakThresholds]
@@ -2556,11 +2625,12 @@ export function retraceThemePreviews() {
     const link = stage.querySelector(`.v3-island[data-id="${c.id}"]`);
     if (!link) return;
 
-    const previewHM = buildIsolatedHeightmap([c], v3Config.island, islandHaloPx);
+    const previewHM = buildIsolatedHeightmap([c], v3Config.island, islandHaloPx + clipMargin + 80);
     const halo = link.querySelector(".v3-island-theme-preview");
     if (halo) {
       const distanceField = buildCoastlineDistanceField(previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold);
       halo.setAttribute("d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -islandHaloPx));
+      halo.setAttribute("data-clip-d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -(islandHaloPx + clipMargin)));
     }
     bandLevels().forEach(([name, levels]) => {
       levels.forEach((level, i) => {
@@ -2593,11 +2663,12 @@ export function retraceThemePreviews() {
     const circles = grownBySection.get(sectionMeta.id) || [];
     if (!circles.length) return;
 
-    const previewHM = buildIsolatedHeightmap(circles, v3Config.island, sectionHaloPx);
+    const previewHM = buildIsolatedHeightmap(circles, v3Config.island, sectionHaloPx + clipMargin + 80);
     const halo = region.querySelector(".v3-section-theme-preview");
     if (halo) {
       const distanceField = buildCoastlineDistanceField(previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold);
       halo.setAttribute("d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -sectionHaloPx));
+      halo.setAttribute("data-clip-d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -(sectionHaloPx + clipMargin)));
     }
     bandLevels().forEach(([name, levels]) => {
       levels.forEach((level, i) => {
@@ -2676,7 +2747,10 @@ function setupMedievalEffectsHoverClip(stage) {
     const target = e.target.closest(".v3-island[data-id], .v3-section-link");
     if (!target) return;
     const previewEl = target.querySelector(".v3-island-theme-preview, .v3-section-theme-preview");
-    updateMedievalEffectsClip(previewEl ? previewEl.getAttribute("d") : "");
+    // v3.7.38 bugfix -- data-clip-d (dilated a bit further than the wash's
+    // own `d`) rather than `d` itself, so the clip fully covers wherever
+    // the wash's own blur could still be tinting -- see clipMarginFor().
+    updateMedievalEffectsClip(previewEl ? previewEl.getAttribute("data-clip-d") : "");
   });
   stage.addEventListener("pointerout", e => {
     const target = e.target.closest(".v3-island[data-id], .v3-section-link");

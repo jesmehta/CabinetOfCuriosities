@@ -81,6 +81,13 @@ body.v3-proto {
   --v3-preview-sand: #f2c94c;
   --v3-preview-veg: #4caf3f;
   --v3-preview-peak: #fff;
+  /* v3.7.38 -- Topology's own sea-depth bands were missing from the
+     preview entirely (only the flat halo wash stood in for the whole
+     sea side) -- direct feedback: "sea contours arent visible." Same
+     single token the real .v3-sea-band uses (--v3-sea-shallow), not a
+     deep/shallow split -- multiple opacity-stacked instances are what
+     create the depth gradient, same as the real map. */
+  --v3-preview-sea: #43d6d6;
   --v3-preview-blur: 8px;
 
   margin: 0;
@@ -985,6 +992,25 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   opacity: 1;
 }
 
+/* v3.7.38 -- real sea-depth bands (see .v3-preview-sea's own comment),
+   sitting on top of the halo wash but under the shadow/land bands --
+   same paint-order slot the real .v3-sea-band occupies relative to
+   .v3-coast-outward-band/shadow and the land bands in drawIslandsPath().
+   Crisp, no blur -- same "only the outer wash softens" logic as the land
+   bands. */
+.v3-island-theme-preview-sea {
+  fill: var(--v3-preview-sea);
+  fill-opacity: 0.24;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview-sea,
+.v3-island:focus-visible .v3-island-theme-preview-sea {
+  opacity: 1;
+}
+
 /* v3.7.34 -- real per-band preview fidelity, sitting on top of the
    blurred halo wash above. Crisp (no blur) on purpose: only the OUTER
    edge blending into the sea needs to soften, same visual logic the real
@@ -1263,6 +1289,21 @@ body[data-label-style="glow"] .v3-section-label {
 
 .v3-section-link:hover .v3-section-theme-preview,
 .v3-section-link:focus-visible .v3-section-theme-preview {
+  opacity: 0.85;
+}
+
+/* v3.7.38 -- real sea-depth bands, section level. Same reasoning as the
+   island-level rule above. */
+.v3-section-theme-preview-sea {
+  fill: var(--v3-preview-sea);
+  fill-opacity: 0.24;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview-sea,
+.v3-section-link:focus-visible .v3-section-theme-preview-sea {
   opacity: 0.85;
 }
 
