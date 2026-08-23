@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.37 -- Mechanism 3 complete for now: Topology's directional shadow swaps in on hover; default theme reverted to Medieval](#v3737----mechanism-3-complete-for-now-topologys-directional-shadow-swaps-in-on-hover-default-theme-reverted-to-medieval)
   - [v3.7.36 -- Mechanism 3, first slice: Medieval's own wave-rings/coastal-bands genuinely disappear on hover, not just get painted over](#v3736----mechanism-3-first-slice-medievals-own-wave-ringscoastal-bands-genuinely-disappear-on-hover-not-just-get-painted-over)
   - [v3.7.35 bugfix -- theme-preview sand band was camouflaged, coastline outline missing entirely](#v3735-bugfix----theme-preview-sand-band-was-camouflaged-coastline-outline-missing-entirely)
   - [v3.7.34 -- Theme preview grows real per-band fidelity (sand/veg/peak), plus a generalized sync fix](#v3734----theme-preview-grows-real-per-band-fidelity-sandvegpeak-plus-a-generalized-sync-fix)
@@ -96,7 +97,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.36** (domain warping for real concave coastlines,
+Currently on **v3.7.37** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -153,17 +154,31 @@ v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
--> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35 -> v3.7.36
+-> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35 -> v3.7.36 -> v3.7.37
 progression and why each pass changed what it did. Most recently
-(v3.7.36): the first real slice of "mechanism 3" proper -- hovering an
-island or section doesn't just overlay Topology's colours on top of
-Medieval's own wave-ring/coastal-band contours any more, it makes those
-Medieval-only decorations genuinely disappear within that hovered
-region, via a shared JS-driven clip-path (CSS `:hover` alone can style
-existing elements but can't construct a dynamic "everywhere except this
-shape" hole). Topology's own directional shadow swap within the region
-is the one piece of the original spec still open. Full detail, with a
-screenshot, in the changelog below. Before that (v3.7.35): two bugs in
+(v3.7.37): mechanism 3's last remaining piece -- Topology's own
+directional taper shadow, isolated to the hovered island/section, swaps
+in for Medieval's radial shadow within the hover region (both are now in
+the same clip-path's target list `v3.7.36` introduced). A real z-order
+bug caught before shipping, not after: the shadow was originally painted
+UNDER the halo wash, which is fully opaque in its interior, so it was
+completely invisible -- confirmed via an isolated diagnostic screenshot,
+fixed by reordering, not by guessing. At its real opacity (matching the
+live map's own shadow, 0.08 fill-opacity) the effect reads as genuinely
+subtle against the halo's saturated teal, a live open question flagged
+below rather than silently retuned. Also this round: dev tool's default
+theme reverted to Medieval Map (Topology stays the hover/preview target)
+now that this feature is the active focus, and confirmed (a follow-up
+test, not assumed) that section-level hover was ALSO already working
+correctly since v3.7.36 -- an earlier live check just happened to sample
+a hit-testing dead zone. Full detail, with screenshots, in the changelog
+below. Before that (v3.7.36): the first real slice of "mechanism 3"
+proper -- hovering an island or section doesn't just overlay Topology's
+colours on top of Medieval's own wave-ring/coastal-band contours any
+more, it makes those Medieval-only decorations genuinely disappear
+within that hovered region, via a shared JS-driven clip-path (CSS
+`:hover` alone can style existing elements but can't construct a dynamic
+"everywhere except this shape" hole). Before that (v3.7.35): two bugs in
 v3.7.34's new per-band preview, both caught live and fixed same-session
 -- the sand band was camouflaged (mapped to the same colour as the wash
 sitting directly underneath it) and the coastline outline had quietly
@@ -1447,6 +1462,84 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.37 -- Mechanism 3 complete for now: Topology's directional shadow swaps in on hover; default theme reverted to Medieval
+
+Direct approval and two follow-up requests together: "seems to work for
+Entries, not sure about Sections - also hard to figure since it could be
+just opacity and layering from my POV. Go ahead, work the rest, we'll
+debug when we get to it. Make Medieval the default again, since that's
+what we are working on."
+
+**Section-level hover, checked rather than assumed working.** The
+reported uncertainty was investigated directly before writing any new
+code: a first test hovered a genuinely empty hit-testing dead zone
+(confirmed via `elementFromPoint`), not a real gap in the mechanism.
+Re-tested against the section's own guaranteed-hit label-band rect --
+`.v3-medieval-effects-hole`'s `d` attribute updated correctly (a real,
+non-trivial shape, not an empty string), and a screenshot confirms wave
+rings genuinely absent across a whole section (two islands + connecting
+sea + label), while still visible on neighbouring sections:
+
+![Bookshelf of Curiosities fully hovered: both component islands, the connecting sea, and the label band all show the Topology preview together, with wave-ring contours absent inside the hovered region but visible around neighbouring sections](landing-v3/dev-screenshots/v3.7.36-mechanism3-section-hover-confirmed.png)
+
+**Default theme reverted.** `islands-tool.html`'s `data-theme` attribute
+back to `medieval-map` (was `satellite`/Topology, set in v3.7.27 when
+the active work was the Topology theme itself) -- direct request, "since
+that's what we are working on" now refers to the hover mechanism, whose
+resting state is Medieval.
+
+**Topology's directional shadow, isolated per island/section.** New
+`buildIsolatedShadowTaper()` mirrors `drawIslandsPath()`'s own
+directional-shadow algorithm exactly (same height-linear reach formula,
+same `copiesPerLevel`/`baseReach`/`maxReach`/`levelStagger` constants --
+see that block's own extensive comment for the reasoning), just tracing
+circles' isolated heightmap (`buildIsolatedHeightmap()`, already shared
+with the band/halo tracing) instead of the whole canvas's. Needs its own
+isolated `<filter filterUnits="userSpaceOnUse">` per island/section, for
+the exact same reason the real shadow needed one (v3.7.24's bugfix,
+re-applied here rather than re-discovered) -- CSS `filter: blur()`
+region auto-computation is unreliable for many overlapping,
+individually-transformed children. `.v3-sea-shadow-radial`/
+`.v3-sea-shadow-taper` (Medieval's and Topology's own shadow styles) are
+now both in `#v3-medieval-effects-clip`'s target list alongside the
+wave-ring/coastal-band layers v3.7.36 added, so Medieval's shadow is
+clipped away in the SAME hovered region Topology's replaces it in --
+a swap, not an addition on top.
+
+**A real z-order bug, caught before shipping.** First pass painted the
+shadow group UNDER the halo wash (matching the real shadow's own "under
+the land fill" comment literally) -- but that wash is fully OPAQUE in
+its interior (blur softens only the edge, not interior alpha), so the
+shadow was completely invisible underneath it. Confirmed via an isolated
+diagnostic (hid every other preview layer, temporarily boosted the
+shadow's own opacity to 0.9) before concluding it was a real bug and not
+just "too subtle to see":
+
+![The same directional taper shadow, other preview layers hidden and opacity temporarily boosted for diagnosis -- confirms real, correctly-shaped geometry, offset toward the shadow's configured SW direction](landing-v3/dev-screenshots/v3.7.37-mechanism3-shadow-taper-isolated-diagnostic.png)
+
+Fixed by reordering: shadow now appended AFTER the halo wash, BEFORE the
+land bands -- the correct equivalent of "under the land, over the sea"
+in a stack where the wash itself stands in for "the sea."
+
+**Open, not silently resolved:** at the shadow's REAL opacity (0.08
+fill-opacity, matching the live map's own value exactly, not retuned),
+the effect reads as quite subtle against the halo's saturated teal --
+confirmed genuinely present and correctly shaped (see the diagnostic
+above), just faint in normal viewing. Left at the real value rather than
+boosted unilaterally, since "reads as the same shadow" was the explicit
+goal; whether it should be more visible in this specific context is a
+live design question, not resolved here.
+
+**Also verified, not assumed:** an indirect Topological-offset slider
+(not a theme-preview control) correctly updates a shadow copy's `d`
+attribute -- the same `retraceThemePreviews()`-folded-into-
+`retraceIslands()` sync mechanism (v3.7.34) already covers this new
+geometry too, no separate wiring needed. (A first check of this
+appeared to fail -- querying the WRONG shadow copy by index, the
+coastline-level one rather than a sand-level one, which is genuinely
+unaffected by a sand-threshold slider -- corrected before concluding
+anything was broken.)
 
 ### v3.7.36 -- Mechanism 3, first slice: Medieval's own wave-rings/coastal-bands genuinely disappear on hover, not just get painted over
 

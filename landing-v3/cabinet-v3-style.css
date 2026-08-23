@@ -841,12 +841,15 @@ body[data-label-style="glow"] .v3-compass-direction-label {
    moves to whichever island/section is currently hovered -- applying it
    here means these three layers vanish inside that hole and stay fully
    visible everywhere else, with no per-element clip-path bookkeeping.
-   Shadow layers deliberately NOT included yet -- swapping Medieval's
-   shadow for Topology's directional taper within the region is a
-   separate, larger piece, still open. */
+   v3.7.37 -- extended to both shadow classes too, now that
+   .v3-island-theme-preview-shadow/.v3-section-theme-preview-shadow exist
+   to replace what's clipped away with Topology's own directional taper
+   instead of just removing Medieval's shadow and leaving a gap. */
 .v3-wave-ring,
 .v3-coast-outward-band,
-.v3-coast-inward-band {
+.v3-coast-inward-band,
+.v3-sea-shadow-radial,
+.v3-sea-shadow-taper {
   clip-path: url(#v3-medieval-effects-clip);
 }
 
@@ -927,6 +930,30 @@ body[data-label-style="glow"] .v3-compass-direction-label {
 .v3-island:hover .v3-island-glow,
 .v3-island:focus-visible .v3-island-glow {
   opacity: 0.65;
+}
+
+/* v3.7.37 -- mechanism 3's last piece: Topology's own directional taper
+   shadow, isolated to one island, painted first/underneath (see
+   buildIsolatedShadowTaper()'s own comment in cabinet-v3-layout.js).
+   Same fill/opacity as the real .v3-sea-shadow-taper-copy -- reads as
+   the same shadow, just isolated and theme-swapped. No separate blur
+   here -- the group carries its own SVG filter (filter attribute, set in
+   JS) rather than a CSS class, same "explicit filterUnits, no
+   auto-bounding-box guesswork" fix the real shadow needed. */
+.v3-island-theme-preview-shadow-copy {
+  fill: #000;
+  fill-opacity: 0.08;
+}
+
+.v3-island-theme-preview-shadow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview-shadow,
+.v3-island:focus-visible .v3-island-theme-preview-shadow {
+  opacity: 1;
 }
 
 /* Theme-preview-on-hover prototype (Part A: colour only, no band/wave/
@@ -1197,6 +1224,24 @@ body[data-label-style="glow"] .v3-section-label {
 .v3-section-link:hover .v3-section-glow,
 .v3-section-link:focus-visible .v3-section-glow {
   opacity: 0.22;
+}
+
+/* v3.7.37 -- mechanism 3's last piece, section level. Same reasoning as
+   the island-level rules above. */
+.v3-section-theme-preview-shadow-copy {
+  fill: #000;
+  fill-opacity: 0.08;
+}
+
+.v3-section-theme-preview-shadow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview-shadow,
+.v3-section-link:focus-visible .v3-section-theme-preview-shadow {
+  opacity: 0.85;
 }
 
 /* Theme-preview-on-hover prototype (Part A), section level -- same

@@ -2076,6 +2076,42 @@ Still open from the original spec: Topology's directional shadow doesn't
 yet replace Medieval's own shadow within the hovered region -- a
 separate, larger computation than clipping away contour lines.
 
+Confirmed working for entries, real uncertainty raised about sections
+rather than a bug report stated as fact: **"seems to work for Entries,
+not sure about Sections - also hard to figure since it could be just
+opacity and layering from my POV. Go ahead, work the rest, we'll debug
+when we get to it. Make Medieval the default again, since that's what we
+are working on."** Investigated directly rather than assumed either way
+-- a first test happened to hover a genuine hit-testing dead zone
+(confirmed via `elementFromPoint`), not a real gap; re-tested against
+the section's own guaranteed-hit label-band rect and confirmed it was
+already working correctly since the previous round.
+
+![Bookshelf of Curiosities fully hovered -- both islands, the connecting sea, and the label band together, wave rings absent inside, visible on neighbouring sections](landing-v3/dev-screenshots/v3.7.36-mechanism3-section-hover-confirmed.png)
+
+Default theme reverted (`islands-tool.html`'s `data-theme`, satellite ->
+medieval-map) per the direct request above.
+
+"The rest" -- Topology's directional shadow swapping in for Medieval's
+own within the hovered region, the one piece of the original spec still
+open. Built by isolating the real shadow's own algorithm to one
+island/section's own heightmap (already shared with the band/halo
+tracing), needing its own isolated blur filter for the same reason the
+real shadow once did (v3.7.24's bugfix, reapplied not rediscovered). A
+real z-order bug surfaced before shipping: the shadow painted UNDER the
+halo wash first, which is fully opaque in its interior, so it was
+completely invisible -- confirmed via an isolated diagnostic (every
+other layer hidden, shadow opacity temporarily boosted) before
+concluding it was a real bug, not "too subtle to see":
+
+![The isolated shadow taper, other layers hidden and opacity boosted for diagnosis -- real, correctly-shaped geometry, confirming the bug was z-order, not missing geometry](landing-v3/dev-screenshots/v3.7.37-mechanism3-shadow-taper-isolated-diagnostic.png)
+
+Fixed by reordering (shadow after the wash, before the bands). Left open
+rather than silently retuned: at the shadow's real opacity (matching the
+live map's own value exactly), the effect reads as quite subtle against
+the halo's saturated teal -- a genuine design question about this
+specific context, not resolved here.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

@@ -621,6 +621,47 @@ function traceIsolatedShapeAtLevel(circles, islandConfig, level, H, cols, rows, 
   return traceContourFromHeightmap(H, cols, rows, islandConfig.cellSize, localBounds, level);
 }
 
+// Mechanism 3, last piece: Topology's directional taper shadow, isolated
+// to one island/section for the theme-preview overlay -- same algorithm
+// as drawIslandsPath()'s own directional-shadow block (see that block's
+// own extensive comment for the height-linear reach formula and why it
+// looks the way it does), just tracing circles' own isolated heightmap
+// instead of the whole canvas's. Deliberately NOT theme-aware beyond
+// this: always builds Topology's directional style regardless of what
+// v3Config.themePreview.previewTheme is actually set to (THEME_PRESETS,
+// which maps a theme to radial/directional, lives in
+// cabinet-v3-controls.js's closure, not reachable from here) -- correct
+// for the feature's real purpose (previewing Topology specifically), a
+// known gap if the preview theme is ever pointed at a radial-shadow
+// theme instead, not silently pretended otherwise.
+function buildIsolatedShadowTaper(circles, islandConfig, previewHM, angleDeg) {
+  if (!circles.length) return [];
+  const { threshold, sandThresholds, vegThresholds, peakThresholds, cellSize } = islandConfig;
+  const taperLevels = [threshold, ...(sandThresholds || []), ...(vegThresholds || []), ...(peakThresholds || [])];
+  const heights = taperLevels.map(level => Math.max(0, level - threshold));
+  const maxHeight = Math.max(1e-6, ...heights);
+  const rad = (angleDeg * Math.PI) / 180;
+  const sdx = Math.cos(rad);
+  const sdy = Math.sin(rad);
+  const copiesPerLevel = 4;
+  const baseReach = 8;
+  const maxReach = 46;
+  const levelStagger = 1.5;
+
+  const copies = [];
+  taperLevels.forEach((level, li) => {
+    const d = traceContourFromHeightmap(previewHM.H, previewHM.cols, previewHM.rows, cellSize, previewHM.localBounds, level);
+    const reach = baseReach + (heights[li] / maxHeight) * (maxReach - baseReach);
+    const start = 3 + li * levelStagger;
+    const step = Math.max(0.5, (reach - start) / (copiesPerLevel - 1));
+    for (let c = 0; c < copiesPerLevel; c++) {
+      const dist = start + c * step;
+      copies.push({ d, transform: `translate(${(sdx * dist).toFixed(2)},${(sdy * dist).toFixed(2)})` });
+    }
+  });
+  return copies;
+}
+
 function renderRegion(stage, region, band, label, sectionMeta, circles) {
   const group = el("g", { class: "v3-region", "data-section": sectionMeta.id });
 
@@ -704,6 +745,28 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   if (sectionShapeD) glowGroup.appendChild(el("path", { class: "v3-section-glow", d: sectionShapeD, "fill-rule": "evenodd" }));
   if (sectionThemePreviewD) glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: sectionThemePreviewD, "fill-rule": "evenodd" }));
   if (sectionPreviewHM) {
+    // Mechanism 3, last piece, section level -- same reasoning and same
+    // v3.7.37 z-order bugfix as the per-island version above: appended
+    // AFTER the wash (sectionThemePreviewD, just above), not before --
+    // that wash is fully opaque in its interior, so painting the shadow
+    // underneath it hid the shadow completely.
+    const shadowFilterId = `v3-section-shadow-blur-${sectionMeta.id}`;
+    const shadowDefs = el("defs");
+    const shadowFilter = el("filter", { id: shadowFilterId, filterUnits: "userSpaceOnUse" });
+    shadowFilter.appendChild(el("feGaussianBlur", { stdDeviation: 1.5 }));
+    shadowDefs.appendChild(shadowFilter);
+    const { x: sfx, y: sfy, width: sfw, height: sfh } = sectionPreviewHM.localBounds;
+    shadowFilter.setAttribute("x", sfx);
+    shadowFilter.setAttribute("y", sfy);
+    shadowFilter.setAttribute("width", sfw);
+    shadowFilter.setAttribute("height", sfh);
+    glowGroup.appendChild(shadowDefs);
+    const shadowGroup = el("g", { class: "v3-section-theme-preview-shadow", filter: `url(#${shadowFilterId})` });
+    buildIsolatedShadowTaper(circles, v3Config.island, sectionPreviewHM, v3Config.island.seaShadowAngleDeg).forEach(({ d, transform }) => {
+      shadowGroup.appendChild(el("path", { class: "v3-section-theme-preview-shadow-copy", "fill-rule": "evenodd", d, transform }));
+    });
+    glowGroup.appendChild(shadowGroup);
+
     [
       ["sand", v3Config.island.sandThresholds],
       ["veg", v3Config.island.vegThresholds],
@@ -784,6 +847,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       // flatColourMode/showWaveRings/showCoastalBands/seaShadowStyle do --
       // so this reproduces the real band structure, not an approximation.
       const previewHM = buildIsolatedHeightmap([c], v3Config.island, v3Config.themePreview.islandHaloPx);
+
       const previewDistanceField = buildCoastlineDistanceField(
         previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold
       );
@@ -792,6 +856,43 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
         previewHM.localBounds, -v3Config.themePreview.islandHaloPx
       );
       link.appendChild(el("path", { d: themePreviewD, class: "v3-island-theme-preview", "fill-rule": "evenodd" }));
+
+      // Mechanism 3, last piece -- Topology's directional taper shadow,
+      // isolated to this one island. Appended AFTER the halo wash above,
+      // not before -- v3.7.37 bugfix: an EARLIER version painted this
+      // first/underneath the wash (matching the real shadow's own "under
+      // the land fill, only the spill into open water shows" ordering),
+      // but that wash is fully OPAQUE in its interior (blur softens only
+      // the EDGE, not the interior alpha), so the shadow was completely
+      // hidden underneath it -- confirmed by an empty-looking hover
+      // screenshot before this fix, not assumed. Between the wash and the
+      // land bands (sand/veg/peak, appended next) is the correct
+      // equivalent slot: still under the "land," visible over the "sea."
+      // Same "swap Medieval's shadow for Topology's, not just add
+      // Topology's on top of it" goal as before (Medieval's own shadow is
+      // clipped away by setupMedievalEffectsHoverClip -- see
+      // .v3-sea-shadow-radial/.v3-sea-shadow-taper in the clip's target
+      // list, cabinet-v3-style.css). Own isolated blur filter, same
+      // filterUnits="userSpaceOnUse" + bounds-sized-region fix the real
+      // shadow needed for the exact same reason (see that block's own
+      // v3.7.24 bugfix comment) -- sized to previewHM.localBounds instead
+      // of the whole canvas.
+      const shadowFilterId = `v3-island-shadow-blur-${c.id}`;
+      const shadowDefs = el("defs");
+      const shadowFilter = el("filter", { id: shadowFilterId, filterUnits: "userSpaceOnUse" });
+      shadowFilter.appendChild(el("feGaussianBlur", { stdDeviation: 1.5 }));
+      shadowDefs.appendChild(shadowFilter);
+      const { x: sfx, y: sfy, width: sfw, height: sfh } = previewHM.localBounds;
+      shadowFilter.setAttribute("x", sfx);
+      shadowFilter.setAttribute("y", sfy);
+      shadowFilter.setAttribute("width", sfw);
+      shadowFilter.setAttribute("height", sfh);
+      link.appendChild(shadowDefs);
+      const shadowGroup = el("g", { class: "v3-island-theme-preview-shadow", filter: `url(#${shadowFilterId})` });
+      buildIsolatedShadowTaper([c], v3Config.island, previewHM, v3Config.island.seaShadowAngleDeg).forEach(({ d, transform }) => {
+        shadowGroup.appendChild(el("path", { class: "v3-island-theme-preview-shadow-copy", "fill-rule": "evenodd", d, transform }));
+      });
+      link.appendChild(shadowGroup);
 
       [
         ["sand", v3Config.island.sandThresholds],
@@ -2469,6 +2570,16 @@ export function retraceThemePreviews() {
     });
     const coastline = link.querySelector(".v3-island-theme-preview-coastline");
     if (coastline) coastline.setAttribute("d", traceIsolatedShapeAtLevel([c], v3Config.island, v3Config.island.threshold, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
+
+    const shadowCopies = link.querySelectorAll(".v3-island-theme-preview-shadow-copy");
+    if (shadowCopies.length) {
+      const fresh = buildIsolatedShadowTaper([c], v3Config.island, previewHM, v3Config.island.seaShadowAngleDeg);
+      shadowCopies.forEach((node, i) => {
+        if (!fresh[i]) return;
+        node.setAttribute("d", fresh[i].d);
+        node.setAttribute("transform", fresh[i].transform);
+      });
+    }
   });
 
   const grownBySection = new Map();
@@ -2496,6 +2607,16 @@ export function retraceThemePreviews() {
     });
     const coastline = region.querySelector(".v3-section-theme-preview-coastline");
     if (coastline) coastline.setAttribute("d", traceIsolatedShapeAtLevel(circles, v3Config.island, v3Config.island.threshold, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
+
+    const shadowCopies = region.querySelectorAll(".v3-section-theme-preview-shadow-copy");
+    if (shadowCopies.length) {
+      const fresh = buildIsolatedShadowTaper(circles, v3Config.island, previewHM, v3Config.island.seaShadowAngleDeg);
+      shadowCopies.forEach((node, i) => {
+        if (!fresh[i]) return;
+        node.setAttribute("d", fresh[i].d);
+        node.setAttribute("transform", fresh[i].transform);
+      });
+    }
   });
 }
 
