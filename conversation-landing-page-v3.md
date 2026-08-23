@@ -2545,6 +2545,103 @@ worked, no JavaScript involved at all -- a different kind of mechanism
 entirely from an animation loop, wrongly lumped in by association
 rather than by actually checking.
 
+## "Hold 37, 21 and 29 are a go, and I want to see the transition before the switch version" -- four small items, one real bug found along the way
+
+A "quick fun / trivial stuff" request: clarifying questions on `#21`
+(compass-click theme swap), `#29` (compass rotation), and `#37` (label
+overflow), plus a status check on `#41`, before moving on to the
+multi-repo deployment trial.
+
+The clarifying round surfaced real geometry to resolve, not just
+preference. For `#29`'s trigger, the direct concern was spatial, not
+about hover-vs-click as a mechanism: **"hover triggered but can it be
+triggered by mouse being over the ring specifically, or at a certain
+distance from the centre, etc? We're doing the theme swap by clicking on
+the inner circle, I dont want to overload the compass centre too
+much."** The compass rose SVG already has a natural answer to this: two
+concentric layers built into the artwork itself (a small inner ring
+motif, and the full 8-pointed star reaching to the arm tips), so the two
+gestures could be zoned by radius with zero overlap by construction --
+proposed and confirmed before writing any code.
+
+`#21`'s scope answer trimmed the theme cycle to exactly what was asked
+("The first is fine but I am curios about how the 2nd would look? All 9
+is out of the question though") -- Medieval/Topology only, not all nine
+dev-tool presets, but genuinely curious whether the swap should be an
+instant snap or a cross-fade rather than settling for a description.
+That curiosity became the actual build order: **"hold 37, 21 and 29 are
+a go, and I want to see the transition before the switch version"** --
+ship the fade first, live, before choosing between it and instant.
+
+A second bug arrived out of band, mid-implementation: **"Also 60, and
+also the text at the bottom of the page is invisible in Medieval since
+colours are the same/close enough."** Diagnosis was fast because the
+shape was already on record: `.v3-footnote` used the same
+`--cab-land-light` token that caused the v3.7.23 H1 bug, just missed
+from that pass. Fixed by folding it into the same medieval-map override
+-- at the time, still scoped as a one-theme fix.
+
+`#37` got the concrete-example treatment it asked for rather than a
+guess: a Playwright script screenshotted every candidate label at
+interior region seams. Most turned out fine -- Circle Packing Library,
+Doors of Kutch, Christie, and 100 Gradients all sit cleanly inside their
+own coastlines. One genuine case survived: `History & Approach` /
+`Research & Interests`, the tightly-packed 3-island Teaching cluster,
+where the label text visibly crosses into the neighbouring island.
+Shown, then held per the "hold 37" instruction -- no fix chosen yet.
+
+`#60` (sticky header) turned out to need no JS at all: `position:
+sticky` doesn't remove an element from document flow, so
+`resolveCanvasDimensions()`'s measurement of where `.v3-stage-wrap`
+starts stays correct without any code change on the layout side. The
+only real decision was what to paint behind it once content could
+scroll underneath -- the header had never had an explicit background,
+just an implicit browser-default white inherited from nothing setting
+one -- made explicit as `#fff` rather than picking a new colour.
+
+That explicit white background is what turned the one-theme footnote
+fix into a bigger one. Verifying `#21`'s swap live (Playwright,
+clicking the new compass hit-circle and screenshotting the settled
+Topology state) showed the H1 and subtitle rendering pale-beige against
+the white header -- readable, but low-contrast, on a theme nobody had
+asked to fix. The same `--cab-land-light` token, still defaulted for
+every theme except medieval-map's one-off override, "sized for the
+dark-sea themes... this text sits directly on the page's own sea
+background" per a comment written back when the header briefly overlaid
+the canvas (v3.6.10) -- an assumption that stopped being true the moment
+v3.6.12 put the header back in normal flow, but nothing had ever
+actually surfaced it until a second theme became reachable on the
+production page for the first time. `--v3-ink` -- already dark and
+theme-correct on every preset, being the map's own text-ink token --
+replaced it as the default for h1/subtitle/footnote alike, which also
+made the medieval-only override redundant; removed rather than left as
+dead weight.
+
+The compass geometry itself came together cleanly once proposed:
+`.v3-compass-theme-hit` (small, centre, click) and
+`.v3-compass-spin-hit` (large, ring, hover) as two plain concentric
+circles, ordered so the smaller one's later paint-order naturally wins
+hit-testing over the larger one beneath it -- no evenodd/annulus SVG
+math needed. The rose's star artwork moved into its own nested group,
+`.v3-compass-rose-spin`, so `#29`'s hover-triggered rotation
+(`transform-box: fill-box` centring the spin on the group's own
+geometry) wouldn't have to fight `roseGroup`'s existing translate/scale
+positioning transform. One thing flagged rather than silently built:
+the original `#29` request also asked for "the diagonals radiating from
+its centre" to rotate along with the arms -- those diagonals (the
+lat/long grid's own ordinal rays, drawn separately in `render()`) don't,
+in this pass. Only the rose graphic itself spins.
+
+`#41`'s status answer, meanwhile, turned out to be more than a progress
+check: the map's own section taxonomy
+(`bookshelf`/`fffx`/`teaching`/`visual-field-notes`/`machines-makings`/
+`interfaces-data-texts`) doesn't match `mkdocs.yml`'s pre-v3 nav
+categories (`Thingamajigs`, `Wild wild web`) at all, and two whole
+sections -- `teaching` and `visual-field-notes` -- have zero
+representation in that nav despite `cabinet-entries.tsv` entries
+pointing at pages meant to live under it. Not started; real
+reconciliation work, not a rename.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
