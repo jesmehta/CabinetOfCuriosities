@@ -150,7 +150,14 @@ export const v3Config = {
   // instead of 1 / 85) -- numerically identical, JS doesn't care which
   // form a number literal is written in, nothing to fix.
   island: {
-    cellSize: 4,
+    // v3.7.11 -- 4 -> 3: direct request for more accurate coastline
+    // offsets (wave rings, the coast-hugging bands/shadow below) now that
+    // the resolution/speed tradeoff is confirmed build-time-only (see
+    // buildCoastlineDistanceField()'s own comment in
+    // cabinet-v3-islandshape.js) -- the static index.html page pays
+    // nothing for this, only islands-tool.html's live retrace and the
+    // one-time `node build-static.mjs` run get slower.
+    cellSize: 3,
     noiseScale: 1 / 26,
     octaves: 3,
     lacunarity: 2,
