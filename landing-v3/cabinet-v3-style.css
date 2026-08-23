@@ -68,7 +68,13 @@ body.v3-proto {
      previews, updates the hover effect too, with no separate "preview
      colour" editor and no risk of these two colour sets drifting apart. */
   --v3-preview-ink: #0d2436;
-  --v3-preview-land: #f2c94c;
+  /* v3.7.35 -- the OUTER halo wash, past the coastline into the sea, not
+     land -- was wrongly Topology's sand tone (same source as the real
+     sand band painted on top of it, so the sand band was invisible:
+     identical colour, opaque wash directly underneath). Topology's own
+     shallow-sea tone instead, direct feedback: "sand is either not
+     happenning or more likely hidden under the yellow blob." */
+  --v3-preview-land: #43d6d6;
   /* v3.7.34 -- Topology's own sand/veg/peak, for real per-band preview
      fidelity (see .v3-island-theme-preview-sand/-veg/-peak below)
      instead of the one flat --v3-preview-land wash alone. */
@@ -968,12 +974,30 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   transition: opacity var(--cab-transition-fast);
 }
 
+/* v3.7.35 -- the real coastline boundary, on top of the bands. The wash
+   (.v3-island-theme-preview above) is deliberately unstroked/blurred and
+   never traced a crisp boundary of its own; once real bands existed
+   there was nothing marking the island's actual edge at all -- direct
+   feedback: "the coastal outline isnt there as well." Matches the real
+   .v3-coastline-outline's own fill:none/stroke-width:1.2 treatment,
+   unblurred (only the outer sea-halo wash softens). */
+.v3-island-theme-preview-coastline {
+  fill: none;
+  stroke: var(--v3-preview-ink);
+  stroke-width: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
 .v3-island:hover .v3-island-theme-preview-sand,
 .v3-island:focus-visible .v3-island-theme-preview-sand,
 .v3-island:hover .v3-island-theme-preview-veg,
 .v3-island:focus-visible .v3-island-theme-preview-veg,
 .v3-island:hover .v3-island-theme-preview-peak,
-.v3-island:focus-visible .v3-island-theme-preview-peak {
+.v3-island:focus-visible .v3-island-theme-preview-peak,
+.v3-island:hover .v3-island-theme-preview-coastline,
+.v3-island:focus-visible .v3-island-theme-preview-coastline {
   opacity: 1;
 }
 
@@ -1211,12 +1235,25 @@ body[data-label-style="glow"] .v3-section-label {
   transition: opacity var(--cab-transition-fast);
 }
 
+/* v3.7.35 -- real coastline boundary, section level. Same gap/fix as the
+   island-level rule above. */
+.v3-section-theme-preview-coastline {
+  fill: none;
+  stroke: var(--v3-preview-ink);
+  stroke-width: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
 .v3-section-link:hover .v3-section-theme-preview-sand,
 .v3-section-link:focus-visible .v3-section-theme-preview-sand,
 .v3-section-link:hover .v3-section-theme-preview-veg,
 .v3-section-link:focus-visible .v3-section-theme-preview-veg,
 .v3-section-link:hover .v3-section-theme-preview-peak,
-.v3-section-link:focus-visible .v3-section-theme-preview-peak {
+.v3-section-link:focus-visible .v3-section-theme-preview-peak,
+.v3-section-link:hover .v3-section-theme-preview-coastline,
+.v3-section-link:focus-visible .v3-section-theme-preview-coastline {
   opacity: 0.85;
 }
 

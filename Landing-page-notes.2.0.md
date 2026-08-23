@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.35 bugfix -- theme-preview sand band was camouflaged, coastline outline missing entirely](#v3735-bugfix----theme-preview-sand-band-was-camouflaged-coastline-outline-missing-entirely)
   - [v3.7.34 -- Theme preview grows real per-band fidelity (sand/veg/peak), plus a generalized sync fix](#v3734----theme-preview-grows-real-per-band-fidelity-sandvegpeak-plus-a-generalized-sync-fix)
   - [v3.7.33 bugfix -- Island/Section halo sliders were a silent no-op at any value](#v3733-bugfix----islandsection-halo-sliders-were-a-silent-no-op-at-any-value)
   - [v3.7.32 -- Theme x hover, Part A: a real colour-preview prototype, plus the theme roster narrowed toward Medieval + Topology](#v3732----theme-x-hover-part-a-a-real-colour-preview-prototype-plus-the-theme-roster-narrowed-toward-medieval--topology)
@@ -94,7 +95,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.34** (domain warping for real concave coastlines,
+Currently on **v3.7.35** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -151,9 +152,16 @@ v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
--> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34
+-> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35
 progression and why each pass changed what it did. Most recently
-(v3.7.34): the theme-preview overlay grew real per-band fidelity -- a
+(v3.7.35): two bugs in v3.7.34's new per-band preview, both caught live
+and fixed same-session -- the sand band was camouflaged (mapped to the
+same colour as the wash sitting directly underneath it) and the
+coastline outline had quietly gone missing once real bands were added
+(the wash's own stroke was deliberately dropped a version earlier for a
+different reason). Full detail, with a before/after screenshot, in the
+changelog below. Before that (v3.7.34): the theme-preview overlay grew
+real per-band fidelity -- a
 hovered island/section now previews its ACTUAL sand/veg/peak contours at
 Topology's colours (traced at the same shared thresholds every real
 island uses, not an approximation), not one flat wash. Also fixed the
@@ -1430,6 +1438,49 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.35 bugfix -- theme-preview sand band was camouflaged, coastline outline missing entirely
+
+Direct report against v3.7.34's real per-band fidelity: "Some layers of
+the vegetation are visible but sand is either not happenning or more
+likely hidden under the yellow blob. But the coastal outline isnt there
+as well."
+
+The bug, reconstructed on the live (now-fixed) page for the record
+rather than only described -- both screenshots are the SAME island,
+same mechanism, only the two broken values changed back:
+
+![v3.7.34, broken: Golden Age SciFi hovered shows an opaque yellow blob with vegetation faintly visible inside it, no distinct sand band, and no coastline outline at all](landing-v3/dev-screenshots/v3.7.34-theme-preview-sand-camouflaged-bug.png)
+
+![v3.7.35, fixed: the same island hovered shows a teal sea halo, a visible yellow sand band, a green vegetation band, and a dark coastline outline, all distinct from each other](landing-v3/dev-screenshots/v3.7.35-theme-preview-band-fidelity-fixed.png)
+
+Two separate root causes, both confirmed by inspection before fixing:
+
+1. **Sand camouflage.** `applyThemePreviewTokens()` mapped BOTH
+   `--v3-preview-land` (the outer halo wash) and `--v3-preview-sand` (the
+   real sand band painted on top of it) to the same source value,
+   `themeTokenState[...]["--v3-sand"]`. An opaque wash and a band the
+   exact same colour sitting directly on top of it are visually
+   indistinguishable regardless of z-order -- the veg band was visible
+   because it's a different hue (green) against the wash, sand wasn't
+   because it's the identical hue. Remapped `--v3-preview-land` to
+   `--v3-sea-shallow` instead -- the halo is conceptually sea past the
+   coastline, not land, so this is also a more accurate mapping, not just
+   a fix for the collision.
+2. **Missing coastline.** v3.7.32 deliberately dropped the preview's
+   stroke when the blur/edge-softening feedback landed ("the edges need
+   to be blurred... not a hard outline"), which was correct for the OUTER
+   halo wash, but meant nothing ever traced the island's actual boundary
+   once real bands existed inside it. Added
+   `.v3-island-theme-preview-coastline`/`.v3-section-theme-preview-coastline`
+   -- `traceIsolatedShapeAtLevel()` at the real coastline threshold,
+   reusing the same shared heightmap the halo/bands already built,
+   unblurred (matching the real `.v3-coastline-outline`'s own
+   `stroke-width: 1.2`) so it stays crisp on top of the softer wash.
+
+Both new elements are kept in sync by the same `retraceThemePreviews()`
+fold-into-`retraceIslands()` mechanism v3.7.34 already established, so
+no new sync gap was introduced.
 
 ### v3.7.34 -- Theme preview grows real per-band fidelity (sand/veg/peak), plus a generalized sync fix
 

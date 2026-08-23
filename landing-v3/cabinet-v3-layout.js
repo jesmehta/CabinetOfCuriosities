@@ -718,6 +718,14 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
         );
       });
     });
+    // Real coastline outline(s), section level -- same "wash alone never
+    // traced a boundary" gap as islands above, fixed the same way: trace
+    // this section's circles at the real coastline threshold (not
+    // dilated), reusing sectionPreviewHM instead of a fresh heightmap.
+    const previewCoastlineD = traceIsolatedShapeAtLevel(
+      circles, v3Config.island, v3Config.island.threshold, sectionPreviewHM.H, sectionPreviewHM.cols, sectionPreviewHM.rows, sectionPreviewHM.localBounds
+    );
+    glowGroup.appendChild(el("path", { d: previewCoastlineD, class: "v3-section-theme-preview-coastline", "fill-rule": "evenodd" }));
   }
   sectionLink.appendChild(glowGroup);
 
@@ -799,6 +807,19 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
           );
         });
       });
+
+      // Real coastline outline, on top of the bands -- direct feedback:
+      // "the coastal outline isnt there as well." The wash above (halo)
+      // is deliberately unstroked (v3.7.32, blur handles its edge
+      // instead), so once real bands got added there was nothing tracing
+      // the island's actual boundary at all. traceIsolatedShapeAtLevel at
+      // the real threshold, reusing the SAME shared heightmap rather than
+      // a fresh trace -- same shape islandD already holds, just sourced
+      // from previewHM instead of a separate call.
+      const previewCoastlineD = traceIsolatedShapeAtLevel(
+        [c], v3Config.island, v3Config.island.threshold, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds
+      );
+      link.appendChild(el("path", { d: previewCoastlineD, class: "v3-island-theme-preview-coastline", "fill-rule": "evenodd" }));
 
       link.appendChild(el("path", { d: islandD, class: "v3-island-hit", "fill-rule": "evenodd" }));
       link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
@@ -2446,6 +2467,8 @@ export function retraceThemePreviews() {
         if (band) band.setAttribute("d", traceIsolatedShapeAtLevel([c], v3Config.island, level, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
       });
     });
+    const coastline = link.querySelector(".v3-island-theme-preview-coastline");
+    if (coastline) coastline.setAttribute("d", traceIsolatedShapeAtLevel([c], v3Config.island, v3Config.island.threshold, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
   });
 
   const grownBySection = new Map();
@@ -2471,6 +2494,8 @@ export function retraceThemePreviews() {
         if (band) band.setAttribute("d", traceIsolatedShapeAtLevel(circles, v3Config.island, level, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
       });
     });
+    const coastline = region.querySelector(".v3-section-theme-preview-coastline");
+    if (coastline) coastline.setAttribute("d", traceIsolatedShapeAtLevel(circles, v3Config.island, v3Config.island.threshold, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
   });
 }
 

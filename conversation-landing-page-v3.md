@@ -1875,14 +1875,14 @@ rather than guessing at which screenshot belonged to which release.
 ## "Theme x hover": three mechanisms compared before writing any code, then a real Part A
 
 New feature, described in detail up front rather than as a vague idea:
-"On hover, the island + a certain distance beyond - say 20 px - convert
+**"On hover, the island + a certain distance beyond - say 20 px - convert
 from Medieval theme to Topology theme... And Medieval effects disappear -
-wave contours, etc." Two mechanisms offered directly ("Can the topo theme
-components be underneath the medieval theme and on hover, the medieval
-theme components become invisible... Can the topo theme be layered on
-top but kept invisible until the element is hovered upon?") plus an open
-question: "What other mechanisms can make this happen, how complex and
-costly will they be?"
+wave contours, etc."** Two mechanisms offered directly (**"Can the topo
+theme components be underneath the medieval theme and on hover, the
+medieval theme components become invisible... Can the topo theme be
+layered on top but kept invisible until the element is hovered upon?"**)
+plus an open question: **"What other mechanisms can make this happen,
+how complex and costly will they be?"**
 
 Answered with three real options, not just the two offered: live
 on-hover regeneration (re-trace the hovered region's geometry into
@@ -1891,16 +1891,17 @@ full-scene layer with a dynamic clip-path reveal (both themes always
 rendered, hover just moves a mask); and CSS-only recolouring with no
 geometry swap (cheap, but doesn't get the structural differences). Cost
 compared across build/runtime/user-facing axes for each, not just picked.
-Direct reaction: "2 sounds like its costly while still not being ideal...
-3 sounds ideal... I suspect I'll come back to one of the other two" --
+Direct reaction: **"2 sounds like its costly while still not being
+ideal... 3 sounds ideal... I suspect I'll come back to one of the other
+two"** --
 correctly identifying that 2's specific risk was debounce-vs-latency
 under a wandering mouse, not raised as a hypothetical but as the user's
 own instinct, confirmed rather than just agreed with.
 
-A follow-up question caught a real overstatement: "why do we need to go
-back to circlepacking all the way? The island coast svgs are constant to
-all the themes - what varies is colours, offset bands, topology bands
-etc." Checked `THEME_PRESETS` directly rather than defending the earlier
+A follow-up question caught a real overstatement: **"why do we need to
+go back to circlepacking all the way? The island coast svgs are constant
+to all the themes - what varies is colours, offset bands, topology bands
+etc."** Checked `THEME_PRESETS` directly rather than defending the earlier
 claim from memory -- confirmed only four properties vary per theme
 (`flatColourMode`, `showWaveRings`, `showCoastalBands`, `seaShadowStyle`),
 not geometry or thresholds. The "run render() twice, risk two different
@@ -1909,16 +1910,16 @@ deliberately sharing one layout pass and skinning it twice -- corrected
 in place rather than defended.
 
 Before building, checked what the EXISTING section hover-glow actually
-does, prompted directly: "is that a composite of individual halos... or
-one shape?" Reading `renderRegion()` found `traceIsolatedShape()` already
-traces a real union (every circle in a section, one call, since the
-underlying heightmap fuses circles via `max()` anyway) and bakes it into
-the SVG once per `retraceIslands()`, never on hover -- confirming the
-user's own guess ("this shape can be pre-computed and kept... similar to
-the entry islands, since it's not going to change anyway") was already
-how the codebase worked, and that the SAME function already supported
-the dilation ("island + 20px") the feature needed, via its existing
-`extraDistance` parameter.
+does, prompted directly: **"is that a composite of individual halos...
+or one shape?"** Reading `renderRegion()` found `traceIsolatedShape()`
+already traces a real union (every circle in a section, one call, since
+the underlying heightmap fuses circles via `max()` anyway) and bakes it
+into the SVG once per `retraceIslands()`, never on hover -- confirming
+the user's own guess (**"this shape can be pre-computed and kept...
+similar to the entry islands, since it's not going to change anyway"**)
+was already how the codebase worked, and that the SAME function already
+supported the dilation ("island + 20px") the feature needed, via its
+existing `extraDistance` parameter.
 
 Part A built on that: a Topology-coloured overlay per island (a fresh
 dilated `traceIsolatedShape` call) and per section (its own dedicated
@@ -1928,12 +1929,13 @@ revealed via CSS on hover/focus. Verified via a Playwright smoke test
 counts match expected) before handing back -- not a visual judgement
 call, which stayed the user's to make.
 
-Feedback after trying it live: distance too tight ("maybe 40-50px"), a
-hard outline where blur was wanted, flat colour reading as "a no show"
-(expected, already flagged as deferred), and a direct architecture
-question -- "both effects will be controlled and edited by their
-respective theme dropdowns, right? ... Or are you creating a third
-theme?" Answered by reading the ACTUAL colour-editor mechanism rather
+Feedback after trying it live: distance too tight (**"maybe
+40-50px"**), a hard outline where blur was wanted, flat colour reading
+as **"a no show"** (expected, already flagged as deferred), and a direct
+architecture question -- **"both effects will be controlled and edited
+by their respective theme dropdowns, right? ... Or are you creating a
+third theme?"** Answered by reading the ACTUAL colour-editor mechanism
+rather
 than assuming: `themeTokenState` already holds every theme's live-edited
 colours regardless of which is active, only pushing to `<body>` when
 that theme IS active -- meaning the first pass's hardcoded colour
@@ -1949,29 +1951,32 @@ bug (an SVG `<use>` referencing a `<symbol>` with a closed bezier path,
 created during initial synchronous render, silently failing to paint) --
 directly relevant to a `<use>`-based sharing optimization floated for
 mechanism 3, flagged as a real risk to test early rather than assume away,
-per the user's own request to "keep an eye on the use/symbol issue... you
-can give me context and clarity if you need me to make a decision."
+per the user's own request to **"keep an eye on the use/symbol issue...
+you can give me context and clarity if you need me to make a
+decision."**
 
-Alongside this: a theme-roster cleanup, direct request ("riso can go...
-cyano and medieriso will never be applied, only topo + medieval"). First
-pass misread "cyanotype... kept as an archive" as "pull it from the
-dropdown," removing it from `THEME_OPTIONS`/`THEME_PRESETS` entirely --
-corrected immediately on direct feedback ("Cyanotype was supposed to be
-kept"): riso alone was disposable and deleted outright (CSS included);
+Alongside this: a theme-roster cleanup, direct request (**"riso can
+go... cyano and medieriso will never be applied, only topo +
+medieval"**). First pass misread **"cyanotype... kept as an archive"**
+as "pull it from the dropdown," removing it from `THEME_OPTIONS`/
+`THEME_PRESETS` entirely -- corrected immediately on direct feedback
+(**"Cyanotype was supposed to be kept"**): riso alone was disposable and
+deleted outright (CSS included);
 Cyanotype and MedieRiso both stay live/selectable, since "archive" and
 "scratchpad" describe their eventual production fate, not their present
 reachability in the dev tool.
 
 Also logged, mid-turn, an easter egg idea rather than built immediately:
-"Clicking within the inner circle of the compass switches the theme for
-the whole canvas from medieval to topo and back. Its too nice a piece of
-work to be seen only in bits" -- added to `three-world-launch-phases-ToDo.md`'s
-Phase 0, sequenced after this feature rather than before it.
+**"Clicking within the inner circle of the compass switches the theme
+for the whole canvas from medieval to topo and back. Its too nice a
+piece of work to be seen only in bits"** -- added to
+`three-world-launch-phases-ToDo.md`'s Phase 0, sequenced after this
+feature rather than before it.
 
-Tried live immediately after, a real bug surfaced fast: "It's still
+Tried live immediately after, a real bug surfaced fast: **"It's still
 yellow blobs, nothing else. Island halo - i turned it upto 100 and went
 down to 7, no change. Same for Section Halo. Edge Blur works fine
-though." The "yellow blobs" half was the already-flagged flat-colour
+though."** The "yellow blobs" half was the already-flagged flat-colour
 limitation, expected -- but the halo sliders doing genuinely nothing at
 any value was new and real. Traced to `retraceIslands()` (the sliders'
 default redraw path) never calling `renderRegion()`, the only place the
@@ -1984,11 +1989,12 @@ of trusting the reasoning alone -- the same discipline as every other
 bug caught this project by testing rather than by guessing.
 
 Confirmed working, then a scope correction rather than a new request:
-"what do you mean by colour preview hover mechanism? the yellow blobs?"
--- clarifying that "Part A" terminology had drifted from its original
-meaning. "I had meant for Part A to include your mechanism 1 completely
-as far as it aligned with Mechanism 3. However, lets get on with
-mechanism 3 anyway, since that's where were heading finally." Read as:
+**"what do you mean by colour preview hover mechanism? the yellow
+blobs?"** -- clarifying that "Part A" terminology had drifted from its
+original meaning. **"I had meant for Part A to include your mechanism 1
+completely as far as it aligned with Mechanism 3. However, lets get on
+with mechanism 3 anyway, since that's where were heading finally."**
+Read as:
 real per-band colour fidelity (sand/veg/peak, not one flat wash) isn't a
 detour from mechanism 3, it's groundwork FOR it, so build it now rather
 than treating it as separately deferred polish.
@@ -2010,6 +2016,44 @@ different config path -- folded `retraceThemePreviews()`'s work into
 rather than depending on every future slider author remembering to opt
 in. Verified via Playwright that an INDIRECT slider (not a theme-preview
 control at all) correctly updates a preview band's geometry.
+
+Tried live immediately, two real bugs in the new band fidelity: **"Some
+layers of the vegetation are visible but sand is either not happenning
+or more likely hidden under the yellow blob. But the coastal outline
+isnt there as well."**
+
+![v3.7.34, broken: an opaque yellow blob with vegetation faintly visible inside it, no distinct sand band, no coastline outline](landing-v3/dev-screenshots/v3.7.34-theme-preview-sand-camouflaged-bug.png)
+
+Root causes, both confirmed by inspection: the outer halo wash and the
+real sand band had been mapped to the SAME source colour
+(`--v3-sand`), so an opaque wash and an identically-coloured band
+painted directly on top of it were indistinguishable regardless of paint
+order -- veg showed because it's a different hue, sand didn't because
+it wasn't. Remapped the wash to `--v3-sea-shallow` instead (also a more
+accurate mapping on its own terms -- the halo is sea past the
+coastline, not land). Separately, the coastline stroke had been dropped
+back in the original blur fix, correctly for the wash itself, but
+nothing ever replaced it once real bands existed inside that wash --
+added a dedicated, unblurred coastline-outline path reusing the same
+shared heightmap.
+
+![v3.7.35, fixed: a teal sea halo, a visible yellow sand band, a green vegetation band, and a dark coastline outline, all distinct](landing-v3/dev-screenshots/v3.7.35-theme-preview-band-fidelity-fixed.png)
+
+Documentation conventions set explicitly at this point, both applied
+from here on: **"in Conversation...md mark my actual quotes in bold, i
+think that is helpful when reading the docu. Also try to maximise my
+verbatim quotes apart from the mundane 'yes no go ahead' etc ones."**
+And, separately: **"in all the docs, feel free to embed images to
+illustrate a point or showcase a state - the screenshots archive is a
+good source and you can capture screenshots of parts or the whole in
+advance knowing you will be adding them to documentation."** Followed
+immediately by a correction on WHICH state is worth capturing: **"The
+real learnings are the errors we make on the way. Capture those
+screenshots as well."** -- the "before" screenshot above wasn't sitting
+in the archive already (the bug was never intentionally captured while
+live), so it was reconstructed on the already-fixed page by setting the
+same two broken values back and re-screenshotting the same island,
+rather than skipped for not having an original.
 
 ## This handoff
 

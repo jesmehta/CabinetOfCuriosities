@@ -565,7 +565,15 @@ function buildControlPanel() {
   function applyThemePreviewTokens() {
     const values = themeTokenState[v3Config.themePreview.previewTheme] || themeTokenState[THEME_OPTIONS[0][0]];
     document.body.style.setProperty("--v3-preview-ink", values["--v3-ink"]);
-    document.body.style.setProperty("--v3-preview-land", values["--v3-sand"]);
+    // --v3-preview-land is the OUTER halo wash -- the "past the coastline,
+    // into the sea" ring, not land at all. Was wrongly mapped to
+    // --v3-sand (the same source as the real sand band painted on top of
+    // it), which made the sand band invisible -- same colour, opaque wash
+    // directly underneath, nothing to tell them apart. Direct feedback:
+    // "sand is either not happenning or more likely hidden under the
+    // yellow blob." --v3-sea-shallow reads correctly as sea, and gives
+    // the sand band real contrast to sit on top of.
+    document.body.style.setProperty("--v3-preview-land", values["--v3-sea-shallow"]);
     document.body.style.setProperty("--v3-preview-sand", values["--v3-sand"]);
     document.body.style.setProperty("--v3-preview-veg", values["--v3-veg"]);
     document.body.style.setProperty("--v3-preview-peak", values["--v3-peak"]);
