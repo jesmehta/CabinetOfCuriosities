@@ -2058,6 +2058,7 @@ function ensureDragon(stage, canvasBounds, sampler, t) {
     const d = spawnDragon(canvasBounds, sampler.isLand, Math.random, v3Config.dragon);
     d.sizeMult = sizeMultMin + Math.random() * (sizeMultMax - sizeMultMin);
     const { outer, slide } = buildDragonElement(colors[i % colors.length]);
+    applyDragonTransform(d, outer, slide);
     stage.appendChild(outer);
     return { d, group: outer, slide };
   });
@@ -2087,6 +2088,37 @@ function updateDragonSampler(sampler) {
 // 1->0 (slides down and out), surface grows it 0->1 (slides up and back
 // in) -- see buildDragonElement()'s own comment for why this reads as
 // "sinking" rather than a shrink/fade.
+// v3.7.28 -- factored out of tickDragon() below so ensureDragon() can
+// call it once, synchronously, right after building each dragon's
+// elements -- direct bug report: "part of the dragon svg is momentarily
+// visible on the upper left corner at a very large size" on reload.
+// Cause: buildDragonElement()'s `outer` group carries no transform of
+// its own (only `inner`, which just centres the artwork's local
+// coordinate space -- see that function's comment); the real
+// position/scale was ONLY ever applied inside tickDragon(), which
+// animationFrame() skips entirely on its first call (`lastFrameTime`
+// starts null). ensureDragon() appended `outer` to the live stage before
+// any of that ran, so the browser could paint one or more real frames of
+// the dragon sitting at raw DRAGON_PATH_D coordinates -- untranslated,
+// unscaled, i.e. full native artwork size at the SVG's origin -- exactly
+// the glitch described. Calling this once at spawn time, using the same
+// formula, means `outer` never has an untransformed moment to be caught
+// mid-paint; tickDragon() then simply keeps calling it every frame as
+// before.
+function applyDragonTransform(d, group, slide) {
+  const config = v3Config.dragon;
+  const scale = (config.targetWidth * d.sizeMult) / DRAGON_VIEWBOX.width;
+  const bobY = Math.sin(d.bobPhase) * config.bobAmplitude;
+  const flip = Math.cos(d.heading) >= 0 ? -1 : 1;
+  group.setAttribute(
+    "transform",
+    `translate(${d.x.toFixed(1)} ${(d.y + bobY).toFixed(1)}) scale(${(flip * scale).toFixed(4)} ${scale.toFixed(4)})`
+  );
+
+  const slideY = DRAGON_VIEWBOX.height * (1 - d.diveScale);
+  slide.setAttribute("transform", `translate(0 ${slideY.toFixed(2)})`);
+}
+
 function tickDragon(dt, t) {
   if (!dragonState) return;
   const { dragons, canvasBounds, sampler } = dragonState;
@@ -2094,17 +2126,7 @@ function tickDragon(dt, t) {
 
   dragons.forEach(({ d, group, slide }) => {
     stepDragon(d, sampler.isLand, canvasBounds, t, dt, config, Math.random);
-
-    const scale = (config.targetWidth * d.sizeMult) / DRAGON_VIEWBOX.width;
-    const bobY = Math.sin(d.bobPhase) * config.bobAmplitude;
-    const flip = Math.cos(d.heading) >= 0 ? -1 : 1;
-    group.setAttribute(
-      "transform",
-      `translate(${d.x.toFixed(1)} ${(d.y + bobY).toFixed(1)}) scale(${(flip * scale).toFixed(4)} ${scale.toFixed(4)})`
-    );
-
-    const slideY = DRAGON_VIEWBOX.height * (1 - d.diveScale);
-    slide.setAttribute("transform", `translate(0 ${slideY.toFixed(2)})`);
+    applyDragonTransform(d, group, slide);
   });
 }
 
