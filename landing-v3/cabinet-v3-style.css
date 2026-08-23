@@ -69,6 +69,12 @@ body.v3-proto {
      colour" editor and no risk of these two colour sets drifting apart. */
   --v3-preview-ink: #0d2436;
   --v3-preview-land: #f2c94c;
+  /* v3.7.34 -- Topology's own sand/veg/peak, for real per-band preview
+     fidelity (see .v3-island-theme-preview-sand/-veg/-peak below)
+     instead of the one flat --v3-preview-land wash alone. */
+  --v3-preview-sand: #f2c94c;
+  --v3-preview-veg: #4caf3f;
+  --v3-preview-peak: #fff;
   --v3-preview-blur: 8px;
 
   margin: 0;
@@ -930,6 +936,47 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   opacity: 1;
 }
 
+/* v3.7.34 -- real per-band preview fidelity, sitting on top of the
+   blurred halo wash above. Crisp (no blur) on purpose: only the OUTER
+   edge blending into the sea needs to soften, same visual logic the real
+   .v3-sand-band/.v3-veg-band/.v3-peak-band already use (sharp band
+   edges, softness only ever at the coastal-shadow/sea-shadow layer, never
+   here) -- opacities copied from those same real rules so a previewed
+   island reads consistently with how the same bands look once the theme
+   actually switches, not a separately-invented preview look. */
+.v3-island-theme-preview-sand {
+  fill: var(--v3-preview-sand);
+  fill-opacity: 0.6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island-theme-preview-veg {
+  fill: var(--v3-preview-veg);
+  fill-opacity: 0.55;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island-theme-preview-peak {
+  fill: var(--v3-preview-peak);
+  fill-opacity: 0.75;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-island:hover .v3-island-theme-preview-sand,
+.v3-island:focus-visible .v3-island-theme-preview-sand,
+.v3-island:hover .v3-island-theme-preview-veg,
+.v3-island:focus-visible .v3-island-theme-preview-veg,
+.v3-island:hover .v3-island-theme-preview-peak,
+.v3-island:focus-visible .v3-island-theme-preview-peak {
+  opacity: 1;
+}
+
 .v3-island-label {
   font-family: var(--cab-font-body);
   font-size: 13px;
@@ -1131,6 +1178,45 @@ body[data-label-style="glow"] .v3-section-label {
 
 .v3-section-link:hover .v3-section-theme-preview,
 .v3-section-link:focus-visible .v3-section-theme-preview {
+  opacity: 0.85;
+}
+
+/* v3.7.34 -- real per-band preview fidelity, section level. Same
+   reasoning as the island-level rules above (crisp, real band opacities,
+   no separately-invented look) -- 0.85 ceiling, not 1, matching
+   .v3-section-theme-preview's own dimmer-than-island wash above (a
+   section covers much more area, so full-strength competes with the
+   islands sitting inside it). */
+.v3-section-theme-preview-sand {
+  fill: var(--v3-preview-sand);
+  fill-opacity: 0.6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-theme-preview-veg {
+  fill: var(--v3-preview-veg);
+  fill-opacity: 0.55;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-theme-preview-peak {
+  fill: var(--v3-preview-peak);
+  fill-opacity: 0.75;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cab-transition-fast);
+}
+
+.v3-section-link:hover .v3-section-theme-preview-sand,
+.v3-section-link:focus-visible .v3-section-theme-preview-sand,
+.v3-section-link:hover .v3-section-theme-preview-veg,
+.v3-section-link:focus-visible .v3-section-theme-preview-veg,
+.v3-section-link:hover .v3-section-theme-preview-peak,
+.v3-section-link:focus-visible .v3-section-theme-preview-peak {
   opacity: 0.85;
 }
 

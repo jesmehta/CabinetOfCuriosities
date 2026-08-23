@@ -559,13 +559,16 @@ function buildControlPanel() {
   // its OWN token names so the preview never gets overwritten by whatever
   // applyThemeTokens() happens to be doing for the ACTIVE theme at the
   // same time -- the two run independently, on purpose (Medieval can be
-  // active while Topology is what's being edited/previewed). Only two
-  // tokens mapped so far (ink, sand -> the flat land wash Part A uses) --
-  // extend this alongside the eventual per-band preview fidelity.
+  // active while Topology is what's being edited/previewed). v3.7.34 --
+  // extended past the flat land wash to real per-band fidelity
+  // (sand/veg/peak), so this now maps every token those bands read.
   function applyThemePreviewTokens() {
     const values = themeTokenState[v3Config.themePreview.previewTheme] || themeTokenState[THEME_OPTIONS[0][0]];
     document.body.style.setProperty("--v3-preview-ink", values["--v3-ink"]);
     document.body.style.setProperty("--v3-preview-land", values["--v3-sand"]);
+    document.body.style.setProperty("--v3-preview-sand", values["--v3-sand"]);
+    document.body.style.setProperty("--v3-preview-veg", values["--v3-veg"]);
+    document.body.style.setProperty("--v3-preview-peak", values["--v3-peak"]);
   }
 
   // Nested one level deeper than the outer "Theme colours" subsection --
@@ -674,14 +677,17 @@ function buildControlPanel() {
   previewThemeRow.appendChild(previewThemeSelect);
   themePreviewSubsection.appendChild(previewThemeRow);
 
-  // onChange overridden -- the default (retraceIslands) redraws the
-  // shared coastline/band/grid layers only and never touches
-  // renderRegion()'s output, where the preview paths actually live, so
-  // it's a silent no-op for this specific pair of sliders (confirmed
-  // live: "i turned it upto 100 and went down to 7, no change"). Calling
-  // the full render() would work but re-runs circle packing for a change
-  // that never needs it -- retraceThemePreviews() is the narrow fix,
-  // matching drawGeoGrid()'s own cheap-targeted-redraw precedent.
+  // onChange overridden -- retraceIslands() (the default) now ALSO
+  // refreshes the theme preview (v3.7.34, folded in there so every OTHER
+  // slider that can affect it, e.g. the Topological-offset sliders below,
+  // doesn't need its own explicit wiring too), but these two sliders only
+  // ever need the preview refreshed, never the shared coastline/band/grid
+  // layers retraceIslands() also redraws -- calling retraceThemePreviews()
+  // directly stays the cheaper, narrower choice for THESE specifically.
+  // (Originally this override existed because retraceIslands() was a
+  // silent no-op for the preview altogether -- confirmed live: "i turned
+  // it upto 100 and went down to 7, no change" -- that's fixed now, this
+  // override is a pure optimisation, not a correctness requirement.)
   buildSlider(themePreviewSubsection, {
     label: "Island halo (px)", min: 0, max: 100, step: 1,
     get: () => v3Config.themePreview.islandHaloPx,

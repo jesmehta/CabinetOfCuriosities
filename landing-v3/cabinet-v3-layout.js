@@ -575,21 +575,16 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
 // the full canvas would mean ~25+ full-canvas-sized allocations on every
 // render()/retrace, almost all of it wasted on cells nowhere near the
 // circle(s) in question.
-function traceIsolatedShape(circles, islandConfig, extraDistance = 0) {
-  if (!circles.length) return "";
-
-  const { cellSize, threshold, warpStrength, outerFrac, angularStrength } = islandConfig;
-  // Same formula as buildIslandHeightmap's own (private) maxOuterR --
-  // reproduced here since this needs it before calling in, to size the
-  // local grid; see that function's doc comment in
-  // cabinet-v3-islandshape.js for why each term is there.
+// Split out of traceIsolatedShape (below) so a caller tracing the SAME
+// circle(s) at several different levels -- theme-preview band fidelity,
+// which needs coastline + sand + veg + peak all for one island -- pays
+// for buildIslandHeightmap() ONCE, not once per level. edgePadding still
+// needs the largest extraDistance any of those callers will ask for, so
+// the local grid is sized generously enough up front for all of them.
+function buildIsolatedHeightmap(circles, islandConfig, maxExtraDistance = 0) {
+  const { outerFrac, angularStrength, warpStrength } = islandConfig;
   const influenceRadius = c => c.radius * outerFrac * (1 + angularStrength) + warpStrength;
-  // 40 (vs. drawIslandsPath's own +60 for the full-canvas trace): these
-  // grids are already tightly cropped to just the circle(s) in question,
-  // not the whole canvas, so a contour has less far to travel to close
-  // cleanly off-grid -- see buildCoastlineDistanceField's edge-forcing
-  // comment for what this margin is protecting against.
-  const edgePadding = Math.max(0, extraDistance) + 40;
+  const edgePadding = Math.max(0, maxExtraDistance) + 40;
 
   const minX = Math.min(...circles.map(c => c.x - influenceRadius(c))) - edgePadding;
   const maxX = Math.max(...circles.map(c => c.x + influenceRadius(c))) + edgePadding;
@@ -597,13 +592,33 @@ function traceIsolatedShape(circles, islandConfig, extraDistance = 0) {
   const maxY = Math.max(...circles.map(c => c.y + influenceRadius(c))) + edgePadding;
   const localBounds = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 
-  const { H, cols, rows } = buildIslandHeightmap(circles, localBounds, islandConfig);
+  return { ...buildIslandHeightmap(circles, localBounds, islandConfig), localBounds };
+}
+
+function traceIsolatedShape(circles, islandConfig, extraDistance = 0) {
+  if (!circles.length) return "";
+  const { cellSize, threshold } = islandConfig;
+  const { H, cols, rows, localBounds } = buildIsolatedHeightmap(circles, islandConfig, extraDistance);
 
   if (extraDistance <= 0) {
     return traceContourFromHeightmap(H, cols, rows, cellSize, localBounds, threshold);
   }
   const distanceField = buildCoastlineDistanceField(H, cols, rows, cellSize, threshold);
   return traceContourFromHeightmap(distanceField, cols, rows, cellSize, localBounds, -extraDistance);
+}
+
+// Theme-preview band fidelity -- traces circles' own isolated heightmap
+// at an arbitrary ABSOLUTE level (a sandThresholds/vegThresholds/
+// peakThresholds entry), not threshold+dilation like traceIsolatedShape
+// above. Those threshold arrays are shared across every theme (confirmed
+// directly against THEME_PRESETS before assuming it -- only
+// flatColourMode/showWaveRings/showCoastalBands/seaShadowStyle actually
+// vary per theme), so tracing at the SAME level real islands use is
+// exactly the shape a real per-band Topology fill needs, just isolated to
+// one circle instead of the whole canvas.
+function traceIsolatedShapeAtLevel(circles, islandConfig, level, H, cols, rows, localBounds) {
+  if (!circles.length) return "";
+  return traceContourFromHeightmap(H, cols, rows, islandConfig.cellSize, localBounds, level);
 }
 
 function renderRegion(stage, region, band, label, sectionMeta, circles) {
@@ -644,8 +659,18 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // v3Config.themePreview's doc comment for why this doesn't just reuse
   // coastalZoneWidth above), so tuning "how much sea shows on preview"
   // doesn't also move the hit/glow shape calibrated for a different
-  // purpose.
-  const sectionThemePreviewD = traceIsolatedShape(circles, v3Config.island, v3Config.themePreview.sectionHaloPx);
+  // purpose. One shared heightmap build (all this section's circles
+  // together, same fused-via-max() trick the real section coastline
+  // trace above already relies on) covers the halo wash and every real
+  // sand/veg/peak level, same reasoning as the per-island version below.
+  const sectionPreviewHM = circles.length ? buildIsolatedHeightmap(circles, v3Config.island, v3Config.themePreview.sectionHaloPx) : null;
+  const sectionThemePreviewD = sectionPreviewHM
+    ? traceContourFromHeightmap(
+        buildCoastlineDistanceField(sectionPreviewHM.H, sectionPreviewHM.cols, sectionPreviewHM.rows, v3Config.island.cellSize, v3Config.island.threshold),
+        sectionPreviewHM.cols, sectionPreviewHM.rows, v3Config.island.cellSize,
+        sectionPreviewHM.localBounds, -v3Config.themePreview.sectionHaloPx
+      )
+    : "";
 
   // v3.6.26 -- clipPath restricted to this section's own region.inner:
   // "if an island or its coastal zone intrude into another section, ...
@@ -678,6 +703,22 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   glowGroup.appendChild(el("rect", { class: "v3-section-glow", x: band.x, y: band.y, width: band.width, height: band.height }));
   if (sectionShapeD) glowGroup.appendChild(el("path", { class: "v3-section-glow", d: sectionShapeD, "fill-rule": "evenodd" }));
   if (sectionThemePreviewD) glowGroup.appendChild(el("path", { class: "v3-section-theme-preview", d: sectionThemePreviewD, "fill-rule": "evenodd" }));
+  if (sectionPreviewHM) {
+    [
+      ["sand", v3Config.island.sandThresholds],
+      ["veg", v3Config.island.vegThresholds],
+      ["peak", v3Config.island.peakThresholds]
+    ].forEach(([name, levels]) => {
+      levels.forEach((level, i) => {
+        const bandD = traceIsolatedShapeAtLevel(
+          circles, v3Config.island, level, sectionPreviewHM.H, sectionPreviewHM.cols, sectionPreviewHM.rows, sectionPreviewHM.localBounds
+        );
+        glowGroup.appendChild(
+          el("path", { d: bandD, class: `v3-section-theme-preview-${name} v3-section-theme-preview-${name}-${i + 1}`, "fill-rule": "evenodd" })
+        );
+      });
+    });
+  }
   sectionLink.appendChild(glowGroup);
 
   group.appendChild(sectionLink);
@@ -724,9 +765,41 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       const link = el("a", { class: "v3-island", href: c.href || "#" });
       link.setAttribute("data-id", c.id);
       const islandD = traceIsolatedShape([c], v3Config.island, 0);
-      const themePreviewD = traceIsolatedShape([c], v3Config.island, v3Config.themePreview.islandHaloPx);
       link.appendChild(el("path", { d: islandD, class: "v3-island-glow", "fill-rule": "evenodd" }));
+
+      // Theme-preview prototype, band fidelity -- one shared heightmap
+      // build (buildIsolatedHeightmap()) covers the halo wash AND every
+      // real sand/veg/peak level below, instead of rebuilding it per
+      // level. sandThresholds/vegThresholds/peakThresholds are the SAME
+      // arrays real (non-preview) islands trace at -- confirmed against
+      // THEME_PRESETS that these don't vary per theme, only
+      // flatColourMode/showWaveRings/showCoastalBands/seaShadowStyle do --
+      // so this reproduces the real band structure, not an approximation.
+      const previewHM = buildIsolatedHeightmap([c], v3Config.island, v3Config.themePreview.islandHaloPx);
+      const previewDistanceField = buildCoastlineDistanceField(
+        previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold
+      );
+      const themePreviewD = traceContourFromHeightmap(
+        previewDistanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize,
+        previewHM.localBounds, -v3Config.themePreview.islandHaloPx
+      );
       link.appendChild(el("path", { d: themePreviewD, class: "v3-island-theme-preview", "fill-rule": "evenodd" }));
+
+      [
+        ["sand", v3Config.island.sandThresholds],
+        ["veg", v3Config.island.vegThresholds],
+        ["peak", v3Config.island.peakThresholds]
+      ].forEach(([name, levels]) => {
+        levels.forEach((level, i) => {
+          const bandD = traceIsolatedShapeAtLevel(
+            [c], v3Config.island, level, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds
+          );
+          link.appendChild(
+            el("path", { d: bandD, class: `v3-island-theme-preview-${name} v3-island-theme-preview-${name}-${i + 1}`, "fill-rule": "evenodd" })
+          );
+        });
+      });
+
       link.appendChild(el("path", { d: islandD, class: "v3-island-hit", "fill-rule": "evenodd" }));
       link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
       group.appendChild(link);
@@ -2318,36 +2391,61 @@ export function retraceIslands() {
     updateParticleSampler(freshSampler);
     updateDragonSampler(freshSampler);
   }
-}
 
-// Exported for cabinet-v3-controls.js's Island/Section halo sliders --
-// bugfix: those sliders defaulted to retraceIslands() (buildSlider's own
-// default onChange), which does NOT touch renderRegion()'s output at all
-// (it redraws the shared global coastline/band/grid/flow-field layers
-// only -- see its own comment). renderRegion() -- where the theme-preview
-// paths actually live -- only ever runs inside the full render() pass, so
-// the halo sliders silently updated v3Config.themePreview with no visible
-// effect whatsoever, at any value. Confirmed directly ("i turned it upto
-// 100 and went down to 7, no change"), not assumed from reading the code
-// alone. Rather than call the much heavier render() (re-runs circle
-// packing/treemap for a change that never touches either), this updates
-// just the existing preview <path> elements' `d` attribute in place --
-// no DOM structure change, so no risk of the z-order bug found earlier
-// this project (re-appending a whole region group would land it after
-// the compass/grid/particles in paint order, same mistake, different
-// element). Matches drawGeoGrid()'s own "cheap, targeted redraw" pattern
-// rather than reaching for the full pipeline.
+  // v3.7.33/34 bugfix -- renderRegion() (where every theme-preview path
+  // lives) only ever runs inside the full render() pass, never here, so
+  // NOTHING above this line touches those paths. Originally wired only to
+  // the Island/Section halo sliders directly (confirmed via a genuine
+  // silent-no-op bug: "i turned it upto 100 and went down to 7, no
+  // change"); folded in here instead once the preview grew real
+  // sand/veg/peak bands too, since those depend on the SAME
+  // sandThresholds/vegThresholds/peakThresholds arrays every other
+  // Topological-offset slider already mutates, and there's no reliable
+  // way to enumerate every slider that could ever touch those arrays from
+  // outside this function. Cheap enough to run unconditionally: each
+  // island/section trace is bounded to its own small local grid, not the
+  // full canvas (see buildIsolatedHeightmap()'s own comment) -- a small
+  // fraction of the full-canvas retrace this function already pays for
+  // on every tick regardless.
+  retraceThemePreviews();
+}
+// v3.7.34 -- also keeps the sand/veg/peak preview bands in sync, not
+// just the halo wash (they were added alongside this function, so
+// they've never been out of sync in a shipped version, but they'd fall
+// into the exact same "silent no-op" trap the halo sliders hit if left
+// wired only to the halo sliders -- the existing Topological-offset
+// sliders (sandThresholds/vegThresholds/peakThresholds) also need this
+// refreshed, and there's no way to enumerate every slider that could
+// ever touch those arrays from here. Folded into retraceIslands() below
+// instead of requiring every such slider to remember to call this
+// separately -- see that function's own comment for the "why fold it in,
+// isn't that wasteful on unrelated ticks" reasoning.
 export function retraceThemePreviews() {
   if (!islandLayoutState) return;
   const stage = document.querySelector("#v3-stage");
   const { islandHaloPx, sectionHaloPx } = v3Config.themePreview;
+  const bandLevels = () => [
+    ["sand", v3Config.island.sandThresholds],
+    ["veg", v3Config.island.vegThresholds],
+    ["peak", v3Config.island.peakThresholds]
+  ];
 
   islandLayoutState.grown.forEach(c => {
     const link = stage.querySelector(`.v3-island[data-id="${c.id}"]`);
     if (!link) return;
-    const preview = link.querySelector(".v3-island-theme-preview");
-    if (!preview) return;
-    preview.setAttribute("d", traceIsolatedShape([c], v3Config.island, islandHaloPx));
+
+    const previewHM = buildIsolatedHeightmap([c], v3Config.island, islandHaloPx);
+    const halo = link.querySelector(".v3-island-theme-preview");
+    if (halo) {
+      const distanceField = buildCoastlineDistanceField(previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold);
+      halo.setAttribute("d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -islandHaloPx));
+    }
+    bandLevels().forEach(([name, levels]) => {
+      levels.forEach((level, i) => {
+        const band = link.querySelector(`.v3-island-theme-preview-${name}-${i + 1}`);
+        if (band) band.setAttribute("d", traceIsolatedShapeAtLevel([c], v3Config.island, level, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
+      });
+    });
   });
 
   const grownBySection = new Map();
@@ -2358,10 +2456,21 @@ export function retraceThemePreviews() {
   islandLayoutState.layout.forEach(({ sectionMeta }) => {
     const region = stage.querySelector(`.v3-region[data-section="${sectionMeta.id}"]`);
     if (!region) return;
-    const preview = region.querySelector(".v3-section-theme-preview");
-    if (!preview) return;
     const circles = grownBySection.get(sectionMeta.id) || [];
-    preview.setAttribute("d", traceIsolatedShape(circles, v3Config.island, sectionHaloPx));
+    if (!circles.length) return;
+
+    const previewHM = buildIsolatedHeightmap(circles, v3Config.island, sectionHaloPx);
+    const halo = region.querySelector(".v3-section-theme-preview");
+    if (halo) {
+      const distanceField = buildCoastlineDistanceField(previewHM.H, previewHM.cols, previewHM.rows, v3Config.island.cellSize, v3Config.island.threshold);
+      halo.setAttribute("d", traceContourFromHeightmap(distanceField, previewHM.cols, previewHM.rows, v3Config.island.cellSize, previewHM.localBounds, -sectionHaloPx));
+    }
+    bandLevels().forEach(([name, levels]) => {
+      levels.forEach((level, i) => {
+        const band = region.querySelector(`.v3-section-theme-preview-${name}-${i + 1}`);
+        if (band) band.setAttribute("d", traceIsolatedShapeAtLevel(circles, v3Config.island, level, previewHM.H, previewHM.cols, previewHM.rows, previewHM.localBounds));
+      });
+    });
   });
 }
 

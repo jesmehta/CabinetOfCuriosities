@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.34 -- Theme preview grows real per-band fidelity (sand/veg/peak), plus a generalized sync fix](#v3734----theme-preview-grows-real-per-band-fidelity-sandvegpeak-plus-a-generalized-sync-fix)
   - [v3.7.33 bugfix -- Island/Section halo sliders were a silent no-op at any value](#v3733-bugfix----islandsection-halo-sliders-were-a-silent-no-op-at-any-value)
   - [v3.7.32 -- Theme x hover, Part A: a real colour-preview prototype, plus the theme roster narrowed toward Medieval + Topology](#v3732----theme-x-hover-part-a-a-real-colour-preview-prototype-plus-the-theme-roster-narrowed-toward-medieval--topology)
   - [v3.7.24-v3.7.30 -- Topology's directional cast shadow: cliff-edge fix, a real CSS-filter bug, then a height-aware taper](#v3724-v3730----topologys-directional-cast-shadow-cliff-edge-fix-a-real-css-filter-bug-then-a-height-aware-taper)
@@ -93,7 +94,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.33** (domain warping for real concave coastlines,
+Currently on **v3.7.34** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -150,16 +151,25 @@ v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
--> v3.7.31 -> v3.7.32 -> v3.7.33
+-> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34
 progression and why each pass changed what it did. Most recently
-(v3.7.33): the Island/Section halo sliders added in v3.7.32 were a silent
-no-op at any value -- retraceIslands() (their default redraw path) never
-touches renderRegion()'s output, where the preview paths actually live.
-Fixed with a new narrowly-scoped retraceThemePreviews() that updates just
-those two paths' geometry in place, confirmed via Playwright (the `d`
-attribute now genuinely changes size with the slider) rather than
-re-eyeballing it. Full detail in the changelog below. Before that
-(v3.7.32): a first real prototype of "theme x hover" -- hovering an
+(v3.7.34): the theme-preview overlay grew real per-band fidelity -- a
+hovered island/section now previews its ACTUAL sand/veg/peak contours at
+Topology's colours (traced at the same shared thresholds every real
+island uses, not an approximation), not one flat wash. Also fixed the
+same class of bug v3.7.33 fixed for the halo sliders, generalized: ANY
+slider touching sandThresholds/vegThresholds/peakThresholds (not just the
+theme-preview's own sliders) now keeps the preview in sync, folded into
+retraceIslands() itself rather than requiring each such slider to opt in
+individually. Full detail in the changelog below. Before that (v3.7.33):
+the Island/Section halo sliders added in v3.7.32 were a silent no-op at
+any value -- retraceIslands() (their default redraw path) never touches
+renderRegion()'s output, where the preview paths actually live. Fixed
+with a new narrowly-scoped retraceThemePreviews() that updates just those
+two paths' geometry in place, confirmed via Playwright (the `d` attribute
+now genuinely changes size with the slider) rather than re-eyeballing it.
+Before that (v3.7.32): a first real prototype of "theme x hover" --
+hovering an
 island or section reveals a Topology-coloured overlay of its own real
 traced shape (reusing the same isolated-trace mechanism that already
 powers hover glow/hit-testing), coloured from the SAME live
@@ -1420,6 +1430,51 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.34 -- Theme preview grows real per-band fidelity (sand/veg/peak), plus a generalized sync fix
+
+Direct correction of scope: "I had meant for Part A to include your
+mechanism 1 completely as far as it aligned with Mechanism 3. However,
+lets get on with mechanism 3 anyway." Read as: don't treat "mechanism
+1's full colour fidelity" as a detour from mechanism 3 -- build it AS
+PART OF the path toward mechanism 3, since real per-band colour was
+always going to be needed there too.
+
+Mechanism: `traceIsolatedShape()` (island/section boundary tracing) and
+the new `traceIsolatedShapeAtLevel()` now share one heightmap build per
+island/section (`buildIsolatedHeightmap()`, factored out of
+`traceIsolatedShape()`) instead of each level paying for its own --
+tracing coastline + halo + sand x2 + veg x2 + peak all reuses the SAME
+`H`/`cols`/`rows`, since only the CONTOUR LEVEL changes between them, not
+the underlying noise field. `sandThresholds`/`vegThresholds`/
+`peakThresholds` are the exact same arrays real (non-preview) islands
+trace at -- already confirmed (v3.7.32) that these don't vary per theme,
+so tracing a preview at those same levels reproduces the real band
+structure exactly, not an approximation of it. New CSS classes
+(`.v3-island-theme-preview-sand/-veg/-peak`, mirrored for sections) reuse
+the real bands' own opacities (0.6/0.55/0.75) so a previewed island reads
+consistently with how it'll actually look once the theme switches, and
+stay unblurred (crisp band edges) while only the outer halo wash keeps
+its blur -- the same "soft only at the outer sea-blend edge" logic the
+real map already uses.
+
+Also fixed, found while building this rather than reported first: the
+SAME silent-no-op class of bug v3.7.33 fixed for the halo sliders
+threatened these new band paths too, for a wider set of triggers -- any
+of the existing Topological-offset sliders (Sand 1/2, Veg 1/2, peak) can
+change `sandThresholds`/`vegThresholds`/`peakThresholds`, and none of
+them know anything about the theme-preview feature (they predate it).
+Rather than hunt down and individually wire every such slider (fragile --
+the exact mistake that caused v3.7.33 in the first place, just for a
+different config path), `retraceThemePreviews()`'s work is now folded
+into `retraceIslands()` itself, so the invariant "the preview always
+matches current config" holds unconditionally. Confirmed via Playwright
+that moving a Topological-offset slider -- not a theme-preview slider --
+correctly changes a preview band's `d` attribute. The Island/Section halo
+sliders keep their own direct `retraceThemePreviews()` call too (cheaper
+than the full `retraceIslands()` for a change that only ever needs the
+narrower function), now a pure optimisation rather than a correctness
+requirement.
 
 ### v3.7.33 bugfix -- Island/Section halo sliders were a silent no-op at any value
 

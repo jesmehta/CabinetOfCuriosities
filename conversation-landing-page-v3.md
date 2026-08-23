@@ -1983,6 +1983,34 @@ path's `d` attribute measurably changes length with the slider) instead
 of trusting the reasoning alone -- the same discipline as every other
 bug caught this project by testing rather than by guessing.
 
+Confirmed working, then a scope correction rather than a new request:
+"what do you mean by colour preview hover mechanism? the yellow blobs?"
+-- clarifying that "Part A" terminology had drifted from its original
+meaning. "I had meant for Part A to include your mechanism 1 completely
+as far as it aligned with Mechanism 3. However, lets get on with
+mechanism 3 anyway, since that's where were heading finally." Read as:
+real per-band colour fidelity (sand/veg/peak, not one flat wash) isn't a
+detour from mechanism 3, it's groundwork FOR it, so build it now rather
+than treating it as separately deferred polish.
+
+Built by factoring `traceIsolatedShape()`'s heightmap build out into
+`buildIsolatedHeightmap()`, shared across coastline + halo + every real
+band level for one island/section, and adding
+`traceIsolatedShapeAtLevel()` to trace that same heightmap at an
+arbitrary absolute level -- `sandThresholds`/`vegThresholds`/
+`peakThresholds` already confirmed theme-invariant, so this reproduces
+the real band structure exactly. While building it, spotted (not
+reported) that the SAME class of bug just fixed for the halo sliders
+would also hit these new band paths, from a wider set of triggers: any
+existing Topological-offset slider, none of which know about the
+theme-preview feature. Rather than wire each one individually --
+repeating the exact mistake that caused the halo bug, just against a
+different config path -- folded `retraceThemePreviews()`'s work into
+`retraceIslands()` itself, so the sync invariant holds unconditionally
+rather than depending on every future slider author remembering to opt
+in. Verified via Playwright that an INDIRECT slider (not a theme-preview
+control at all) correctly updates a preview band's geometry.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
