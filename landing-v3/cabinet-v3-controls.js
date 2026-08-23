@@ -727,7 +727,11 @@ function buildControlPanel() {
   // how blurred the edge is), deliberately separate from either theme's
   // own colour block above: these aren't colours, they're behaviour of
   // the hover mechanism, and belong to neither theme individually.
-  const themePreviewSubsection = makeSubsection(visualsSection, "Theme hover preview", false);
+  // v3.7.43 -- renamed "Theme hover preview" -> "Hover theme" (shorter,
+  // matches the control-panel reorganization's own naming) and repositioned
+  // (see the reorder pass at the end of the Visuals section) -- purely
+  // cosmetic, this subsection's own contents/logic are unchanged.
+  const themePreviewSubsection = makeSubsection(visualsSection, "Hover theme", false);
 
   const previewThemeRow = document.createElement("label");
   previewThemeRow.className = "v3-controls-row";
@@ -763,13 +767,13 @@ function buildControlPanel() {
   // silent no-op for the preview altogether -- confirmed live: "i turned
   // it upto 100 and went down to 7, no change" -- that's fixed now, this
   // override is a pure optimisation, not a correctness requirement.)
-  buildSlider(themePreviewSubsection, {
+  const islandHaloWidget = buildSlider(themePreviewSubsection, {
     label: "Island halo (px)", min: 0, max: 100, step: 1,
     get: () => v3Config.themePreview.islandHaloPx,
     set: v => { v3Config.themePreview.islandHaloPx = v; },
     onChange: retraceThemePreviews
   });
-  buildSlider(themePreviewSubsection, {
+  const sectionHaloWidget = buildSlider(themePreviewSubsection, {
     label: "Section halo (px)", min: 0, max: 100, step: 1,
     get: () => v3Config.themePreview.sectionHaloPx,
     set: v => { v3Config.themePreview.sectionHaloPx = v; },
@@ -782,7 +786,7 @@ function buildControlPanel() {
   // so wave-rings/coastal-bands stay fully hidden under the wash's own
   // wider soft edge -- see that function's own comment) -- so this still
   // needs retraceThemePreviews(), just not the full retraceIslands().
-  buildSlider(themePreviewSubsection, {
+  const blurWidget = buildSlider(themePreviewSubsection, {
     label: "Edge blur (px)", min: 0, max: 30, step: 1,
     get: () => v3Config.themePreview.blurPx,
     set: v => { v3Config.themePreview.blurPx = v; },
@@ -799,6 +803,26 @@ function buildControlPanel() {
   // match data.js's defaults by coincidence.
   applyThemePreviewTokens();
   document.body.style.setProperty("--v3-preview-blur", `${v3Config.themePreview.blurPx}px`);
+
+  // v3.7.43 -- local Reset, same pattern the other subsection-level
+  // buttons below (Bands width, Wave ring, Topological offset, Particle
+  // counts) now use -- this subsection never had ANY reset path before
+  // (not even via the master "Reset visuals" -- v3Config.themePreview was
+  // simply never touched by resetVisuals()).
+  function resetHoverTheme() {
+    v3Config.themePreview.previewTheme = visualsDefaults.previewTheme;
+    v3Config.themePreview.islandHaloPx = visualsDefaults.islandHaloPx;
+    v3Config.themePreview.sectionHaloPx = visualsDefaults.sectionHaloPx;
+    v3Config.themePreview.blurPx = visualsDefaults.blurPx;
+    previewThemeSelect.value = v3Config.themePreview.previewTheme;
+    islandHaloWidget.refresh();
+    sectionHaloWidget.refresh();
+    blurWidget.refresh();
+    applyThemePreviewTokens();
+    document.body.style.setProperty("--v3-preview-blur", `${v3Config.themePreview.blurPx}px`);
+    retraceThemePreviews();
+  }
+  addButton(themePreviewSubsection, "Reset", resetHoverTheme, { block: true });
 
   // -- Label style (v3.6.12) -- picks which .v3-island-label halo
   // treatment cabinet-v3-style.css applies, via a data-label-style
@@ -999,6 +1023,25 @@ function buildControlPanel() {
   personalityRow.appendChild(personalitySelect);
   particleSubsection.appendChild(personalityRow);
 
+  // v3.7.43 -- local Reset, same handle-based pattern the master
+  // resetVisuals() below already uses for these same fields -- factored
+  // out into its own function so both this button and the master call the
+  // identical logic instead of duplicating it.
+  function resetParticleCounts() {
+    v3Config.particles.count = visualsDefaults.particleCount;
+    v3Config.particles.maxCount = visualsDefaults.particleMaxCount;
+    particleCountWidget.refresh();
+    particleMaxWidget.refresh();
+    v3Config.particles.coastSpawnFraction = visualsDefaults.coastSpawnFraction;
+    v3Config.particles.coastSpawnDirMode = visualsDefaults.coastSpawnDirMode;
+    coastSpawnFractionWidget.refresh();
+    coastDirSelect.value = v3Config.particles.coastSpawnDirMode;
+    v3Config.particles.personalityMode = visualsDefaults.personalityMode;
+    personalitySelect.value = v3Config.particles.personalityMode;
+    refreshParticleCount();
+  }
+  addButton(particleSubsection, "Reset", resetParticleCounts, { block: true });
+
   // -- Wave ring parameters -- unchanged generator logic from v3.6.7
   // (waveDistances is a derived array, d[i] = start * multiplier^i +
   // offset, not a single scalar, so it doesn't fit the one-slider-one-key
@@ -1048,6 +1091,15 @@ function buildControlPanel() {
   });
   waveSubsection.appendChild(waveValueSpan);
   refreshWavePreview();
+
+  // v3.7.43 -- local Reset, same factoring as Particle counts' own above.
+  function resetWaveRing() {
+    v3Config.island.waveDistances = [...visualsDefaults.waveDistances];
+    Object.assign(waveGen, waveGenDefaults);
+    Object.values(waveFieldWidgets).forEach(w => w.refresh());
+    refreshWavePreview();
+  }
+  addButton(waveSubsection, "Reset", () => { resetWaveRing(); retraceIslands(); }, { block: true });
 
   // -- Topological offset parameters (v3.6.9, punch-list item 7) --
   // seaBandThresholds/sandThresholds/vegThresholds get their own sliders
@@ -1135,6 +1187,17 @@ function buildControlPanel() {
   // comment in cabinet-v3-data.js has the "why 0.13" reasoning).
   addBandGroup("peakThresholds", "Land", i => i + 1 + v3Config.island.sandThresholds.length + v3Config.island.vegThresholds.length, " (peak)");
 
+  // v3.7.43 -- local Reset, same factoring as Particle counts'/Wave ring's
+  // own above.
+  function resetTopoOffsets() {
+    v3Config.island.seaBandThresholds = [...visualsDefaults.seaBandThresholds];
+    v3Config.island.sandThresholds = [...visualsDefaults.sandThresholds];
+    v3Config.island.vegThresholds = [...visualsDefaults.vegThresholds];
+    v3Config.island.peakThresholds = [...visualsDefaults.peakThresholds];
+    bandSliders.forEach(s => s.refresh());
+  }
+  addButton(topoSubsection, "Reset", () => { resetTopoOffsets(); retraceIslands(); }, { block: true });
+
   // -- Geo grid (v3.7.7) -- lat/long dotted grid + compass diagonals
   // (drawGeoGrid(), cabinet-v3-layout.js). Direct request: "2 separate
   // controls for each of them" -- latitude (horizontal lines) and
@@ -1189,14 +1252,16 @@ function buildControlPanel() {
   // left to the caller. That's what lets each section's own Reset button
   // take the cheap path while Reset ALL, below, runs all three back to
   // back and pays for one render() at the end instead of three.
+  // v3.7.43 -- most of this function's old body is now the five
+  // subsection-local Reset functions above/below (resetHoverTheme,
+  // resetBandWidths, resetWaveRing, resetTopoOffsets,
+  // resetParticleCounts) -- this master just calls all five plus whatever
+  // never got its own local button (Coastal effects' checkboxes, the
+  // Theme dropdown itself, Geo grid, Diagnostics), same "one shared
+  // function, no duplicated logic" reasoning those five already follow.
   function resetVisuals() {
     v3Config.island.flatColourMode = visualsDefaults.flatColourMode;
     v3Config.island.showWaveRings = visualsDefaults.showWaveRings;
-    v3Config.island.seaBandThresholds = [...visualsDefaults.seaBandThresholds];
-    v3Config.island.sandThresholds = [...visualsDefaults.sandThresholds];
-    v3Config.island.vegThresholds = [...visualsDefaults.vegThresholds];
-    v3Config.island.peakThresholds = [...visualsDefaults.peakThresholds];
-    v3Config.island.waveDistances = [...visualsDefaults.waveDistances];
     waveCheck.checked = v3Config.island.showWaveRings;
     bandCheck.checked = !v3Config.island.flatColourMode;
     // v3.7.19 -- "" (the no-attribute default) was dropped from
@@ -1213,21 +1278,9 @@ function buildControlPanel() {
     flowVectorsCheck.checked = v3Config.flow.showVectors;
     v3Config.island.showNoise = visualsDefaults.showNoise;
     noiseCheck.checked = v3Config.island.showNoise;
-    v3Config.particles.count = visualsDefaults.particleCount;
-    v3Config.particles.maxCount = visualsDefaults.particleMaxCount;
-    particleCountWidget.refresh();
-    particleMaxWidget.refresh();
-    v3Config.particles.coastSpawnFraction = visualsDefaults.coastSpawnFraction;
-    v3Config.particles.coastSpawnDirMode = visualsDefaults.coastSpawnDirMode;
-    coastSpawnFractionWidget.refresh();
-    coastDirSelect.value = v3Config.particles.coastSpawnDirMode;
-    v3Config.particles.personalityMode = visualsDefaults.personalityMode;
-    personalitySelect.value = v3Config.particles.personalityMode;
-    refreshParticleCount();
-    bandSliders.forEach(s => s.refresh());
-    Object.assign(waveGen, waveGenDefaults);
-    Object.values(waveFieldWidgets).forEach(w => w.refresh());
-    refreshWavePreview();
+    resetParticleCounts();
+    resetTopoOffsets();
+    resetWaveRing();
     v3Config.geo.showGrid = visualsDefaults.showGeoGrid;
     v3Config.geo.showDiagonals = visualsDefaults.showGeoDiagonals;
     showGridCheck.checked = v3Config.geo.showGrid;
@@ -1242,12 +1295,55 @@ function buildControlPanel() {
     coastalBandCheck.checked = v3Config.island.showCoastalBands;
     seaShadowCheck.checked = v3Config.island.showSeaShadow;
     seaShadowStyleSelect.value = v3Config.island.seaShadowStyle;
+    resetBandWidths();
+    resetHoverTheme();
   }
 
-  addButton(visualsSection, "Reset visuals", () => {
+  const resetVisualsBtn = addButton(visualsSection, "Reset visuals", () => {
     resetVisuals();
     retraceIslands();
   }, { block: true });
+
+  // v3.7.43 -- direct request: reorganize the Visuals section into a
+  // fixed, predictable sequence (Theme dropdown, Hover theme, Coastal
+  // effects, Text label style, Bands width, Wave ring, Topological
+  // offset, Particle counts, Geo grid, Theme colours, Diagnostics, Reset
+  // visuals). Every row/subsection above was left built and wired exactly
+  // where its own logic already lived -- rewriting this as one final
+  // re-parenting pass (rather than physically moving each block of
+  // construction code around the file) means no risk of breaking the
+  // dependency order those blocks rely on (e.g. applyThemePreset()
+  // reading bandCheck/waveCheck/coastalBandCheck, declared earlier in the
+  // file for exactly that reason -- see its own comment). appendChild()
+  // on an element already in the document MOVES it rather than cloning,
+  // so this both creates the one genuinely new grouping (Coastal effects,
+  // below) and re-sequences everything else in a single pass.
+  //
+  // "Coastal effects" is the one new wrapper -- these five rows
+  // (waveCheckRow/bandCheckRow/coastalBandCheckRow/seaShadowCheckRow/
+  // seaShadowStyleRow) were loose top-level children of Visuals before
+  // this, never grouped. No local Reset button requested for this one --
+  // covered by the master Reset visuals below, same as Geo grid/Theme
+  // colours/Diagnostics.
+  const coastalEffectsSubsection = makeSubsection(visualsSection, "Coastal effects", false);
+  [waveCheckRow, bandCheckRow, coastalBandCheckRow, seaShadowCheckRow, seaShadowStyleRow].forEach(
+    row => coastalEffectsSubsection.appendChild(row)
+  );
+
+  [
+    themeRow,
+    themePreviewSubsection,
+    coastalEffectsSubsection,
+    labelStyleRow,
+    bandWidthSubsection,
+    waveSubsection,
+    topoSubsection,
+    particleSubsection,
+    geoSubsection,
+    colorsSubsection,
+    diagnosticsSubsection,
+    resetVisualsBtn
+  ].forEach(node => visualsSection.appendChild(node));
 
   // =====================================================================
   // ISLAND SHAPE -- feeds the coastline trace (warp/angular/base-noise
