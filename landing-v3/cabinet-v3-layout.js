@@ -1170,7 +1170,21 @@ function drawGeoGrid(stage, canvasBounds, origin) {
     group.setAttribute("mask", "url(#v3-sea-mask)");
   }
 
-  stage.appendChild(group);
+  // v3.7.31 bugfix -- was a plain stage.appendChild(group), always
+  // placing the grid as the LAST (topmost) stage child. Fine on a fresh
+  // render() (the compass is rendered after the grid there, so it
+  // naturally ends up on top regardless) but wrong on any later
+  // retraceIslands() call -- ANY dev-panel slider in Visuals triggers
+  // one, and retraceIslands() redraws the grid but never re-renders the
+  // compass, so appendChild kept re-promoting the grid back to the very
+  // end, silently pushing it ABOVE the (untouched, still-earlier-in-DOM)
+  // compass the moment any slider moved. Direct feedback: "diagonals
+  // beneath the compass not above." Inserting before .v3-compass (when
+  // it exists) instead pins the grid to a stable position just under the
+  // compass regardless of which function last redrew which.
+  const compassGroup = stage.querySelector(".v3-compass");
+  if (compassGroup) stage.insertBefore(group, compassGroup);
+  else stage.appendChild(group);
 }
 
 // Traces + draws (or, on a re-call, just updates in place) the stacked

@@ -809,7 +809,9 @@ body[data-label-style="glow"] .v3-compass-direction-label {
 .v3-coastline-outline {
   fill: none;
   stroke: var(--v3-ink);
-  stroke-width: 2;
+  /* v3.7.30 -- 2 -> 1.2, direct feedback: "the coastal outline needs to
+     be thinner than current." */
+  stroke-width: 1.2;
 }
 
 /* Invisible hit target at an entry's original (pre-noise) circle --
