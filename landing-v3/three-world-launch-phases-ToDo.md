@@ -295,6 +295,10 @@ own numbering note near the top) -- a move, not a re-add.
       anticlockwise -- either at random or triggered by approach/hover
       -- for one full revolution. Direct request, logged as a to-do
       rather than implemented immediately.
+- [ ] **#63** Compass arms: hovering one reveals intricate scrollwork
+      ornament on that arm, plus a colour change. Blocked on the user's
+      own hand-drawn/traced/digitized SVG artwork before this can be
+      built -- same shape of blocker as #30's boats.
 - [ ] **#30** Theme-specific boat artwork: swap the boat graphic between themes
       (islands-tool.html's dev panel boat toggle -- the current ellipses
       are a top-down view, fitted for Topology's satellite-map
