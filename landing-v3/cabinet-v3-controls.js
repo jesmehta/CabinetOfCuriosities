@@ -52,7 +52,12 @@ const CONTROLS = [
 // -- same span as the Base coastline "Threshold" slider above, since
 // they're the same kind of value (a height in the shared noise
 // heightmap), just for a different contour group.
-const BAND_MIN = -1.5;
+// v3.7.28 -- -1.5 -> -2, headroom below the new waterLevel floor
+// (cabinet-v3-data.js, -1.4): a slider whose own low end sits ONLY
+// 0.1 past the floor makes the "why did this just vanish" cliff (see
+// that field note) hard to find by feel; -2 leaves real room to drag
+// past it and back.
+const BAND_MIN = -2;
 const BAND_MAX = 0.5;
 const BAND_STEP = 0.02;
 
@@ -758,25 +763,78 @@ function buildControlPanel() {
   // Nested collapsible (v3.6.22), closed by default -- see
   // makeSubsection() -- this one in particular can get long (one slider
   // per array element across all three bands).
+  //
+  // v3.7.26 -- direct feedback after walking through what these raw
+  // heightmap values actually mean: "-0.62 is a notional zero... sea 1
+  // being deeper than sea 4 is notionally dissonant." Two changes:
+  // 1) every slider here now GETS/SETS relative to the live Base
+  //    coastline Threshold (Island shape section, CONTROLS above), so 0
+  //    always reads as "exactly the coastline," negative as sea-ward,
+  //    positive as inland -- regardless of whatever Threshold itself is
+  //    tuned to. The underlying arrays in v3Config.island still store
+  //    RAW heightmap values (unchanged -- drawIslandsPath() and every
+  //    other reader expects that); the +/- threshold conversion happens
+  //    only here, at the UI boundary. Deliberately NOT a full rescale
+  //    onto a fixed -1..1 span -- the sea side has a real, principled
+  //    floor (waterLevel, -1 raw) but the land side has no equivalent
+  //    hard ceiling to rescale against (noiseAmplitude bounds it in
+  //    practice, not by construction), so inventing one would trade one
+  //    arbitrary number (-0.62) for a different arbitrary one. A plain
+  //    offset gets the actual usability win (0 = coast) without that.
+  // 2) renumbered so "1" always means "nearest the coast," matching a
+  //    "measured from sea level" intuition -- direct request: "Sea
+  //    4-3-2-1 deep to coast and then Land 1-2-3-4 to go from coast to
+  //    inland." Sea counts DOWN from the array (index 0, the loosest/
+  //    deepest contour, now displays as the HIGHEST number). Land counts
+  //    UP continuously across the sand/veg array boundary rather than
+  //    restarting at 1 for veg -- they stay separate arrays (and
+  //    separate colours, --v3-sand vs --v3-veg in cabinet-v3-style.css),
+  //    only the visible numbering runs together, so a "(sand)"/"(veg)"
+  //    suffix keeps that distinction visible now that the number alone
+  //    doesn't carry it. A plain read-only row between the two groups
+  //    marks where the coastline itself sits (always 0 in these now-
+  //    relative units) -- "a frozen Coastline slider... or just a text
+  //    label," went with the plain label: a disabled slider would still
+  //    need an arbitrary track range to place its thumb on, for a
+  //    single fixed point that doesn't actually need one.
   const topoSubsection = makeSubsection(visualsSection, "Topological offset parameters", false);
 
   const bandSliders = [];
-  const addBandGroup = (arrayKey, label) => {
+  const addBandGroup = (arrayKey, label, displayIndex, suffix = "") => {
     v3Config.island[arrayKey].forEach((_, i) => {
       bandSliders.push(
         buildSlider(topoSubsection, {
-          label: `${label} ${i + 1}`, min: BAND_MIN, max: BAND_MAX, step: BAND_STEP,
-          get: () => v3Config.island[arrayKey][i],
+          label: `${label} ${displayIndex(i)}${suffix}`,
+          min: BAND_MIN - v3Config.island.threshold, max: BAND_MAX - v3Config.island.threshold, step: BAND_STEP,
+          get: () => v3Config.island[arrayKey][i] - v3Config.island.threshold,
           set: v => {
-            v3Config.island[arrayKey] = v3Config.island[arrayKey].map((x, idx) => (idx === i ? v : x));
+            v3Config.island[arrayKey] = v3Config.island[arrayKey].map((x, idx) => (idx === i ? v + v3Config.island.threshold : x));
           }
         })
       );
     });
   };
-  addBandGroup("seaBandThresholds", "Sea");
-  addBandGroup("sandThresholds", "Sand");
-  addBandGroup("vegThresholds", "Veg");
+  addBandGroup("seaBandThresholds", "Sea", i => v3Config.island.seaBandThresholds.length - i);
+
+  const coastlineRow = document.createElement("div");
+  coastlineRow.className = "v3-controls-row";
+  const coastlineName = document.createElement("span");
+  coastlineName.className = "v3-controls-name";
+  coastlineName.textContent = "Coastline";
+  const coastlineValue = document.createElement("span");
+  coastlineValue.className = "v3-controls-value";
+  coastlineValue.textContent = `0.00 (raw ${formatValue(v3Config.island.threshold, BAND_STEP)})`;
+  coastlineRow.appendChild(coastlineName);
+  coastlineRow.appendChild(coastlineValue);
+  topoSubsection.appendChild(coastlineRow);
+
+  addBandGroup("sandThresholds", "Land", i => i + 1, " (sand)");
+  addBandGroup("vegThresholds", "Land", i => i + 1 + v3Config.island.sandThresholds.length, " (veg)");
+  // v3.7.28 -- "Land 5," direct request: "can I have a land 5, and
+  // colour it white... a mountain peak of sorts." Continues the same
+  // coast-to-inland numbering as sand/veg above (peakThresholds' own
+  // comment in cabinet-v3-data.js has the "why 0.13" reasoning).
+  addBandGroup("peakThresholds", "Land", i => i + 1 + v3Config.island.sandThresholds.length + v3Config.island.vegThresholds.length, " (peak)");
 
   // -- Geo grid (v3.7.7) -- lat/long dotted grid + compass diagonals
   // (drawGeoGrid(), cabinet-v3-layout.js). Direct request: "2 separate

@@ -167,7 +167,22 @@ export const v3Config = {
     outerFrac: 1.3,
     gradientStrength: 1.12,
     threshold: -0.62,
-    waterLevel: -1,
+    // v3.7.28 -- -1 -> -1.4: direct feedback, "can the -1 limit be
+    // extended/applied to a slightly looser noise level, to get more
+    // variance in the sea floor." -1 sat right at the edge of what the
+    // Sea 1-4 slider range could usefully reach (Sea 4's loosest default,
+    // -0.97, was only 0.03 away from the old floor) -- verified
+    // empirically (traceContourFromHeightmap() returns a genuinely EMPTY
+    // path the instant a level goes past waterLevel, not a gradual
+    // fade-out: h can never be recorded below this value, so "H > level"
+    // becomes trivially true everywhere once level <= waterLevel, and a
+    // uniformly-true field has no crossing left to trace at all -- that's
+    // the "blink out" behaviour reported). -1.4 pushes the floor well
+    // past every current seaBandThresholds value, leaving real headroom
+    // for looser sea-floor levels or wider variance before hitting it
+    // again. See field notes below -- still only needs to stay
+    // "comfortably below threshold," no other constraint.
+    waterLevel: -1.4,
     seed: "cabinet-v3-islands",
     angularStrength: 0.38,
     angularFreqMin: 1.2,
