@@ -303,71 +303,63 @@ theme work above rather than the Phase 1 launch work below. Numbers
 carried over unchanged from wherever each item started (see this file's
 own numbering note near the top) -- a move, not a re-add.
 
-- [ ] **#21** Easter egg: clicking within the compass rose's inner circle
+- [x] **#21** Easter egg: clicking within the compass rose's inner circle
       switches the WHOLE canvas's theme, Medieval <-> Topology, and back
       on a second click. Direct request: "Its too nice a piece of work to
       be seen only in bits." Depends on the theme x hover feature (now
       built, v3.7.32-v3.7.44 above) enough to make sense built after it,
       not before -- same two themes, same colour data, just a
       click-triggered whole-canvas swap instead of a hover-scoped local
-      one. **Mechanically done, v3.7.48-v3.7.49, but NOT actually
-      correct yet -- reopened by direct testing feedback.** A small
-      invisible circle at the rose's centre (`.v3-compass-theme-hit`,
-      `renderCompassRegion()`) toggles `document.body.dataset.theme`
-      between `medieval-map`/`satellite` on click, with a CROSS-FADE
-      (450ms `transition`) rather than an instant snap, per direct
-      request to see it live before choosing between the two. Two
-      real problems found once actually tested:
-      1. **Structural, not just colour.** `document.body.dataset.theme`
-         only flips the CSS custom-property LAYER (fill/stroke tokens).
-         Whether wave rings/coastal bands draw at all, and whether
-         islands render flat or shaded, is controlled by
-         `v3Config.island.flatColourMode`/`showWaveRings`/
-         `showCoastalBands`/`seaShadowStyle` -- baked into the static
-         SVG once, at BUILD time, from whichever theme
-         `build-render.html` had active (`medieval-map`, hardcoded).
-         `THEME_PRESETS` (`cabinet-v3-controls.js`) sets these
-         DIFFERENTLY per theme (`satellite: flatColourMode: false,
-         showWaveRings: false, showCoastalBands: false, seaShadowStyle:
-         "directional"` vs medieval's `true/true/true/"radial"`) --
-         real structural differences a runtime attribute flip cannot
-         retroactively add or remove. Direct report: **"it shows
-         topology as a flat version... topo bands are missing, etc."**
-         Confirmed by screenshot: swapped-to-Topology still renders
-         with medieval's flat-fill-plus-ring island style, just
-         recoloured, not Topology's own directional-shadow/textured
-         look. Real options, not yet chosen between: (a) accept this as
-         a deliberate "Topology colours on Medieval structure" partial
-         swap and stop calling it a full theme swap; (b) bake BOTH
-         themes' full structural variants into the static build and
-         toggle visibility via `data-theme` -- roughly doubles the
-         static HTML payload (currently ~4.7MB of SVG markup); (c) reuse
-         the already-serialized `grown`+`canvasBounds` (same data
-         v3.7.47's boats/dragons already reads) to re-run just the
-         island-drawing/coastline-tracing portion of
-         `cabinet-v3-layout.js` client-side on swap -- NOT the full
-         170KB+ engine (treemap/circlepack only decide positions, which
-         don't change between themes), but still real added JS and a
-         genuine recompute pause on click, not instant.
-      2. **Hover-preview mismatch, secondary per direct confirmation
-         ("The In-topology hover behaviour is secondary").** The
-         per-island theme-preview hover wash is a static, pre-baked
-         decoration representing "hover shows what the OTHER production
-         theme would look like" relative to build time -- not reactive
-         to whichever theme is CURRENTLY active after a swap. Once
-         swapped into Topology, hovering should preview Medieval, but
-         still shows Topology's own (now-redundant) preview. Same root
-         cause as (1) above, likely resolved by whichever option is
-         chosen there rather than needing its own separate fix.
-      **Fixed in the same pass**: the ~10px page-jump on swap
-      (`.v3-header h1`'s font-family swaps to Cinzel for medieval-map,
-      a different typeface with different natural line-height metrics
-      -- explicit `line-height: 1.2` now forces the same line-box
-      height regardless of which font is actually rendering inside it;
-      verified identical `.v3-header` height in px before/after swap).
-      Known limitation, inherited from #64/v3.7.47, unaffected by the
-      above: boats/dragons only have Medieval colours defined, so they
-      won't re-tint on swap to Topology either way (already-flagged
+      one. **Done, v3.7.48-v3.7.50.** First pass (v3.7.48) only flipped
+      `document.body.dataset.theme`, which changes CSS colour tokens but
+      not structure -- direct testing feedback: **"it shows topology as
+      a flat version... topo bands are missing, etc."** True cause: wave
+      rings/coastal bands/flat-vs-shaded rendering come from
+      `v3Config.island.flatColourMode`/`showWaveRings`/
+      `showCoastalBands`/`seaShadowStyle`, baked into the static SVG once
+      at build time under Medieval's own settings. v3.7.49's own
+      analysis proposed three costly rebuild options (accept a colour-
+      only swap; double the static payload to bake both themes'
+      structure; a partial client-side re-render) without checking
+      whether the structure might already exist somewhere on the page --
+      corrected by direct, sharp feedback: **"The Hover ALREADY HAS all
+      of TOPOLOGY built in!! You just have to do the hover equivalent of
+      the entire canvas... I dont see why you keep wanting a new big
+      bang every time an asteroid has to change orbit."** Right: the
+      theme x hover feature (v3.7.32-v3.7.44) already builds a FULL,
+      independently-traced Topology render for every single island and
+      section -- real directional shadow, real band tracing, real
+      coastline (`v3Config.themePreview.previewTheme` is hardcoded
+      `"satellite"`) -- just scoped to reveal on a per-element `:hover`
+      instead of canvas-wide. **v3.7.50, actually done**: two small CSS
+      rules keyed off `data-theme="satellite"` (already set by the
+      existing click handler, no new state needed) -- reveal every
+      `*-theme-preview*` layer at once (the same `opacity: 1` the
+      `:hover` rules already set), and hide the 5 "Medieval effects"
+      elements (`.v3-wave-ring`/`.v3-coast-outward-band`/`.v3-coast-
+      inward-band-group`/`.v3-sea-shadow-radial`/`.v3-sea-shadow-taper`)
+      outright rather than relying on the single-hole hover-clip
+      mechanism, which was built for one local area, not the whole
+      canvas. Zero new JS, zero added payload, zero rebuild. Verified
+      visually (Playwright): real textured/shaded islands, directional
+      drop-shadows, correctly zero wave rings, and a clean round-trip
+      back to Medieval's original flat/banded look on a second click.
+      Same "check what already exists before reaching for a rebuild"
+      lesson as the boats/dragons cost correction (`#64`) -- this time
+      caught by the user, not self-corrected.
+      In-topology hover preview (hovering an island while already
+      swapped to Topology should preview Medieval, currently still shows
+      Topology's own now-redundant preview) stays unfixed, per direct
+      confirmation this is secondary and can wait.
+      **Also fixed in the same pass**: the ~10px page-jump on swap
+      (`.v3-header h1`'s font-family swaps to Cinzel for medieval-map, a
+      different typeface with different natural line-height metrics --
+      explicit `line-height: 1.2` now forces the same line-box height
+      regardless of which font is actually rendering inside it; verified
+      identical `.v3-header` height in px before/after swap).
+      Known limitation, inherited from #64/v3.7.47, unaffected by any of
+      the above: boats/dragons only have Medieval colours defined, so
+      they won't re-tint on swap to Topology either way (already-flagged
       future scope).
 - [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale

@@ -698,7 +698,7 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    whole block is the only thing to delete. */
 #v3-stage,
 #v3-stage * {
-  transition: fill 450ms ease, stroke 450ms ease, background-color 450ms ease;
+  transition: fill 450ms ease, stroke 450ms ease, background-color 450ms ease, opacity 450ms ease;
 }
 
 .v3-header,
@@ -989,6 +989,49 @@ body[data-label-style="glow"] .v3-compass-direction-label {
 .v3-sea-shadow-radial,
 .v3-sea-shadow-taper {
   clip-path: url(#v3-medieval-effects-clip);
+}
+
+/* v3.7.50 (#21) -- the theme-preview-on-hover mechanism above already
+   builds FULL Topology structure for every island and section
+   (v3Config.themePreview.previewTheme is hardcoded "satellite",
+   cabinet-v3-data.js) -- real directional shadow, real band tracing,
+   real coastline, not an approximation -- it was just scoped to reveal
+   on a per-element :hover instead of canvas-wide. Direct correction:
+   "The Hover ALREADY HAS all of TOPOLOGY built in!! You just have to do
+   the hover equivalent of the entire canvas." Right -- the "double the
+   static payload" / "partial live re-render" options from v3.7.49 were
+   solving a problem that didn't need solving; this is the same
+   "check what already exists before reaching for a rebuild" lesson as
+   the boats/dragons cost estimate (#64). Two things, both scoped to
+   data-theme="satellite" so they only apply once actually swapped:
+   reveal every theme-preview layer at once (same opacity:1 the :hover
+   rules already set, just triggered by the swap instead), and hide the
+   5 "Medieval effects" elements above outright rather than relying on
+   the single hover-clip-hole mechanism (built for ONE local area, not
+   the whole canvas at once). */
+body.v3-proto[data-theme="satellite"] .v3-wave-ring,
+body.v3-proto[data-theme="satellite"] .v3-coast-outward-band,
+body.v3-proto[data-theme="satellite"] .v3-coast-inward-band-group,
+body.v3-proto[data-theme="satellite"] .v3-sea-shadow-radial,
+body.v3-proto[data-theme="satellite"] .v3-sea-shadow-taper {
+  opacity: 0;
+}
+
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-shadow,
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview,
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-sea,
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-sand,
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-veg,
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-peak,
+body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-coastline,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-shadow,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-sea,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-sand,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-veg,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-peak,
+body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-coastline {
+  opacity: 1;
 }
 
 .v3-wave-ring {
