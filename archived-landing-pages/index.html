@@ -63,14 +63,20 @@
     border: 1px solid var(--cab-card-border);
     border-radius: 4px;
     padding: 1.75rem;
-    text-decoration: none;
-    color: inherit;
     box-shadow: 0 2px 6px rgba(46, 36, 24, 0.15);
     transition: box-shadow 0.15s ease, transform 0.15s ease;
   }
   .archive-card:hover {
     box-shadow: 0 4px 12px rgba(46, 36, 24, 0.22);
     transform: translateY(-2px);
+  }
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .archive-card p a {
+    color: var(--cab-accent);
   }
   .archive-card .eyebrow {
     display: block;
@@ -107,26 +113,31 @@
     Each iteration is preserved as it last stood before being superseded.
   </p>
   <div class="archive-grid">
-    <a class="archive-card" href="v1/index.html">
-      <span class="eyebrow">v1</span>
-      <h2>The original MkDocs site</h2>
+    <div class="archive-card">
+      <a class="card-link" href="v1/index.html">
+        <span class="eyebrow">v1</span>
+        <h2>The original MkDocs site</h2>
+      </a>
       <p>
         The first Cabinet of Curiosities homepage: a plain MkDocs Material
         content page linking out to jesalmehta.com and other worlds, with
         the full site of pages beneath it. Fully navigable, built as it
         stood at its last commit before the archipelago-map rebuild.
       </p>
-    </a>
-    <a class="archive-card" href="v2/index.html">
-      <span class="eyebrow">v2</span>
-      <h2>The archipelago-map stub</h2>
+    </div>
+    <div class="archive-card">
+      <a class="card-link" href="v2/index.html">
+        <span class="eyebrow">v2</span>
+        <h2>The archipelago-map stub</h2>
+      </a>
       <p>
         A hand-built SVG archipelago map that briefly replaced the v1
         homepage, then was itself quickly superseded before it was ever
         linked into the rest of the site. Preserved standalone with its
-        own styles and scripts, not connected onward.
+        own styles and scripts, not connected onward. See also its
+        <a href="v2-history/index.html">intermediate states</a>.
       </p>
-    </a>
+    </div>
   </div>
   <footer>
     v3, the archipelago-tool rebuild of the map above, is the current

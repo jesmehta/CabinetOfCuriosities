@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>v2 history</title>
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --cab-paper: #ead9b8;
+    --cab-ink: #2e2418;
+    --cab-ink-soft: #6d5a3f;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--cab-paper);
+    color: var(--cab-ink);
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  a.back { align-self: flex-start; margin-left: max(1rem, calc(50% - 20rem)); color: var(--cab-ink-soft); margin-bottom: 2rem; }
+  h1 { margin: 0 0 0.25rem; }
+  p.intro { color: var(--cab-ink-soft); max-width: 38rem; text-align: center; margin: 0 0 2rem; }
+  ol { max-width: 38rem; width: 100%; padding: 0; list-style: none; }
+  li { margin-bottom: 1rem; padding: 1rem 1.25rem; background: rgba(238, 222, 184, 0.7); border: 1px solid rgba(46, 36, 24, 0.4); border-radius: 4px; }
+  li a { font-weight: bold; color: var(--cab-ink); text-decoration: none; }
+  li a:hover { text-decoration: underline; }
+  li p { margin: 0.35rem 0 0; font-size: 0.9rem; color: var(--cab-ink-soft); line-height: 1.5; }
+</style>
+</head>
+<body>
+  <a class="back" href="../index.html">&larr; Archive</a>
+  <h1>v2 -- intermediate states</h1>
+  <p class="intro">
+    Every meaningfully distinct visual state the archipelago-map stub passed
+    through on its way to the version in <code>../v2/</code>, each rebuilt
+    with its own dependency chain as it stood at that commit.
+  </p>
+  <ol>
+    <li>
+      <a href="01-initial/index.html">01 -- initial (c384a11)</a>
+      <p>The very first pass: hand-drawn hachure/islet flourishes, a plain
+      double-rectangle cartouche, simple diamond compass needle. Built
+      before the map was reviewed against its own reference images.</p>
+    </li>
+    <li>
+      <a href="02-round1-visual-pass/index.html">02 -- Round 1 visual pass (e8694a4)</a>
+      <p>The reference-driven overhaul: jaggier engraved coastlines,
+      correlated ripple contours, hachure ticks, an 8-point compass star,
+      corner-scroll cartouche flourishes, topic-matched entry icons.</p>
+    </li>
+    <li>
+      <a href="03-coastline-regen/index.html">03 -- coastline regen (b20398f)</a>
+      <p>Islands repositioned for a new layout; ripple rings switched from
+      per-island triples to one fused distance-transform contour. Drops the
+      old per-island hachure/islet flourishes -- they didn't fit the new
+      coastline style.</p>
+    </li>
+    <li>
+      <a href="04-serpent-redesign/index.html">04 -- serpent redesign (a3887b0)</a>
+      <p>Same map as 03, with the sea-serpent motif replaced: a segmented
+      coiling body with head, eye, frill and tail, instead of a bare
+      sine-wave-plus-triangle.</p>
+    </li>
+  </ol>
+</body>
+</html>
