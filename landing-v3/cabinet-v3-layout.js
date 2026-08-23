@@ -858,35 +858,137 @@ const COMPASS_ROSE_SCALE = 0.62;
 // cabinet-v3-style.css (hit and target aren't DOM siblings, since hits
 // need the full-square transform and the arm-glow needs the rose's own
 // shrunk one).
+// v3.7.18 -- shared by renderCompassRegion() (below) and render()'s own
+// gridOrigin calculation, so both agree on where the compass's true
+// visual centre actually is. Split out at v3.7.20 -- gridOrigin (the
+// lat/long grid's and the diagonals' shared phase-alignment point,
+// render()) originally just read compassSquare's raw, UNshifted centre,
+// which was correct until this function started shifting the rose off
+// that centre (below) to recentre the whole [rose + labels] unit --
+// after that, gridOrigin and the rose's actual rendered position quietly
+// disagreed, direct feedback: "diagonals no longer centred to the
+// compass! I suspect the latlong isnt either" (it was: same root cause).
+// Computing the shift ONCE here, called from both places, means there's
+// only one place this math can drift out of sync with itself.
+//
+// Direct feedback that produced this shift in the first place: uneven
+// spacing between the rose and its 4 labels ("Contact me" sitting
+// tighter to the rose than the others). COMPASS_LABEL_LAYOUT's old fixed
+// FRACTIONS (x/y as a % of the square) put every label a fixed DISTANCE
+// from the square's own edge, not a fixed distance from the rose's edge
+// -- two labels of different lengths (or one wrapped to 2 lines) end up
+// different distances from the actual artwork even at matching
+// fractions. Replaced with an explicit, uniform LABEL_GAP measured from
+// the rose's real rendered edge (= `inset`, the same margin that centres
+// the rose in the square) to each label's own near edge -- same gap on
+// all 4 sides by construction. COMPASS_LABEL_LAYOUT still supplies
+// anchor/wrap per direction; only x/y are derived here instead of read
+// off `pos` directly.
+//
+// Second direct request, done together: "recalculate the compass
+// position based on centering the compass + the text labels, and
+// recenter within the larger section+margin territory." Two passes --
+// first computes every label's estimated position/box at the gap above
+// (nominal, rose assumed centred in `square`), then measures the
+// combined [rose + all 4 labels] bounding box and returns how far THAT
+// box's centre sits from the square's own centre, for the caller to
+// shift rose + every label + every hit box (or, for render(),
+// gridOrigin) by. Only needed because the 4 labels aren't symmetric in
+// length -- a longer label pushes the combined box's edge further out on
+// its side than a shorter one opposite it, so the rose-centred-alone
+// assumption doesn't actually centre the whole visual unit. Estimated
+// the same way every other label box in this file already is (char count
+// x font size x width factor) -- not a live getBBox() measurement,
+// consistent with this file's existing convention (see
+// wrapTitleToLines()).
+function computeCompassLayout(square) {
+  const fullScale = square.width / COMPASS_VIEWBOX;
+  const scale = fullScale * COMPASS_ROSE_SCALE;
+  const inset = (square.width - square.width * COMPASS_ROSE_SCALE) / 2;
+  const roseLeft = square.x + inset;
+  const roseRight = square.x + square.width - inset;
+  const roseTop = square.y + inset;
+  const roseBottom = square.y + square.height - inset;
+  const roseCenterX = square.x + square.width / 2;
+  const roseCenterY = square.y + square.height / 2;
+  return { scale, inset, roseLeft, roseRight, roseTop, roseBottom, roseCenterX, roseCenterY };
+}
+
+const COMPASS_LABEL_GAP = 10;
+const COMPASS_LABEL_CHAR_WIDTH_FACTOR = 0.56;
+const COMPASS_LABEL_FONT_SIZE = 11;
+const COMPASS_LABEL_LINE_HEIGHT = 12;
+
+function computeCompassNominalLabels(rose, sectionMeta) {
+  const byDirection = new Map(
+    sectionMeta.entries
+      .filter(e => e.status !== false)
+      .map(e => [e.visual && e.visual.anchor, e])
+  );
+  return Object.entries(COMPASS_LABEL_LAYOUT)
+    .map(([dir, pos]) => {
+      const entry = byDirection.get(dir);
+      if (!entry) return null;
+      const lines = pos.wrap ? entry.title.split(" ") : [entry.title];
+      const maxLineLen = Math.max(...lines.map(l => l.length));
+      const textWidth = maxLineLen * COMPASS_LABEL_FONT_SIZE * COMPASS_LABEL_CHAR_WIDTH_FACTOR;
+      const textHalfHeight = (lines.length * COMPASS_LABEL_LINE_HEIGHT) / 2;
+      let x, y;
+      if (dir === "E") { x = rose.roseRight + COMPASS_LABEL_GAP + textWidth; y = rose.roseCenterY; }
+      else if (dir === "W") { x = rose.roseLeft - COMPASS_LABEL_GAP - textWidth; y = rose.roseCenterY; }
+      else if (dir === "N") { x = rose.roseCenterX; y = rose.roseTop - COMPASS_LABEL_GAP - textHalfHeight; }
+      else { x = rose.roseCenterX; y = rose.roseBottom + COMPASS_LABEL_GAP + textHalfHeight; }
+      return { dir, pos, entry, lines, x, y, textWidth, textHalfHeight };
+    })
+    .filter(Boolean);
+}
+
+// Returns { shiftX, shiftY } -- see computeCompassLayout()'s own comment
+// for why this needs to be called (not just the raw square centre) by
+// both renderCompassRegion() and render()'s gridOrigin calculation.
+function computeCompassShift(square, sectionMeta) {
+  const rose = computeCompassLayout(square);
+  const nominal = computeCompassNominalLabels(rose, sectionMeta);
+  const boxLeft = Math.min(rose.roseLeft, ...nominal.filter(n => n.dir === "W").map(n => n.x));
+  const boxRight = Math.max(rose.roseRight, ...nominal.filter(n => n.dir === "E").map(n => n.x));
+  const boxTop = Math.min(rose.roseTop, ...nominal.filter(n => n.dir === "N").map(n => n.y - n.textHalfHeight));
+  const boxBottom = Math.max(rose.roseBottom, ...nominal.filter(n => n.dir === "S").map(n => n.y + n.textHalfHeight));
+  return {
+    shiftX: rose.roseCenterX - (boxLeft + boxRight) / 2,
+    shiftY: rose.roseCenterY - (boxTop + boxBottom) / 2
+  };
+}
+
 function renderCompassRegion(stage, region, sectionMeta) {
   const square = region.compassSquare;
   if (!square || square.width <= 0) return;
 
   const group = el("g", { class: "v3-compass" });
 
-  const fullScale = square.width / COMPASS_VIEWBOX;
-  const scale = fullScale * COMPASS_ROSE_SCALE;
-  const inset = (square.width - square.width * COMPASS_ROSE_SCALE) / 2;
-  const rose = el("g", {
+  const rose = computeCompassLayout(square);
+  const nominal = computeCompassNominalLabels(rose, sectionMeta);
+  const boxLeft = Math.min(rose.roseLeft, ...nominal.filter(n => n.dir === "W").map(n => n.x));
+  const boxRight = Math.max(rose.roseRight, ...nominal.filter(n => n.dir === "E").map(n => n.x));
+  const boxTop = Math.min(rose.roseTop, ...nominal.filter(n => n.dir === "N").map(n => n.y - n.textHalfHeight));
+  const boxBottom = Math.max(rose.roseBottom, ...nominal.filter(n => n.dir === "S").map(n => n.y + n.textHalfHeight));
+  const shiftX = rose.roseCenterX - (boxLeft + boxRight) / 2;
+  const shiftY = rose.roseCenterY - (boxTop + boxBottom) / 2;
+
+  const { scale, inset } = rose;
+  const roseGroup = el("g", {
     class: "v3-compass-rose",
-    transform: `translate(${square.x + inset}, ${square.y + inset}) scale(${scale})`
+    transform: `translate(${square.x + inset + shiftX}, ${square.y + inset + shiftY}) scale(${scale})`
   });
   COMPASS_ROSE_SHAPES.forEach(shape => {
     const attrs = { class: shape.cls };
     if (shape.tag === "polygon") attrs.points = shape.points;
     else attrs.d = shape.d;
-    rose.appendChild(el(shape.tag, attrs));
+    roseGroup.appendChild(el(shape.tag, attrs));
   });
   Object.entries(COMPASS_ARM_HULLS).forEach(([dir, points]) => {
-    rose.appendChild(el("polygon", { class: "v3-compass-arm-glow", "data-direction": dir, points }));
+    roseGroup.appendChild(el("polygon", { class: "v3-compass-arm-glow", "data-direction": dir, points }));
   });
-  group.appendChild(rose);
-
-  const byDirection = new Map(
-    sectionMeta.entries
-      .filter(e => e.status !== false)
-      .map(e => [e.visual && e.visual.anchor, e])
-  );
+  group.appendChild(roseGroup);
 
   // v3.7.2 -- `wrap: true` (E, currently -- "Contact me", the longest of
   // the 4 labels) line-breaks one word per <tspan> instead of pushing
@@ -910,38 +1012,31 @@ function renderCompassRegion(stage, region, sectionMeta) {
   // care about .v3-compass-hit[data-direction]'s OWN :hover/
   // :focus-visible state, not what shape triggered it.
   const LABEL_HIT_PAD = 5;
-  const LABEL_CHAR_WIDTH_FACTOR = 0.56;
-  const LABEL_FONT_SIZE = 11;
 
   const labels = el("g", { class: "v3-compass-labels" });
   const hits = el("g", { class: "v3-compass-hits" });
-  const labelLineHeight = 12;
 
-  Object.entries(COMPASS_LABEL_LAYOUT).forEach(([dir, pos]) => {
-    const entry = byDirection.get(dir);
-    if (!entry) return;
-
-    const lines = pos.wrap ? entry.title.split(" ") : [entry.title];
-    const x = square.x + pos.x * square.width;
-    const y = square.y + pos.y * square.height;
+  nominal.forEach(({ dir, pos, entry, lines, x: nomX, y: nomY }) => {
+    const x = nomX + shiftX;
+    const y = nomY + shiftY;
     const textEl = el("text", { class: "v3-compass-direction-label", "data-direction": dir, x, "text-anchor": pos.anchor });
-    const firstY = y - ((lines.length - 1) * labelLineHeight) / 2;
+    const firstY = y - ((lines.length - 1) * COMPASS_LABEL_LINE_HEIGHT) / 2;
     lines.forEach((line, i) => {
-      textEl.appendChild(el("tspan", { x, y: firstY + i * labelLineHeight }, line));
+      textEl.appendChild(el("tspan", { x, y: firstY + i * COMPASS_LABEL_LINE_HEIGHT }, line));
     });
     labels.appendChild(textEl);
 
     const maxLineLen = Math.max(...lines.map(l => l.length));
-    const boxWidth = maxLineLen * LABEL_FONT_SIZE * LABEL_CHAR_WIDTH_FACTOR + LABEL_HIT_PAD * 2;
-    const boxHeight = lines.length * labelLineHeight + LABEL_HIT_PAD * 2;
-    let boxLeft;
-    if (pos.anchor === "start") boxLeft = x - LABEL_HIT_PAD;
-    else if (pos.anchor === "end") boxLeft = x - boxWidth + LABEL_HIT_PAD;
-    else boxLeft = x - boxWidth / 2;
-    const boxTop = y - boxHeight / 2;
+    const hitWidth = maxLineLen * COMPASS_LABEL_FONT_SIZE * COMPASS_LABEL_CHAR_WIDTH_FACTOR + LABEL_HIT_PAD * 2;
+    const hitHeight = lines.length * COMPASS_LABEL_LINE_HEIGHT + LABEL_HIT_PAD * 2;
+    let hitLeft;
+    if (pos.anchor === "start") hitLeft = x - LABEL_HIT_PAD;
+    else if (pos.anchor === "end") hitLeft = x - hitWidth + LABEL_HIT_PAD;
+    else hitLeft = x - hitWidth / 2;
+    const hitTop = y - hitHeight / 2;
 
     const link = el("a", { class: "v3-compass-hit", href: entry.href || "#", "data-direction": dir });
-    link.appendChild(el("rect", { class: "v3-compass-label-frame", x: boxLeft, y: boxTop, width: boxWidth, height: boxHeight }));
+    link.appendChild(el("rect", { class: "v3-compass-label-frame", x: hitLeft, y: hitTop, width: hitWidth, height: hitHeight }));
     hits.appendChild(link);
   });
 
@@ -2132,8 +2227,20 @@ export function render() {
   // retraceIslands() (below) needs it too, to redraw the grid on its own
   // cheap path when a spacing slider moves, without recomputing the
   // whole layout just for that.
+  // v3.7.20 bugfix -- used to be compassSquare's raw, unshifted centre,
+  // which stopped matching the rose's actual rendered position once
+  // renderCompassRegion() started recentring the [rose + labels] unit as
+  // one block (v3.7.18) -- direct feedback: "diagonals no longer centred
+  // to the compass! I suspect the latlong isnt either" (it was). Now
+  // reads the exact same shift renderCompassRegion() itself applies (see
+  // computeCompassShift()'s own comment), so this can never drift out of
+  // sync with where the compass is actually drawn again.
   const gridOrigin = compassRegion
-    ? { x: compassRegion.compassSquare.x + compassRegion.compassSquare.width / 2, y: compassRegion.compassSquare.y + compassRegion.compassSquare.height / 2 }
+    ? (() => {
+        const square = compassRegion.compassSquare;
+        const { shiftX, shiftY } = computeCompassShift(square, compassMeta);
+        return { x: square.x + square.width / 2 + shiftX, y: square.y + square.height / 2 + shiftY };
+      })()
     : { x: canvasWidth / 2, y: canvasHeight / 2 };
   islandLayoutState = { grown, canvasBounds, gridOrigin, layout };
   const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
