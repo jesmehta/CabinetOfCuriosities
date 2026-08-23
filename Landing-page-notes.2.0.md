@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.53 bugfix -- compass direction labels went invisible on hover in Medieval](#v3753-bugfix----compass-direction-labels-went-invisible-on-hover-in-medieval)
   - [v3.7.52 -- compass spin gets a real ease-in/cruise/ease-out shape](#v3752----compass-spin-gets-a-real-ease-incruiseease-out-shape)
   - [v3.7.51 -- v3.7.50 was itself wrong: a real full-canvas structural layer, not a global hover reveal](#v3751----v3750-was-itself-wrong-a-real-full-canvas-structural-layer-not-a-global-hover-reveal)
   - [v3.7.50 -- the theme swap actually works now: reusing the hover-preview mechanism instead of rebuilding anything](#v3750----the-theme-swap-actually-works-now-reusing-the-hover-preview-mechanism-instead-of-rebuilding-anything)
@@ -112,7 +113,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.52**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.53**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1532,6 +1533,28 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.53 bugfix -- compass direction labels went invisible on hover in Medieval
+
+Fourth instance of the same root cause as v3.7.23/v3.7.48: on hover,
+`.v3-compass-direction-label` switches `fill` to `--v3-halo-ink`, which
+defaults to the shared `--cab-land-hover` (`#faf3dc`, a pale parchment
+cream) unless a theme overrides it -- fine against a dark sea, invisible
+against medieval-map's own equally pale one. Direct report: "hover on
+the compass rose labels makes them cream and disapper into the
+background."
+
+Fixed with a medieval-scoped override on just the label's `fill` (not a
+blanket `--v3-halo-ink` retune in medieval-map's own token block) --
+that token also drives `.v3-compass-arm-glow`/`.v3-island-glow`/
+`.v3-section-glow`, none of which were reported broken and likely read
+fine staying pale even in this theme; narrower blast radius, one less
+thing to have to re-verify. The override needs an extra
+`body.v3-proto[data-theme="medieval-map"]` ancestor prefix on all four
+direction rules (not a smaller tweak) to out-specificity the existing
+per-direction hover rules honestly, rather than reaching for
+`!important`. Verified via computed style (`getComputedStyle(...).fill`
+read back as `rgb(28, 23, 18)`, exactly `--v3-ink`) and a screenshot.
 
 ### v3.7.52 -- compass spin gets a real ease-in/cruise/ease-out shape
 

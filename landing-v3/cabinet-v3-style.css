@@ -832,6 +832,32 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   filter: drop-shadow(0 0 3px var(--v3-halo-ink));
 }
 
+/* v3.7.53 bugfix -- same cream-on-cream pattern as the v3.7.23/v3.7.48
+   header/footnote fixes: on hover, the four rules above switch the
+   label's fill to --v3-halo-ink, which "this theme doesn't override...
+   so it's still the shared warm parchment tone (--cab-land-hover,
+   #faf3dc)" (see satellite's own comment on this same token above) --
+   fine against a dark sea, invisible against medieval-map's own pale
+   parchment one. Direct report: "hover on the compass rose labels makes
+   them cream and disappear into the background." Scoped to just the
+   label's fill (not a blanket --v3-halo-ink override in medieval-map's
+   own block) since that token also drives arm-glow/island-glow/
+   section-glow washes elsewhere, not reported as broken and likely
+   fine staying pale even here. Needs the extra body.v3-proto[data-
+   theme=...] ancestor prefix (not just a :has() rewrite) to out-
+   specificity the four rules above rather than fighting them with
+   !important. */
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="N"]:hover) .v3-compass-direction-label[data-direction="N"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="N"]:focus-visible) .v3-compass-direction-label[data-direction="N"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="E"]:hover) .v3-compass-direction-label[data-direction="E"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="E"]:focus-visible) .v3-compass-direction-label[data-direction="E"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="S"]:hover) .v3-compass-direction-label[data-direction="S"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="S"]:focus-visible) .v3-compass-direction-label[data-direction="S"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="W"]:hover) .v3-compass-direction-label[data-direction="W"],
+body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-direction="W"]:focus-visible) .v3-compass-direction-label[data-direction="W"] {
+  fill: var(--v3-ink);
+}
+
 /* v3.7.1 -- faint dotted lat/long grid + compass diagonals
    (cabinet-v3-layout.js's drawGeoGrid()), ~100px apart. A distinct dot
    pattern from .v3-region-outline's dashed 6-6 (that one reads as
