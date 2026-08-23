@@ -632,7 +632,11 @@ function buildControlPanel() {
     opt.textContent = label;
     labelStyleSelect.appendChild(opt);
   });
-  labelStyleSelect.value = document.body.dataset.labelStyle || "halo";
+  // v3.7.27 -- fallback changed "halo" -> "glow": direct request, "label
+  // style = soft glow as default." The real default lives on <body>'s own
+  // data-label-style attribute (islands-tool.html / index.template.html)
+  // -- this fallback only matters if that attribute is ever missing.
+  labelStyleSelect.value = document.body.dataset.labelStyle || "glow";
   labelStyleSelect.addEventListener("change", () => {
     document.body.dataset.labelStyle = labelStyleSelect.value;
   });
