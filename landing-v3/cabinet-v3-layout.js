@@ -2083,7 +2083,14 @@ function drawFlowFieldDebug(stage, canvasBounds, field) {
 // potential already uses at its own field.cellSize, 24px) rather than
 // resampling anything -- H doesn't need rebuilding, just reading
 // sparsely.
-const NOISE_DEBUG_CELL_PX = 24;
+// v3.7.44 -- 24 -> 12: direct request, "Island noise heightmap needs to
+// be finer than what it is currently... doesnt cost the user anything,
+// only at the tool level to me, so atleast double the resolution from
+// current." Dev-only debug overlay (never shipped in index.html/the
+// production build), so the extra SVG node count this trades against
+// (4x, both axes finer) is a real cost only to this tool's own render
+// time, never to an actual site visitor.
+const NOISE_DEBUG_CELL_PX = 12;
 function drawIslandNoiseDebug(stage, paddedBounds, H, cols, rows, cellSize) {
   let group = stage.querySelector(".v3-noise-debug");
 
