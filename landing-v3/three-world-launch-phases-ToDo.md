@@ -17,6 +17,15 @@
 Live checklist. Check items off as they land; don't renumber or reorder
 on completion -- history matters more than a tidy list. Companion files:
 
+Phase 0's punch list (both subsections below, 2026-08-23) carries a
+stable `**#N**` tag right after each item's checkbox, so items can be
+referred to by number ("#12") instead of by description. Assigned once,
+in the order items appeared at the time -- a NEW item added later gets
+the next unused number appended wherever it's inserted in the list, it
+does NOT trigger a renumber of anything else, same "history matters"
+reasoning as the no-renumbering rule above. Only Phase 0 is tagged this
+way for now.
+
 - `Landing-page-notes.2.0.md` (parent directory) -- v3-prototype concept
   notes, discussions, and full changelog. This file's Phase 0 used to
   live there as the "punch list"; moved out here because it had outgrown
@@ -45,7 +54,7 @@ freely.
 
 ### Punch list (sea serpent through colophon)
 
-- [x] Sea-serpent redesign -- **done, v3.6.24**: the blocker was the
+- [x] **#1** Sea-serpent redesign -- **done, v3.6.24**: the blocker was the
       reference itself, resolved by the user supplying one directly
       (`dragon.svg`) rather than a hand-drawn sketch. 1-3 independent
       sea-dragon wanderers, noise-driven movement, coastal avoidance,
@@ -53,16 +62,16 @@ freely.
       (`cabinet-v3-seaserpent.js` / `_test-serpent.html`) stays
       untracked, unused, not deleted -- superseded, not merged into
       this.
-- [ ] Water wave-line texture -- on hold pending a reference image (v2's
+- [ ] **#2** Water wave-line texture -- on hold pending a reference image (v2's
       own wavelines weren't visible/legible as a reference on their
       own).
-- [x] Boats sailing in smooth flows (not randomly moving) -- the
+- [x] **#3** Boats sailing in smooth flows (not randomly moving) -- the
       original attempt was reverted after an unresolved Chromium
       `<use>`/`<symbol>` rendering bug. **Done, v3.6.17-v3.6.21**, via a
       different mechanism that sidesteps that bug entirely: plain
       `<ellipse>`+`<line>` particles (no `<use>`/`<symbol>`), advected
       along the flow field below. See next item.
-- [x] Flowfield stretch goal -- a precomputed noise/flow field with
+- [x] **#4** Flowfield stretch goal -- a precomputed noise/flow field with
       live, cheap particle advection along it (waves, boats),
       obstacles/repulsion around islands, optionally mouse-reactive.
       **Done, v3.6.16-v3.6.21** (`islands-tool.html` only --
@@ -79,10 +88,10 @@ freely.
       rather than perturbing the field itself, capped at 1.5x the base
       particle count. **Not yet in the production static build** -- see
       Phase 1's "finish or consciously defer flowfield particles".
-- [x] islands-tool idea: a control to re-roll/regenerate the circle
+- [x] **#5** islands-tool idea: a control to re-roll/regenerate the circle
       centres and packing stage itself -- done, v3.6.8: "Reroll
       positions" button, Layout section.
-- [x] islands-tool idea: switch or layer between the wave contours, the
+- [x] **#6** islands-tool idea: switch or layer between the wave contours, the
       topology noise contour bands, or both -- **tier 1 done** (v3.6.8's
       three preset buttons, replaced in v3.6.9 by two independent
       checkboxes in the Visuals section -- Wave contours / Colour bands
@@ -93,16 +102,16 @@ freely.
       riso, cyanotype, neon, ukiyo, medieRiso), each its own colour token
       set + type pairing, switched live via the Theme select -- see
       `v3-scheme-candidates.md`.
-- [x] islands-tool idea: give the topology noise contour bands
+- [x] **#7** islands-tool idea: give the topology noise contour bands
       (`seaBandThresholds`/`sandThresholds`/`vegThresholds`) their own
       panel section -- done, v3.6.9: "Topological offset parameters" in
       the Visuals section, one slider per array element.
-- [x] Strengthen centroid gathering further -- push `centerBias` harder
+- [x] **#8** Strengthen centroid gathering further -- push `centerBias` harder
       if islands should cluster tighter still -- **counted done**: a
       live slider exists (v3.6.8, Layout section) so this is now a
       direct try-values-and-judge action, not something blocked on more
       code.
-- [ ] Give sections a minimum weight so small sections (About Me, etc.)
+- [ ] **#9** Give sections a minimum weight so small sections (About Me, etc.)
       don't read as visually skewed/collapsed -- **investigated
       (v3.6.10), confirmed insufficient as-is.**
       `v3Config.canvas.minSectionWeight` (v3.4) floors a section's AREA
@@ -113,46 +122,46 @@ freely.
       one item's own shape. A real fix needs an aspect-ratio-aware
       constraint back in `squarify()` -- not something to build without
       discussing scope first.
-- [ ] A real pass on fonts, colours, sizes, and readability --
+- [ ] **#10** A real pass on fonts, colours, sizes, and readability --
       **partially done, v3.6.12-v3.6.13**: header type/size, section-
       label size, and island-label legibility (live-switchable, see
       below) are addressed. The map's overall colour scheme itself
       (sea/sand/veg band hues, ink tones) is still the original
       first-guess palette from v3.6.5 -- untouched, still on hold.
-- [ ] Other small details -- compass rose, easter eggs, etc.
-- [x] Expand the canvas to full-bleed window size -- **done, v3.6.10.**
+- [ ] **#11** Other small details -- compass rose, easter eggs, etc.
+- [x] **#12** Expand the canvas to full-bleed window size -- **done, v3.6.10.**
       Adapts to the viewport ONCE at load, not on a live drag-resize
       afterward.
-- [x] Fold the "Cabinet of Curiosities" heading + intro text into the
+- [x] **#13** Fold the "Cabinet of Curiosities" heading + intro text into the
       map itself -- **done, v3.6.10, reverted v3.6.12.** v3.6.12 put it
       back in a normal top-of-page row instead (real `<h1>`/`<p>`
       matters for crawlers/screen readers in a way JS-drawn SVG text
       doesn't). Still real, unchanged HTML either way.
-- [x] Refine the header itself -- **done, v3.6.12**: title/tagline
+- [x] **#14** Refine the header itself -- **done, v3.6.12**: title/tagline
       wording, typography/look-and-feel (larger H1, sits directly on the
       full-bleed sea colour instead of a card), position (top row).
       H1-scale-mismatch sub-question moved to the next item, unresolved.
-- [ ] Still open: resizing the window scales the map's own text via the
+- [ ] **#15** Still open: resizing the window scales the map's own text via the
       SVG viewBox, but the real HTML `<h1>`/tagline don't scale with it,
       since they sit outside the SVG entirely. Undecided which of three
       options to take: scale it with the map, clamp its size within a
       range, or leave it fixed as-is (current behaviour, by default
       rather than decision).
-- [ ] Idea: the compass rose (or similar map ornamentation) could BE the
+- [ ] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
       About Me / Contact Me links, rather than those existing as regular
       islands -- see the doc-audit item below (WORLD-SYSTEMS.md's
       FabAcademy-is-not-a-world rule) for a directly relevant constraint
       on what About Me should even link to.
-- [ ] Merge branches -- **superseded by Phase 1's "Promote
+- [ ] **#17** Merge branches -- **superseded by Phase 1's "Promote
       landing-v3-prototype into the production Cabinet structure" and
       the Branch/production transition checklist below.**
-- [ ] Create a history section and place archival pages there --
+- [ ] **#18** Create a history section and place archival pages there --
       `archived-landing-pages/` already exists as a filesystem
       convention; this is about giving it a real, linked home on the
       site itself, not just a folder.
-- [ ] Launch the page -- **superseded by Phase 1 below.**
-- [ ] Write the colophon and creation notes.
-- [ ] Easter egg: clicking within the compass rose's inner circle
+- [ ] **#19** Launch the page -- **superseded by Phase 1 below.**
+- [ ] **#20** Write the colophon and creation notes.
+- [ ] **#21** Easter egg: clicking within the compass rose's inner circle
       switches the WHOLE canvas's theme, Medieval <-> Topology, and back
       on a second click. Direct request: "Its too nice a piece of work to
       be seen only in bits." Depends on the theme x hover feature (see
@@ -168,46 +177,78 @@ Surfaced by reading `LANDING-PAGE-NOTES.md` (top-level, v2/production),
 v3-prototype) items, kept here since they're real open items on the same
 overall site.
 
-- [ ] Card/label overlap on Bookshelf, fffx, and Interfaces/Data/Texts
+- [ ] **#22** Card/label overlap on Bookshelf, fffx, and Interfaces/Data/Texts
       islands -- the widest cards clip the island name label.
-- [ ] Real thumbnails owed for entries still on generated placeholder
+- [ ] **#23** Real thumbnails owed for entries still on generated placeholder
       tiles -- e.g. Circle Packing Library already has one sitting in
       the fffx repo, just never copied over.
-- [ ] CV entry's "scroll" icon reads ambiguous at card size.
-- [ ] Verify fffx's DNS/CNAME is actually live before treating fffx
+- [ ] **#24** CV entry's "scroll" icon reads ambiguous at card size.
+- [ ] **#25** Verify fffx's DNS/CNAME is actually live before treating fffx
       links from Cabinet as production (no committed `CNAME` confirmed
       as of the v2.1 follow-up that raised this).
-- [ ] `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
+- [ ] **#26** `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
       dashed border, leader-line to a card sitting off the island
       entirely) is fully built and supported by the renderer but no
       entry currently uses it -- available for future content that needs
       it.
-- [ ] `WORLD-SYSTEMS.md` standing rule: FabAcademy/Fabricademy
+- [ ] **#27** `WORLD-SYSTEMS.md` standing rule: FabAcademy/Fabricademy
       documentation sites are NOT Level-1 worlds and should not become
       Cabinet islands -- link them from About Me or a relevant
       essay/reflection page instead, if at all. Bears directly on the
       compass-rose/About-Me idea above and on the history-section item
       above.
-- [ ] Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
+- [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale
       (still describes Cabinet as having no islands of its own, and
       carries TODOs that Cabinet's own build already satisfies).
-- [ ] Compass rose rotation: the rose (and the diagonals radiating from
+- [ ] **#29** Compass rose rotation: the rose (and the diagonals radiating from
       its centre, so they keep matching its ordinal arms) rotates
       anticlockwise -- either at random or triggered by approach/hover
       -- for one full revolution. Direct request, logged as a to-do
       rather than implemented immediately.
-- [ ] Theme-specific boat artwork: swap the boat graphic between themes
+- [ ] **#30** Theme-specific boat artwork: swap the boat graphic between themes
       (islands-tool.html's dev panel boat toggle -- the current ellipses
       are a top-down view, fitted for Topology's satellite-map
-      register). Medieval Map wants a side-view boat instead. Blocked on
-      the user either describing the side-view shape in enough detail to
-      build it, or supplying an actual SVG.
-- [ ] Merge themes x hover -- **meaning corrected by the user, not yet
+      register). Was blocked on the user describing the side-view shape
+      or supplying an SVG -- **spec now given, 2026-08-23**: dual-scheme
+      the boats.
+      - Medieval: side view, generative triangle sail, muted colours.
+      - Topology: top view, current ellipse shape kept, lighter outline,
+        a more intense/saturated version of the same hue (vs. Medieval's
+        muted one).
+- [ ] **#31** Merge themes x hover -- **meaning corrected by the user, not yet
       re-explained.** Not "reconcile hover CSS across theme presets"
       (that was a wrong guess, struck from scope). Actual intent still
       TBD. Placeholder title only.
-- [x] Update `index.html` to match current development -- the shipped
+- [ ] **#32** Rework "Copy config" -- direct question, 2026-08-23: "What does
+      copy config do now, with multiple themes and specific
+      applications? Does it need to be reworked, or the place where the
+      config is supposed to be pasted in the file? Pressing copy config
+      should mention where it needs to be pasted, or it should be part
+      of the copied text as a comment... Or there can be a separate
+      user_theme_config.js type file that this gets pasted into on its
+      own and the code can pick it up from that without any
+      copy-pasting." Current state (`cabinet-v3-controls.js`'s "Copy
+      config" button): dumps ONLY `v3Config.island` (shape/band tuning)
+      as JSON to the clipboard/console, meant to be hand-pasted back
+      into `cabinet-v3-data.js` (per `islands-tool.html`'s own
+      footnote) -- unchanged since v3.6, predating the theme system's
+      growth. It captures whichever theme happens to be ACTIVE at copy
+      time (since THEME_PRESETS overwrites `v3Config.island`'s
+      flatColourMode/showWaveRings/showCoastalBands/seaShadowStyle on
+      every theme switch) with no record of which theme that was, and
+      it never captures theme colours at all -- those live in
+      `themeTokenState`, a separate in-memory object, never written back
+      to `cabinet-v3-style.css`'s per-theme blocks by anything. Nor does
+      it capture `v3Config.themePreview`/`geo`/`particles`/`flow`/
+      `dragon`. Two candidate directions raised, not yet chosen between:
+      (a) minimal -- expand what's captured (theme colours per-theme,
+      themePreview) and embed a comment in the copied text itself saying
+      exactly where each piece goes; (b) bigger -- a separate,
+      auto-loaded override file (all live-tunable state in one object)
+      so nothing needs hand-pasting into source at all. Needs a decision
+      before implementing, not a guess.
+- [x] **#33** Update `index.html` to match current development -- the shipped
       static build needs to reflect everything landed on
       `islands-tool.html`/the dev panel. **Done** -- `42c5734 build:
       regenerate index.html for v3.7.23-v3.7.30` postdates every code
