@@ -2337,6 +2337,40 @@ the trailer going forward, the answer was **"Rewrite the 11 existing
 commits too."** Done via `git filter-branch -f --msg-filter` stripping
 the trailer, verified zero remaining across the rewritten range.
 
+Immediately followed by a bigger question, not just about that
+session's 11: **"Can you check past commits and tell me if this is
+present and if it can be corrected, and pros and cons of having it ?"**
+The check found 25 of the repo's 175 commits carrying the trailer, all
+on `landing-v3-prototype`, dating back to 2026-08-08 -- and, unlike the
+11 just fixed, all 25 were already pushed, so correcting them meant a
+force-push, not just a local rewrite. Laid out plainly rather than just
+done:
+
+- **Pros of keeping it**: transparency (AI involvement visible without
+  cross-referencing anything else), a recognized signal some orgs/CI
+  treat as compliance/audit-relevant, and GitHub's own tooling
+  (contribution graphs, blame) keys off it automatically.
+- **Cons**: noise in `git log`/`git blame` if that context isn't wanted
+  surfaced there, an implication of shared authorship/accountability
+  that may not match how credit is actually meant to be attributed on
+  a solo repo, and odd-looking contribution-graph/avatar attribution on
+  a personal project.
+
+The reply gave the actual reasoning, not just a decision, and is worth
+keeping in full: **"well, I know that almost all of landing v3 was
+worked in collab with you so I don't need to figure what was you and
+what was me. The other machine can be synced, not a problem. If the
+contribution split is between me and my ai tool, i dont think that has
+too much meaning to it, gothub convention or not. Please remove them,
+you are right on the cons, it's noisy, the implications are convoluted
+depending on interpretation, my colophon will anyway state the
+methodology so transparency isnt a question."** All 25 were rewritten
+and force-pushed on that basis -- multi-machine sync isn't a blocker
+here, per the same message, and the transparency concern the "pros"
+side raised is handled separately and explicitly, by the colophon
+stating the methodology, so the trailer isn't standing in as the only
+disclosure of AI involvement.
+
 That fix lived only in conversation context. After this session's
 compaction, the instruction wasn't in the carried-forward summary, and
 wasn't yet saved to the assistant's own cross-session memory system
