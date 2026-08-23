@@ -277,9 +277,12 @@ overall site.
       be ambiguous. The `<symbol id="icon-scroll">` sprite still sits
       unreferenced in `docs/index.html`, harmless dead weight, not worth
       a separate cleanup item on its own.
-- [ ] **#25** Verify fffx's DNS/CNAME is actually live before treating fffx
+- [x] **#25** Verify fffx's DNS/CNAME is actually live before treating fffx
       links from Cabinet as production (no committed `CNAME` confirmed
-      as of the v2.1 follow-up that raised this).
+      as of the v2.1 follow-up that raised this). -- **done, confirmed
+      live, 2026-08-24**: `fffx.cabinetofcuriosities.in` fetched
+      directly, 200, served by GitHub Pages, real title ("Form follows
+      f(x)"), not a placeholder.
 - [ ] **#26** `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
       dashed border, leader-line to a card sitting off the island
       entirely) is fully built and supported by the renderer but no
@@ -725,10 +728,23 @@ marked as such.*
 ### Cross-world launch checks
 
 - [ ] **#55** Verify Cabinet, Bookshelf and FFFX link to each other correctly
-- [ ] **#56** Verify custom domains/CNAMEs (fffx's specifically: see the
-      doc-audit item above)
-- [ ] **#57** Check visible landing links, MkDocs navigation, nested routes and
-      assets
+      -- **partially verified, 2026-08-24**: Cabinet -> Bookshelf/FFFX
+      confirmed (both external nav links + TSV entries live, 200, real
+      titles). Bookshelf/FFFX -> Cabinet not checked -- no local access
+      to either repo from this environment, would need fetching their
+      live pages and grepping for a link back.
+- [x] **#56** Verify custom domains/CNAMEs (fffx's specifically: see the
+      doc-audit item above) -- **done, 2026-08-24**, same verification as
+      #25 (duplicate ask): `fffx.cabinetofcuriosities.in` live, 200,
+      served by GitHub Pages, real title.
+- [x] **#57** Check visible landing links, MkDocs navigation, nested routes and
+      assets -- **done for Cabinet's own scope, 2026-08-24**: `mkdocs
+      build` clean, Playwright confirms zero console/request errors on
+      the promoted page, and every newly-added route this session
+      (`/teaching/*`, `/makings/*`, colophon's archive links, etc.) was
+      fetched directly and content-checked, not just status-code checked.
+      Bookshelf/FFFX's own internal nav is out of scope -- no local
+      access to audit from here.
 - [ ] **#58** Confirm failed builds do not replace the last successful live
       deployment
 - [ ] **#59** Merge/tag/deploy the launch version
@@ -737,7 +753,7 @@ marked as such.*
 
 - [ ] **#66** About needs to be written properly -- currently 30 words of
       placeholder text (`docs/about.md`). Part of #42.
-- [ ] **#67** Nav content audit: most `mkdocs.yml`-linked pages are stub/
+- [x] **#67** Nav content audit: most `mkdocs.yml`-linked pages are stub/
       "coming soon" text even though the file exists -- word counts taken
       2026-08-24: `about.md` 30, `makings.md` 21, `creative_code.md` 42,
       `emergent_twine.md` 12, `trippyGourmet.md` 12, `fffx/100Gradients.md`
