@@ -38,8 +38,45 @@ jobs:
           exit 1
         fi
 
+    # v3.7.54 (#43) -- multi-repo assembly, phase 1 proof of concept.
+    # See landing-v3/cabinet-multi-repo-assembly-concept-note-short.md
+    # for the full architecture decision -- this is deliberately just
+    # ONE project, hand-written, not yet the generalized manifest-driven
+    # version (that's Phase 2, cabinet-multi-repo-assembly-concept-
+    # note-short.md's own section 8/11). Checked out into a path OUTSIDE
+    # docs/ so mkdocs build (below) never sees or processes it -- it's
+    # plain static HTML with no build step of its own (confirmed by
+    # inspection: no package.json/Makefile/gen.py committed, every path
+    # inside is relative, nothing hardcodes jesmehta.github.io), so
+    # "build" here is just "have the files."
+    - name: Checkout Working with AI
+      uses: actions/checkout@v4
+      with:
+        repository: jesmehta/working-with-ai
+        path: _external/working-with-ai
+
     - name: Build MkDocs Site
       run: mkdocs build --site-dir public
+
+    # Copied in AFTER the MkDocs build so it lands in the final output
+    # tree at public/teaching/working-with-ai/ -- mkdocs build has no
+    # awareness this directory exists, so it can never overwrite or be
+    # overwritten by anything MkDocs itself generates under teaching/.
+    # All-or-nothing per the concept note's own failure-behaviour
+    # requirement (section 5/11): the validation step below exits
+    # non-zero (failing this job, which the deploy job below depends on
+    # via `needs: build`) rather than silently deploying a Cabinet
+    # build missing its assembled content.
+    - name: Assemble Working with AI
+      run: |
+        mkdir -p public/teaching/working-with-ai
+        cp -r _external/working-with-ai/. public/teaching/working-with-ai/
+        rm -rf public/teaching/working-with-ai/.git
+
+    - name: Validate assembled output
+      run: |
+        test -f public/teaching/working-with-ai/index.html || (echo "ERROR: assembled Working with AI is missing its index.html" && exit 1)
+        test -f public/teaching/working-with-ai/working-with-ai/01.html || (echo "ERROR: assembled Working with AI is missing its own content" && exit 1)
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
