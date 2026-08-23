@@ -1483,6 +1483,31 @@ they're real open items on the same overall site.
     Medieval Map wants a side-view boat instead. Not started; direct
     request, blocked on the user either describing the side-view shape in
     enough detail to build it, or supplying an actual SVG.
+28. Merge themes x hover: reconcile hover-state behaviour/styling across
+    all theme presets so it's a single coherent treatment rather than
+    each theme carrying its own drift. Not started.
+29. Update `index.html` to match current development: the shipped static
+    build (`build-static.mjs`'s output) needs a fresh regeneration pass so
+    it reflects everything landed on `islands-tool.html`/the dev panel
+    this phase (topology shadow, Land 5, Diagnostics, theme/label-style
+    defaults, etc.) before launch. Not started.
+30. Merge branches / make v3 the main version -- `landing-v3-prototype`
+    becomes the live default branch, and the site's entry point launches
+    the v3 page directly. Supersedes/absorbs item 15 (merge branches) and
+    item 17 (launch the page) above.
+31. Archive v1 and v2 before overwrite -- before v3 replaces the live
+    page, archive the current v1/v2 production pages (into
+    `archived-landing-pages/`, the existing convention -- see item 16)
+    rather than deleting/overwriting them in place.
+32. Update `mkdocs.yml` and other site structures to match -- once v3 is
+    live, the site's nav/config needs a pass so it reflects the new
+    structure: v3 as the front page, with either mkdocs-generated pages
+    living underneath it, or links out to other standalone HTML pages in
+    this repo or sibling repos.
+33. Make other-repo pages read as Cabinet sub-pages -- the "look like a
+    subpage of Cabinet" treatment (consistent header/nav/styling wrapper)
+    for pages that physically live in other repos, so they feel
+    integrated into the site rather than reading as external links.
 
 ## Changelog
 
