@@ -2717,6 +2717,40 @@ flagged by its own reporter as secondary, and shares the identical root
 cause -- likely resolved by whichever option gets picked for the main
 issue, not something to chase separately.
 
+## "I dont see why you keep wanting a new big bang every time an asteroid has to change orbit"
+
+The three options laid out at the end of the previous round -- reframe
+the swap as colour-only, double the static payload, or a partial
+client-side re-render -- never got as far as a decision. Direct
+correction arrived first:
+
+> "21 - The Hover ALREADY HAS all of TOPOLOGY built in!! You just have
+> to do the hover equivalent of the entire canvas and fix it! I dont
+> see why you keep wanting a new big bang every time an asteroid has to
+> change orbit."
+
+It was right, and checking confirmed it immediately: the theme x hover
+feature, built and shipped weeks earlier (v3.7.32-v3.7.44), already
+independently traces a full Topology render for every island and every
+section -- real directional shadow, real band structure, a real
+coastline -- because `v3Config.themePreview.previewTheme` has been
+hardcoded `"satellite"` the whole time. It was only ever wired to reveal
+per-element, on hover. The fix was two small CSS rules keyed off the
+same `data-theme` attribute the click handler already sets: reveal every
+preview layer at once instead of one at a time, and hide the five
+"Medieval effects" elements outright instead of leaning on a hover-clip
+mechanism built for exactly one island at a time. No new JavaScript, no
+added payload, no rebuild -- verified both directions with Playwright,
+clean round trip.
+
+The pattern is the same one #64 already went through with the boats/
+dragons cost estimate -- assume the expensive path is necessary, get
+corrected by someone actually asking "isn't the simple thing already
+here?", find out it was. The difference this time is who caught it:
+that one (`#64`) was self-corrected after a challenge to go re-check;
+this one the user identified outright, by name, pointing at code that
+had already shipped rather than waiting to be asked where to look.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

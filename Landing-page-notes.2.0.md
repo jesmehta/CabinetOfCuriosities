@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.50 -- the theme swap actually works now: reusing the hover-preview mechanism instead of rebuilding anything](#v3750----the-theme-swap-actually-works-now-reusing-the-hover-preview-mechanism-instead-of-rebuilding-anything)
   - [v3.7.49 -- full-width header, diagonals now spin with the compass, and a real structural gap found in the theme swap](#v3749----full-width-header-diagonals-now-spin-with-the-compass-and-a-real-structural-gap-found-in-the-theme-swap)
   - [v3.7.48 -- sticky header, compass click to swap theme, compass hover to spin](#v3748----sticky-header-compass-click-to-swap-theme-compass-hover-to-spin)
   - [v3.7.47 -- boats and dragons, live, on the production build](#v3747----boats-and-dragons-live-on-the-production-build)
@@ -109,7 +110,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.49**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.50**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1529,6 +1530,67 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.50 -- the theme swap actually works now: reusing the hover-preview mechanism instead of rebuilding anything
+
+v3.7.49 closed with three costly options for making the theme swap
+structurally correct: reframe it as colour-only, double the static
+payload to bake both themes' structure, or a partial client-side
+re-render. Direct, sharp correction before any of them got built:
+
+> "21 - The Hover ALREADY HAS all of TOPOLOGY built in!! You just have
+> to do the hover equivalent of the entire canvas and fix it! I dont
+> see why you keep wanting a new big bang every time an asteroid has to
+> change orbit."
+
+Correct. The theme x hover feature (v3.7.32-v3.7.44) already builds a
+FULL, independently-traced Topology render for every island and section
+-- real directional shadow (`buildIsolatedShadowTaper` with Topology's
+own `seaShadowAngleDeg`), real sea/sand/veg/peak band tracing at the
+same theme-invariant thresholds the live map uses, a real coastline --
+because `v3Config.themePreview.previewTheme` is hardcoded `"satellite"`
+(`cabinet-v3-data.js`). It was only ever scoped to reveal on a per-
+element `:hover`/`:focus-visible`, via plain `opacity: 0 -> 1` CSS
+transitions on classes like `.v3-island-theme-preview`,
+`.v3-island-theme-preview-sea/-sand/-veg/-peak/-coastline`, and their
+`.v3-section-theme-preview-*` counterparts -- an opaque wash + real
+bands stacked on top of the shared base geometry, replacing it visually
+without touching it.
+
+The fix is two small CSS rules, both keyed off `data-theme="satellite"`
+-- already set by the existing click handler, no new state needed:
+
+1. Reveal every `*-theme-preview*` layer at once (the exact same
+   `opacity: 1` the `:hover` rules already apply, just triggered
+   canvas-wide instead of per-element).
+2. Hide the 5 "Medieval effects" elements outright --
+   `.v3-wave-ring`, `.v3-coast-outward-band`,
+   `.v3-coast-inward-band-group`, `.v3-sea-shadow-radial`,
+   `.v3-sea-shadow-taper` -- rather than relying on the existing
+   `#v3-medieval-effects-clip` mechanism, which moves a single
+   clip-path "hole" to whichever ONE island is currently hovered and
+   was never meant to cover the whole canvas at once.
+
+Also extended the v3.7.48 cross-fade's broad `#v3-stage *` transition
+rule to include `opacity` (previously only `fill`/`stroke`/
+`background-color`) so the reveal/hide fades at the same 450ms as
+everything else, rather than the wave-rings/bands snapping instantly
+while colours fade smoothly around them.
+
+Zero new JavaScript, zero added payload, zero rebuild. Verified visually
+(Playwright, both directions): swapping to Topology now shows real
+textured/shaded islands with directional drop-shadows and correctly no
+wave rings; a second click reverts cleanly to Medieval's original flat/
+banded look with no residual artifacts. Same "check what already exists
+before reaching for a rebuild" lesson as the boats/dragons cost
+correction (`#64`) -- that one was self-corrected after a direct
+challenge; this one the user caught outright, pointing straight at code
+already sitting in the file.
+
+The in-topology hover preview (hovering an island while already swapped
+to Topology should preview Medieval, currently still shows Topology's
+own now-redundant preview) stays unfixed -- confirmed secondary, can
+wait.
 
 ### v3.7.49 -- full-width header, diagonals now spin with the compass, and a real structural gap found in the theme swap
 
