@@ -1455,6 +1455,160 @@ previous fix had even been fully written up:
   request for a DIFFERENT kind of distinction than italic gave, applied
   site-wide rather than to just the one theme that prompted it.
 
+## "Is the resolution/speed tradeoff a page-load cost, or just a build-time one?"
+
+A genuinely useful question asked before any code changed: "The offset
+calculation precision is a matter of extra load time for the tool right,
+not the final page, since that uses the precalculated svgs?" Worth
+answering precisely rather than assuming -- `build-static.mjs` runs a
+real headless browser once, captures whatever `cabinet-v3-layout.js`
+produces, and bakes it into `index.html` as static markup, so a visitor
+never executes any of the actual heightmap/distance-field code at all.
+Confirmed, then acted on immediately: "improve the resolution just a
+little bit, I'd like to be more accurate" -- `cellSize` 4 -> 3, since the
+only real cost is `islands-tool.html`'s live retrace and the occasional
+`node build-static.mjs` run, both fine to pay a little more for.
+
+## Coastal shadows and bands: two real geometry bugs, caught by testing rather than guessing
+
+The other half of a much earlier scheme note -- "drop shadows from the
+islands onto the sea" and a coast-hugging inward colour band -- had never
+actually been built. Asked about directly: "Where is the island's shadow
+fading outwards and the coloured band fading inward?" Both went in, and
+both broke in ways that took real investigation, not just a parameter
+tweak, to actually fix.
+
+The shadow's first version was directional -- copies of the coastline
+translated toward a simulated light source, "light coming from the NE."
+Direct reaction once it rendered: "The directional shadow looks
+beautiful. Note and save the technique and parameters. Caveat, it makes
+the islands look like straight cliffs rising form the sea... for now,
+we'll use an all-around shadow." Nothing was thrown away -- the
+directional version and its exact tuned parameters stayed in the code,
+disabled, for whenever a real light-direction cue fits somewhere else.
+
+The inward band was the harder one. Several rounds of "I can't see any
+inner band at all" survived what looked like real fixes, including one
+that specifically targeted a wrong clip-path. The actual cause only
+became clear by testing directly rather than re-reading the code a
+fourth time: a small throwaway Node script (reusing the project's own
+exported pure-logic functions, no browser needed) traced the same
+contour at increasing distances and measured the resulting polygon's
+area -- confirming empirically that a single offset contour drawn
+*inside* the coastline always fills as its own shrinking core, regardless
+of which way the underlying field's sign was flipped. That ruled out the
+theory driving the first two fix attempts and pointed at the real one: a
+second subpath (the true coastline plus the inward contour) so
+`fill-rule="evenodd"` cuts a ring, not a filled blob. Verified with the
+same kind of direct measurement before touching the CSS again.
+
+Even after the ring was geometrically correct, it still didn't show:
+"I can't see any inner band at all" was STILL true, this time because
+the band's colour token happened to be identical to the flat land fill
+sitting directly underneath it -- a translucent copy of the same colour
+painted over itself. A dedicated token fixed that, though it didn't last
+long: "for each section, generate a colour hue, and use THAT colour hue
+for it's coastal inward band, not the same colour over all sections"
+replaced the single shared token with a deterministic per-section hash a
+few messages later, which then surfaced a THIRD issue -- "the colour band
+is tied to the section and its islands, so if an island is partly
+outside the section, the colour band still needs to be applied -
+currently it is cropped off" -- fixed by clipping to each section's own
+traced island shape instead of its nominal rectangle.
+
+Tuning throughout stayed fast and specific: "why does each wave ring
+have it's own shadow band?" (the shadow's reach had grown wide enough to
+overlap the wave rings, read as one had), "Outer shade band is too
+narrow too light... it should be slightly bigger, darker, and fade out,"
+"make the colours slightly brighter/more intense." Each landed as a
+direct value change, no back-and-forth needed once the underlying
+geometry was actually correct.
+
+## Compass, round two: two small fixes, then a bigger label rework that broke the grid
+
+Two quick, independent bugs first: the compass's own N/S/E/W rays
+vanished whenever the lat/long grid toggle was off ("if latlong is off,
+the compass rose NSEW cardinal lines need to appear, not only the
+diagonals" -- they'd been silently relying on the grid's own lines to
+cover that direction), and the compass rose's colours needed a real
+remap: "white = deep sea, black = same as now/whatever ink, and the 2
+rings that are blue in the svg = a dark-midtone hue, darker than the
+ink, lighter than the sea, either deep violet or brick red." Given a
+choice without a strong steer, violet was picked and explained rather
+than asked about -- the theme's palette was already all warm
+reds/browns, and violet was the one hue missing.
+
+The bigger piece: "the compass section does not actually show [its own
+boundary], so for better alignments/spacing, you can either move the
+contact me further right... OR recalculate the compass position based
+on centering the compass + the text labels, and recenter within the
+larger section+margin territory... a combination of both, actually." The
+underlying issue was that each label sat a fixed FRACTION of the square
+away from its edge, not a fixed distance from the rose's actual edge --
+two labels of different lengths ended up different distances from the
+artwork despite matching fractions. Fixed with an explicit uniform gap
+plus a second pass that recentres the whole [rose + labels] shape as one
+unit, since the 4 labels aren't symmetric enough for centring the rose
+alone to also centre the visual whole.
+
+That fix immediately caused a new, very specific bug report: "diaginals
+no longer centred to the compass! I suspect the latlong isnt either." It
+was -- `gridOrigin` had been computed from the square's raw centre the
+whole time, which stopped matching the rose's actual (now-shifted)
+position the moment the recentring logic went in. Fixed by making both
+places read the exact same shift calculation, verified directly by
+comparing the rendered rose's true centre against the diagonal grid's
+actual origin coordinates in the built output, not just by eyeballing a
+screenshot.
+
+## Trimming the theme roster
+
+A deliberate consolidation pass, framed explicitly as a two-step
+process: "make sure they are documented - they should already be there -
+and then we will start eliminating." Checked first (confirmed
+`v3-scheme-candidates.md` already had every scheme's full palette and
+reasoning recorded, independent of which ones still had live code), then
+executed: "get rid of the following: None/current default, wave contour
+draft, neon memphis, ukiyo." All four dropped from the dropdown and the
+stylesheet in one pass.
+
+A second, more specific request followed in the same spirit: "Topology
+Draft and Bathymetric - merge/keep one" -- kept the draft version's own
+colours (not the doc-accurate one's), explicitly did NOT bring over its
+sans-serif font pairing ("keep the serif font from draft not the sans
+serif one in bathy"), and rather than letting the deleted theme's
+palette vanish, "copy bathymetric colours into medieriso" -- a real
+identity change for a theme whose whole point had been a *medieval*
+sepia base, now recolored around a *bathymetric* blue one. Flagged
+plainly rather than done quietly, since it's the kind of call that's
+easy to want reversed once seen live.
+
+Also asked for directly, and answered without needing to build anything
+first: "tell me the differences between the two topology versions" --
+the draft reused the site's older placeholder palette with no ink/font
+overrides of its own, while the doc-accurate one had tuned, brighter
+hexes and a real Fraunces/Space Grotesk pairing. That answer is what the
+merge decision above was actually based on.
+
+## Dev-panel toggles, a font trim, and a todo logged instead of built
+
+A cluster of smaller asks, each quick to satisfy once the underlying
+mechanism already existed: "give me a toggle for the coastal bands and
+sea shadows as well to turn on off" (two new checkboxes, same
+empty-list-vs-boolean pattern the wave-ring toggle already used, so
+turning a toggle off never throws away tuned values); "trim the fonts as
+well" (the Google Fonts URL still loaded faces only the just-deleted
+themes had ever used); and, from a couple of messages earlier, "while we
+are working on the medieval map, make that the default option in the
+dropdown, so I dont have to click 2 times to get to it."
+
+One request was deliberately NOT built: "Add todo: Compass rose rotation
+and diagonals rotate with it, anticlockwise, randomly or on
+approach/hover for 1 revolution." Logged as punch-list item 26 in
+`Landing-page-notes.2.0.md` rather than implemented on the spot -- the
+user's own phrasing ("add todo") was the signal to record intent, not
+build it immediately.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

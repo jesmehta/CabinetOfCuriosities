@@ -5,7 +5,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.8** (domain warping for real concave coastlines,
+Currently on **v3.7.22** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -58,22 +58,28 @@ v3.6.8 -> v3.6.9 -> v3.6.10 -> v3.6.11 -> v3.6.12 -> v3.6.13 -> v3.6.14 ->
 v3.6.15 -> v3.6.16 -> v3.6.17 -> v3.6.18 -> v3.6.19 -> v3.6.20 -> v3.6.21
 -> v3.6.22 -> v3.6.23 -> v3.6.24 -> v3.6.25 -> v3.6.26 -> v3.6.27 ->
 v3.6.28 -> v3.6.29 -> v3.6.30 -> v3.7 -> v3.7.1 -> v3.7.2 -> v3.7.3 ->
-v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8
-progression and why each pass changed what it did. Most recently (v3.7 ->
-v3.7.8): WIP/dummy entries dropped their dashed status ring and their own
-hover identity entirely, behaving exactly like non-entry filler islands
-(no link/hit/glow of their own, hover and click fall through to the
-section's own link); the Medieval Map theme retinted (darker reddish
-island fill, lighter amber/sepia sea); and by far the largest single
-addition, a reserved southeast "compass rose" section -- a fixed square
-tile carved deterministically out of the treemap (not just squarify's
-best-effort placement), rendering `compass_rose.svg`'s own artwork
-recoloured through the same `--v3-*` theme tokens every other themed
-element uses, four TSV-driven direction links (replacing the old About
-Me section entirely), plus an independently-toggleable, independently-
-spaced dotted lat/long grid radiating from the compass's own centre
-(masked to the sea, never visible over land) with 16-point-compass-style
-diagonal rays through the compass's own ordinal arms.
+v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
+v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
+-> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22
+progression and why each pass changed what it did. Most recently (v3.7.9
+-> v3.7.22): the coastal shadow/band pair the original scheme note asked
+for finally landed (an all-around sea shadow plus inward/outward
+coast-hugging colour bands, each section now generating its own hue),
+after two real geometry bugs -- a directional-shadow-reads-as-cliffs
+issue and an inward-offset-contour-fills-the-wrong-side issue -- were
+found and fixed along the way; the compass rose's cardinal rays now work
+independent of the lat/long grid toggle, its white/black/blue fills got
+re-pointed to more meaningful theme tokens (plus a new dedicated
+`--v3-compass-accent`), and its 4 direction labels got recentred as one
+unit with the rose rather than pinned to fixed square-relative fractions
+(which surfaced a grid-origin sync bug, also fixed); the theme roster
+shrank from 10 to 6 (dropped the no-attribute default, "medieval,"
+"neon," "ukiyo"; merged "Topology draft"/"Bathymetric" into one,
+recolouring `medieRiso` with the discarded palette rather than losing it
+outright); and the dev panel picked up toggles for the new coastal
+bands/sea shadow, a lat/long-off default, and `islands-tool.html` now
+opens straight onto Medieval Map. Full detail (including both bugs'
+actual root causes) in the changelog below.
 This section is now in an active visual-polish phase (colors, ripples,
 sea serpent, boats, water texture, a possible flow-field stretch goal)
 -- entries from here get a lighter documentation pass than the
@@ -1458,6 +1464,11 @@ they're real open items on the same overall site.
     carries TODOs, e.g. "stricter CI checks" for section/id validation
     and "card component unification," that Cabinet's own build already
     satisfies).
+26. Compass rose rotation: the rose (and the diagonals radiating from its
+    centre, so they keep matching its ordinal arms) rotates anticlockwise
+    -- either at random or triggered by approach/hover -- for one full
+    revolution. Not started; direct request, logged as a to-do rather
+    than implemented immediately.
 
 ## Changelog
 
@@ -1622,6 +1633,240 @@ upright face loaded to fall back to under that family name at all.
 Fixed at the source: `ital@1` -> `ital@0`. (`index.html`/`build-
 render.html` load no Google Fonts at all, a pre-existing gap outside
 this fix's scope -- not touched.)
+
+### v3.7.11 -- coastline-offset resolution: cellSize 4 -> 3
+
+One-line change, confirmed build-time-only first: `cellSize` (the grid
+every heightmap/distance-field trace samples at) only costs time in
+`islands-tool.html`'s live retrace and the one-time `node build-
+static.mjs` run -- the shipped `index.html` is a static SVG snapshot a
+headless browser already rendered once, so a visitor's page load pays
+nothing extra regardless of resolution. With that confirmed, tightened
+from 4 to 3 for more accurate coastline offsets (wave rings, the coastal
+bands below) per direct request ("improve the resolution just a little
+bit, I'd like to be more accurate").
+
+### v3.7.9-v3.7.17 -- coastal shadow & band effects: a real cast shadow, coast-hugging colour bands, two geometry bugs found and fixed
+
+The other half of the original "scheme 1" note (v3.7's own entry below)
+finally got built: "drop shadows from the islands onto the sea" and "a
+coast to inward inland band in transparent deep green fading to
+nothing." Both effects reuse the SAME "many low-opacity overlapping
+copies = a gradient" trick `.v3-wave-ring` already established, just off
+different fields -- and both went through a real geometry bug before
+landing correctly, documented here because the wrong turns are as
+informative as the fix.
+
+**The outward shadow: directional, then all-around.** First built as a
+literal directional cast shadow -- copies of the coastline path
+translated toward a light source (`seaShadowDistances`/`seaShadowAngleDeg`,
+135 degrees = light from the NE per direct instruction), stacked at low
+opacity so the overlap does the fading. Direct feedback once seen live:
+"looks beautiful... [but] it makes the islands look like straight cliffs
+rising from the sea" -- a translated copy of an organic coastline leaves
+a hard straight trailing edge wherever the shape doesn't happen to curve,
+reading as a cliff face rather than a shadow. Rather than delete the
+technique, it was left fully intact and disabled (`seaShadowDistances:
+[]`) for reuse somewhere a real light-direction cue fits better later
+("we'll use it elsewhere"), and replaced for general use with an
+ALL-AROUND shadow (`.v3-sea-shadow-radial`) built the same way the
+outward colour band is: a genuine coastline-offset distance field
+(`buildCoastlineDistanceField()`), which always follows the true
+coastline shape in every direction, never a straight edge.
+
+**The inward band: an actual geometry bug, not a tuning issue.** The
+first attempt at `buildInlandDistanceField()` traced a positive-distance
+contour at level `+D` and stacked several of them, expecting the same
+overlap-fade the outward band gets. It never appeared ("the inwards
+colour band?" / "I can't see any inner band at all," even after a first
+attempted fix). Root cause, confirmed by direct empirical testing (a
+throwaway Node harness measuring traced-polygon area at increasing `D`):
+a SINGLE simple contour offset INWARD from the coastline always fills as
+its enclosed, shrinking core, regardless of the field's sign -- SVG fills
+a simple closed curve's bounded (smaller) side, full stop, so no amount
+of sign-flipping (tried once, confirmed a no-op by the same area test)
+changes which side gets painted. The real fix: give the trace a SECOND
+subpath -- the true coastline plus the D-px-inward contour -- so
+`fill-rule="evenodd"` (already in use everywhere else in this file) cuts
+the inward contour out as a hole. The fill becomes the RING between
+coastline and hole, which correctly grows with `D` since the hole
+shrinks, giving the overlap-stacking trick the direction it actually
+needs. A same-colour-as-base bug compounded this for a while too:
+`.v3-coast-inward-band` briefly shared `--v3-veg` with the flat-mode land
+fill directly underneath it -- a translucent copy of the exact colour
+already there is invisible regardless of the geometry, which is why "I
+can't see any inner band at all" was STILL true right after the ring fix
+landed. Fixed with a dedicated `--v3-coast-ink` token (later superseded,
+see v3.7.16 below).
+
+**Reach, darkness, per-section colour.** The outward shadow/band's
+distances were originally wide enough to overlap `waveDistances`' own
+rings, reading as "each wave ring has its own shadow band" -- tightened
+so the fade completes well inside the first ring, then widened again
+once too tight ("too narrow too light and aligns exactly with the first
+wave contour... slightly bigger, darker, and fade out"), landing on
+values deliberately sharing no number with `waveDistances` so the two
+can't visually lock together again. `--v3-coast-ink` (one colour, every
+section) was replaced entirely at v3.7.16: `drawCoastalInwardBands()`
+split out of `drawIslandsPath()` so each section can generate its own
+hue -- a deterministic hash of `sectionMeta.id` (stable across content
+reordering, unlike an index) at a fixed "deep, muted" saturation/
+lightness, direct request: "for each section, generate a colour hue, and
+use THAT colour hue for it's coastal inward band, not the same colour
+over all sections." Per-section colour needed its own clip, which
+exposed a second bug: clipping to `region.inner` (a fixed rect) cropped
+the band wherever an island's growth spilled past its own section's
+nominal rect -- growth is explicitly NOT rect-bounded (see v3.5's "single
+global growth pass" decision). Fixed by clipping to `traceIsolatedShape()`
+instead, the same "this section's own circles, traced alone" technique
+`renderRegion()`'s own hover hit-shape already relies on, which follows
+the actual silhouette instead of an approximation of it. Saturation/
+lightness bumped once more for intensity (42%/58%, 22%/32% -- "make the
+colours slightly brighter/more intense"), and both the band pair and the
+shadow got independent dev-panel on/off toggles at v3.7.21 (see that
+entry below) using the same empty-list-vs-boolean split `showWaveRings`
+already established, so a toggle-off never destroys tuned distances.
+
+### v3.7.9, v3.7.17-v3.7.20 -- compass rose, round 2: cardinal-line/grid-toggle bug, colour remap, then label recentring + a grid-origin sync bug it caused
+
+Two rounds of direct feedback on the compass itself, after the section
+above landed the base rose/lat-long-grid feature.
+
+**Round 1 -- two small, targeted fixes.** The diagonal-ray loop
+(`drawGeoGrid()`) skipped the 4 cardinal angles unconditionally, on the
+assumption the full lat/long lines through the same origin always
+covered them -- true only when `showGrid` was actually on. With the grid
+toggled off, the compass lost its own N/S/E/W rays entirely, leaving only
+its ordinal diagonals ("if latlong is off, the compass rose NSEW cardinal
+lines need to appear, not only the diagonals"). Fixed by only skipping a
+cardinal ray when the grid is ALSO drawing that segment. Separately, the
+compass's white/black/blue fill mapping got re-pointed: white
+`--v3-sea-shallow` -> `--v3-sea-deep` and blue `--v3-ring-ink` -> a new
+dedicated `--v3-compass-accent` token (direct instruction: "white = deep
+sea, black = same as now/whatever ink, and the 2 rings that are blue in
+the svg = a dark-midtone hue, darker than the ink, lighter than the
+sea"). `--v3-ring-ink` wasn't right for that slot any more: it defaults
+to following `--v3-ink`, which is exactly why the "blue" rings had been
+reading as near-identical to black on every theme that never gave it its
+own value. `--v3-compass-accent` defaults to the same fallback (so every
+theme without a tuned value renders unchanged) with real values only
+where asked for -- medieval-map got deep violet ("either deep violet or
+brick red" -- violet chosen since the palette is already all warm
+reds/browns/ambers and needed the contrast more), "satellite"/Topology
+got a warm coral for the same "give it a hue nothing else in the theme
+uses" reason once that theme was folded in at v3.7.22 (see below).
+
+**Round 2 -- label recentring, and the grid-origin bug it caused.**
+Direct feedback: uneven spacing between the rose and its 4 labels
+("Contact me" sitting tighter to the rose than the others). Root cause:
+`COMPASS_LABEL_LAYOUT`'s fixed FRACTIONS positioned each label a fixed
+distance from the SQUARE's edge, not from the ROSE's edge -- two labels
+of different lengths (or one wrapped to 2 lines) end up different
+distances from the actual artwork even at matching fractions. Replaced
+with an explicit, uniform gap measured from the rose's real rendered edge
+to each label's own near edge, same on all 4 sides by construction. Done
+together with the other half of the same request -- "recalculate the
+compass position based on centering the compass + the text labels, and
+recenter within the larger section+margin territory" -- since the 4
+labels aren't symmetric in length, centring the rose alone doesn't centre
+the whole visual unit; a second pass now measures the combined [rose +
+labels] estimated bounding box and shifts rose, every label, and every
+hit box together to recentre THAT box in the square.
+
+That shift broke something not touched by this change on paper:
+`render()`'s `gridOrigin` (what both the lat/long grid and the diagonals
+phase-align to) still read the square's raw, UNshifted centre, so it
+silently fell out of sync with the rose's new, shifted position the
+moment the shift became non-zero -- direct feedback: "diagaonals no
+longer centred to the compass! I suspect the latlong isnt either" (it
+was). Fixed by extracting the shift math into a shared
+`computeCompassShift()`, called from both `renderCompassRegion()` and
+`render()`'s `gridOrigin` calculation, so the two can't drift apart
+again -- confirmed by cross-checking the rendered rose's true centre
+against the diagonal grid's actual origin point in the built output.
+
+### v3.7.13-v3.7.22 -- visual clean-up: glow radius (two rounds), Medieval Map colour retints, section-label glow made more prominent
+
+Small, direct-value tuning requests, grouped here since none needed new
+mechanism -- just parameter changes to things already built.
+
+Medieval Map: `--v3-sea-deep` "Deep sea - #f4ebdd" (was a darker amber),
+`--v3-veg` "#fbf0ee for vegetation" (was the reddish-brown originally
+retinted in at v3.7). The "soft glow" `data-label-style` variant's
+`drop-shadow` radius went 1.5px -> 3.5px across all four glow rules
+(compass/island/island-hover/section) on the first request ("the label
+style soft glow needs to have a larger glow"), then section labels
+specifically got a second, bigger pass -- 6px and a 3rd stacked
+drop-shadow, not just a wider 2nd one -- once singled out from the other
+three ("needs to be larger/brighter/less transparent - more prominent in
+general"): each `drop-shadow` pass is a separate blurred copy, so
+overlap density right at the glyph edge is what actually reads as
+brighter/less transparent, the same "many low-opacity copies" logic the
+coastal bands rely on, not radius alone.
+
+### v3.7.19, v3.7.22 -- theme roster cleanup: 4 themes dropped, Topology draft + Bathymetric merged, medieRiso recoloured
+
+Before touching anything, checked that every theme candidate was
+actually documented somewhere durable -- confirmed `v3-scheme-
+candidates.md` already records full palettes/type/rationale for every
+scheme this dropdown was ever meant to compare, independent of which
+ones still have a live CSS block. With that confirmed, direct request:
+"start eliminating." Dropped from both `THEME_OPTIONS`/`THEME_PRESETS`
+(`cabinet-v3-controls.js`) and their `cabinet-v3-style.css` blocks: the
+no-attribute default (`""`), `medieval` ("Wave Contour draft" --
+`medieval-map` is its doc-accurate, since-heavily-customised
+replacement, so nothing about that direction is actually lost), `neon`
+("Neon Memphis"), `ukiyo` ("Ukiyo-e Woodblock"). Two things that removal
+would otherwise have silently broken, fixed alongside it:
+`applyThemeTokens()`'s empty-string fallback and `resetVisuals()`'s
+Reset button both used to fall back to the now-gone `""` key -- both now
+fall back to `THEME_OPTIONS[0][0]` instead.
+
+Second pass, same session: "Topology Draft and Bathymetric - merge/keep
+one." Kept `satellite` (relabelled "Topology" in the dropdown, same
+internal id) with its own original draft colours untouched, added the
+`--v3-ink`/`--v3-compass-accent` overrides it had never had (same latent
+"compass blue reads as black" issue medieval-map had before its own
+v3.7.17 fix), and did NOT adopt `bathymetric`'s Fraunces/Space Grotesk
+font pairing ("keep the serif font from draft not the sans serif one in
+bathy" -- "draft" never had a font override to begin with, so it already
+fell back to the site's own serif default, `--cab-font-heading`/`-body`
+= Georgia). `bathymetric`'s own theme block was deleted, but its colours
+weren't discarded outright -- copied wholesale into `medieRiso`'s 5 base
+tokens (sea-deep/shallow/veg/sand/ink) per direct instruction ("copy
+bathymetric colours into medieriso"), leaving medieRiso's riso-neon
+accent layer (`--v3-ring-ink`/`--v3-halo-ink`/`--v3-label-outline`, band-
+boundary strokes, boat/dragon hues) untouched -- still the same
+"electric highlights over a dark, cool base" structure, just a
+bathymetric-blue base instead of the sepia/near-black-indigo one it had
+before. A real identity shift for a theme whose name still says
+"medieval" -- flagged as such rather than done quietly; the previous
+values are preserved in this file's own git history if that turns out to
+be the wrong call.
+
+`islands-tool.html`'s Google Fonts URL trimmed to match: IM Fell English
+SC (medieval only), Poppins (neon only), Shippori Mincho/Zen Old Mincho
+(ukiyo only) all dropped -- nothing left references them.
+
+### v3.7.16, v3.7.21 -- dev panel: lat/long defaults off, coastal-band/sea-shadow toggles, tool opens on Medieval Map
+
+Three small dev-panel/tool-default requests, unrelated to each other
+beyond all being about how the live tool starts up or gets tuned.
+`v3Config.geo.showGrid` now defaults to `false` ("default - latlong is
+off") -- still fully live via its existing panel toggle, just not the
+starting state. Two new checkboxes, "Coastal bands (in + out)" and "Sea
+shadow" ("give me a toggle for the coastal bands and sea shadows as well
+to turn on off"), gate `v3Config.island.showCoastalBands`/`showSeaShadow`
+using the same empty-list-vs-boolean split `showWaveRings` already
+established (see v3.7.9-v3.7.17 above) -- the coastal band pair share one
+switch, since they're the one "coast to inward/outward" effect from the
+original scheme note, not two independent ones. Both wired into Reset
+Visuals alongside the existing geo-grid/wave-ring restores.
+`islands-tool.html`'s `<body>` now carries `data-theme="medieval-map"`
+directly, so the theme dropdown opens already on Medieval Map instead of
+needing a manual switch every reload ("while we are working on the
+medieval map, make that the default option in the dropdown, so I dont
+have to click 2 times to get to it").
 
 ### v3.7 -- WIP/dummy entries lose their dashed ring and their own hover identity; Medieval Map retinted
 
