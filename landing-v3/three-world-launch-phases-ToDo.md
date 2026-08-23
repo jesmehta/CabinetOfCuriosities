@@ -444,6 +444,15 @@ own numbering note near the top) -- a move, not a re-add.
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be
       built -- same shape of blocker as #30's boats.
+- [ ] **#65** The compass rose graphic itself should also swap on #21's
+      theme click, not just the map's colours/structure -- direct
+      request, 2026-08-24: "current version is medieval, the topo
+      version can be some harmonically generated spirographic thing
+      entwined around the same compass arms or different graphic
+      altogether." Logged as a to-do, not built yet -- needs a design
+      decision on which direction (generated spirograph vs a distinct
+      hand/traced graphic) before implementation, similar shape of open
+      question to #30's theme-specific boat artwork.
 - [x] **#64** Decide what to do about boats/dragons never appearing on the
       production build -- **#38's "consciously deferred" made concrete,
       2026-08-23**: seeing the live site with no boats/dragons at all
