@@ -27,6 +27,8 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.46 -- production's H1/section/island labels were never loading their actual fonts](#v3746----productions-h1sectionisland-labels-were-never-loading-their-actual-fonts)
+  - [v3.7.45 -- static build was missing data-theme, fell back to unthemed base colours](#v3745----static-build-was-missing-data-theme-fell-back-to-unthemed-base-colours)
   - [v3.7.44 -- Island noise debug overlay resolution doubled](#v3744----island-noise-debug-overlay-resolution-doubled)
   - [v3.7.43 -- control panel reorganized into a fixed sequence, five new subsection-local Reset buttons](#v3743----control-panel-reorganized-into-a-fixed-sequence-five-new-subsection-local-reset-buttons)
   - [v3.7.42 -- coastal band model simplified: "land baseline" only, sea-ward outward fade dropped](#v3742----coastal-band-model-simplified-land-baseline-only-sea-ward-outward-fade-dropped)
@@ -104,7 +106,11 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.44** (domain warping for real concave coastlines,
+Currently on **v3.7.46**. As of 2026-08-23, this is no longer just a
+prototype -- `landing-v3` was promoted into production (merged
+`landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
+`docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
+real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -1517,6 +1523,46 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.46 -- production's H1/section/island labels were never loading their actual fonts
+
+`index.template.html` (and therefore `index.html`, and therefore
+`docs/index.html` once promoted) loaded no webfonts at all. The Google
+Fonts `<link>` only ever existed in `islands-tool.html`, behind a
+comment saying font choice "hasn't been chosen as final yet" -- true
+when written, no longer true once punch-list item 10/#36 (final
+colour/type choice) was marked done, but the production template was
+never updated to match. Every themed font silently fell back to
+`--cab-font-heading`/`--cab-font-body`'s fallback (Georgia) instead of
+Medieval Map's actual Cinzel (H1) / IM Fell English (section labels) /
+EB Garamond (island labels) -- invisible as an error, just visibly
+wrong once compared directly against `islands-tool.html`, which is how
+it was caught: **"the index.html did not have the same H1 font as the
+tool pages... check the other fonts in main index vs island-tool."**
+
+Fixed by adding only what Medieval Map (the one theme the static build
+ever ships, `data-theme="medieval-map"` hardcoded) actually needs, not
+`islands-tool.html`'s full nine-family scheme-comparison set -- Topology
+(`satellite`), the only other production-bound theme, has no
+`font-family` override at all and needs nothing loaded. Verified via
+Playwright: `h1`/`.v3-section-label`/`.v3-island-label` all compute the
+correct family, zero request errors, on both `landing-v3/index.html`
+and the promoted `docs/index.html`.
+
+### v3.7.45 -- static build was missing data-theme, fell back to unthemed base colours
+
+Every theme's colours are scoped entirely through
+`body.v3-proto[data-theme="..."]` CSS selectors -- `islands-tool.html`
+hardcodes `data-theme="medieval-map"` on `<body>`, but `build-render.html`
+(the headless-capture source) and `index.template.html` (the shipped
+page itself) never carried that attribute at all. Caught directly: **"v3
+index isnt in perfect sync with island tool - the base theme is still
+flat-ish topology, not medieval colours."** Since theming is entirely
+class-driven rather than baked into the captured SVG markup, the fix
+didn't change the captured markup's byte length at all -- only the
+missing `data-theme` attribute on both templates' `<body>` tags, so the
+existing CSS cascade actually applies once rendered. Regenerated
+`index.html` afterward to confirm.
 
 ### v3.7.44 -- Island noise debug overlay resolution doubled
 
