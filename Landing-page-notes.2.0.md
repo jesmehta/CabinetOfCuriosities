@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.47 -- boats and dragons, live, on the production build](#v3747----boats-and-dragons-live-on-the-production-build)
   - [v3.7.46 -- production's H1/section/island labels were never loading their actual fonts](#v3746----productions-h1sectionisland-labels-were-never-loading-their-actual-fonts)
   - [v3.7.45 -- static build was missing data-theme, fell back to unthemed base colours](#v3745----static-build-was-missing-data-theme-fell-back-to-unthemed-base-colours)
   - [v3.7.44 -- Island noise debug overlay resolution doubled](#v3744----island-noise-debug-overlay-resolution-doubled)
@@ -106,14 +107,17 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.46**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.47**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
 real concave coastlines,
 interactively tuned via an on-page control panel, split across three
-pages -- `index.html` a zero-JS static build of the evolving real
-prototype, `islands-tool.html` the permanent live tuning tool,
+pages -- `index.html` a static build of the evolving real prototype
+(zero-JS through v3.7.46; as of v3.7.47 it loads one small script,
+`cabinet-v3-production-animate.js`, for live boats/dragons -- see that
+version's own entry for why this doesn't mean loading the real
+prototype), `islands-tool.html` the permanent live tuning tool,
 `archive/v3.6/` a frozen snapshot -- plus a paste-friendly
 `cabinet-v3-data.js`, a by-editability file table below, genuine
 fixed-distance wave rings via a Euclidean distance transform, a
@@ -1523,6 +1527,67 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.47 -- boats and dragons, live, on the production build
+
+`#38` had marked flowfield/particle boats + dragons "consciously
+deferred" from the static production build -- true at the level of
+"the static build has zero client-side script," but never actually put
+to the user for a decision. Reopened directly once the deferral had a
+concrete, visible consequence rather than an abstract one: **"I never
+agreed to not having the boats and dragons - they make the page alive.
+Why would I put in so much effort on something that wasnt going to be
+shipped. It's going on the live page."**
+
+First cost estimate was wrong, corrected by direct challenge: **"Isnt
+the real engine just a particle system and a noise field? The islands
+are already there as svgs. What is the problem?"** The original
+estimate assumed reusing `startCurrentAnimation()` meant loading the
+whole `cabinet-v3-layout.js` (170KB+) along with `cabinet-v3-treemap.js`/
+`cabinet-v3-circlepack.js` -- but those two only decide WHERE islands go,
+a decision that's already made and baked into the static SVG. Checking
+`startCurrentAnimation()`'s actual dependencies (`islandLayoutState`/
+`lastIslandTrace`) showed it only needs `grown` (the circle-packing
+OUTPUT -- tiny, per-island x/y/radius) plus canvas bounds, not the
+algorithm that produces them.
+
+Further trimmed by direct scoping: MedieRiso-specific particle/dragon
+colour branching dropped (that theme is a kept-reference scratchpad,
+never ships to production -- "medieriso is gone already... only the
+topo and medieval themes are in use"), click-to-launch dropped ("we
+can get rid of mouseclick to new boat, thats ok, if it is a big load. i
+had forgotten it even existed"), the dragon's dive/resurface slide-and-
+clip rendering kept unchanged ("dragon slide-sink is a keeper though,
+that works nicely").
+
+Implementation: `build-static.mjs` now also captures `grown`+
+`canvasBounds` from a finished `render()` (a new `getIslandLayoutState()`
+export on `cabinet-v3-layout.js`, read via a small capture-only script
+in `build-render.html`) and serializes it into the static build as an
+inline `<script type="application/json" id="v3-anim-data">` block. A
+new `cabinet-v3-production-animate.js` reuses `cabinet-v3-flowfield.js`/
+`cabinet-v3-particles.js`/`cabinet-v3-dragon.js`/`cabinet-v3-islandshape.js`'s
+`buildIslandHeightmap` completely unmodified -- zero duplication of the
+actual physics -- with only the DOM-rendering glue freshly written and
+trimmed per the above. ~150KB uncompressed added payload, not the
+~350KB+ first estimated skipping `cabinet-v3-treemap.js`/
+`cabinet-v3-circlepack.js` entirely turned out to matter more than
+minifying/bundling would have. Promoted to `docs/index.html` the same
+way as everything else: the 6 files copied into `docs/assets/js/`,
+three path rewrites (two stylesheets, one script src). Verified via
+Playwright on both `landing-v3/index.html` and the promoted
+`docs/index.html`: 130 particles, 1-3 dragons, positions genuinely
+change frame to frame, zero console/request errors, full `mkdocs
+build` still clean.
+
+Caught and corrected in the same stretch: an unrelated false claim (in
+`three-world-launch-phases-ToDo.md`'s `#64`) that the theme x hover
+mechanism "doesn't work in production for the same reason" boats/
+dragons didn't -- direct pushback (**"it does work, what are you
+talking about ?"**) led to actually checking: every hover-preview rule
+is a pure CSS `:hover` selector revealing already-baked SVG paths via
+opacity, zero JavaScript involved, unrelated to the animation-loop
+requirement boats/dragons actually have.
 
 ### v3.7.46 -- production's H1/section/island labels were never loading their actual fonts
 

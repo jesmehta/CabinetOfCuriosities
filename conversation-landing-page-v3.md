@@ -2490,6 +2490,61 @@ here too because the project's own established convention (see the two
 earlier entries on this same subject) is to record process corrections
 in-repo, not just in a tool's private state.
 
+## "Isnt the real engine just a particle system and a noise field?" -- reopening a decision that was never actually put to a vote
+
+`#38` had been marked "consciously deferred" -- boats/particles and the
+sea-dragons don't appear on the production build at all, only on
+`islands-tool.html`. True as a description of the static build's
+architecture (zero client-side script), but that description had been
+presented as if it settled the open question `#38` actually posed
+("decide whether X ships or is deferred"), without the user ever
+actually being asked to choose. The gap surfaced once the abstract
+deferral became a concrete, visible absence: **"I never agreed to not
+having the boats and dragons - they make the page alive. Why would I
+put in so much effort on something that wasnt going to be shipped. It's
+going on the live page - tell me the options and cost, or better yet,
+tell me why it isnt there already."**
+
+The first honest answer given -- three options, with a real cost
+estimate for shipping it live (loading `cabinet-v3-layout.js` and its
+full dependency chain, ~350KB uncompressed) -- didn't survive a direct
+challenge: **"Isnt the real engine just a particle system and a noise
+field? The islands are already there as svgs. What is the problem?"**
+Checking rather than defending the prior number: `startCurrentAnimation()`
+only actually depends on `islandLayoutState`/`lastIslandTrace` --
+`grown` (circle-packing output, tiny per-island numbers) and canvas
+bounds -- not on `cabinet-v3-treemap.js`/`cabinet-v3-circlepack.js`,
+the algorithms that PRODUCE `grown` in the first place. Those only need
+to run once, at build time (which they already do); a live page only
+needs their output.
+
+A second round of scoping followed the same pattern -- asked plainly
+rather than assumed: what tree-shaking meant, whether the per-particle
+decor was "the randomized 3 lines in an ellipse," whether MedieRiso-
+specific colour branching still mattered ("medieriso is gone already,
+its only a scratchpad theme, not being used"), what click-to-launch even
+was ("we can get rid of mouseclick to new boat, thats ok, if it is a
+big load. i had forgotten it even existed"), and confirmation that the
+dragon's dive/resurface animation specifically should survive whatever
+got cut ("dragon slide-sink is a keeper though, that works nicely").
+Each answer removed real scope: no MedieRiso branch, no click-to-launch,
+no flow-field debug visualization -- leaving a genuinely small, focused
+module (`cabinet-v3-production-animate.js`) that reuses the actual
+physics modules unmodified and only reimplements the trimmed rendering
+glue. Shipped as v3.7.47, promoted to `docs/index.html`, verified live:
+130 particles, 1-3 dragons, genuinely moving.
+
+Caught in the same stretch, unrelated but structurally identical: a
+claim in `#64`'s own text that the theme x hover mechanism "doesn't
+work in production for the same reason" boats/dragons didn't -- stated
+without checking, corrected the same way the cost estimate was: **"64
+also says... theme x hover mechanism also doesn't work in production
+for the same reason. This is a. unacceptable in function b. it does
+work, what are you talking about?"** It was pure CSS `:hover`, always
+worked, no JavaScript involved at all -- a different kind of mechanism
+entirely from an animation loop, wrongly lumped in by association
+rather than by actually checking.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
