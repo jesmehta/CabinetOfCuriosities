@@ -1968,6 +1968,21 @@ the whole canvas from medieval to topo and back. Its too nice a piece of
 work to be seen only in bits" -- added to `three-world-launch-phases-ToDo.md`'s
 Phase 0, sequenced after this feature rather than before it.
 
+Tried live immediately after, a real bug surfaced fast: "It's still
+yellow blobs, nothing else. Island halo - i turned it upto 100 and went
+down to 7, no change. Same for Section Halo. Edge Blur works fine
+though." The "yellow blobs" half was the already-flagged flat-colour
+limitation, expected -- but the halo sliders doing genuinely nothing at
+any value was new and real. Traced to `retraceIslands()` (the sliders'
+default redraw path) never calling `renderRegion()`, the only place the
+preview paths exist -- so the config value updated correctly every time,
+with nothing in the DOM ever reading it. Fixed with a narrowly-scoped
+`retraceThemePreviews()` rather than reaching for the heavier full
+`render()`, and checked the fix actually worked via Playwright (the
+path's `d` attribute measurably changes length with the slider) instead
+of trusting the reasoning alone -- the same discipline as every other
+bug caught this project by testing rather than by guessing.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

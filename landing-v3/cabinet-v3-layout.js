@@ -2320,6 +2320,51 @@ export function retraceIslands() {
   }
 }
 
+// Exported for cabinet-v3-controls.js's Island/Section halo sliders --
+// bugfix: those sliders defaulted to retraceIslands() (buildSlider's own
+// default onChange), which does NOT touch renderRegion()'s output at all
+// (it redraws the shared global coastline/band/grid/flow-field layers
+// only -- see its own comment). renderRegion() -- where the theme-preview
+// paths actually live -- only ever runs inside the full render() pass, so
+// the halo sliders silently updated v3Config.themePreview with no visible
+// effect whatsoever, at any value. Confirmed directly ("i turned it upto
+// 100 and went down to 7, no change"), not assumed from reading the code
+// alone. Rather than call the much heavier render() (re-runs circle
+// packing/treemap for a change that never touches either), this updates
+// just the existing preview <path> elements' `d` attribute in place --
+// no DOM structure change, so no risk of the z-order bug found earlier
+// this project (re-appending a whole region group would land it after
+// the compass/grid/particles in paint order, same mistake, different
+// element). Matches drawGeoGrid()'s own "cheap, targeted redraw" pattern
+// rather than reaching for the full pipeline.
+export function retraceThemePreviews() {
+  if (!islandLayoutState) return;
+  const stage = document.querySelector("#v3-stage");
+  const { islandHaloPx, sectionHaloPx } = v3Config.themePreview;
+
+  islandLayoutState.grown.forEach(c => {
+    const link = stage.querySelector(`.v3-island[data-id="${c.id}"]`);
+    if (!link) return;
+    const preview = link.querySelector(".v3-island-theme-preview");
+    if (!preview) return;
+    preview.setAttribute("d", traceIsolatedShape([c], v3Config.island, islandHaloPx));
+  });
+
+  const grownBySection = new Map();
+  islandLayoutState.grown.forEach(c => {
+    if (!grownBySection.has(c.sectionId)) grownBySection.set(c.sectionId, []);
+    grownBySection.get(c.sectionId).push(c);
+  });
+  islandLayoutState.layout.forEach(({ sectionMeta }) => {
+    const region = stage.querySelector(`.v3-region[data-section="${sectionMeta.id}"]`);
+    if (!region) return;
+    const preview = region.querySelector(".v3-section-theme-preview");
+    if (!preview) return;
+    const circles = grownBySection.get(sectionMeta.id) || [];
+    preview.setAttribute("d", traceIsolatedShape(circles, v3Config.island, sectionHaloPx));
+  });
+}
+
 // Exported (v3.6.8) so cabinet-v3-controls.js's centerBias slider and
 // "Reroll positions" button can re-run the full pipeline -- unlike every
 // other control in the panel, both change buildSeedsForSection()'s

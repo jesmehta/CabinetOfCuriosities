@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.33 bugfix -- Island/Section halo sliders were a silent no-op at any value](#v3733-bugfix----islandsection-halo-sliders-were-a-silent-no-op-at-any-value)
   - [v3.7.32 -- Theme x hover, Part A: a real colour-preview prototype, plus the theme roster narrowed toward Medieval + Topology](#v3732----theme-x-hover-part-a-a-real-colour-preview-prototype-plus-the-theme-roster-narrowed-toward-medieval--topology)
   - [v3.7.24-v3.7.30 -- Topology's directional cast shadow: cliff-edge fix, a real CSS-filter bug, then a height-aware taper](#v3724-v3730----topologys-directional-cast-shadow-cliff-edge-fix-a-real-css-filter-bug-then-a-height-aware-taper)
   - [v3.7.28 -- "Land 5": a mountain-peak accent, calibrated against real content, not a guess](#v3728----land-5-a-mountain-peak-accent-calibrated-against-real-content-not-a-guess)
@@ -92,7 +93,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.32** (domain warping for real concave coastlines,
+Currently on **v3.7.33** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -149,8 +150,15 @@ v3.7.4 -> v3.7.5 -> v3.7.6 -> v3.7.7 -> v3.7.8 -> v3.7.9 -> v3.7.10 ->
 v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
--> v3.7.31 -> v3.7.32
+-> v3.7.31 -> v3.7.32 -> v3.7.33
 progression and why each pass changed what it did. Most recently
+(v3.7.33): the Island/Section halo sliders added in v3.7.32 were a silent
+no-op at any value -- retraceIslands() (their default redraw path) never
+touches renderRegion()'s output, where the preview paths actually live.
+Fixed with a new narrowly-scoped retraceThemePreviews() that updates just
+those two paths' geometry in place, confirmed via Playwright (the `d`
+attribute now genuinely changes size with the slider) rather than
+re-eyeballing it. Full detail in the changelog below. Before that
 (v3.7.32): a first real prototype of "theme x hover" -- hovering an
 island or section reveals a Topology-coloured overlay of its own real
 traced shape (reusing the same isolated-trace mechanism that already
@@ -1412,6 +1420,41 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.33 bugfix -- Island/Section halo sliders were a silent no-op at any value
+
+Direct report, tried live rather than just described: "Island halo - i
+turned it upto 100 and went down to 7, no change. Same for Section
+Halo." Root cause: `buildSlider()`'s default `onChange` is
+`retraceIslands()`, and v3.7.32 didn't override it for these two new
+sliders -- but `retraceIslands()` only redraws the SHARED global
+coastline/band/grid/flow-field layers (`drawIslandsPath()`,
+`drawCoastalInwardBands()`, `drawGeoGrid()`, etc.); it never calls
+`renderRegion()`, which is the ONLY place the theme-preview `<path>`
+elements get built. `v3Config.themePreview.islandHaloPx`/`sectionHaloPx`
+were updating correctly in memory the whole time -- nothing in the DOM
+ever read the new value, at any slider position.
+
+Considered calling the full `render()` instead (would have worked --
+its own doc comment notes a full render is barely more expensive than
+`retraceIslands()` already is, since the island retrace step dominates
+either way), but that also re-runs circle packing/treemap for a change
+that never touches either, and risked visually shifting the whole
+layout on every halo tick if packing turned out non-deterministic
+between calls (it isn't, but re-running it for no reason is still
+wasted work and needless risk). Instead, added
+`retraceThemePreviews()`: finds each island's/section's ALREADY-EXISTING
+`.v3-island-theme-preview`/`.v3-section-theme-preview` element by its
+`data-id`/`data-section` and updates only that element's `d` attribute
+in place, via the same `traceIsolatedShape()` calls `renderRegion()`
+itself uses -- no DOM structure change, so no risk of the compass/grid
+z-order bug fixed in v3.7.31 recurring for a different element (that bug
+was exactly "removing and re-appending a whole group lands it at the
+wrong paint order"; this fix never removes anything). Matches
+`drawGeoGrid()`'s own "cheap, targeted redraw, not the full pipeline"
+precedent. Verified directly, not assumed: a Playwright check confirmed
+the preview path's `d` attribute actually changes length when the slider
+moves (2882 -> 4979 characters at halo 45px -> 100px).
 
 ### v3.7.32 -- Theme x hover, Part A: a real colour-preview prototype, plus the theme roster narrowed toward Medieval + Topology
 

@@ -27,7 +27,7 @@
 // already costs per tick.
 
 import { v3Config } from "./cabinet-v3-data.js";
-import { retraceIslands, render, rerollPacking, resetReroll, startCurrentAnimation, refreshParticleCount } from "./cabinet-v3-layout.js";
+import { retraceIslands, retraceThemePreviews, render, rerollPacking, resetReroll, startCurrentAnimation, refreshParticleCount } from "./cabinet-v3-layout.js";
 
 // Each entry drives one Island-shape slider. `get`/`set` default to
 // reading/writing v3Config.island[key] directly; only warpPeriod
@@ -674,15 +674,25 @@ function buildControlPanel() {
   previewThemeRow.appendChild(previewThemeSelect);
   themePreviewSubsection.appendChild(previewThemeRow);
 
+  // onChange overridden -- the default (retraceIslands) redraws the
+  // shared coastline/band/grid layers only and never touches
+  // renderRegion()'s output, where the preview paths actually live, so
+  // it's a silent no-op for this specific pair of sliders (confirmed
+  // live: "i turned it upto 100 and went down to 7, no change"). Calling
+  // the full render() would work but re-runs circle packing for a change
+  // that never needs it -- retraceThemePreviews() is the narrow fix,
+  // matching drawGeoGrid()'s own cheap-targeted-redraw precedent.
   buildSlider(themePreviewSubsection, {
     label: "Island halo (px)", min: 0, max: 100, step: 1,
     get: () => v3Config.themePreview.islandHaloPx,
-    set: v => { v3Config.themePreview.islandHaloPx = v; }
+    set: v => { v3Config.themePreview.islandHaloPx = v; },
+    onChange: retraceThemePreviews
   });
   buildSlider(themePreviewSubsection, {
     label: "Section halo (px)", min: 0, max: 100, step: 1,
     get: () => v3Config.themePreview.sectionHaloPx,
-    set: v => { v3Config.themePreview.sectionHaloPx = v; }
+    set: v => { v3Config.themePreview.sectionHaloPx = v; },
+    onChange: retraceThemePreviews
   });
   // onChange overridden -- pure CSS, no geometry change, so a full
   // retraceIslands() would be wasted work for what's just a filter value.
