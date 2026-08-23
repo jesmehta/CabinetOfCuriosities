@@ -27,6 +27,8 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.57 -- mkdocs nav restructured around Compass/Teaching, first `cabinet-sections.tsv` gap found (#41/#44/#46/#66-69)](#v3757----mkdocs-nav-restructured-around-compassteaching-first-cabinet-sectionstsv-gap-found-4144466-69)
+  - [v3.7.56 -- `deploy.yml`'s long inline comments trimmed to a help note](#v3756----deployymls-long-inline-comments-trimmed-to-a-help-note)
   - [v3.7.55 -- a dummy colophon page, and the archive finally deployed for real (#20/#61/#62)](#v3755----a-dummy-colophon-page-and-the-archive-finally-deployed-for-real-2061-62)
   - [v3.7.54 -- multi-repo assembly, phase 1: Working with AI mounted at /teaching/working-with-ai/](#v3754----multi-repo-assembly-phase-1-working-with-ai-mounted-at-teachingworking-with-ai)
   - [v3.7.53 bugfix -- compass direction labels went invisible on hover in Medieval](#v3753-bugfix----compass-direction-labels-went-invisible-on-hover-in-medieval)
@@ -115,7 +117,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.55**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.57**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1535,6 +1537,77 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.57 -- mkdocs nav restructured around Compass/Teaching, first `cabinet-sections.tsv` gap found (#41/#44/#46/#66-69)
+
+Content audit requested directly: list what's in `cabinet-entries.tsv`/
+`mkdocs.yml` nav, what's missing from each, flag pages that are empty in
+practice even when the file exists, then restructure `mkdocs.yml`'s nav
+to match the compass/world names. Word-counted every nav-linked `.md`
+page first rather than trusting a visual skim -- confirmed most are
+genuinely stub/"coming soon" (`about.md` 30 words, `makings.md` 21,
+`creative_code.md` 42, `emergent_twine.md`/`trippyGourmet.md` 12 each,
+three `fffx/` pages under 25, all three `3dp/3DP_*.md` prints pages
+under 20) against a handful with real content (`mini_loom.md` 1019,
+`site_notes.md` 1583, `dotMandalaTool.md` 1029, `traceryBots.md` 681,
+`fffx/PackingShapes.md` 819). Logged as `#67` rather than acted on --
+decided to leave `.md` files with no TSV entry alone for now, especially
+the empty ones, instead of forcing a TSV row for a stub.
+
+`mkdocs.yml` nav changes:
+
+- New **Compass** section (About Me, Colophon, Now) -- mirrors the
+  compass rose's own N/S directions. `docs/now.md` created as a stub,
+  same "coming soon" pattern as `colophon.md` -- content later.
+- New **Teaching** section: SSD Creative Coding (external, matches
+  `cabinet-entries.tsv`'s existing `teaching-student-work` row), Working
+  with AI (`https://cabinetofcuriosities.in/teaching/working-with-ai/`
+  -- the first link anywhere to `#43`'s assembly, closing `#44`; fetched
+  and confirmed live with the real page title before linking it, closing
+  `#46` too), plus two more external repos, Prompt Generator and Oblique
+  Strategies.
+- `Thingamajigs` renamed to **Machines & Makings**, matching
+  `cabinet-sections.tsv`'s `machines-makings` title -- direct progress on
+  `#41`. Swatch Fields added under it.
+- All four new external repo links (Prompt Generator, Oblique Strategies,
+  Swatch Fields, Working with AI) were only given as `github.com/jesmehta/...`
+  repo URLs -- checked each for an actual GitHub Pages deployment first
+  (`jesmehta.github.io/<repo>/`, confirmed 200 + real `<title>`, not a
+  disguised 404) rather than linking bare source repos into a docs nav.
+- Fixed a pre-existing, unrelated stale nav reference found by the build
+  warnings while testing this change: `mkdocs.yml` pointed
+  `fffx/formFollowsFx.md` at a file that doesn't exist (real filename is
+  `fffx/fffx.md`) -- a live 404 in production nav. One-line typo fix, not
+  a content decision, so fixed on sight rather than logged as a to-do.
+
+TraceryBots and Dot Mandala Generator were asked to also appear under
+Form follows f(x) -- decided against moving or duplicating them.
+Root cause instead: "Wild wild web" (their current home) has no
+`cabinet-sections.tsv` row at all, unlike every other nav section. Added
+one (`wild-wild-web`, `status: false`) so it's tracked, but left it
+non-rendering -- the archipelago grid is already full (2 large + 4
+medium islands + the compass's reserved corner), so giving it a real map
+position needs a layout decision, not just a data entry. Logged as `#69`.
+
+Verified locally: `mkdocs build` clean (no new warnings after the
+`fffx.md` fix), `node tools/build-cabinet-content.js` succeeded with 8
+sections/27 entries, `build-static.mjs` + promotion to `docs/index.html`
+produced byte-for-byte the same visible map (the new section is
+`status: false`, so it's filtered before rendering) -- confirmed with a
+Playwright screenshot, zero console/page errors.
+
+### v3.7.56 -- `deploy.yml`'s long inline comments trimmed to a help note
+
+Direct request: replace the verbose per-step prose comments added in
+`v3.7.54`/`v3.7.55` with something closer to onboarding documentation --
+short, points at the relevant `#NN` to-dos, doesn't repeat the full
+rationale inline every time. The single "how to add another repo"
+explanation now lives once, in `cabinet-multi-repo-assembly-concept-
+note-short.md`'s new "Quick reference" section (right after Phase 1) --
+Checkout/Assemble/Validate as three steps, matching what `#43` actually
+shipped, not the eventual Phase 2 manifest. `deploy.yml`'s own comments
+were cut down to one short pointer at the top of the assembly block plus
+one line per step, linking `#43`/`#44`/`#46` instead of restating them.
 
 ### v3.7.55 -- a dummy colophon page, and the archive finally deployed for real (#20/#61/#62)
 
