@@ -18,13 +18,15 @@
 Live checklist. Check items off as they land; don't renumber or reorder
 on completion -- history matters more than a tidy list. Companion files:
 
-Phase 0's punch list (all three subsections below, 2026-08-23) carries a
-stable `**#N**` tag right after each item's checkbox, so items can be
-referred to by number ("#12") instead of by description. Assigned once,
-in the order items appeared at the time -- a NEW item added later gets
-the next unused number appended wherever it's inserted in the list, it
-does NOT trigger a renumber of anything else, same "history matters"
-reasoning as the no-renumbering rule above. Only Phase 0 is tagged this
+Phase 0's punch list and Phase 1 (2026-08-23) carry a stable `**#N**`
+tag right after each item's checkbox, so items can be referred to by
+number ("#12") instead of by description -- one continuous sequence
+across both (Phase 0: #1-33, Phase 1: #34-59), not restarting per
+phase. Assigned once, in the order items appeared at the time -- a NEW
+item added later gets the next unused number appended wherever it's
+inserted in the list, it does NOT trigger a renumber of anything else,
+same "history matters" reasoning as the no-renumbering rule above.
+Phase 2/3A/3B+ aren't tagged yet -- only Phase 0 and Phase 1 are, this
 way for now.
 
 - `Landing-page-notes.2.0.md` (parent directory) -- v3-prototype concept
@@ -320,46 +322,46 @@ failures remain.*
 
 ### Cabinet
 
-- [ ] Finish the V3 landing-page launch pass:
-  - [x] integrate sea serpent -- done, v3.6.24 (Phase 0 above)
-  - [ ] final colour/type choice (Phase 0 above -- partially done, the
+- [ ] **#34** Finish the V3 landing-page launch pass:
+  - [x] **#35** integrate sea serpent -- done, v3.6.24 (Phase 0 above)
+  - [ ] **#36** final colour/type choice (Phase 0 above -- partially done, the
         map's overall colour scheme is still on hold)
-  - [ ] fix obvious label overflow on the map itself (distinct from the
+  - [ ] **#37** fix obvious label overflow on the map itself (distinct from the
         doc-audit item above about production-page card/label overlap)
-  - [ ] decide whether flowfield/particle boats ship in the production
+  - [ ] **#38** decide whether flowfield/particle boats ship in the production
         build or are consciously deferred (currently
         `islands-tool.html`-only, see Phase 0 above)
-  - [ ] desktop/mobile QA
-- [ ] Promote `landing-v3-prototype` into the production Cabinet
+  - [ ] **#39** desktop/mobile QA
+- [ ] **#40** Promote `landing-v3-prototype` into the production Cabinet
       structure (see the Branch/production transition checklist below,
       and `three-world-launch-phases-Notes.md` for why this is a normal merge, not a
       default-branch switch)
-- [ ] Align the landing-page hierarchy with `mkdocs.yml`
-- [ ] Finish essential personal pages: About Me, Contact, any other page
+- [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml`
+- [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch
-- [ ] Implement the first multi-repo assembly, beginning with Working
+- [ ] **#43** Implement the first multi-repo assembly, beginning with Working
       with AI (see `three-world-launch-phases-Notes.md` for the mechanism)
-- [ ] Change public links from Working with AI's external GitHub Pages
+- [ ] **#44** Change public links from Working with AI's external GitHub Pages
       URL to the Cabinet-local path once assembled and tested
 
 ### Branch / production transition
 
-- [ ] Complete and test V3 on `landing-v3-prototype`
-- [ ] Test the Working with AI assembly there without replacing the
+- [ ] **#45** Complete and test V3 on `landing-v3-prototype`
+- [ ] **#46** Test the Working with AI assembly there without replacing the
       current production site
-- [ ] Tag/archive the current `main` state before launch (see Phase 0's
+- [ ] **#47** Tag/archive the current `main` state before launch (see Phase 0's
       "create a history section" item -- give archived pages a real
       linked home, not just a tag)
-- [ ] Merge `landing-v3-prototype` into `main`
-- [ ] Ensure the Pages workflow is triggered from `main`
-- [ ] Deploy the assembled `public/` artifact from `main`
+- [ ] **#48** Merge `landing-v3-prototype` into `main`
+- [ ] **#49** Ensure the Pages workflow is triggered from `main`
+- [ ] **#50** Deploy the assembled `public/` artifact from `main`
 
 ### Bookshelf + FFFX
 
-- [ ] Review both repos for last-minute updates
-- [ ] Audit current section/entry TSVs against work that already exists
-- [ ] Link any obvious existing work that should already be represented
-- [ ] Verify current standalone pages/interactives and subdomain
+- [ ] **#51** Review both repos for last-minute updates
+- [ ] **#52** Audit current section/entry TSVs against work that already exists
+- [ ] **#53** Link any obvious existing work that should already be represented
+- [ ] **#54** Verify current standalone pages/interactives and subdomain
       deployment
 
 *Don't hold launch for unfinished/WIP entries that are intentionally
@@ -367,14 +369,14 @@ marked as such.*
 
 ### Cross-world launch checks
 
-- [ ] Verify Cabinet, Bookshelf and FFFX link to each other correctly
-- [ ] Verify custom domains/CNAMEs (fffx's specifically: see the
+- [ ] **#55** Verify Cabinet, Bookshelf and FFFX link to each other correctly
+- [ ] **#56** Verify custom domains/CNAMEs (fffx's specifically: see the
       doc-audit item above)
-- [ ] Check visible landing links, MkDocs navigation, nested routes and
+- [ ] **#57** Check visible landing links, MkDocs navigation, nested routes and
       assets
-- [ ] Confirm failed builds do not replace the last successful live
+- [ ] **#58** Confirm failed builds do not replace the last successful live
       deployment
-- [ ] Merge/tag/deploy the launch version
+- [ ] **#59** Merge/tag/deploy the launch version
 
 ---
 
