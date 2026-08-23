@@ -852,6 +852,19 @@ marked as such.*
       sections, 32 entries), `build-static.mjs`, Playwright screenshot
       confirms Machines & Makings and the new second Swatch Fields island
       both render correctly.
+- [ ] **#73** Compass rose's 4 directions decided (not yet built): N = About
+      Me, S = Colophon (both stay as-is), E/W = Now and a new **Site
+      IA / Sitemap** page, once Contact (`compass-e`) and CV
+      (`compass-w`) are absorbed elsewhere rather than each holding their
+      own direction. Not started -- open questions before building:
+      where does CV content go (folded into About Me's text? dropped
+      entirely in favour of the existing external `jesalmehta.com` link
+      living somewhere less prominent?), does Contact disappear as a
+      compass direction entirely or fold into a footer/social link, and
+      does the Site IA/Sitemap page get hand-written or generated from
+      `mkdocs.yml` + `cabinet-sections.tsv` directly (the latter would
+      need to stay in sync with both, same drift risk as everything else
+      audited in `#67`).
 
 ---
 
