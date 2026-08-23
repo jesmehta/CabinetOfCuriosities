@@ -201,7 +201,9 @@ freely.
       since the current `docs/`-only `mkdocs build --site-dir public`
       deploy wouldn't even package `archived-landing-pages/` as-is (it
       lives outside `docs_dir`) regardless of how it's linked.
-- [ ] **#19** Launch the page -- **superseded by Phase 1 below.**
+- [x] **#19** Launch the page -- **superseded by Phase 1 below -- but also
+      genuinely done now, 2026-08-23**: cabinetofcuriosities.in is live
+      on v3 (#40/#45/#47-50), not just tracked elsewhere.
 - [ ] **#20** Write the colophon and creation notes.
 
 ### Found via documentation survey (v3.6.6 doc audit)
