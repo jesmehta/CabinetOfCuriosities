@@ -875,28 +875,28 @@ system easy to maintain. Threshold: the sites are not just launched;
 they are maintainable, documented and structurally complete enough for
 routine publishing.*
 
-- [ ] Add/finish fuller About/site-context pages
-- [ ] Colophon (Phase 0 above)
-- [ ] Site Notes where useful
-- [ ] At least a basic landing/overview page for every active top-level
-      section
-- [ ] Link existing pages/projects that were not essential enough to
+- [ ] **#74** Add/finish fuller About/site-context pages
+- [ ] **#75** Colophon (Phase 0 above)
+- [ ] **#76** Site Notes where useful
+- [ ] **#77** At least a basic landing/overview page for every active
+      top-level section
+- [ ] **#78** Link existing pages/projects that were not essential enough to
       block launch
-- [ ] Continue selective migration of worthwhile older Cabinet content
-- [ ] Expand Cabinet multi-repo assembly beyond Working with AI: Student
-      Work, Rock Collection, Dupatta Collection, other substantial
+- [ ] **#79** Continue selective migration of worthwhile older Cabinet content
+- [ ] **#80** Expand Cabinet multi-repo assembly beyond Working with AI:
+      Student Work, Rock Collection, Dupatta Collection, other substantial
       independent projects
-- [ ] Build TSV editors for Cabinet, Bookshelf, FFFX (see
+- [ ] **#81** Build TSV editors for Cabinet, Bookshelf, FFFX (see
       `three-world-launch-phases-Notes.md` for requirements)
-- [ ] Generalize Cabinet assembly into a manifest-driven workflow so
+- [ ] **#82** Generalize Cabinet assembly into a manifest-driven workflow so
       additional repos can be mounted through configuration rather than
       hard-coded workflow steps
-- [ ] Add automatic rebuild triggers from child repos (only after the
+- [ ] **#83** Add automatic rebuild triggers from child repos (only after the
       basic assembly is stable)
-- [ ] Add stronger validation before deploy
-- [ ] Normalize duplicated documentation where Bookshelf/FFFX docs have
-      drifted (see the doc-audit item above)
-- [ ] Replace obvious placeholder metadata/thumbnails where easy (see
+- [ ] **#84** Add stronger validation before deploy
+- [ ] **#85** Normalize duplicated documentation where Bookshelf/FFFX docs
+      have drifted (see the doc-audit item above)
+- [ ] **#86** Replace obvious placeholder metadata/thumbnails where easy (see
       the doc-audit item above)
 
 ---
@@ -909,29 +909,29 @@ projects visible and complete.*
 
 Across all three worlds:
 
-- [ ] Complete near-finished projects
-- [ ] Link existing but currently unlinked pages
-- [ ] Add obvious missing entries/sections to TSVs
-- [ ] Add current independent repos to Cabinet assembly
-- [ ] Fill small metadata/thumbnail gaps
-- [ ] Clean up cross-world links
+- [ ] **#87** Complete near-finished projects
+- [ ] **#88** Link existing but currently unlinked pages
+- [ ] **#89** Add obvious missing entries/sections to TSVs
+- [ ] **#90** Add current independent repos to Cabinet assembly
+- [ ] **#91** Fill small metadata/thumbnail gaps
+- [ ] **#92** Clean up cross-world links
 
 **Cabinet**
-- [ ] Current Teaching pages
-- [ ] Student Work
-- [ ] Near-finished galleries
-- [ ] Existing Travel material
-- [ ] Active standalone project integrations
+- [ ] **#93** Current Teaching pages
+- [ ] **#94** Student Work
+- [ ] **#95** Near-finished galleries
+- [ ] **#96** Existing Travel material
+- [ ] **#97** Active standalone project integrations
 
 **Bookshelf**
-- [ ] Existing writing/interactives already represented in the current
-      structure
-- [ ] Strengthen links to current static projects and content pages
-- [ ] Finish easy dormant/WIP entries where source material already
+- [ ] **#98** Existing writing/interactives already represented in the
+      current structure
+- [ ] **#99** Strengthen links to current static projects and content pages
+- [ ] **#100** Finish easy dormant/WIP entries where source material already
       exists
 
 **FFFX**
-- [ ] Prioritize current WIP portals and already-active
+- [ ] **#101** Prioritize current WIP portals and already-active
       computational/generative projects before inventing new categories
 
 ---
@@ -944,29 +944,29 @@ nature -- add new items as they emerge rather than expecting this
 section to empty out.*
 
 **Cabinet**
-- [ ] Add new Teaching material
-- [ ] Expand Student Work
-- [ ] Add Travels and Galleries
-- [ ] Integrate new independent repos
-- [ ] Refine V3 visuals as real content stresses the layout
+- [ ] **#102** Add new Teaching material
+- [ ] **#103** Expand Student Work
+- [ ] **#104** Add Travels and Galleries
+- [ ] **#105** Integrate new independent repos
+- [ ] **#106** Refine V3 visuals as real content stresses the layout
 
 **Bookshelf**
-- [ ] Add writing/research entries
-- [ ] Expand interactive reading/timeline projects
-- [ ] Refine curation, metadata and visual treatments
-- [ ] Explore longer-term alternate views or filters
+- [ ] **#107** Add writing/research entries
+- [ ] **#108** Expand interactive reading/timeline projects
+- [ ] **#109** Refine curation, metadata and visual treatments
+- [ ] **#110** Explore longer-term alternate views or filters
 
 **FFFX**
-- [ ] Complete WIP portals
-- [ ] Add new computational/generative work
-- [ ] Consolidate and document experiments
-- [ ] Refine sections, taxonomy and visual systems
+- [ ] **#111** Complete WIP portals
+- [ ] **#112** Add new computational/generative work
+- [ ] **#113** Consolidate and document experiments
+- [ ] **#114** Refine sections, taxonomy and visual systems
 
 **Cross-world**
-- [ ] Improve shared schema conventions where useful
-- [ ] Improve cross-linking and discovery
-- [ ] Automate child-repo rebuild triggers
-- [ ] Consider Atlas -> public-site tooling
-- [ ] Improve search, accessibility, performance and metadata
-- [ ] Use Cloudflare routing only where a future project genuinely needs
-      it
+- [ ] **#115** Improve shared schema conventions where useful
+- [ ] **#116** Improve cross-linking and discovery
+- [ ] **#117** Automate child-repo rebuild triggers
+- [ ] **#118** Consider Atlas -> public-site tooling
+- [ ] **#119** Improve search, accessibility, performance and metadata
+- [ ] **#120** Use Cloudflare routing only where a future project genuinely
+      needs it
