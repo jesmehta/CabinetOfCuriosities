@@ -1521,18 +1521,32 @@ function drawGeoGrid(stage, canvasBounds, origin) {
   // Now the cardinal skip only applies while showGrid is actually
   // drawing that segment, so turning the grid off doesn't blank the
   // compass's own cardinal rays.
+  // v3.7.49 (#29) -- the rays live in their own nested [translate ->
+  // rotate] pair, same reasoning as the compass rose's own spinGroup:
+  // an inline SVG transform="translate(...)" attribute (positioning,
+  // set once here) and a CSS transform: rotate() (the hover-triggered
+  // spin, cabinet-v3-style.css) can't coexist on the SAME element --
+  // CSS transform replaces the presentation attribute outright rather
+  // than composing with it. Drawing each ray relative to (0,0) instead
+  // of `origin` directly lets the spin group use a static, constant
+  // transform-origin: 0 0 in CSS rather than needing origin's own
+  // (per-render, dynamic) coordinates baked into a stylesheet rule.
   const reach = Math.max(canvasBounds.width, canvasBounds.height) * 1.5;
+  const diagonalOuter = el("g", { transform: `translate(${origin.x}, ${origin.y})` });
+  const diagonalSpin = el("g", { class: "v3-geo-diagonal-spin" });
   for (let deg = 0; showDiagonals && deg < 360; deg += 22.5) {
     if (deg % 90 === 0 && showGrid) continue;
     const rad = (deg * Math.PI) / 180;
     const dx = Math.cos(rad);
     const dy = Math.sin(rad);
-    group.appendChild(el("line", {
+    diagonalSpin.appendChild(el("line", {
       class: "v3-geo-line v3-geo-diagonal",
-      x1: origin.x, y1: origin.y,
-      x2: origin.x + dx * reach, y2: origin.y + dy * reach
+      x1: 0, y1: 0,
+      x2: dx * reach, y2: dy * reach
     }));
   }
+  diagonalOuter.appendChild(diagonalSpin);
+  group.appendChild(diagonalOuter);
 
   const coastline = stage.querySelector(".v3-coastline-outline");
   if (coastline) {
