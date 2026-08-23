@@ -28,8 +28,16 @@ the time -- a NEW
 item added later gets the next unused number appended wherever it's
 inserted in the list, it does NOT trigger a renumber of anything else,
 same "history matters" reasoning as the no-renumbering rule above.
-Phase 2/3A/3B+ aren't tagged yet -- only Phase 0 and Phase 1 are, this
-way for now.
+Phase 2/3A/3B+ were numbered later too (2026-08-24, #74-#123 so far),
+so the whole file now uses one continuous sequence, not just Phase 0/1.
+
+Done items (`- [x]`) are individually wrapped in `<details><summary>#N</summary>`
+so the list stays scannable -- collapsed by default, showing just the
+number; click to expand the full explanation. Only top-level items are
+wrapped this way, not nested sub-items (e.g. `#35`/`#36` under `#34`).
+This only renders as collapsible on GitHub/most markdown previews -- in
+a plain text editor the `<details>`/`<summary>` tags just sit there
+uncollapsed.
 
 - `Landing-page-notes.2.0.md` (parent directory) -- v3-prototype concept
   notes, discussions, and full changelog. This file's Phase 0 used to
@@ -59,6 +67,9 @@ freely.
 
 ### Punch list (sea serpent through colophon)
 
+<details>
+<summary>#1</summary>
+
 - [x] **#1** Sea-serpent redesign -- **done, v3.6.24**: the blocker was the
       reference itself, resolved by the user supplying one directly
       (`dragon.svg`) rather than a hand-drawn sketch. 1-3 independent
@@ -67,15 +78,25 @@ freely.
       (`cabinet-v3-seaserpent.js` / `_test-serpent.html`) stays
       untracked, unused, not deleted -- superseded, not merged into
       this.
+
+</details>
 - [ ] **#2** Water wave-line texture -- on hold pending a reference image (v2's
       own wavelines weren't visible/legible as a reference on their
       own).
+<details>
+<summary>#3</summary>
+
 - [x] **#3** Boats sailing in smooth flows (not randomly moving) -- the
       original attempt was reverted after an unresolved Chromium
       `<use>`/`<symbol>` rendering bug. **Done, v3.6.17-v3.6.21**, via a
       different mechanism that sidesteps that bug entirely: plain
       `<ellipse>`+`<line>` particles (no `<use>`/`<symbol>`), advected
       along the flow field below. See next item.
+
+</details>
+<details>
+<summary>#4</summary>
+
 - [x] **#4** Flowfield stretch goal -- a precomputed noise/flow field with
       live, cheap particle advection along it (waves, boats),
       obstacles/repulsion around islands, optionally mouse-reactive.
@@ -93,9 +114,19 @@ freely.
       rather than perturbing the field itself, capped at 1.5x the base
       particle count. **Not yet in the production static build** -- see
       Phase 1's "finish or consciously defer flowfield particles".
+
+</details>
+<details>
+<summary>#5</summary>
+
 - [x] **#5** islands-tool idea: a control to re-roll/regenerate the circle
       centres and packing stage itself -- done, v3.6.8: "Reroll
       positions" button, Layout section.
+
+</details>
+<details>
+<summary>#6</summary>
+
 - [x] **#6** islands-tool idea: switch or layer between the wave contours, the
       topology noise contour bands, or both -- **tier 1 done** (v3.6.8's
       three preset buttons, replaced in v3.6.9 by two independent
@@ -107,15 +138,27 @@ freely.
       riso, cyanotype, neon, ukiyo, medieRiso), each its own colour token
       set + type pairing, switched live via the Theme select -- see
       `v3-scheme-candidates.md`.
+
+</details>
+<details>
+<summary>#7</summary>
+
 - [x] **#7** islands-tool idea: give the topology noise contour bands
       (`seaBandThresholds`/`sandThresholds`/`vegThresholds`) their own
       panel section -- done, v3.6.9: "Topological offset parameters" in
       the Visuals section, one slider per array element.
+
+</details>
+<details>
+<summary>#8</summary>
+
 - [x] **#8** Strengthen centroid gathering further -- push `centerBias` harder
       if islands should cluster tighter still -- **counted done**: a
       live slider exists (v3.6.8, Layout section) so this is now a
       direct try-values-and-judge action, not something blocked on more
       code.
+
+</details>
 - [ ] **#9** Give sections a minimum weight so small sections (About Me, etc.)
       don't read as visually skewed/collapsed -- **investigated
       (v3.6.10), confirmed insufficient as-is.**
@@ -127,6 +170,9 @@ freely.
       one item's own shape. A real fix needs an aspect-ratio-aware
       constraint back in `squarify()` -- not something to build without
       discussing scope first.
+<details>
+<summary>#10</summary>
+
 - [x] **#10** A real pass on fonts, colours, sizes, and readability --
       **done, v3.6.12-v3.6.13** (header type/size, section-label size,
       island-label legibility, live-switchable) **-- marked fully done
@@ -135,29 +181,49 @@ freely.
       original first-guess palette from v3.6.5, technically untouched --
       noted here rather than silently dropped, but no longer blocking
       this item.
+
+</details>
 - [ ] **#11** Other small details -- compass rose, easter eggs, etc. --
       **partially done, 2026-08-23**: the compass rose itself is real,
       themed, and functional (see the v3.7.1-v3.7.8 changelog entries).
       The "easter eggs" half is still open -- see #21 below, the one
       concrete easter-egg idea currently on record.
+<details>
+<summary>#12</summary>
+
 - [x] **#12** Expand the canvas to full-bleed window size -- **done, v3.6.10.**
       Adapts to the viewport ONCE at load, not on a live drag-resize
       afterward.
+
+</details>
+<details>
+<summary>#13</summary>
+
 - [x] **#13** Fold the "Cabinet of Curiosities" heading + intro text into the
       map itself -- **done, v3.6.10, reverted v3.6.12.** v3.6.12 put it
       back in a normal top-of-page row instead (real `<h1>`/`<p>`
       matters for crawlers/screen readers in a way JS-drawn SVG text
       doesn't). Still real, unchanged HTML either way.
+
+</details>
+<details>
+<summary>#14</summary>
+
 - [x] **#14** Refine the header itself -- **done, v3.6.12**: title/tagline
       wording, typography/look-and-feel (larger H1, sits directly on the
       full-bleed sea colour instead of a card), position (top row).
       H1-scale-mismatch sub-question moved to the next item, unresolved.
+
+</details>
 - [ ] **#15** Still open: resizing the window scales the map's own text via the
       SVG viewBox, but the real HTML `<h1>`/tagline don't scale with it,
       since they sit outside the SVG entirely. Undecided which of three
       options to take: scale it with the map, clamp its size within a
       range, or leave it fixed as-is (current behaviour, by default
       rather than decision).
+<details>
+<summary>#60</summary>
+
 - [x] **#60** The `<h1>` ("Cabinet of Curiosities") should sit on a fixed
       frame that stays visible always; the map itself should be the part
       that scrolls, rolling underneath that fixed frame as it grows with
@@ -188,6 +254,11 @@ freely.
       left ~640px, leaving room for possible right-corner content later
       ("i may add some text on the right corner later, maybe" -- not
       built, just left room for it).
+
+</details>
+<details>
+<summary>#16</summary>
+
 - [x] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
       About Me / Contact Me links, rather than those existing as regular
       islands -- see the doc-audit item below (WORLD-SYSTEMS.md's
@@ -197,10 +268,20 @@ freely.
       labels are the real link targets now (`kind: compass-direction`
       entries in `content/cabinet-entries.tsv`; see #24 below for the
       commit that moved the old CV entry onto this same mechanism).
+
+</details>
+<details>
+<summary>#17</summary>
+
 - [x] **#17** Merge branches -- **superseded by Phase 1's "Promote
       landing-v3-prototype into the production Cabinet structure" and
       the Branch/production transition checklist below -- marked done
       here, tracked there instead.**
+
+</details>
+<details>
+<summary>#18</summary>
+
 - [x] **#18** Create a history section and place archival pages there --
       `archived-landing-pages/` already exists as a filesystem
       convention; this is about giving it a real, linked home on the
@@ -218,6 +299,11 @@ freely.
       renders in full). `v2-history/` also holds the map's four earlier
       visual eras (`c384a11` through `a3887b0`), each rebuilt standalone
       from git history, for anyone who wants to see how it got there.
+
+</details>
+<details>
+<summary>#61</summary>
+
 - [x] **#61** Link `archived-landing-pages/` from the live site's own
       navigation -- split out from #18 above, which now only covers
       building the archive itself. Deliberately deferred until #40
@@ -238,6 +324,11 @@ freely.
       nav placement, both archive links resolve to real archived
       content (correct titles, zero failed requests, zero console
       errors) -- not just checked in isolation.
+
+</details>
+<details>
+<summary>#20</summary>
+
 - [x] **#20** Write the colophon and creation notes. **Scaffolding done,
       v3.7.54, 2026-08-24** -- `docs/colophon.md` exists, is in
       `mkdocs.yml`'s nav, and is reachable from the compass's S
@@ -247,10 +338,17 @@ freely.
       later." Marking done at the scaffolding level since that's what
       was actually asked for this round; the real writing itself is
       still open, just no longer blocked on any plumbing.
+
+</details>
+<details>
+<summary>#19</summary>
+
 - [x] **#19** Launch the page -- **superseded by Phase 1 below -- but also
       genuinely done now, 2026-08-23**: cabinetofcuriosities.in is live
       on v3 (#40/#45/#47-50), not just tracked elsewhere.
 
+
+</details>
 ### Found via documentation survey (v3.6.6 doc audit)
 
 Surfaced by reading `LANDING-PAGE-NOTES.md` (top-level, v2/production),
@@ -264,6 +362,9 @@ overall site.
 - [ ] **#23** Real thumbnails owed for entries still on generated placeholder
       tiles -- e.g. Circle Packing Library already has one sitting in
       the fffx repo, just never copied over.
+<details>
+<summary>#24</summary>
+
 - [x] **#24** CV entry's "scroll" icon reads ambiguous at card size. --
       **superseded, marked done, 2026-08-23**: the `cv` entry itself
       (`cardType: thumbnail-plaque`, `icon: icon-scroll`) was deleted in
@@ -277,12 +378,19 @@ overall site.
       be ambiguous. The `<symbol id="icon-scroll">` sprite still sits
       unreferenced in `docs/index.html`, harmless dead weight, not worth
       a separate cleanup item on its own.
+
+</details>
+<details>
+<summary>#25</summary>
+
 - [x] **#25** Verify fffx's DNS/CNAME is actually live before treating fffx
       links from Cabinet as production (no committed `CNAME` confirmed
       as of the v2.1 follow-up that raised this). -- **done, confirmed
       live, 2026-08-24**: `fffx.cabinetofcuriosities.in` fetched
       directly, 200, served by GitHub Pages, real title ("Form follows
       f(x)"), not a placeholder.
+
+</details>
 - [ ] **#26** `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
       dashed border, leader-line to a card sitting off the island
       entirely) is fully built and supported by the renderer but no
@@ -302,6 +410,9 @@ overall site.
       the doc describes. Real open decision, not busywork: either build
       the missing visual treatment, or correct `DESIGN-SYSTEM.md`'s
       claim to match what actually exists.
+<details>
+<summary>#27</summary>
+
 - [x] **#27** `WORLD-SYSTEMS.md` standing rule: FabAcademy/Fabricademy
       documentation sites are NOT Level-1 worlds and should not become
       Cabinet islands -- link them from About Me or a relevant
@@ -312,6 +423,11 @@ overall site.
       **Fab** *section* (`#123`) is fine and doesn't violate the rule --
       the standing rule was specifically about the world/Level-1 tier,
       not sections in general.
+
+</details>
+<details>
+<summary>#33</summary>
+
 - [x] **#33** Update `index.html` to match current development -- the shipped
       static build needs to reflect everything landed on
       `islands-tool.html`/the dev panel. **Done, re-confirmed
@@ -323,6 +439,8 @@ overall site.
       Re-run `node build-static.mjs` from `landing-v3/` whenever code
       lands ahead of it again.
 
+
+</details>
 ### Additional ideas -- visual/theme work extras (optional, not launch-critical)
 
 Session additions (2026-08-23), moved here from wherever they first
@@ -331,6 +449,9 @@ audit either, but closely related to/stemming from the visual and
 theme work above rather than the Phase 1 launch work below. Numbers
 carried over unchanged from wherever each item started (see this file's
 own numbering note near the top) -- a move, not a re-add.
+
+<details>
+<summary>#21</summary>
 
 - [x] **#21** Easter egg: clicking within the compass rose's inner circle
       switches the WHOLE canvas's theme, Medieval <-> Topology, and back
@@ -413,10 +534,15 @@ own numbering note near the top) -- a move, not a re-add.
       the above: boats/dragons only have Medieval colours defined, so
       they won't re-tint on swap to Topology either way (already-flagged
       future scope).
+
+</details>
 - [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale
       (still describes Cabinet as having no islands of its own, and
       carries TODOs that Cabinet's own build already satisfies).
+<details>
+<summary>#29</summary>
+
 - [x] **#29** Compass rose rotation: the rose (and the diagonals radiating from
       its centre, so they keep matching its ordinal arms) rotates
       anticlockwise -- either at random or triggered by approach/hover
@@ -469,6 +595,8 @@ own numbering note near the top) -- a move, not a re-add.
       through the middle, both spin groups (rose + diagonals) staying in
       lockstep throughout since they share one keyframes rule and
       trigger.
+
+</details>
 - [ ] **#63** Compass arms: hovering one reveals intricate scrollwork
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be
@@ -482,6 +610,9 @@ own numbering note near the top) -- a move, not a re-add.
       decision on which direction (generated spirograph vs a distinct
       hand/traced graphic) before implementation, similar shape of open
       question to #30's theme-specific boat artwork.
+<details>
+<summary>#64</summary>
+
 - [x] **#64** Decide what to do about boats/dragons never appearing on the
       production build -- **#38's "consciously deferred" made concrete,
       2026-08-23**: seeing the live site with no boats/dragons at all
@@ -525,6 +656,8 @@ own numbering note near the top) -- a move, not a re-add.
       selector revealing already-baked SVG paths via opacity, zero
       JavaScript involved -- not analogous to boats/dragons at all,
       which genuinely need a `requestAnimationFrame` loop.
+
+</details>
 - [ ] **#30** Theme-specific boat artwork: swap the boat graphic between themes
       (islands-tool.html's dev panel boat toggle -- the current ellipses
       are a top-down view, fitted for Topology's satellite-map
@@ -535,6 +668,9 @@ own numbering note near the top) -- a move, not a re-add.
       - Topology: top view, current ellipse shape kept, lighter outline,
         a more intense/saturated version of the same hue (vs. Medieval's
         muted one).
+<details>
+<summary>#31</summary>
+
 - [x] **#31** Merge themes x hover -- **meaning corrected by the user, not yet
       re-explained.** Not "reconcile hover CSS across theme presets"
       (that was a wrong guess, struck from scope). Actual intent still
@@ -543,6 +679,8 @@ own numbering note near the top) -- a move, not a re-add.
       mechanism itself now being complete (v3.7.32-v3.7.44 above);
       whatever this placeholder was originally meant to track no longer
       needs separate action.
+
+</details>
 - [ ] **#32** Rework "Copy config" -- direct question, 2026-08-23: "What does
       copy config do now, with multiple themes and specific
       applications? Does it need to be reworked, or the place where the
@@ -571,6 +709,9 @@ own numbering note near the top) -- a move, not a re-add.
       auto-loaded override file (all live-tunable state in one object)
       so nothing needs hand-pasting into source at all. Needs a decision
       before implementing, not a guess.
+<details>
+<summary>#62</summary>
+
 - [x] **#62** Rework `archived-landing-pages/index.html` (the archive landing
       page) -- direct reaction, 2026-08-23: "I dont like the lander, feels
       iffy." Two directions raised, not yet chosen between: (a) redesign
@@ -589,6 +730,8 @@ own numbering note near the top) -- a move, not a re-add.
       added, nested under the `v2` link, same labels the old lander
       used.
 
+
+</details>
 ---
 
 ## Phase 1 -- Go for Launch
@@ -616,11 +759,19 @@ failures remain.*
         currently architected. Boats stay `islands-tool.html`-only, a dev
         tool, unless the static-build approach itself changes later.
   - [ ] **#39** desktop/mobile QA
+<details>
+<summary>#40</summary>
+
 - [x] **#40** Promote `landing-v3-prototype` into the production Cabinet
       structure (see the Branch/production transition checklist below,
       and `three-world-launch-phases-Notes.md` for why this is a normal merge, not a
       default-branch switch) -- **done, 2026-08-23**, see the
       Branch/production transition entries below for the full mechanics.
+
+</details>
+<details>
+<summary>#41</summary>
+
 - [x] **#41** Align the landing-page hierarchy with `mkdocs.yml` -- **first pass,
       2026-08-24**: `mkdocs.yml` nav restructured to mirror the compass/world
       names -- new `Compass` section (About/Colophon/Now) added,
@@ -636,8 +787,13 @@ failures remain.*
       `status: false` on the map side -- a placement decision, #69, not a
       hierarchy gap; also corrected there: the "grid is full" reasoning
       was wrong, see #69's note).
+
+</details>
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch -- see #66 (About).
+<details>
+<summary>#43</summary>
+
 - [x] **#43** Implement the first multi-repo assembly, beginning with Working
       with AI (see `three-world-launch-phases-Notes.md` for the mechanism).
       **Done, v3.7.54, 2026-08-24**: `deploy.yml` gained a second
@@ -664,6 +820,11 @@ failures remain.*
       loads clean, zero failed requests, zero console errors. The live
       GitHub Actions run itself still needs confirming -- no `gh` CLI in
       this environment to read run logs directly.
+
+</details>
+<details>
+<summary>#44</summary>
+
 - [x] **#44** Change public links from Working with AI's external GitHub Pages
       URL to the Cabinet-local path once assembled and tested --
       **done, 2026-08-24**: confirmed `https://cabinetofcuriosities.in/
@@ -674,12 +835,22 @@ failures remain.*
       section -- the Cabinet-local path is now reached from the landing
       page map, not the docs sidebar.
 
+
+</details>
 ### Branch / production transition
+
+<details>
+<summary>#45</summary>
 
 - [x] **#45** Complete and test V3 on `landing-v3-prototype` -- **done,
       2026-08-23**: `data-theme` fix verified, full `mkdocs build`
       passed pre-merge, Playwright confirmed zero console/request
       errors on the promoted page.
+
+</details>
+<details>
+<summary>#46</summary>
+
 - [x] **#46** Test the Working with AI assembly there without replacing the
       current production site -- **done, confirmed live, 2026-08-24**:
       `https://cabinetofcuriosities.in/teaching/working-with-ai/` fetched
@@ -687,6 +858,11 @@ failures remain.*
       Principles"), not just the local pre-push simulation. Current
       production site's visible content was unaffected throughout, as
       predicted (all-or-nothing assembly, nothing linked to it until #44).
+
+</details>
+<details>
+<summary>#47</summary>
+
 - [x] **#47** Tag/archive the current `main` state before launch (see Phase 0's
       "create a history section" item -- give archived pages a real
       linked home, not just a tag) -- **done, 2026-08-23**: archival
@@ -695,6 +871,11 @@ failures remain.*
       `cabinet-v2-before-v3` (commit `6364fce`), matching the existing
       `cabinet-v1-before-map` convention, so it's recoverable by tag as
       well as by being folder-archived.
+
+</details>
+<details>
+<summary>#48</summary>
+
 - [x] **#48** Merge `landing-v3-prototype` into `main` -- **done,
       2026-08-23**, commit `7f3a638`. Not a simple merge: `main` had
       diverged independently since the branch split (2 commits from
@@ -710,10 +891,20 @@ failures remain.*
       *before* the merge specifically so the custom domain wasn't
       silently dropped -- caught only because it was checked rather
       than assumed.
+
+</details>
+<details>
+<summary>#49</summary>
+
 - [x] **#49** Ensure the Pages workflow is triggered from `main` -- **done**:
       `deploy.yml` already triggers `on: push: branches: - main`;
       pushing the merge (`7f3a638`) to `origin/main` triggered it
       directly, nothing separate needed.
+
+</details>
+<details>
+<summary>#50</summary>
+
 - [x] **#50** Deploy the assembled `public/` artifact from `main` -- **done,
       confirmed live, 2026-08-23**: "IT WORKS !" -- cabinetofcuriosities.in
       is serving v3. Two real bugs found by actually looking at the live
@@ -723,6 +914,8 @@ failures remain.*
       dragons don't appear at all (not a regression -- see #64 below,
       this is #38's "consciously deferred" made concrete).
 
+
+</details>
 ### Bookshelf + FFFX
 
 - [ ] **#51** Review both repos for last-minute updates
@@ -742,10 +935,18 @@ marked as such.*
       titles). Bookshelf/FFFX -> Cabinet not checked -- no local access
       to either repo from this environment, would need fetching their
       live pages and grepping for a link back.
+<details>
+<summary>#56</summary>
+
 - [x] **#56** Verify custom domains/CNAMEs (fffx's specifically: see the
       doc-audit item above) -- **done, 2026-08-24**, same verification as
       #25 (duplicate ask): `fffx.cabinetofcuriosities.in` live, 200,
       served by GitHub Pages, real title.
+
+</details>
+<details>
+<summary>#57</summary>
+
 - [x] **#57** Check visible landing links, MkDocs navigation, nested routes and
       assets -- **done for Cabinet's own scope, 2026-08-24**: `mkdocs
       build` clean, Playwright confirms zero console/request errors on
@@ -754,6 +955,8 @@ marked as such.*
       fetched directly and content-checked, not just status-code checked.
       Bookshelf/FFFX's own internal nav is out of scope -- no local
       access to audit from here.
+
+</details>
 - [ ] **#58** Confirm failed builds do not replace the last successful live
       deployment
 - [ ] **#59** Merge/tag/deploy the launch version
@@ -762,6 +965,9 @@ marked as such.*
 
 - [ ] **#66** About needs to be written properly -- currently 30 words of
       placeholder text (`docs/about.md`). Part of #42.
+<details>
+<summary>#67</summary>
+
 - [x] **#67** Nav content audit: most `mkdocs.yml`-linked pages are stub/
       "coming soon" text even though the file exists -- word counts taken
       2026-08-24: `about.md` 30, `makings.md` 21, `creative_code.md` 42,
@@ -780,6 +986,8 @@ marked as such.*
       `fffx/formFollowsFx.md` (file is actually `fffx/fffx.md`, a 404 in
       production) -- fixed same day since it was a one-line typo, not a
       content decision.
+
+</details>
 - [ ] **#68** Update the MkDocs theme's colour scheme to match the landing
       page, and add some light background graphics -- currently plain
       Material defaults, wants to feel like the same site as the v3
@@ -820,6 +1028,9 @@ marked as such.*
       headings), or whether an `aria-label`/hidden HTML heading pass
       would be the right fix vs. leaving it as an intentional map
       metaphor. Needs a real look before deciding.
+<details>
+<summary>#71</summary>
+
 - [x] **#71** Working with AI, Prompt Generator, Oblique Strategies and SSD
       Creative Coding all mapped as real `cabinet-entries.tsv` entries
       under `teaching`, at Cabinet-local assembled paths -- **done,
@@ -842,6 +1053,11 @@ marked as such.*
       is the canonical listing now, a second copy in the docs sidebar was
       redundant. **Live-confirmed, same day**: all four assembled paths
       fetched directly after the `main` push, 200 with real titles each.
+
+</details>
+<details>
+<summary>#72</summary>
+
 - [x] **#72** Bookshelf/FFFX nav split, real Teaching/Makings landing pages,
       Swatch Fields cross-listing -- **done, 2026-08-24**, direct
       follow-up to `#71`'s table:
@@ -886,6 +1102,8 @@ marked as such.*
       sections, 32 entries), `build-static.mjs`, Playwright screenshot
       confirms Machines & Makings and the new second Swatch Fields island
       both render correctly.
+
+</details>
 - [ ] **#73** Compass rose's 4 directions decided (not yet built): N = About
       Me, S = Colophon (both stay as-is), E/W = Now and a new **Site
       IA / Sitemap** page, once Contact (`compass-e`) and CV
@@ -1017,6 +1235,9 @@ section to empty out.*
       own intro note admits it was two documents smashed together once
       already, 2026-08-23) -- worth a real pass on what belongs where
       before the overlap gets worse.
+<details>
+<summary>#123</summary>
+
 - [x] **#123** New Fab section -- **done, 2026-08-24** (#27 intercession):
       `cabinet-sections.tsv` gained a `fab` region (weight 2, `wip`) with
       four entries -- Fab Academy (`https://fabacademy.org/`), Fab 23
@@ -1036,6 +1257,8 @@ section to empty out.*
       Fab islands rendered correctly on the first build. `mkdocs build`
       clean, Playwright confirms zero console errors.
 
+
+</details>
 ---
 
 ## Content Inventory -- Pages, Entries & Their Statuses
