@@ -35,9 +35,12 @@ Done items (`- [x]`) are individually wrapped in `<details><summary>#N</summary>
 so the list stays scannable -- collapsed by default, showing just the
 number; click to expand the full explanation. Only top-level items are
 wrapped this way, not nested sub-items (e.g. `#35`/`#36` under `#34`).
-This only renders as collapsible on GitHub/most markdown previews -- in
-a plain text editor the `<details>`/`<summary>` tags just sit there
-uncollapsed.
+A blank line always surrounds every `<details>`/`</details>` tag on both
+sides -- CommonMark needs that to close an HTML block cleanly; skipping
+it merges adjacent blocks into one raw-HTML region and breaks backtick
+code spans elsewhere (this happened once, 2026-08-24, fixed). This only
+renders as collapsible on GitHub/most markdown previews -- in a plain
+text editor the tags just sit there uncollapsed.
 
 - `Landing-page-notes.2.0.md` (parent directory) -- v3-prototype concept
   notes, discussions, and full changelog. This file's Phase 0 used to
@@ -80,9 +83,11 @@ freely.
       this.
 
 </details>
+
 - [ ] **#2** Water wave-line texture -- on hold pending a reference image (v2's
       own wavelines weren't visible/legible as a reference on their
       own).
+
 <details>
 <summary>#3</summary>
 
@@ -94,6 +99,7 @@ freely.
       along the flow field below. See next item.
 
 </details>
+
 <details>
 <summary>#4</summary>
 
@@ -116,6 +122,7 @@ freely.
       Phase 1's "finish or consciously defer flowfield particles".
 
 </details>
+
 <details>
 <summary>#5</summary>
 
@@ -124,6 +131,7 @@ freely.
       positions" button, Layout section.
 
 </details>
+
 <details>
 <summary>#6</summary>
 
@@ -140,6 +148,7 @@ freely.
       `v3-scheme-candidates.md`.
 
 </details>
+
 <details>
 <summary>#7</summary>
 
@@ -149,6 +158,7 @@ freely.
       the Visuals section, one slider per array element.
 
 </details>
+
 <details>
 <summary>#8</summary>
 
@@ -159,6 +169,7 @@ freely.
       code.
 
 </details>
+
 - [ ] **#9** Give sections a minimum weight so small sections (About Me, etc.)
       don't read as visually skewed/collapsed -- **investigated
       (v3.6.10), confirmed insufficient as-is.**
@@ -170,6 +181,7 @@ freely.
       one item's own shape. A real fix needs an aspect-ratio-aware
       constraint back in `squarify()` -- not something to build without
       discussing scope first.
+
 <details>
 <summary>#10</summary>
 
@@ -183,11 +195,13 @@ freely.
       this item.
 
 </details>
+
 - [ ] **#11** Other small details -- compass rose, easter eggs, etc. --
       **partially done, 2026-08-23**: the compass rose itself is real,
       themed, and functional (see the v3.7.1-v3.7.8 changelog entries).
       The "easter eggs" half is still open -- see #21 below, the one
       concrete easter-egg idea currently on record.
+
 <details>
 <summary>#12</summary>
 
@@ -196,6 +210,7 @@ freely.
       afterward.
 
 </details>
+
 <details>
 <summary>#13</summary>
 
@@ -206,6 +221,7 @@ freely.
       doesn't). Still real, unchanged HTML either way.
 
 </details>
+
 <details>
 <summary>#14</summary>
 
@@ -215,12 +231,14 @@ freely.
       H1-scale-mismatch sub-question moved to the next item, unresolved.
 
 </details>
+
 - [ ] **#15** Still open: resizing the window scales the map's own text via the
       SVG viewBox, but the real HTML `<h1>`/tagline don't scale with it,
       since they sit outside the SVG entirely. Undecided which of three
       options to take: scale it with the map, clamp its size within a
       range, or leave it fixed as-is (current behaviour, by default
       rather than decision).
+
 <details>
 <summary>#60</summary>
 
@@ -256,6 +274,7 @@ freely.
       built, just left room for it).
 
 </details>
+
 <details>
 <summary>#16</summary>
 
@@ -270,6 +289,7 @@ freely.
       commit that moved the old CV entry onto this same mechanism).
 
 </details>
+
 <details>
 <summary>#17</summary>
 
@@ -279,6 +299,7 @@ freely.
       here, tracked there instead.**
 
 </details>
+
 <details>
 <summary>#18</summary>
 
@@ -301,6 +322,7 @@ freely.
       from git history, for anyone who wants to see how it got there.
 
 </details>
+
 <details>
 <summary>#61</summary>
 
@@ -326,6 +348,7 @@ freely.
       errors) -- not just checked in isolation.
 
 </details>
+
 <details>
 <summary>#20</summary>
 
@@ -340,6 +363,7 @@ freely.
       still open, just no longer blocked on any plumbing.
 
 </details>
+
 <details>
 <summary>#19</summary>
 
@@ -349,6 +373,7 @@ freely.
 
 
 </details>
+
 ### Found via documentation survey (v3.6.6 doc audit)
 
 Surfaced by reading `LANDING-PAGE-NOTES.md` (top-level, v2/production),
@@ -362,6 +387,7 @@ overall site.
 - [ ] **#23** Real thumbnails owed for entries still on generated placeholder
       tiles -- e.g. Circle Packing Library already has one sitting in
       the fffx repo, just never copied over.
+
 <details>
 <summary>#24</summary>
 
@@ -380,6 +406,7 @@ overall site.
       a separate cleanup item on its own.
 
 </details>
+
 <details>
 <summary>#25</summary>
 
@@ -391,6 +418,7 @@ overall site.
       f(x)"), not a placeholder.
 
 </details>
+
 - [ ] **#26** `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
       dashed border, leader-line to a card sitting off the island
       entirely) is fully built and supported by the renderer but no
@@ -410,6 +438,7 @@ overall site.
       the doc describes. Real open decision, not busywork: either build
       the missing visual treatment, or correct `DESIGN-SYSTEM.md`'s
       claim to match what actually exists.
+
 <details>
 <summary>#27</summary>
 
@@ -425,6 +454,7 @@ overall site.
       not sections in general.
 
 </details>
+
 <details>
 <summary>#33</summary>
 
@@ -441,6 +471,7 @@ overall site.
 
 
 </details>
+
 ### Additional ideas -- visual/theme work extras (optional, not launch-critical)
 
 Session additions (2026-08-23), moved here from wherever they first
@@ -536,10 +567,12 @@ own numbering note near the top) -- a move, not a re-add.
       future scope).
 
 </details>
+
 - [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale
       (still describes Cabinet as having no islands of its own, and
       carries TODOs that Cabinet's own build already satisfies).
+
 <details>
 <summary>#29</summary>
 
@@ -597,6 +630,7 @@ own numbering note near the top) -- a move, not a re-add.
       trigger.
 
 </details>
+
 - [ ] **#63** Compass arms: hovering one reveals intricate scrollwork
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be
@@ -610,6 +644,7 @@ own numbering note near the top) -- a move, not a re-add.
       decision on which direction (generated spirograph vs a distinct
       hand/traced graphic) before implementation, similar shape of open
       question to #30's theme-specific boat artwork.
+
 <details>
 <summary>#64</summary>
 
@@ -658,6 +693,7 @@ own numbering note near the top) -- a move, not a re-add.
       which genuinely need a `requestAnimationFrame` loop.
 
 </details>
+
 - [ ] **#30** Theme-specific boat artwork: swap the boat graphic between themes
       (islands-tool.html's dev panel boat toggle -- the current ellipses
       are a top-down view, fitted for Topology's satellite-map
@@ -668,6 +704,7 @@ own numbering note near the top) -- a move, not a re-add.
       - Topology: top view, current ellipse shape kept, lighter outline,
         a more intense/saturated version of the same hue (vs. Medieval's
         muted one).
+
 <details>
 <summary>#31</summary>
 
@@ -681,6 +718,7 @@ own numbering note near the top) -- a move, not a re-add.
       needs separate action.
 
 </details>
+
 - [ ] **#32** Rework "Copy config" -- direct question, 2026-08-23: "What does
       copy config do now, with multiple themes and specific
       applications? Does it need to be reworked, or the place where the
@@ -709,6 +747,7 @@ own numbering note near the top) -- a move, not a re-add.
       auto-loaded override file (all live-tunable state in one object)
       so nothing needs hand-pasting into source at all. Needs a decision
       before implementing, not a guess.
+
 <details>
 <summary>#62</summary>
 
@@ -732,6 +771,7 @@ own numbering note near the top) -- a move, not a re-add.
 
 
 </details>
+
 ---
 
 ## Phase 1 -- Go for Launch
@@ -759,6 +799,7 @@ failures remain.*
         currently architected. Boats stay `islands-tool.html`-only, a dev
         tool, unless the static-build approach itself changes later.
   - [ ] **#39** desktop/mobile QA
+
 <details>
 <summary>#40</summary>
 
@@ -769,6 +810,7 @@ failures remain.*
       Branch/production transition entries below for the full mechanics.
 
 </details>
+
 <details>
 <summary>#41</summary>
 
@@ -789,8 +831,10 @@ failures remain.*
       was wrong, see #69's note).
 
 </details>
+
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch -- see #66 (About).
+
 <details>
 <summary>#43</summary>
 
@@ -822,6 +866,7 @@ failures remain.*
       this environment to read run logs directly.
 
 </details>
+
 <details>
 <summary>#44</summary>
 
@@ -837,6 +882,7 @@ failures remain.*
 
 
 </details>
+
 ### Branch / production transition
 
 <details>
@@ -848,6 +894,7 @@ failures remain.*
       errors on the promoted page.
 
 </details>
+
 <details>
 <summary>#46</summary>
 
@@ -860,6 +907,7 @@ failures remain.*
       predicted (all-or-nothing assembly, nothing linked to it until #44).
 
 </details>
+
 <details>
 <summary>#47</summary>
 
@@ -873,6 +921,7 @@ failures remain.*
       well as by being folder-archived.
 
 </details>
+
 <details>
 <summary>#48</summary>
 
@@ -893,6 +942,7 @@ failures remain.*
       than assumed.
 
 </details>
+
 <details>
 <summary>#49</summary>
 
@@ -902,6 +952,7 @@ failures remain.*
       directly, nothing separate needed.
 
 </details>
+
 <details>
 <summary>#50</summary>
 
@@ -916,6 +967,7 @@ failures remain.*
 
 
 </details>
+
 ### Bookshelf + FFFX
 
 - [ ] **#51** Review both repos for last-minute updates
@@ -935,6 +987,7 @@ marked as such.*
       titles). Bookshelf/FFFX -> Cabinet not checked -- no local access
       to either repo from this environment, would need fetching their
       live pages and grepping for a link back.
+
 <details>
 <summary>#56</summary>
 
@@ -944,6 +997,7 @@ marked as such.*
       served by GitHub Pages, real title.
 
 </details>
+
 <details>
 <summary>#57</summary>
 
@@ -957,6 +1011,7 @@ marked as such.*
       access to audit from here.
 
 </details>
+
 - [ ] **#58** Confirm failed builds do not replace the last successful live
       deployment
 - [ ] **#59** Merge/tag/deploy the launch version
@@ -965,6 +1020,7 @@ marked as such.*
 
 - [ ] **#66** About needs to be written properly -- currently 30 words of
       placeholder text (`docs/about.md`). Part of #42.
+
 <details>
 <summary>#67</summary>
 
@@ -988,6 +1044,7 @@ marked as such.*
       content decision.
 
 </details>
+
 - [ ] **#68** Update the MkDocs theme's colour scheme to match the landing
       page, and add some light background graphics -- currently plain
       Material defaults, wants to feel like the same site as the v3
@@ -1028,6 +1085,7 @@ marked as such.*
       headings), or whether an `aria-label`/hidden HTML heading pass
       would be the right fix vs. leaving it as an intentional map
       metaphor. Needs a real look before deciding.
+
 <details>
 <summary>#71</summary>
 
@@ -1055,6 +1113,7 @@ marked as such.*
       fetched directly after the `main` push, 200 with real titles each.
 
 </details>
+
 <details>
 <summary>#72</summary>
 
@@ -1104,6 +1163,7 @@ marked as such.*
       both render correctly.
 
 </details>
+
 - [ ] **#73** Compass rose's 4 directions decided (not yet built): N = About
       Me, S = Colophon (both stay as-is), E/W = Now and a new **Site
       IA / Sitemap** page, once Contact (`compass-e`) and CV
@@ -1235,6 +1295,7 @@ section to empty out.*
       own intro note admits it was two documents smashed together once
       already, 2026-08-23) -- worth a real pass on what belongs where
       before the overlap gets worse.
+
 <details>
 <summary>#123</summary>
 
@@ -1259,6 +1320,7 @@ section to empty out.*
 
 
 </details>
+
 ---
 
 ## Content Inventory -- Pages, Entries & Their Statuses
