@@ -1582,6 +1582,19 @@ in isolation): the colophon page renders with correct nav placement,
 both archive links resolve to the real archived content with correct
 titles, zero failed requests, zero console errors.
 
+**Follow-up, same day**: the colophon page only linked `v1`/`v2`,
+missing the four intermediate visual states `v2-history/` already holds
+-- `01-initial` through `04-serpent-redesign` -- which the OLD archive
+lander (`archived-landing-pages/index.html`) already linked with its
+own labels, reused here. Nested under the `v2` link; confirmed the
+4-space indent renders as a real nested `<ul>` under MkDocs'
+Python-Markdown (which needs 4, not the 2 a CommonMark linter expects),
+and that all four `v2-history/` paths resolve against the assembled
+output tree. Confirmed live via a content-aware poll (checking the
+actual page body for `v2-history`, not just an HTTP 200 -- the OLD
+colophon page was already returning 200 before this shipped, so status
+alone couldn't tell the two apart).
+
 ### v3.7.54 -- multi-repo assembly, phase 1: Working with AI mounted at /teaching/working-with-ai/
 
 First real implementation of `three-world-launch-phases-Notes.md`'s
