@@ -5,6 +5,7 @@ copyright: Copyright 2024 Jesal Mehta - Creative Commons Attribution Non Commerc
 
 nav:
   - About Me: about.md
+  - Colophon: colophon.md
   - Thingamajigs :
     - MiniLoom : mini_loom.md
     - Makings : makings.md

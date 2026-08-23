@@ -804,7 +804,7 @@ export const entries = [
     "section": "compass",
     "title": "Colophon",
     "subtitle": "",
-    "href": "",
+    "href": "colophon/",
     "order": 30,
     "weight": 1,
     "status": true,
@@ -817,7 +817,7 @@ export const entries = [
       "cardType": "",
       "anchor": "S"
     },
-    "notes": "href intentionally blank for now -- set directly in this TSV when ready."
+    "notes": "Dummy page for now (docs/colophon.md) -- links straight to the v1/v2 archive; user will add the actual writing later."
   },
   {
     "id": "compass-w",
