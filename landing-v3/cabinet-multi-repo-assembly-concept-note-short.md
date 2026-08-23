@@ -509,6 +509,30 @@ Steps:
 
 ---
 
+## Quick reference — adding a repo by hand (current, Phase 1)
+
+The actual implementation (`.github/workflows/deploy.yml`, #43) is three
+steps per project, all placed between "Build MkDocs Site" and "Setup Pages":
+
+1. **Checkout** -- `actions/checkout@v4` the repo into `_external/<name>`
+   (public repo, no auth needed).
+2. **Assemble** -- `mkdir -p public/<destination>`, `cp -r
+   _external/<name>/. public/<destination>/`, then `rm -rf
+   public/<destination>/.git`.
+3. **Validate** -- assert real content exists, not just `index.html` (an
+   empty or half-checked-out repo can still have that) -- so a broken
+   assembly fails `build`, and `deploy` (`needs: build`) never ships it.
+
+Once the live deploy is confirmed (#46), point a Cabinet page at
+`/<destination>/` -- `content/cabinet-entries.tsv` if it belongs on the
+compass map, `mkdocs.yml` if it belongs in the docs nav (#44).
+
+This is deliberately hand-written per project, not the manifest in section 8
+-- that generalization is Phase 2 below, worth doing once there are 2-3 real
+examples to generalize from, not before.
+
+---
+
 ## Phase 2 — Generalize
 
 Create the assembly manifest and assembly script.
