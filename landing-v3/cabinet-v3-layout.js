@@ -28,7 +28,7 @@ import { v3Config, EXTRA_WEIGHT } from "./cabinet-v3-data.js";
 import { sections, entries } from "../docs/assets/js/cabinet-generated-content.js";
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
-import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField } from "./cabinet-v3-islandshape.js";
+import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField, buildInlandDistanceField } from "./cabinet-v3-islandshape.js";
 import { buildFlowField, createFlowSampler } from "./cabinet-v3-flowfield.js";
 import { createParticlePool, stepParticle } from "./cabinet-v3-particles.js";
 import { spawnDragon, stepDragon } from "./cabinet-v3-dragon.js";
@@ -1173,6 +1173,82 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   const traceWave = D => traceContourFromHeightmap(distanceField, cols, rows, cellSize, paddedBounds, -D);
   anchor = placeBand(anchor, "v3-wave-ring", showWaveRings ? waveDistances : [], traceWave);
 
+  // v3.7.9 -- the coast-hugging colour fade the original scheme note
+  // asked for ("coast to inward inland band in transparent deep green
+  // fading to nothing... similar to the sea shadow but inwards") never
+  // actually appeared: flatColourMode (below) and the noise-threshold
+  // seaBandThresholds/sandThresholds/vegThresholds bands were a strict
+  // EITHER/OR, so flat mode (the default) always skipped every band. Per
+  // direct instruction ("Both bands, inward and outward, follow
+  // coastline offset not topology") these two are a separate pair, tight
+  // fixed-pixel-distance offsets off the true coastline (buildInlandDistanceField/
+  // buildCoastlineDistanceField, same exact mechanism as the wave rings
+  // above, NOT the noise-threshold bands), drawn regardless of
+  // flatColourMode -- an overlay on top of whichever base fill mode is
+  // active, not an alternative to it. Empty distance lists (the default
+  // if a theme doesn't set them) prune to nothing via placeBand(), same
+  // as every other optional layer here.
+  const { showCoastalBands, coastOutwardBandDistances, showSeaShadow, seaRadialShadowDistances, seaShadowDistances, seaShadowAngleDeg } = v3Config.island;
+  const traceOutward = D => traceContourFromHeightmap(distanceField, cols, rows, cellSize, paddedBounds, -D);
+  anchor = placeBand(anchor, "v3-coast-outward-band", showCoastalBands ? (coastOutwardBandDistances || []) : [], traceOutward);
+
+  // v3.7.10 -- ALL-AROUND cast shadow, direct feedback after seeing the
+  // directional version live: "makes the islands look like straight
+  // cliffs rising from the sea" -- translating a copy of a shape leaves a
+  // hard straight trailing edge wherever the coastline doesn't happen to
+  // curve, which reads as a cliff face, not a shadow. This is just
+  // another coastline-offset band (same traceOutward/distanceField as
+  // coast-outward-band just above -- true fixed-pixel offset in every
+  // direction, so it always follows the actual coastline shape, never a
+  // straight edge), painted black instead of --v3-sea-shallow. This is
+  // the one actually active by default now; the directional block right
+  // below is kept for later ("we'll use it elsewhere") -- see its own
+  // comment.
+  anchor = placeBand(anchor, "v3-sea-shadow-radial", showSeaShadow ? (seaRadialShadowDistances || []) : [], traceOutward);
+
+  // v3.7.9 -- directional cast shadow ("light coming from the NE").
+  // Direct feedback once seen live: "looks beautiful... we'll use it
+  // elsewhere" -- kept fully intact (technique + the exact tuned
+  // parameters that produced that reaction) for reuse somewhere a real
+  // light-direction cue suits better (e.g. a single hero island, not a
+  // whole archipelago where every coastline segment needs the shadow to
+  // hug it). OFF by default: seaShadowDistances is [] in
+  // cabinet-v3-data.js, so this whole block is a no-op until some other
+  // call site opts back in. The technique itself: translate copies of the
+  // coastline shape toward the shadow direction (angle convention matches
+  // drawGeoGrid()'s diagonals: 0=E, 90=S, 180=W, 270=N, clockwise, since
+  // SVG y grows downward -- 135 = SW, i.e. light from the NE) instead of
+  // tracing a new contour level -- a real cast shadow isn't radially
+  // symmetric the way a coastline offset is. Same "many translucent
+  // overlapping copies = a gradient" trick every band here relies on,
+  // just built by shifting one shape instead of re-tracing at different
+  // levels -- alpha-blending stacked equal-opacity fills is order-
+  // independent, so paint order among the copies themselves doesn't
+  // matter. Placed UNDER the land fill (next) so the portion directly
+  // beneath the island stays hidden and only the spill past the
+  // coastline into open water shows, like a real cast shadow. Tuned
+  // parameters that produced the praised look: seaShadowDistances
+  // [4, 9, 16, 26], seaShadowAngleDeg 135, .v3-sea-shadow at
+  // fill-opacity 0.1 (cabinet-v3-style.css).
+  if (seaShadowDistances && seaShadowDistances.length) {
+    const rad = (seaShadowAngleDeg * Math.PI) / 180;
+    const sdx = Math.cos(rad);
+    const sdy = Math.sin(rad);
+    seaShadowDistances.forEach((dist, i) => {
+      const className = `v3-sea-shadow-${i + 1}`;
+      let node = stage.querySelector(`.${className}`);
+      if (!node) node = el("path", { class: `v3-sea-shadow ${className}`, "fill-rule": "evenodd" });
+      stage.insertBefore(node, anchor ? anchor.nextSibling : stage.firstChild);
+      node.setAttribute("d", coastD);
+      node.setAttribute("transform", `translate(${(sdx * dist).toFixed(2)},${(sdy * dist).toFixed(2)})`);
+      anchor = node;
+    });
+  }
+  stage.querySelectorAll(".v3-sea-shadow").forEach(node => {
+    const idxClass = [...node.classList].find(c => c.startsWith("v3-sea-shadow-"));
+    if (idxClass && Number(idxClass.slice("v3-sea-shadow-".length)) > (seaShadowDistances || []).length) node.remove();
+  });
+
   if (flatColourMode) {
     // Empty-list placeBand() calls prune any .v3-sand-band-N/.v3-veg-band-N
     // left over from a previous non-flat retrace; neither call advances
@@ -1189,12 +1265,134 @@ function drawIslandsPath(stage, canvasBounds, grown) {
     anchor = placeBand(anchor, "v3-sand-band", sandThresholds, trace);
     anchor = placeBand(anchor, "v3-veg-band", vegThresholds, trace);
   }
+
+  // v3.7.16 -- the inland half of the coast-hugging fade pair used to be
+  // drawn right here, ONE colour for the whole combined landmass. Moved
+  // out to its own function, drawCoastalInwardBands() below, called
+  // separately from render()/retraceIslands() -- direct request: "for
+  // each section, generate a colour hue, and use THAT colour hue for
+  // it's coastal inward band, not the same colour over all sections."
+  // This function traces one shared heightmap for every circle from
+  // every section combined (see the v3.5 comment on drawIslandsPath's own
+  // call site in render()), so there's no per-section boundary inside the
+  // geometry it builds -- per-section colouring has to clip afterward
+  // against each section's own region rect, which needs the `layout`
+  // array (sectionMeta + region) that only render()/retraceIslands() have
+  // in scope, not this function.
   placeOne(anchor, "v3-coastline-outline", coastD);
 
   // v3.6.16 -- returned so drawFlowFieldDebug() can reuse this exact
   // heightmap (the coast vector rides on its gradient, see
   // cabinet-v3-flowfield.js) instead of building a second one.
   return { H, cols, rows, paddedBounds };
+}
+
+// v3.7.16 -- deterministic string hash -> a hue angle, used below so each
+// section gets its own stable coastal-band colour without hand-authoring
+// one per section. Keyed off sectionMeta.id (not array index) so a
+// section's colour survives content reordering/insertion -- the same
+// section always lands on the same hue across reloads. No claim of even
+// distribution around the wheel (a golden-angle sequence would guarantee
+// that, but needs a stable INDEX, which id-based stability rules out) --
+// good enough for "visually distinct per section," not colour-managed.
+function hashHue(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (Math.imul(h, 31) + str.charCodeAt(i)) >>> 0;
+  return h % 360;
+}
+
+// v3.7.16 -- the inland coastal-fade band, split out from drawIslandsPath()
+// so each SECTION can get its own colour: direct request, "for each
+// section, generate a colour hue, and use THAT colour hue for it's
+// coastal inward band, not the same colour over all sections." Reuses
+// islandTrace's already-built heightmap (no second buildIslandHeightmap()
+// call) and coastD read straight off the already-rendered
+// .v3-coastline-outline element rather than re-tracing it a third time
+// this function -- same reasoning as placeBand()'s own reuse-over-rebuild
+// pattern elsewhere in this file.
+//
+// The ring geometry (coastline plus a D-px-inward hole, evenodd) is
+// computed ONCE per distance level and reused as-is for every section --
+// only the clip and fill colour differ per section. Full remove-and-
+// rebuild every call (like drawGeoGrid()) rather than incremental
+// diffing -- this isn't on a per-frame path, only slider ticks and
+// section-count changes, so the simpler idempotent pattern is worth more
+// than the (currently nonexistent) perf cost of a diff.
+//
+// v3.7.17 bugfix -- clipping to region.inner (a fixed rect) cropped the
+// band wherever an island grew past its own section's nominal rect.
+// Direct feedback: "the colour band is tied to the section and its
+// islands, so if an island is partly outside the section, the colour
+// band still needs to be applied - currently it is cropped off." Growth
+// is explicitly NOT rect-bounded (see render()'s own "single global
+// growth pass... no per-region hard walls" comment) so a rect clip was
+// always going to cut off real cases, not just an edge case. Clips to
+// traceIsolatedShape() instead -- the same "this section's own circles,
+// traced alone" technique renderRegion() already uses for its hover
+// hit-shape, which follows the ACTUAL island silhouette wherever it grew,
+// not an approximation of it. +4px dilation: the isolated trace runs over
+// a different (smaller, locally-bounded) sampling grid than the combined
+// full-canvas one coastD came from, so its marching-squares crossings can
+// land a sub-pixel to a couple of px off from the exact same curve traced
+// globally -- enough, unpadded, to risk shaving a hairline off the band's
+// brightest edge (right at the true coast) on a coordinate rounding
+// technicality. A few px of slack costs nothing (neighbouring sections'
+// bands don't reach here) and guarantees the true coastline stays fully
+// inside the clip.
+function drawCoastalInwardBands(stage, layout, islandTrace, grown) {
+  stage.querySelectorAll(".v3-coast-inward-band, .v3-coast-inward-band-defs").forEach(node => node.remove());
+
+  const { showCoastalBands, coastInwardBandDistances, cellSize, threshold } = v3Config.island;
+  if (!showCoastalBands || !coastInwardBandDistances || !coastInwardBandDistances.length) return;
+
+  const coastlineEl = stage.querySelector(".v3-coastline-outline");
+  if (!coastlineEl) return;
+  const coastD = coastlineEl.getAttribute("d");
+
+  const { H, cols, rows, paddedBounds } = islandTrace;
+  const inlandField = buildInlandDistanceField(H, cols, rows, cellSize, threshold);
+  const ringData = coastInwardBandDistances.map(
+    D => `${coastD} ${traceContourFromHeightmap(inlandField, cols, rows, cellSize, paddedBounds, D)}`
+  );
+
+  const grownBySection = new Map();
+  grown.forEach(c => {
+    if (!grownBySection.has(c.sectionId)) grownBySection.set(c.sectionId, []);
+    grownBySection.get(c.sectionId).push(c);
+  });
+
+  const defs = el("defs", { class: "v3-coast-inward-band-defs" });
+  stage.insertBefore(defs, coastlineEl);
+
+  layout.forEach(({ sectionMeta }) => {
+    const circles = grownBySection.get(sectionMeta.id) || [];
+    if (!circles.length) return;
+    const clipShapeD = traceIsolatedShape(circles, v3Config.island, 4);
+    if (!clipShapeD) return;
+
+    const hue = hashHue(sectionMeta.id);
+    const clipId = `v3-coast-band-clip-${sectionMeta.id}`;
+    const clipPath = el("clipPath", { id: clipId });
+    clipPath.appendChild(el("path", { d: clipShapeD, "fill-rule": "evenodd" }));
+    defs.appendChild(clipPath);
+
+    ringData.forEach((d, i) => {
+      const node = el("path", {
+        class: `v3-coast-inward-band v3-coast-inward-band-${i + 1}`,
+        "fill-rule": "evenodd",
+        d,
+        "clip-path": `url(#${clipId})`
+      });
+      // Inline, not a CSS custom property: this colour is generated per
+      // section, not themeable/hand-authored, so there's no shared token
+      // for a stylesheet rule to reference -- same S/L across every
+      // section, only the hue varies.
+      // v3.7.17 -- 42%/22% -> 58%/32%, direct request ("make the colours
+      // slightly brighter/more intense").
+      node.style.fill = `hsl(${hue}, 58%, 32%)`;
+      stage.insertBefore(node, coastlineEl);
+    });
+  });
 }
 
 // v3.6.16 -- dev-only debug view of the flow field: showPotential tints
@@ -1790,6 +1988,7 @@ export function retraceIslands() {
   const stage = document.querySelector("#v3-stage");
   const islandTrace = drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
   lastIslandTrace = islandTrace;
+  drawCoastalInwardBands(stage, islandLayoutState.layout, islandTrace, islandLayoutState.grown);
 
   // v3.7.7 -- redraw the lat/long grid too (cheap: drawGeoGrid() replaces
   // its own group rather than accumulating one per call, see its own
@@ -1929,9 +2128,10 @@ export function render() {
   const gridOrigin = compassRegion
     ? { x: compassRegion.compassSquare.x + compassRegion.compassSquare.width / 2, y: compassRegion.compassSquare.y + compassRegion.compassSquare.height / 2 }
     : { x: canvasWidth / 2, y: canvasHeight / 2 };
-  islandLayoutState = { grown, canvasBounds, gridOrigin };
+  islandLayoutState = { grown, canvasBounds, gridOrigin, layout };
   const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
   lastIslandTrace = islandTrace;
+  drawCoastalInwardBands(stage, layout, islandTrace, grown);
 
   // v3.7.2 bugfix -- this used to run BEFORE drawIslandsPath() on the
   // (wrong) assumption that JS call order determines DOM/paint order.

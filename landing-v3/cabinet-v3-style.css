@@ -706,6 +706,59 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   fill-opacity: 0.55;
 }
 
+/* v3.7.9 -- coast-hugging fade pair, independent of flatColourMode --
+   see drawIslandsPath()'s own comment in cabinet-v3-layout.js. Tight
+   fixed-pixel offsets (coastOutwardBandDistances/coastInwardBandDistances,
+   cabinet-v3-data.js), same "many low-opacity overlapping copies =
+   gradient" trick as .v3-wave-ring/.v3-sea-band above, just off a real
+   coastline-distance field instead of noise levels -- more overlap right
+   at the coastline, fading out (or in) as distance grows. */
+.v3-coast-outward-band {
+  fill: var(--v3-sea-shallow);
+  fill-opacity: 0.22;
+}
+
+/* v3.7.16 -- fill is no longer a shared token: each section gets its own
+   generated hue, set as an inline style per element
+   (drawCoastalInwardBands(), cabinet-v3-layout.js) -- direct request,
+   "for each section, generate a colour hue... not the same colour over
+   all sections." Only fill-opacity stays shared here. */
+.v3-coast-inward-band {
+  fill-opacity: 0.28;
+}
+
+/* v3.7.10 -- the active shadow: all-around, a coastline-offset band
+   (drawIslandsPath()'s traceOutward, same field as .v3-coast-outward-band
+   above) painted black instead of --v3-sea-shallow, so it always follows
+   the true coastline shape rather than the straight trailing edge a
+   translated copy leaves.
+   v3.7.13 -- direct feedback: "too narrow too light and aligns exactly
+   with the first wave contour" -- old reach (seaRadialShadowDistances
+   [2,4,7] in cabinet-v3-data.js) topped out right next to wave ring 1
+   (waveDistances[0] = 6), so the shadow's own fade-to-nothing edge read
+   as coincident with that ring instead of its own distinct shape. Wider
+   reach + one more step (smoother taper, not a bigger single jump) +
+   higher per-copy opacity for genuine darkness; see cabinet-v3-data.js
+   for the actual distances, deliberately not sharing a value with
+   waveDistances so the two don't visually lock together again. */
+.v3-sea-shadow-radial {
+  fill: #000;
+  fill-opacity: 0.16;
+}
+
+/* v3.7.9 -- directional cast shadow, translated copies of the coastline
+   shape (drawIslandsPath()), not a contour offset -- see that function's
+   comment for why. OFF by default as of v3.7.10 (seaShadowDistances: []
+   in cabinet-v3-data.js) -- kept for reuse elsewhere, not deleted. Low
+   per-copy opacity so the same overlap-stacking trick as the bands above
+   does the actual fading; black (not --v3-halo-ink or any theme accent)
+   per direct instruction ("shadows are black with the requisite opacity
+   play"). */
+.v3-sea-shadow {
+  fill: #000;
+  fill-opacity: 0.1;
+}
+
 /* v3.6.7 -- flatColourMode's single land fill (see drawIslandsPath() in
    cabinet-v3-layout.js) -- reuses --v3-veg opaque rather than
    introducing a third land tone; water's single colour is just

@@ -211,7 +211,69 @@ export const v3Config = {
     // drawIslandsPath() in cabinet-v3-layout.js. Toggle back to false
     // to compare again later; nothing about the band config above is
     // lost by flipping this.
-    flatColourMode: true
+    flatColourMode: true,
+    // v3.7.9 -- coast-hugging colour fade, independent of flatColourMode
+    // (an overlay on top of whichever base fill is active, not an
+    // alternative to it -- see drawIslandsPath()'s own comment in
+    // cabinet-v3-layout.js for why this pair is separate from
+    // seaBandThresholds/sandThresholds/vegThresholds above). Tight, true
+    // fixed-pixel offsets off the real coastline via
+    // buildCoastlineDistanceField()/buildInlandDistanceField(), same
+    // mechanism as waveDistances, NOT another noise threshold -- direct
+    // instruction: "Both bands, inward and outward, follow coastline
+    // offset not topology." Empty either array to turn that side off.
+    //
+    // v3.7.11 -- shrunk from [6, 14, 24]: direct feedback -- "why does
+    // each wave ring have it's own shadow band?" The old reach (out to
+    // 24px) ran past waveDistances' 2nd ring (9.4px) and close to its
+    // 3rd (18.58px), so each ring picked up its own nearby band step,
+    // reading as if every wave ring had a shadow paired to it instead of
+    // one fade hugging just the coast. Now fully faded out by 7px --
+    // clear of ring 2, well clear of ring 3 ("a little bit starting from
+    // the coast and fading outwards before the 2nd or certainly the 3rd
+    // wave contour").
+    // v3.7.21 -- independent on/off switch for the pair above, same
+    // "empty-list vs. boolean" split showWaveRings already established
+    // (see its own v3.6.8 comment): distances stay intact on toggle-off,
+    // so turning it back on doesn't lose whatever's been tuned. Direct
+    // request: "give me a toggle for the coastal bands and sea shadows."
+    showCoastalBands: true,
+    coastOutwardBandDistances: [2, 4, 7],
+    coastInwardBandDistances: [2, 4, 7],
+    // v3.7.10 -- the actual active shadow: all-around (radially
+    // symmetric), same coastline-offset mechanism (traceOutward,
+    // drawIslandsPath()) as coastOutwardBandDistances just above, painted
+    // black instead of --v3-sea-shallow -- see that function's comment.
+    // Direct feedback: the earlier directional version made islands
+    // "look like straight cliffs rising from the sea."
+    // v3.7.11 -- shrunk from [4, 9, 16, 26] for the same reason as
+    // coastOutwardBandDistances just above -- see that comment.
+    // v3.7.13 -- widened again: direct feedback -- "too narrow too light
+    // and aligns exactly with the first wave contour." [2,4,7] topped out
+    // right next to waveDistances[0] (6), so the shadow's fade-out edge
+    // read as locked to that ring. Wider reach (11), one more step for a
+    // smoother taper rather than a bigger single jump, and deliberately
+    // NOT sharing any value with waveDistances ([6, 9.4, 18.58]) so the
+    // two don't coincide again. Darkness itself comes from
+    // .v3-sea-shadow-radial's higher fill-opacity (cabinet-v3-style.css),
+    // not from these distances.
+    // v3.7.21 -- independent on/off switch, same pattern as
+    // showCoastalBands just above.
+    showSeaShadow: true,
+    seaRadialShadowDistances: [2.5, 5, 8, 11],
+    // v3.7.9 -- directional cast shadow ("drop shadows from the islands
+    // onto the sea"), light from the NE per direct instruction. OFF by
+    // default (empty array) as of v3.7.10 -- direct feedback: "looks
+    // beautiful... we'll use it elsewhere" (not here, where the straight
+    // trailing edge reads as a cliff face). Kept, not deleted: the
+    // technique (drawIslandsPath()'s own comment) and these exact tuned
+    // values are what produced that reaction, for whenever a real
+    // light-direction cue suits a future use. Distances are translate
+    // offsets (px), not contour levels. Angle convention matches
+    // drawGeoGrid()'s diagonals: 0=E, 90=S, 180=W, 270=N, clockwise (SVG
+    // y grows downward) -- 135 = shadow cast toward SW = light from NE.
+    seaShadowDistances: [],
+    seaShadowAngleDeg: 135
   },
 
   // v3.6.16 -- precomputed vector flow field (currents), see

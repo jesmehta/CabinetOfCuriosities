@@ -694,6 +694,53 @@ export function buildCoastlineDistanceField(H, cols, rows, cellSize, threshold) 
   return field;
 }
 
+// v3.7.9 -- inland counterpart to buildCoastlineDistanceField() above:
+// every WATER cell is the seed (distance 0) and every LAND cell gets its
+// true pixel distance to the nearest water cell.
+//
+// v3.7.12 tried negating this (mirroring buildCoastlineDistanceField's own
+// sign) on the theory that it would flip the containment direction the
+// same way it does for that field. It doesn't, and the reasoning was
+// wrong: sign only decides which side of a threshold crossing counts as
+// "inside" -- it can't change WHERE marching squares draws the crossing
+// curve itself, and for a field that's monotonic between two plateaus
+// (0 at water, increasingly negative/positive inland, your pick) there is
+// only ONE crossing for any given D, at the same physical point
+// (distance == D) regardless of sign. With fill-rule="evenodd" and a
+// single simple loop, winding direction doesn't matter either -- SVG
+// always fills a simple closed curve's bounded (smaller, topologically
+// enclosed) side. An inward offset curve is nested INSIDE the coastline,
+// so that bounded side is always the shrinking deep core, no matter the
+// field's sign -- confirmed empirically (traced area strictly decreasing
+// as D grew, [2,4,7] -> [29618,27959,25908] px^2, un-fixed by the
+// negation). The outward field doesn't have this problem only because
+// its offset curve sits OUTSIDE the coastline, in open water -- there the
+// bounded side is necessarily the island PLUS a growing fringe, so it
+// gets bigger with D "for free."
+//
+// The actual fix lives in drawIslandsPath()'s traceInward(): concatenate
+// this field's own D-offset loop as a SECOND subpath alongside the true
+// coastline, so evenodd punches it out as a hole -- the fill becomes the
+// RING between the coastline and the D-px-inward line (coastline area
+// minus core(D)'s area), which DOES grow with D, since core(D) shrinks.
+// That's what actually gives the overlap-stacking trick the right
+// direction; this field just supplies the hole's boundary, unchanged
+// output regardless of sign, so back to the simpler unnegated version.
+//
+// No edge-forcing needed: buildIslandHeightmap already forces the padded
+// grid's own border to "definitely water," so cells out there are already
+// seeds (distance 0) with nothing further to force closed. Same
+// half-cellSize accuracy trade as buildCoastlineDistanceField -- see that
+// function's own comment.
+export function buildInlandDistanceField(H, cols, rows, cellSize, threshold) {
+  const isWater = new Uint8Array(cols * rows);
+  for (let i = 0; i < H.length; i++) isWater[i] = H[i] > threshold ? 0 : 1;
+  const sqDist = euclideanDistanceTransform2D(isWater, cols, rows);
+  const field = new Float32Array(cols * rows);
+  for (let i = 0; i < field.length; i++) field[i] = Math.sqrt(sqDist[i]) * cellSize;
+  return field;
+}
+
 // v3.6.4: concentric "ripple" rings echoing the coastline outward into
 // open water (same spirit as the v2 map's coast-ripples-global, see
 // Landing-page-notes.2.0.md) are built by the caller as: build H once

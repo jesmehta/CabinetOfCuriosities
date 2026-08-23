@@ -89,6 +89,14 @@ const COLOR_TOKENS = [
   { key: "--v3-ring-ink", label: "Ring / contour ink" },
   { key: "--v3-halo-ink", label: "Hover halo" },
   { key: "--v3-label-outline", label: "Label outline" }
+  // v3.7.14 added --v3-coast-ink here ("the green isnt available to me on
+  // the control panel drop down"). v3.7.16 removed it again: the inward
+  // coastal band is no longer one theme-wide colour at all -- each
+  // section now gets its own generated hue (drawCoastalInwardBands(),
+  // cabinet-v3-layout.js), set as an inline style that always overrides
+  // whatever this token held, so editing it here stopped doing anything
+  // visible. Leaving a token in this list that silently no-ops would be
+  // worse than not having a row for it.
 ];
 
 // Canvas 2D's fillStyle setter/getter round-trips ANY valid CSS colour
