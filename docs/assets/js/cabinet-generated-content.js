@@ -206,6 +206,33 @@ export const sections = [
     },
     "extraCount": 3,
     "notes": "status: false -- has an mkdocs nav section already (TraceryBots/Dot Mandala/Twine/Creative Coding) but no map placement yet; the 6-region + compass grid is currently full (see machines-makings/interfaces-data-texts/visual-field-notes/teaching cx/cy). Needs a layout decision before flipping to wip/true -- see ToDo #69."
+  },
+  {
+    "id": "fab",
+    "title": "Fab",
+    "subtitle": "Fab Academy, Fabricademy, and reflections from Fab Academy cohorts.",
+    "href": "",
+    "order": 65,
+    "weight": 2,
+    "status": "wip",
+    "kind": "region",
+    "tags": [
+      "fabacademy",
+      "fabricademy",
+      "making",
+      "reflections"
+    ],
+    "location": "external",
+    "map": {
+      "islandId": "",
+      "mapForm": "",
+      "cx": 0,
+      "cy": 0,
+      "rx": 0,
+      "ry": 0
+    },
+    "extraCount": 1,
+    "notes": "New section, 2026-08-24, direct request (#27 intercession -- Fab/Fabricademy are not Level-1 worlds per the standing WORLD-SYSTEMS.md rule, but a Fab SECTION with a couple of program-link islands plus reflection writeups is fine). cx/cy/rx/ry left blank -- confirmed vestigial, squarify() computes placement live from weight."
   }
 ];
 
@@ -990,5 +1017,96 @@ export const entries = [
     },
     "icon": "icon-swatch",
     "notes": "Intersectional entry (2026-08-24) -- same repo as machines-makings's swatch-fields, cross-listed here since it's equally a colour/data-texture piece. Two separate TSV rows, two islands, deliberate."
+  },
+  {
+    "id": "fab-academy",
+    "section": "fab",
+    "title": "Fab Academy",
+    "subtitle": "The official Fab Academy program.",
+    "href": "https://fabacademy.org/",
+    "order": 10,
+    "weight": 3,
+    "status": true,
+    "kind": "program-link",
+    "tags": [
+      "fabacademy"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-cap",
+    "notes": "Root domain inferred from the confirmed personal-page URL (fabacademy.org/2023/...) -- high confidence, but this is the general program site, not fab-23's specific page."
+  },
+  {
+    "id": "fabricademy",
+    "section": "fab",
+    "title": "Fabricademy",
+    "subtitle": "The official Fabricademy program.",
+    "href": "",
+    "order": 20,
+    "weight": 3,
+    "status": "wip",
+    "kind": "program-link",
+    "tags": [
+      "fabricademy"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-cap",
+    "notes": "href still blank -- confirmed domain family is textile-academy.org (from fab-26's class.textile-academy.org/2026/... page), but unsure if the general public site is at textile-academy.org root or a separate fabricademy.net -- confirm before setting."
+  },
+  {
+    "id": "fab-23",
+    "section": "fab",
+    "title": "Fab 23",
+    "subtitle": "Jesal's FabAcademy Chronicles -- write-up and reflections from Fab Academy 2023.",
+    "href": "https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/",
+    "order": 30,
+    "weight": 3,
+    "status": true,
+    "kind": "reflection",
+    "tags": [
+      "fabacademy",
+      "writeup",
+      "2023"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-quill"
+  },
+  {
+    "id": "fab-26",
+    "section": "fab",
+    "title": "Fab 26",
+    "subtitle": "Fabricademy 2026 coursework and journal.",
+    "href": "https://class.textile-academy.org/2026/jesal-mehta/",
+    "order": 40,
+    "weight": 3,
+    "status": true,
+    "kind": "reflection",
+    "tags": [
+      "fabricademy",
+      "writeup",
+      "2026"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-quill",
+    "notes": "Fabricademy, not Fab Academy -- sister program, different year cohort (2026) than fab-23 (2023)."
   }
 ];

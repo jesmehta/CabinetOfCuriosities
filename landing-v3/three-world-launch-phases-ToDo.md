@@ -302,12 +302,16 @@ overall site.
       the doc describes. Real open decision, not busywork: either build
       the missing visual treatment, or correct `DESIGN-SYSTEM.md`'s
       claim to match what actually exists.
-- [ ] **#27** `WORLD-SYSTEMS.md` standing rule: FabAcademy/Fabricademy
+- [x] **#27** `WORLD-SYSTEMS.md` standing rule: FabAcademy/Fabricademy
       documentation sites are NOT Level-1 worlds and should not become
       Cabinet islands -- link them from About Me or a relevant
       essay/reflection page instead, if at all. Bears directly on the
       compass-rose/About-Me idea above and on the history-section item
-      above.
+      above. **Resolved, 2026-08-24**: direct intercession -- Fab/
+      Fabricademy stay out of the world tier (bookshelf/fffx), but a new
+      **Fab** *section* (`#123`) is fine and doesn't violate the rule --
+      the standing rule was specifically about the world/Level-1 tier,
+      not sections in general.
 - [x] **#33** Update `index.html` to match current development -- the shipped
       static build needs to reflect everything landed on
       `islands-tool.html`/the dev panel. **Done, re-confirmed
@@ -617,7 +621,7 @@ failures remain.*
       and `three-world-launch-phases-Notes.md` for why this is a normal merge, not a
       default-branch switch) -- **done, 2026-08-23**, see the
       Branch/production transition entries below for the full mechanics.
-- [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml` -- **first pass,
+- [x] **#41** Align the landing-page hierarchy with `mkdocs.yml` -- **first pass,
       2026-08-24**: `mkdocs.yml` nav restructured to mirror the compass/world
       names -- new `Compass` section (About/Colophon/Now) added,
       `Thingamajigs` renamed to `Machines & Makings` to match
@@ -625,8 +629,13 @@ failures remain.*
       section added the same day was removed again a few hours later
       (`#71`) once Working with AI and friends became real map entries
       instead -- the map is now the canonical home for Teaching content,
-      not a second mkdocs listing. `Wild wild web` is still nav-only with
-      no TSV section of its own -- see #69.
+      not a second mkdocs listing. **Marked done, 2026-08-24**: every
+      `cabinet-sections.tsv` row now has a matching `mkdocs.yml` section
+      except Visual Field Notes (no mkdocs section because nothing exists
+      there yet, confirmed fine) and Wild wild web (present in both, but
+      `status: false` on the map side -- a placement decision, #69, not a
+      hierarchy gap; also corrected there: the "grid is full" reasoning
+      was wrong, see #69's note).
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch -- see #66 (About).
 - [x] **#43** Implement the first multi-repo assembly, beginning with Working
@@ -778,13 +787,21 @@ marked as such.*
 - [ ] **#69** `wild-wild-web` added to `cabinet-sections.tsv` (2026-08-24,
       `status: false` so it doesn't render) -- has an `mkdocs.yml` nav
       section already (TraceryBots, Dot Mandala Generator, Twine,
-      Creative Coding) but no map placement. The archipelago grid is
-      currently full: 2 large islands (bookshelf, fffx) + 4 medium
-      (teaching, visual-field-notes, machines-makings,
-      interfaces-data-texts) + the compass's reserved SE corner --
-      adding an 8th region needs a layout decision (resize the grid?
-      demote an existing region? different mapForm entirely?) before
-      flipping `status` to `wip`/`true`.
+      Creative Coding) but no map placement. **Correction, 2026-08-24**:
+      the original note above assumed the archipelago grid was full and
+      fixed by the recorded `cx`/`cy` per section, requiring a layout
+      redesign to add an 8th region -- wrong. `cabinet-sections.tsv`'s
+      `cx`/`cy`/`rx`/`ry` columns are vestigial, same as entries' `x`/`y`
+      (#see the v3.7.58 changelog entry) -- `cabinet-v3-layout.js`
+      actually computes section placement live via `squarify()` (a real
+      treemap, keyed only on `weight`), confirmed while investigating the
+      new Fab section (#see below) -- so flipping `status` to `wip`/`true`
+      should just work, the treemap reflows on its own. Not yet flipped:
+      still blocked on the Twine/WebTech/Tracery Bots duplication (see
+      the Content Inventory table) being resolved first, since turning
+      Wild wild web into a real island while those three still also live
+      under `interfaces-data-texts` would make the duplication visible
+      on the map itself, not just in the docs sidebar.
 - [ ] **#70** Check whether section/island labels are real headings (`h2` etc.)
       or SVG `<text>`, and what that implies for SEO/search, page
       structure and responsiveness -- **quick check, 2026-08-24**: they're
@@ -1000,6 +1017,24 @@ section to empty out.*
       own intro note admits it was two documents smashed together once
       already, 2026-08-23) -- worth a real pass on what belongs where
       before the overlap gets worse.
+- [x] **#123** New Fab section -- **done, 2026-08-24** (#27 intercession):
+      `cabinet-sections.tsv` gained a `fab` region (weight 2, `wip`) with
+      four entries -- Fab Academy (`https://fabacademy.org/`), Fab 23
+      ("Jesal's FabAcademy Chronicles", the confirmed personal 2023 page),
+      Fab 26 (Fabricademy 2026 -- a different sister program than Fab
+      Academy, confirmed via the `class.textile-academy.org` domain, not
+      guessed), and Fabricademy itself (still no confirmed general/public
+      URL -- `textile-academy.org` root vs. a separate `fabricademy.net`
+      is unresolved, left blank rather than guessed). `mkdocs.yml` gained
+      a matching `Fab` nav section. Corrected a wrong assumption made
+      while scoping this: `cabinet-sections.tsv`'s `cx`/`cy`/`rx`/`ry`
+      columns are NOT authoritative fixed positions (see #69's own
+      correction) -- `cabinet-v3-layout.js` computes section placement
+      live via `squarify()`, keyed only on `weight`. Confirmed by
+      actually adding this section and watching the treemap reflow
+      on its own: no manual layout work needed, screenshot showed all 4
+      Fab islands rendered correctly on the first build. `mkdocs build`
+      clean, Playwright confirms zero console errors.
 
 ---
 
