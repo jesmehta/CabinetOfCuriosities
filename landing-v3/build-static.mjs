@@ -67,6 +67,7 @@ const PORT = 8843;
 const server = await startServer(repoRoot, PORT);
 
 let svgMarkup;
+let animData;
 try {
   const browser = await chromium.launch();
   try {
@@ -93,6 +94,20 @@ try {
     }
 
     svgMarkup = await page.$eval("#v3-stage", el => el.outerHTML);
+
+    // v3.7.47 -- pull just grown (circle-packing output: id/x/y/radius
+    // per island, nothing else -- see cabinet-v3-production-animate.js's
+    // own comment for why not the whole islandLayoutState) + canvasBounds
+    // out of the finished render(), for cabinet-v3-production-animate.js
+    // to build its own flow field/heightmap from without re-running
+    // treemap/circlepack live in every visitor's browser.
+    animData = await page.evaluate(() => {
+      const state = window.__v3GetIslandLayoutState();
+      return {
+        grown: state.grown.map(c => ({ id: c.id ?? null, x: c.x, y: c.y, radius: c.radius })),
+        canvasBounds: state.canvasBounds
+      };
+    });
   } finally {
     await browser.close();
   }
@@ -103,10 +118,14 @@ try {
 const templatePath = path.join(landingV3Dir, "index.template.html");
 const outputPath = path.join(landingV3Dir, "index.html");
 
-const template = await readFile(templatePath, "utf8");
-const placeholder = "<!-- V3_ISLANDS_SVG -->";
-if (!template.includes(placeholder)) {
-  throw new Error(`index.template.html is missing the ${placeholder} placeholder`);
+let template = await readFile(templatePath, "utf8");
+const svgPlaceholder = "<!-- V3_ISLANDS_SVG -->";
+const animPlaceholder = "<!-- V3_ANIM_DATA -->";
+if (!template.includes(svgPlaceholder)) {
+  throw new Error(`index.template.html is missing the ${svgPlaceholder} placeholder`);
+}
+if (!template.includes(animPlaceholder)) {
+  throw new Error(`index.template.html is missing the ${animPlaceholder} placeholder`);
 }
 
 const banner = [
@@ -119,7 +138,10 @@ const banner = [
   ""
 ].join("\n");
 
-const output = banner + template.replace(placeholder, svgMarkup);
+const animJson = JSON.stringify(animData);
+template = template.replace(svgPlaceholder, svgMarkup);
+template = template.replace(animPlaceholder, `<script type="application/json" id="v3-anim-data">${animJson}</script>`);
+const output = banner + template;
 await writeFile(outputPath, output, "utf8");
 
-console.log(`wrote index.html (${svgMarkup.length} chars of SVG markup)`);
+console.log(`wrote index.html (${svgMarkup.length} chars of SVG markup, ${animJson.length} chars of anim data)`);
