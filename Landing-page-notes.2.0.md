@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.54 -- multi-repo assembly, phase 1: Working with AI mounted at /teaching/working-with-ai/](#v3754----multi-repo-assembly-phase-1-working-with-ai-mounted-at-teachingworking-with-ai)
   - [v3.7.53 bugfix -- compass direction labels went invisible on hover in Medieval](#v3753-bugfix----compass-direction-labels-went-invisible-on-hover-in-medieval)
   - [v3.7.52 -- compass spin gets a real ease-in/cruise/ease-out shape](#v3752----compass-spin-gets-a-real-ease-incruiseease-out-shape)
   - [v3.7.51 -- v3.7.50 was itself wrong: a real full-canvas structural layer, not a global hover reveal](#v3751----v3750-was-itself-wrong-a-real-full-canvas-structural-layer-not-a-global-hover-reveal)
@@ -113,7 +114,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.53**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.54**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1533,6 +1534,40 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.54 -- multi-repo assembly, phase 1: Working with AI mounted at /teaching/working-with-ai/
+
+First real implementation of `three-world-launch-phases-Notes.md`'s
+multi-repo assembly design (`#43`) -- see `cabinet-multi-repo-assembly-
+concept-note-short.md` for the full architecture decision this
+implements. `deploy.yml` now checks out `jesmehta/working-with-ai`
+(public repo, no auth needed) into `_external/working-with-ai/` -- a
+path outside `docs/`, so MkDocs never sees or processes it -- then, once
+`mkdocs build` has produced `public/`, copies it into
+`public/teaching/working-with-ai/` and validates the result before the
+Pages artifact uploads. All-or-nothing by construction: `deploy` needs
+`build`, so a failed assembly step means no new artifact and the
+current live site stays exactly as it was.
+
+Deliberately hand-written for this one project rather than the
+generalized manifest the concept note describes for Phase 2 -- inspecting
+the repo first showed it needs nothing more: no build step of its own
+committed, every internal path relative, nothing hardcoding
+`jesmehta.github.io`, so assembly here really is just "copy the files
+somewhere MkDocs won't touch them."
+
+Verified locally before ever touching the workflow file: reproduced the
+exact CI sequence by hand (`mkdocs build --site-dir public`, then the
+same copy), then load-tested the result with Playwright -- correct
+title, all 16 table-of-contents links present, the first link resolves
+correctly at the new nested mount depth, and the sibling `coding-with-
+ai/` sub-site (present in the same repo but not linked from its own
+root page) also loads clean. Zero failed requests, zero console errors.
+
+Not yet done: the live GitHub Actions run itself isn't confirmed (no
+`gh` CLI in this environment to read run logs), and nothing in Cabinet
+links to the new path yet (`#44`) -- deliberately held until the live
+deploy is confirmed working, not just the local simulation.
 
 ### v3.7.53 bugfix -- compass direction labels went invisible on hover in Medieval
 

@@ -586,10 +586,40 @@ failures remain.*
 - [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml`
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch
-- [ ] **#43** Implement the first multi-repo assembly, beginning with Working
-      with AI (see `three-world-launch-phases-Notes.md` for the mechanism)
+- [x] **#43** Implement the first multi-repo assembly, beginning with Working
+      with AI (see `three-world-launch-phases-Notes.md` for the mechanism).
+      **Done, v3.7.54, 2026-08-24**: `deploy.yml` gained a second
+      `actions/checkout@v4` step (`repository: jesmehta/working-with-ai`,
+      `path: _external/working-with-ai`, no auth needed -- public repo),
+      copied into `public/teaching/working-with-ai/` AFTER `mkdocs
+      build` runs (so MkDocs never sees it, and it can never collide
+      with anything MkDocs itself generates), then a validation step
+      checking for `index.html` and real content before the Pages
+      artifact is uploaded -- all-or-nothing by construction, since a
+      failed step here fails the `build` job the `deploy` job depends
+      on. Deliberately hand-written for this ONE project, not yet the
+      generalized manifest (`cabinet-multi-repo-assembly-concept-note-
+      short.md`'s own Phase 2) -- inspection first: the repo has no
+      build step of its own (no package.json/Makefile/gen.py committed,
+      output IS the source), every internal path is relative, nothing
+      hardcodes `jesmehta.github.io`, so "assemble" here really is just
+      "copy the files." Verified locally before ever touching the
+      workflow: simulated the exact sequence (`mkdocs build --site-dir
+      public`, then copy) and load-tested the result with Playwright --
+      title/16 TOC links present, first link click resolves correctly
+      at the new mount depth, the sibling `coding-with-ai/` sub-site
+      (not linked from the root page but present in the same repo) also
+      loads clean, zero failed requests, zero console errors. The live
+      GitHub Actions run itself still needs confirming -- no `gh` CLI in
+      this environment to read run logs directly.
 - [ ] **#44** Change public links from Working with AI's external GitHub Pages
-      URL to the Cabinet-local path once assembled and tested
+      URL to the Cabinet-local path once assembled and tested. Not
+      started -- there's currently no existing Cabinet link to Working
+      with AI to update in the first place (not in `cabinet-
+      entries.tsv`, not in `mkdocs.yml`) -- #43's assembly makes
+      `/teaching/working-with-ai/` reachable but nothing points to it
+      yet. Holding on adding a fresh link until #43's live deploy is
+      actually confirmed working, not just locally simulated.
 
 ### Branch / production transition
 
@@ -598,12 +628,18 @@ failures remain.*
       passed pre-merge, Playwright confirmed zero console/request
       errors on the promoted page.
 - [ ] **#46** Test the Working with AI assembly there without replacing the
-      current production site -- **explicitly deferred, 2026-08-23**:
-      not built at all yet (`#43`/`#44`). Deliberately sequenced after
-      `#48` rather than before it -- bundling a new deploy-workflow
-      mechanism into the same merge as the homepage promotion would
-      have compounded risk in one untested change; better as its own
-      isolated, separately-testable change against a known-good `main`.
+      current production site -- **in progress, 2026-08-24, #43 shipped
+      to `main`**: the assembly step is self-protecting by construction
+      (all-or-nothing -- `deploy` needs `build`, so a failed assembly
+      step means no new artifact and the current live site stays up
+      untouched), and nothing in Cabinet links to
+      `/teaching/working-with-ai/` yet, so even a SUCCESSFUL run just
+      adds an inert, unlinked path -- either outcome leaves the current
+      production site's actual visible content unaffected. Still needs
+      the live GitHub Actions run itself confirmed (this environment has
+      no `gh` CLI to read run logs), and the deployed URL fetched to
+      confirm the assembled content actually rendered end to end, not
+      just the local pre-push simulation.
 - [x] **#47** Tag/archive the current `main` state before launch (see Phase 0's
       "create a history section" item -- give archived pages a real
       linked home, not just a tag) -- **done, 2026-08-23**: archival
