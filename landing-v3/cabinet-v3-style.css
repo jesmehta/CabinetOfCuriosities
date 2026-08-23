@@ -120,11 +120,24 @@ body.v3-proto[data-theme="satellite"] {
    toward the same two hue families so the theme still reads coherently
    if flat mode is switched off from the dev panel. */
 body.v3-proto[data-theme="medieval-map"] {
-  --v3-sea-deep: #c9974f;
+  /* v3.7.14 -- direct value: "Deep sea - #f4ebdd" (was #c9974f, a
+     darker amber -- this is a much lighter cream/parchment). */
+  --v3-sea-deep: #f4ebdd;
   --v3-sea-shallow: #ddbd82;
-  --v3-veg: #5c2417;
+  /* v3.7.16 -- direct value: "#fbf0ee for vegetation" (was #5c2417, the
+     reddish-brown -- this is a pale blush cream). */
+  --v3-veg: #fbf0ee;
   --v3-sand: #7d3a24;
   --v3-ink: #1c1712;
+  /* v3.7.17 -- compass rose "blue" rings: direct request, "a dark-midtone
+     hue, darker than the ink, lighter than the sea, either deep violet or
+     brick red." Went with deep violet -- medieval-map's palette is
+     already all warm reds/browns/ambers (--v3-veg, --v3-sand, both
+     --v3-sea-* tones), so a brick red accent would read as one more shade
+     of the same hue family instead of a distinct compass accent; violet
+     is the contrast this theme doesn't have anywhere else yet. Easy swap
+     to a brick red (e.g. #6b2b1f) if that reads better live. */
+  --v3-compass-accent: #4a2c5e;
 }
 
 body.v3-proto[data-theme="medieval-map"] .v3-header h1 {
@@ -583,8 +596,11 @@ body[data-label-style="halo"] .v3-compass-direction-label {
   stroke-width: 3px;
 }
 
+/* v3.7.14 -- 1.5px -> 3.5px, all four "glow" label-style rules in this
+   file (compass/island/island-hover/section) -- direct request: "the
+   label style soft glow needs to have a larger glow." */
 body[data-label-style="glow"] .v3-compass-direction-label {
-  filter: drop-shadow(0 0 1.5px var(--v3-label-outline)) drop-shadow(0 0 1.5px var(--v3-label-outline));
+  filter: drop-shadow(0 0 3.5px var(--v3-label-outline)) drop-shadow(0 0 3.5px var(--v3-label-outline));
 }
 
 .v3-compass-hit {
@@ -894,7 +910,7 @@ body[data-label-style="halo"] .v3-island-label {
    sat between. */
 
 body[data-label-style="glow"] .v3-island-label {
-  filter: drop-shadow(0 0 1.5px var(--v3-label-outline)) drop-shadow(0 0 1.5px var(--v3-label-outline));
+  filter: drop-shadow(0 0 3.5px var(--v3-label-outline)) drop-shadow(0 0 3.5px var(--v3-label-outline));
 }
 
 /* "plain" intentionally adds nothing -- a no-halo baseline to judge the
@@ -922,7 +938,7 @@ body[data-label-style="halo"] .v3-island:focus-visible .v3-island-label {
 body[data-label-style="glow"] .v3-island:hover .v3-island-label,
 body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
   fill: var(--v3-label-outline);
-  filter: drop-shadow(0 0 1.5px var(--v3-ink)) drop-shadow(0 0 1.5px var(--v3-ink));
+  filter: drop-shadow(0 0 3.5px var(--v3-ink)) drop-shadow(0 0 3.5px var(--v3-ink));
 }
 
 /* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-
@@ -963,8 +979,17 @@ body[data-label-style="halo"] .v3-section-label {
   stroke-width: 3px;
 }
 
+/* v3.7.22 -- direct feedback: section labels' glow "needs to be
+   larger/brighter/less transparent - more prominent in general," singled
+   out from the other 3 glow rules (compass/island/island-hover), which
+   stay at v3.7.14's 3.5px. Bigger radius (6px, "larger") AND a 3rd
+   stacked drop-shadow (not just a bigger 2nd one) -- each pass is a
+   separate blurred copy, so overlap density right at the glyph edge is
+   what actually reads as "brighter/less transparent," not radius alone;
+   3 passes at the same colour compounds like the coastal bands' own
+   overlap-stacking trick. */
 body[data-label-style="glow"] .v3-section-label {
-  filter: drop-shadow(0 0 1.5px var(--v3-label-outline)) drop-shadow(0 0 1.5px var(--v3-label-outline));
+  filter: drop-shadow(0 0 6px var(--v3-label-outline)) drop-shadow(0 0 6px var(--v3-label-outline)) drop-shadow(0 0 6px var(--v3-label-outline));
 }
 
 /* v3.6.27 -- section hover: label turns the SOLID version of its own
