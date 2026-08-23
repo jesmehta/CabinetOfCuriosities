@@ -2320,6 +2320,47 @@ cover, and whether the paste-back-into-source workflow still makes
 sense at this scale -- see `three-world-launch-phases-ToDo.md` for
 where that stands.
 
+## The commit-convention correction, a third time
+
+This has happened before, twice, both recorded earlier in this file
+(see "One small process correction is worth recording on its own" and
+the reversal that followed it): whether commits in this repo carry a
+"Co-Authored-By: Claude" trailer keeps drifting from whatever was
+actually decided, because the decision only ever lived in conversation
+context, not in anything that survives a compaction or a fresh session.
+
+Earlier in this same session (2026-08-23, before the compaction this
+handoff continues from), a direct instruction landed again: **"can you
+not have claude sonnet as co author on the commits ?"** Asked whether
+to also rewrite the 11 commits already made that session or just drop
+the trailer going forward, the answer was **"Rewrite the 11 existing
+commits too."** Done via `git filter-branch -f --msg-filter` stripping
+the trailer, verified zero remaining across the rewritten range.
+
+That fix lived only in conversation context. After this session's
+compaction, the instruction wasn't in the carried-forward summary, and
+wasn't yet saved to the assistant's own cross-session memory system
+either -- so the default habit of adding the trailer came straight
+back, silently, across the next 8 commits. Caught only because the
+user was watching the repo directly: **"are you commiting as coauthor
+again ? I can see the updates on github,"** followed by **"I had
+earlier instructed you not to coouthor the commits - check the
+history, or the documentation if history has been compacted. I hope
+you documented that part."**
+
+Fixed the same way -- stash the in-progress uncommitted work (the
+`git filter-branch` safety check refuses to run against a dirty tree),
+rewrite the same 8-commit range's messages, verify zero trailers
+remain, pop the stash back. This time also fixed properly rather than
+just locally: saved as a standing feedback memory in the assistant's
+own cross-session memory system (not just this file), specifically
+because *this* file only helps once a session has already loaded it --
+the gap was between sessions and across a compaction, exactly the case
+memory exists for. This paragraph is the other half of that fix, kept
+here too because the project's own established convention (see the two
+earlier entries on this same subject) is to record process corrections
+in-repo, not just in a tool's private state.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`
