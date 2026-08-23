@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.48 -- sticky header, compass click to swap theme, compass hover to spin](#v3748----sticky-header-compass-click-to-swap-theme-compass-hover-to-spin)
   - [v3.7.47 -- boats and dragons, live, on the production build](#v3747----boats-and-dragons-live-on-the-production-build)
   - [v3.7.46 -- production's H1/section/island labels were never loading their actual fonts](#v3746----productions-h1sectionisland-labels-were-never-loading-their-actual-fonts)
   - [v3.7.45 -- static build was missing data-theme, fell back to unthemed base colours](#v3745----static-build-was-missing-data-theme-fell-back-to-unthemed-base-colours)
@@ -107,7 +108,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.47**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.48**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1527,6 +1528,95 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.48 -- sticky header, compass click to swap theme, compass hover to spin
+
+Three small/fun items batched together (`#60`, `#21`, `#29` on
+`three-world-launch-phases-ToDo.md`), plus a real bug the first of them
+surfaced.
+
+**#60 -- sticky header.** `.v3-header` is now `position: sticky; top: 0`
+with an opaque white background; the map (and footnote) scroll normally
+underneath it. Pure CSS -- sticky doesn't remove an element from
+document flow, so `resolveCanvasDimensions()`'s measurement of
+`.v3-stage-wrap`'s start position is unaffected, no JS changes needed.
+
+**Contrast bug, found via #60.** Giving the header an explicit
+background exposed that `.v3-header h1`/`.v3-subtitle`/`.v3-footnote`
+all defaulted to `--cab-land-light` (a light parchment cream) for every
+theme except medieval-map, which got a one-off `--v3-ink` override back
+in v3.7.23 ("H1/title Cabinet Text in Medieval theme is invisible"). The
+original comment justifying that default -- "sized for the dark-sea
+themes... this text sits directly on the page's own sea background" --
+was wrong even when written: the header has sat on plain (implicit)
+white ever since v3.6.12 put it back in normal document flow, not on any
+sea colour. Medieval-map's version was bad enough (near-invisible
+cream-on-cream) to get reported and fixed on its own; every other theme
+had the same bug at a lower severity (pale-on-white, readable but poor
+contrast), invisible until #21 (below) made it possible to actually view
+another theme on the production page at all. Fixed by defaulting all
+three to `--v3-ink` instead -- already dark and theme-correct on every
+preset, since it's the map's own text-ink token -- which also made the
+medieval-only override redundant; removed it (kept the Cinzel
+font-family override, which is unrelated to colour).
+
+**#21 -- click the compass centre to swap Medieval <-> Topology.** A
+small invisible circle at the rose's centre
+(`.v3-compass-theme-hit`, `renderCompassRegion()`,
+`cabinet-v3-layout.js`) toggles `document.body.dataset.theme` on click
+(`startThemeSwap()`, `cabinet-v3-production-animate.js`). Both themes'
+CSS already ship unconditionally on the static build (confirmed by
+inspection before writing any code), so this really is just the
+attribute flip -- no colour math, no per-theme JS. Shipping with a
+**cross-fade**, not an instant snap, at the user's direct request to see
+it live before choosing between the two ("I want to see the transition
+before the switch version") -- instant was the original lean going in,
+this is deliberately provisional pending that comparison. The fade is
+`transition: fill 450ms ease, stroke 450ms ease, background-color 450ms
+ease` applied broadly to `#v3-stage, #v3-stage *` (every themed SVG
+element -- bands, coastlines, compass, labels, boats/dragons -- lives
+under that id, so this catches all of them without hand-listing classes,
+at zero idle cost since transitions only run when a value changes) plus
+`color 450ms ease` on the header/footnote text. If instant wins, the fix
+is deleting that one CSS block. Known limitation, inherited from
+`#64`/v3.7.47: boats/dragons only have Medieval colours defined
+(`PARTICLE_COLORS`, `v3Config.dragon.fillColors`), so they don't re-tint
+on swap to Topology -- already-flagged future scope ("may ask for theme
+based colour later"), not addressed here.
+
+**#29 -- hover the compass ring to spin it.** One full anticlockwise
+revolution, replays on every hover, no JS state -- matches the existing
+arm-glow hover mechanism's own no-state pattern. Deliberately scoped
+away from #21's click circle after a direct concern about overloading
+the centre: **"We're doing the theme swap by clicking on the inner
+circle, I dont want to overload the compass centre too much."** Solved
+geometrically: a second invisible hit shape,
+`.v3-compass-spin-hit`, sized to the rose's full extent and appended
+UNDERNEATH the smaller `.v3-compass-theme-hit` circle in paint order --
+plain SVG hit-testing means the smaller circle wins for the centre, the
+larger one only catches the ring/arm area outside it, no evenodd/annulus
+math needed. The rotation itself is pure CSS: the star artwork moved
+into a new nested group, `.v3-compass-rose-spin` (separate from
+`roseGroup`'s own translate/scale positioning, so the two transforms
+don't fight each other), with `transform-box: fill-box; transform-origin:
+50% 50%` centring the spin on the group's own bounding box regardless of
+what coordinate space the parent transform runs in, and a `:has()` rule
+(`.v3-compass:has(.v3-compass-spin-hit:hover) .v3-compass-rose-spin`)
+applying a 900ms `rotate(-360deg)` keyframe animation on hover -- same
+`:has()` pattern the existing arm-glow hover already uses. **Scope note:**
+the original request also mentioned "the diagonals radiating from its
+centre, so they keep matching its ordinal arms" -- those diagonals (the
+lat/long grid's ordinal rays, drawn separately in `render()`) do NOT
+rotate with the rose in this pass; only the rose graphic itself spins.
+Not attempted, flagged rather than silently dropped.
+
+**#37 held.** A real interior-seam label-overflow example was found and
+shown before deciding anything (`History & Approach`/`Research &
+Interests`, the tightly-packed 3-island Teaching cluster) -- every other
+candidate label checked (Circle Packing Library, Doors of Kutch,
+Christie, 100 Gradients) turned out to sit cleanly inside its own
+coastline, so this isn't a general problem. Fix approach not yet chosen;
+explicitly held at the user's request pending #21/#29/#60 landing first.
 
 ### v3.7.47 -- boats and dragons, live, on the production build
 

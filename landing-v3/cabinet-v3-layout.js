@@ -1327,15 +1327,49 @@ function renderCompassRegion(stage, region, sectionMeta) {
     class: "v3-compass-rose",
     transform: `translate(${square.x + inset + shiftX}, ${square.y + inset + shiftY}) scale(${scale})`
   });
+  // v3.7.48 (#21/#29) -- the star artwork + arm-glow duplicates live in a
+  // nested group so they can spin (#29's hover-triggered rotation, CSS
+  // keyframes in cabinet-v3-style.css) independently of roseGroup's own
+  // translate/scale positioning -- rotating roseGroup itself would need
+  // to fight that positioning transform every frame. transform-box:
+  // fill-box (that stylesheet) centres the spin on this group's own
+  // bounding box automatically, so no origin math is needed here.
+  const spinGroup = el("g", { class: "v3-compass-rose-spin" });
   COMPASS_ROSE_SHAPES.forEach(shape => {
     const attrs = { class: shape.cls };
     if (shape.tag === "polygon") attrs.points = shape.points;
     else attrs.d = shape.d;
-    roseGroup.appendChild(el(shape.tag, attrs));
+    spinGroup.appendChild(el(shape.tag, attrs));
   });
   Object.entries(COMPASS_ARM_HULLS).forEach(([dir, points]) => {
-    roseGroup.appendChild(el("polygon", { class: "v3-compass-arm-glow", "data-direction": dir, points }));
+    spinGroup.appendChild(el("polygon", { class: "v3-compass-arm-glow", "data-direction": dir, points }));
   });
+  roseGroup.appendChild(spinGroup);
+
+  // Two concentric invisible hit circles, both in the rose's own raw
+  // COMPASS_VIEWBOX coordinate space (827.72 wide, centred 413.86,
+  // 413.86) so roseGroup's existing transform positions/scales them
+  // automatically, same as the artwork itself. Appended in this order
+  // (spin ring first, theme circle second/topmost) so a click/hover
+  // inside the smaller inner circle is caught by IT, not the larger
+  // ring beneath -- no evenodd/annulus math needed, plain SVG paint
+  // order does the job. #21: click the inner circle to swap Medieval
+  // <-> Topology (handler in cabinet-v3-production-animate.js, since
+  // that's the only script loaded on the production/static build).
+  // #29: hover the outer ring/arm area to spin the rose one revolution
+  // (pure CSS, see .v3-compass-spin-hit's :has() rule) -- direct
+  // request to keep the two gestures spatially separate: "I dont want
+  // to overload the compass centre too much."
+  const spinHitRadius = COMPASS_VIEWBOX / 2 - 3;
+  const themeHitRadius = spinHitRadius * 0.27;
+  roseGroup.appendChild(el("circle", {
+    class: "v3-compass-spin-hit",
+    cx: 413.86, cy: 413.86, r: spinHitRadius
+  }));
+  roseGroup.appendChild(el("circle", {
+    class: "v3-compass-theme-hit",
+    cx: 413.86, cy: 413.86, r: themeHitRadius
+  }));
   group.appendChild(roseGroup);
 
   // v3.7.2 -- `wrap: true` (E, currently -- "Contact me", the longest of

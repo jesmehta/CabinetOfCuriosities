@@ -157,13 +157,31 @@ freely.
       options to take: scale it with the map, clamp its size within a
       range, or leave it fixed as-is (current behaviour, by default
       rather than decision).
-- [ ] **#60** The `<h1>` ("Cabinet of Curiosities") should sit on a fixed
+- [x] **#60** The `<h1>` ("Cabinet of Curiosities") should sit on a fixed
       frame that stays visible always; the map itself should be the part
       that scrolls, rolling underneath that fixed frame as it grows with
       more entries. Direct request, 2026-08-23. Related to #15 (both are
       about how the real HTML header interacts with the SVG map below
       it) but a distinct ask -- #15 is about text scaling, this is about
-      scroll/fixed-position behaviour as content grows.
+      scroll/fixed-position behaviour as content grows. **Done, v3.7.48**:
+      `.v3-header` is `position: sticky; top: 0` with an opaque white
+      background -- pure CSS, no JS, since sticky doesn't remove an
+      element from document flow (`resolveCanvasDimensions()`'s
+      measurement of `.v3-stage-wrap` is unaffected). Giving the header
+      an explicit background surfaced a real latent bug in the process:
+      `.v3-header h1`/`.v3-subtitle`/`.v3-footnote` all defaulted to
+      `--cab-land-light` (a light cream token), "sized for the dark-sea
+      themes" per a stale comment that assumed the header sat on a dark
+      sea-coloured backdrop -- it never actually did once v3.6.12 put it
+      back in normal document flow, it's sat on plain (implicit) white
+      the whole time. medieval-map's version of this was bad enough to
+      get reported and fixed already (v3.7.23, near-invisible cream-on-
+      cream); every OTHER theme had the same bug, just less severely
+      (pale-on-white, readable but low-contrast) -- not noticed until
+      #21 (below) made it possible to actually view another theme on the
+      production page. Fixed by defaulting all three to `--v3-ink`
+      (already dark and theme-correct everywhere, it's the map's own
+      text-ink token) instead of carrying a medieval-only override.
 - [x] **#16** Idea: the compass rose (or similar map ornamentation) could BE the
       About Me / Contact Me links, rather than those existing as regular
       islands -- see the doc-audit item below (WORLD-SYSTEMS.md's
@@ -280,23 +298,49 @@ theme work above rather than the Phase 1 launch work below. Numbers
 carried over unchanged from wherever each item started (see this file's
 own numbering note near the top) -- a move, not a re-add.
 
-- [ ] **#21** Easter egg: clicking within the compass rose's inner circle
+- [x] **#21** Easter egg: clicking within the compass rose's inner circle
       switches the WHOLE canvas's theme, Medieval <-> Topology, and back
       on a second click. Direct request: "Its too nice a piece of work to
       be seen only in bits." Depends on the theme x hover feature (now
       built, v3.7.32-v3.7.44 above) enough to make sense built after it,
       not before -- same two themes, same colour data, just a
       click-triggered whole-canvas swap instead of a hover-scoped local
-      one.
+      one. **Done, v3.7.48**: a small invisible circle at the rose's
+      centre (`.v3-compass-theme-hit`, `renderCompassRegion()`) toggles
+      `document.body.dataset.theme` between `medieval-map`/`satellite` on
+      click -- both themes' CSS ship unconditionally already, so this is
+      just the attribute flip, no colour logic needed. Currently shipping
+      with a CROSS-FADE (450ms `transition` on every fill/stroke/
+      background/color under `#v3-stage` plus the header text), not an
+      instant snap -- direct request to see the fade live before
+      finalizing between the two ("I want to see the transition before
+      the switch version"), instant was the original lean going in.
+      Known limitation, inherited from #64/v3.7.47: boats/dragons only
+      have Medieval colours defined, so they won't re-tint on swap to
+      Topology (already-flagged future scope, not fixed here).
 - [ ] **#28** Backport Cabinet's newer `WORLD-SYSTEMS.md` to the Bookshelf (and
       fffx, if accessible) sibling repos -- Bookshelf's copy is stale
       (still describes Cabinet as having no islands of its own, and
       carries TODOs that Cabinet's own build already satisfies).
-- [ ] **#29** Compass rose rotation: the rose (and the diagonals radiating from
+- [x] **#29** Compass rose rotation: the rose (and the diagonals radiating from
       its centre, so they keep matching its ordinal arms) rotates
       anticlockwise -- either at random or triggered by approach/hover
       -- for one full revolution. Direct request, logged as a to-do
-      rather than implemented immediately.
+      rather than implemented immediately. **Done, v3.7.48**: hover-
+      triggered, replays on every hover (no JS state, matches the
+      existing arm-glow hover mechanism). Scoped to a second invisible
+      hit shape, `.v3-compass-spin-hit`, a ring covering the arm/star
+      area OUTSIDE the smaller `.v3-compass-theme-hit` circle (#21) --
+      direct request to keep the two gestures spatially separate: "I
+      dont want to overload the compass centre too much." Pure CSS: a
+      nested `.v3-compass-rose-spin` group (just the star artwork, not
+      roseGroup's own positioning translate/scale) gets `animation:
+      rotate(-360deg)` via a `:has()` rule when the ring is hovered;
+      `transform-box: fill-box` centres the spin on the group's own
+      bounding box without needing to compute the rose's centre by hand.
+      The diagonals radiating from the compass (the lat/long grid's
+      ordinal rays, drawn separately in `render()`) do NOT rotate with
+      it -- out of scope for this pass, not attempted.
 - [ ] **#63** Compass arms: hovering one reveals intricate scrollwork
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be

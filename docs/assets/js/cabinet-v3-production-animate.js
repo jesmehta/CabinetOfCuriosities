@@ -223,4 +223,23 @@ export function startProductionAnimation() {
   requestAnimationFrame(frame);
 }
 
+// v3.7.48 (#21) -- click the compass's inner circle to swap the whole
+// canvas between Medieval and Topology. The two themes' CSS already
+// ship unconditionally (cabinet-v3-style.css's body.v3-proto[data-
+// theme=...] blocks aren't behind any build flag), so this is just the
+// attribute flip -- no colour math here. Known limitation, inherited
+// from #64/v3.7.47: boats/dragons only have Medieval colours defined
+// (PARTICLE_COLORS/v3Config.dragon.fillColors above), so they won't
+// re-tint on swap to Topology -- already flagged as future scope
+// ("may ask for theme based colour later"), not fixed by this.
+function startThemeSwap() {
+  const themeHit = document.querySelector(".v3-compass-theme-hit");
+  if (!themeHit) return;
+  themeHit.addEventListener("click", () => {
+    const current = document.body.dataset.theme;
+    document.body.dataset.theme = current === "medieval-map" ? "satellite" : "medieval-map";
+  });
+}
+
 startProductionAnimation();
+startThemeSwap();
