@@ -293,7 +293,9 @@ function buildControlPanel() {
     showGeoGrid: v3Config.geo.showGrid,
     showGeoDiagonals: v3Config.geo.showDiagonals,
     latSpacing: v3Config.geo.latSpacing,
-    lonSpacing: v3Config.geo.lonSpacing
+    lonSpacing: v3Config.geo.lonSpacing,
+    showCoastalBands: v3Config.island.showCoastalBands,
+    showSeaShadow: v3Config.island.showSeaShadow
   };
 
   // -- Look checkboxes: independent on/off switches for the two effects
@@ -335,6 +337,44 @@ function buildControlPanel() {
   bandCheckRow.appendChild(bandCheck);
   bandCheckRow.appendChild(bandCheckLabel);
   visualsSection.appendChild(bandCheckRow);
+
+  // v3.7.21 -- direct request: "give me a toggle for the coastal bands
+  // and sea shadows as well to turn on off." Same empty-list-vs-boolean
+  // split as waveCheck above (showCoastalBands/showSeaShadow,
+  // cabinet-v3-data.js) -- distances stay tuned across a toggle-off.
+  // coastalBandCheck covers BOTH coastOutwardBandDistances (drawIslandsPath())
+  // and coastInwardBandDistances (drawCoastalInwardBands()) -- they're the
+  // one "coast to inward/outward" pair from the original scheme note, not
+  // two separate effects, so one switch for both.
+  const coastalBandCheckRow = document.createElement("label");
+  coastalBandCheckRow.className = "v3-controls-checkbox-row";
+  const coastalBandCheck = document.createElement("input");
+  coastalBandCheck.type = "checkbox";
+  coastalBandCheck.checked = v3Config.island.showCoastalBands;
+  coastalBandCheck.addEventListener("change", () => {
+    v3Config.island.showCoastalBands = coastalBandCheck.checked;
+    retraceIslands();
+  });
+  const coastalBandCheckLabel = document.createElement("span");
+  coastalBandCheckLabel.textContent = "Coastal bands (in + out)";
+  coastalBandCheckRow.appendChild(coastalBandCheck);
+  coastalBandCheckRow.appendChild(coastalBandCheckLabel);
+  visualsSection.appendChild(coastalBandCheckRow);
+
+  const seaShadowCheckRow = document.createElement("label");
+  seaShadowCheckRow.className = "v3-controls-checkbox-row";
+  const seaShadowCheck = document.createElement("input");
+  seaShadowCheck.type = "checkbox";
+  seaShadowCheck.checked = v3Config.island.showSeaShadow;
+  seaShadowCheck.addEventListener("change", () => {
+    v3Config.island.showSeaShadow = seaShadowCheck.checked;
+    retraceIslands();
+  });
+  const seaShadowCheckLabel = document.createElement("span");
+  seaShadowCheckLabel.textContent = "Sea shadow";
+  seaShadowCheckRow.appendChild(seaShadowCheck);
+  seaShadowCheckRow.appendChild(seaShadowCheckLabel);
+  visualsSection.appendChild(seaShadowCheckRow);
 
   // -- Theme (v3.6.14, expanded v3.6.15) -- seven parallel colour/type
   // treatments, meant to be compared against each other rather than one
@@ -833,6 +873,10 @@ function buildControlPanel() {
     v3Config.geo.lonSpacing = visualsDefaults.lonSpacing;
     latSpacingWidget.refresh();
     lonSpacingWidget.refresh();
+    v3Config.island.showCoastalBands = visualsDefaults.showCoastalBands;
+    v3Config.island.showSeaShadow = visualsDefaults.showSeaShadow;
+    coastalBandCheck.checked = v3Config.island.showCoastalBands;
+    seaShadowCheck.checked = v3Config.island.showSeaShadow;
   }
 
   addButton(visualsSection, "Reset visuals", () => {

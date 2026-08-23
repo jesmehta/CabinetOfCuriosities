@@ -604,7 +604,10 @@ export const v3Config = {
   // (lat/long lines) and diagonals can now be shown/hidden
   // independently.
   geo: {
-    showGrid: true,
+    // v3.7.16 -- default off: direct request ("default - latlong is
+    // off"). Still fully live via the dev-panel toggle, just not the
+    // starting state.
+    showGrid: false,
     showDiagonals: true,
     latSpacing: 120,
     lonSpacing: 120
