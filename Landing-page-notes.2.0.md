@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.51 -- v3.7.50 was itself wrong: a real full-canvas structural layer, not a global hover reveal](#v3751----v3750-was-itself-wrong-a-real-full-canvas-structural-layer-not-a-global-hover-reveal)
   - [v3.7.50 -- the theme swap actually works now: reusing the hover-preview mechanism instead of rebuilding anything](#v3750----the-theme-swap-actually-works-now-reusing-the-hover-preview-mechanism-instead-of-rebuilding-anything)
   - [v3.7.49 -- full-width header, diagonals now spin with the compass, and a real structural gap found in the theme swap](#v3749----full-width-header-diagonals-now-spin-with-the-compass-and-a-real-structural-gap-found-in-the-theme-swap)
   - [v3.7.48 -- sticky header, compass click to swap theme, compass hover to spin](#v3748----sticky-header-compass-click-to-swap-theme-compass-hover-to-spin)
@@ -110,7 +111,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.50**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.51**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1530,6 +1531,83 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.51 -- v3.7.50 was itself wrong: a real full-canvas structural layer, not a global hover reveal
+
+v3.7.50 shipped, then broke on the very next look. Direct report:
+
+> "neightbourig islands, esp non-entry ones, and the sectional
+> boundaries, are being occluded. Dont render individual islands. Maybe
+> have a full topology also built alongside the per island and per
+> section builds."
+
+v3.7.50's fix -- globally revealing the theme-preview mechanism's
+per-island washes instead of gating them behind `:hover` -- was correct
+about WHAT already existed (the theme x hover feature really does build
+a full Topology render) but wrong about HOW it was built. Each preview
+is computed in isolation
+(`buildIsolatedHeightmap([c], v3Config.island, ...)`, that one island's
+circle data only), sized with a generous halo meant to blend into open
+water around exactly ONE hovered island at a time. Revealing every
+entry island's isolated wash simultaneously meant every one of those
+halos was now bleeding across whatever sat nearby -- and non-entry
+filler circles (the small unlabeled decoration islands scattered
+through the map) never got a preview built for them AT ALL, since
+`renderRegion()` only calls the theme-preview construction for
+`c.kind === "entry"`. A filler sitting inside a neighbouring entry
+island's halo radius had nothing of its own to show through, and the
+dashed section-boundary lines suffered the same fate wherever a wash's
+blur passed over them.
+
+The actual fix, `drawTopologyStructuralLayer()`
+(`cabinet-v3-layout.js`): build Topology's bands and directional shadow
+the SAME way `drawIslandsPath()` already builds Medieval's -- one
+shared heightmap across every island together, not one per island.
+Concretely, it reuses `islandTrace` -- the `{ H, cols, rows,
+paddedBounds }` `drawIslandsPath()` already computed and returns, the
+exact geometry every real (non-preview) coastline/band on the map
+traces from -- and retraces it at Topology's own levels instead of
+Medieval's. Correct for fillers and section boundaries by construction,
+because it isn't a copy or an approximation of the real map's geometry,
+it IS the real map's geometry.
+
+Scope stayed deliberately narrow. Checking `THEME_PRESETS`
+(`cabinet-v3-controls.js`) again: Topology only actually needs two
+things Medieval's own build never produces at all --
+`flatColourMode: true` means Medieval skips real sand/veg/peak bands
+entirely (just one flat fill), and `seaShadowStyle: "radial"` means
+Medieval never takes the directional-shadow branch. Wave rings and
+coastal bands stay OFF for Topology in both builds
+(`showWaveRings`/`showCoastalBands: false`), so v3.7.50's "hide
+Medieval effects" CSS rule already handles those correctly -- no need
+to touch them. One thing did have to come OUT of that hide-list,
+though: `.v3-sea-shadow-taper` was sitting there as a "Medieval effects"
+target that Medieval's own build never actually produces anyway
+(harmless before), but `drawTopologyStructuralLayer()` now reuses that
+exact class name for its own real directional-shadow content -- leaving
+it in the hide-list would have hidden the very shadow the new function
+exists to draw. Every other class name (`.v3-sea-band-N`,
+`.v3-sand-band-N`, `.v3-veg-band-N`, `.v3-peak-band-N`) is reused
+directly from the real, non-preview rendering path too, for the same
+reason: Medieval's build never creates any of them, so there's no
+collision, and they already read correctly off the same theme-reactive
+`--v3-sand`/`--v3-veg`/`--v3-peak` tokens the rest of the map uses --
+no new colour rules needed, unlike the theme-preview mechanism's own
+fixed `--v3-preview-*` stand-ins.
+
+Static payload grew from ~4.7MB to ~6.2MB -- roughly +33%, not the ~2x
+a genuine second full render would have cost, since only the two
+missing structural pieces were added, not a duplicate of the whole
+map. Verified visually (Playwright, both directions, the same
+Vera-Molnar/Circle-Packing-Library/Particle-Systems crop the bug report
+used): real textured/shaded islands, directional drop-shadows, zero
+wave rings, section-boundary dashes and filler islands fully intact
+this time, and a clean round-trip back to Medieval's flat/banded look
+on a second click. `mkdocs build` still clean.
+
+Same "check what already exists before reaching for a rebuild" lesson
+as the boats/dragons cost correction (`#64`) -- but the correction
+itself needed correcting once, this time, before it actually held.
 
 ### v3.7.50 -- the theme swap actually works now: reusing the hover-preview mechanism instead of rebuilding anything
 

@@ -1901,6 +1901,134 @@ function drawIslandsPath(stage, canvasBounds, grown) {
   return { H, cols, rows, paddedBounds };
 }
 
+// v3.7.51 (#21 corrected) -- a full-canvas, ONE-heightmap Topology
+// structural pass, built the same way drawIslandsPath() above builds
+// Medieval's -- across every island TOGETHER, not one at a time.
+//
+// v3.7.50's approach (globally revealing the per-island/per-section
+// theme-preview mechanism) was wrong for this: that mechanism builds
+// each island's Topology preview in ISOLATION
+// (buildIsolatedHeightmap([c], ...), one island's own circle data
+// only), with a generous halo margin meant to blend into open water
+// around exactly ONE hovered island. Direct report after actually
+// seeing it live: "neightbourig islands, esp non-entry ones, and the
+// sectional boundaries, are being occluded. Dont render individual
+// islands. Maybe have a full topology also built alongside the per
+// island and per section builds." Non-entry (filler) circles never get
+// a preview built for them at all (only c.kind === "entry" does, see
+// drawRegion() above), and revealing every ENTRY island's isolated wash
+// simultaneously meant each one's halo could bleed across a nearby
+// filler or a section's dashed boundary line that was never part of
+// that isolated computation in the first place.
+//
+// This function sidesteps that entirely by reusing islandTrace's
+// ALREADY-BUILT shared heightmap (same H/cols/rows/paddedBounds every
+// island's real coastline traces from) -- correct by construction for
+// fillers and cross-section boundaries, exactly like the real map
+// already is, because it IS the real map's own geometry, just
+// re-traced at Topology's band levels instead of Medieval's.
+//
+// Scope is deliberately narrower than a full second drawIslandsPath()
+// pass: THEME_PRESETS' satellite entry only actually needs two things
+// Medieval's own build never produces (flatColourMode: true skips
+// bands entirely; seaShadowStyle: "radial" never takes the directional
+// branch) -- real sand/veg/peak (and sea-depth) bands, and the
+// directional shadow taper. Wave rings and coastal bands both stay OFF
+// for Topology either way (showWaveRings/showCoastalBands: false), so
+// there's nothing to build for those -- v3.7.50's CSS already hides
+// Medieval's own baked copies of those three plus the radial shadow;
+// this only adds the two pieces still missing after that.
+//
+// Class names deliberately REUSE the real (non-preview) band/shadow
+// classes (.v3-sea-band-N, .v3-sand-band-N, etc, .v3-sea-shadow-taper) --
+// Medieval's own build never creates any of these (flatColourMode/
+// seaShadowStyle rule them all out), so there's no collision, and it
+// means zero new CSS colour rules are needed: they already read
+// correctly off the same theme-reactive --v3-sand/--v3-veg/--v3-peak
+// tokens the rest of the map uses, no fixed --v3-preview-* stand-ins
+// required this time.
+function drawTopologyStructuralLayer(stage, islandTrace) {
+  const { H, cols, rows, paddedBounds } = islandTrace;
+  const {
+    cellSize, threshold, seaBandThresholds, sandThresholds, vegThresholds, peakThresholds,
+    showSeaShadow, seaShadowAngleDeg
+  } = v3Config.island;
+  const trace = level => traceContourFromHeightmap(H, cols, rows, cellSize, paddedBounds, level);
+
+  const coastlineEl = stage.querySelector(".v3-coastline-outline");
+  if (!coastlineEl) return;
+
+  const existing = stage.querySelector(".v3-topo-structural");
+  if (existing) existing.remove();
+  const group = el("g", { class: "v3-topo-structural" });
+  stage.insertBefore(group, coastlineEl);
+
+  seaBandThresholds.forEach((level, i) => {
+    group.appendChild(el("path", { d: trace(level), class: `v3-sea-band v3-sea-band-${i + 1}`, "fill-rule": "evenodd" }));
+  });
+
+  // Same taper-shadow construction as drawIslandsPath()'s own directional
+  // branch above (v3.7.24-v3.7.30's tuning) -- kept in sync by hand since
+  // duplicating it was simpler than threading a class-prefix/output-
+  // target parameter through that already-long function for a shadow
+  // style Medieval's own build never takes.
+  if (showSeaShadow) {
+    let defs = stage.querySelector("#v3-geo-defs");
+    if (!defs) {
+      defs = el("defs", { id: "v3-geo-defs" });
+      stage.insertBefore(defs, stage.firstChild);
+    }
+    let blurFilter = defs.querySelector("#v3-sea-shadow-taper-blur");
+    if (!blurFilter) {
+      blurFilter = el("filter", { id: "v3-sea-shadow-taper-blur", filterUnits: "userSpaceOnUse" });
+      blurFilter.appendChild(el("feGaussianBlur", { stdDeviation: 1.5 }));
+      defs.appendChild(blurFilter);
+    }
+    blurFilter.setAttribute("x", paddedBounds.x);
+    blurFilter.setAttribute("y", paddedBounds.y);
+    blurFilter.setAttribute("width", paddedBounds.width);
+    blurFilter.setAttribute("height", paddedBounds.height);
+
+    const taperLevels = [threshold, ...(sandThresholds || []), ...(vegThresholds || []), ...(peakThresholds || [])];
+    const heights = taperLevels.map(level => Math.max(0, level - threshold));
+    const maxHeight = Math.max(1e-6, ...heights);
+    const rad = (seaShadowAngleDeg * Math.PI) / 180;
+    const sdx = Math.cos(rad);
+    const sdy = Math.sin(rad);
+    const copiesPerLevel = 4;
+    const baseReach = 8;
+    const maxReach = 46;
+    const levelStagger = 1.5;
+    const taperGroup = el("g", { class: "v3-sea-shadow-taper", filter: "url(#v3-sea-shadow-taper-blur)" });
+    taperLevels.forEach((level, li) => {
+      const d = trace(level);
+      const reach = baseReach + (heights[li] / maxHeight) * (maxReach - baseReach);
+      const start = 3 + li * levelStagger;
+      const step = Math.max(0.5, (reach - start) / (copiesPerLevel - 1));
+      for (let c = 0; c < copiesPerLevel; c++) {
+        const dist = start + c * step;
+        taperGroup.appendChild(el("path", {
+          class: "v3-sea-shadow-taper-copy",
+          "fill-rule": "evenodd",
+          d,
+          transform: `translate(${(sdx * dist).toFixed(2)},${(sdy * dist).toFixed(2)})`
+        }));
+      }
+    });
+    group.appendChild(taperGroup);
+  }
+
+  sandThresholds.forEach((level, i) => {
+    group.appendChild(el("path", { d: trace(level), class: `v3-sand-band v3-sand-band-${i + 1}`, "fill-rule": "evenodd" }));
+  });
+  vegThresholds.forEach((level, i) => {
+    group.appendChild(el("path", { d: trace(level), class: `v3-veg-band v3-veg-band-${i + 1}`, "fill-rule": "evenodd" }));
+  });
+  peakThresholds.forEach((level, i) => {
+    group.appendChild(el("path", { d: trace(level), class: `v3-peak-band v3-peak-band-${i + 1}`, "fill-rule": "evenodd" }));
+  });
+}
+
 // v3.7.16 -- deterministic string hash -> a hue angle, used below so each
 // section gets its own stable coastal-band colour without hand-authoring
 // one per section. Keyed off sectionMeta.id (not array index) so a
@@ -2715,6 +2843,7 @@ export function retraceIslands() {
   const islandTrace = drawIslandsPath(stage, islandLayoutState.canvasBounds, islandLayoutState.grown);
   lastIslandTrace = islandTrace;
   drawCoastalInwardBands(stage, islandLayoutState.layout, islandTrace, islandLayoutState.grown);
+  drawTopologyStructuralLayer(stage, islandTrace);
   drawIslandNoiseDebug(stage, islandTrace.paddedBounds, islandTrace.H, islandTrace.cols, islandTrace.rows, v3Config.island.cellSize);
 
   // v3.7.7 -- redraw the lat/long grid too (cheap: drawGeoGrid() replaces
@@ -3045,6 +3174,7 @@ export function render() {
   const islandTrace = drawIslandsPath(stage, canvasBounds, grown);
   lastIslandTrace = islandTrace;
   drawCoastalInwardBands(stage, layout, islandTrace, grown);
+  drawTopologyStructuralLayer(stage, islandTrace);
   drawIslandNoiseDebug(stage, islandTrace.paddedBounds, islandTrace.H, islandTrace.cols, islandTrace.rows, v3Config.island.cellSize);
 
   // v3.7.2 bugfix -- this used to run BEFORE drawIslandsPath() on the

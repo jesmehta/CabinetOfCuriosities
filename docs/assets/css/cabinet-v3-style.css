@@ -991,46 +991,49 @@ body[data-label-style="glow"] .v3-compass-direction-label {
   clip-path: url(#v3-medieval-effects-clip);
 }
 
-/* v3.7.50 (#21) -- the theme-preview-on-hover mechanism above already
-   builds FULL Topology structure for every island and section
-   (v3Config.themePreview.previewTheme is hardcoded "satellite",
-   cabinet-v3-data.js) -- real directional shadow, real band tracing,
-   real coastline, not an approximation -- it was just scoped to reveal
-   on a per-element :hover instead of canvas-wide. Direct correction:
-   "The Hover ALREADY HAS all of TOPOLOGY built in!! You just have to do
-   the hover equivalent of the entire canvas." Right -- the "double the
-   static payload" / "partial live re-render" options from v3.7.49 were
-   solving a problem that didn't need solving; this is the same
-   "check what already exists before reaching for a rebuild" lesson as
-   the boats/dragons cost estimate (#64). Two things, both scoped to
-   data-theme="satellite" so they only apply once actually swapped:
-   reveal every theme-preview layer at once (same opacity:1 the :hover
-   rules already set, just triggered by the swap instead), and hide the
-   5 "Medieval effects" elements above outright rather than relying on
-   the single hover-clip-hole mechanism (built for ONE local area, not
-   the whole canvas at once). */
+/* v3.7.50 (#21), REVERTED in v3.7.51 -- globally revealing the
+   per-island/per-section theme-preview mechanism above (instead of its
+   normal per-element :hover) seemed like the same "reuse what's already
+   built" fix as the rest of this comment block, but that mechanism
+   builds each island's preview in ISOLATION
+   (buildIsolatedHeightmap([c], ...), one island's own circle data only)
+   with a generous halo meant to blend into open water around exactly
+   ONE hovered island. Direct report after seeing it live: "neightbourig
+   islands, esp non-entry ones, and the sectional boundaries, are being
+   occluded... Dont render individual islands. Maybe have a full
+   topology also built alongside the per island and per section builds."
+   Replaced by drawTopologyStructuralLayer() (cabinet-v3-layout.js) --
+   ONE shared-heightmap pass across every island together, same
+   construction drawIslandsPath() already uses for Medieval, correct for
+   fillers and section boundaries by construction because it reuses the
+   real map's own geometry rather than an isolated per-island copy. */
 body.v3-proto[data-theme="satellite"] .v3-wave-ring,
 body.v3-proto[data-theme="satellite"] .v3-coast-outward-band,
 body.v3-proto[data-theme="satellite"] .v3-coast-inward-band-group,
 body.v3-proto[data-theme="satellite"] .v3-sea-shadow-radial,
-body.v3-proto[data-theme="satellite"] .v3-sea-shadow-taper {
+body.v3-proto[data-theme="satellite"] .v3-islands-land-flat {
   opacity: 0;
 }
 
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-shadow,
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview,
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-sea,
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-sand,
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-veg,
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-peak,
-body.v3-proto[data-theme="satellite"] .v3-island-theme-preview-coastline,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-shadow,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-sea,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-sand,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-veg,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-peak,
-body.v3-proto[data-theme="satellite"] .v3-section-theme-preview-coastline {
+/* v3.7.51 -- .v3-topo-structural (drawTopologyStructuralLayer()) reuses
+   the real, non-preview band/shadow classes directly (.v3-sea-band-N,
+   .v3-sand-band-N, .v3-sea-shadow-taper, etc) -- Medieval's own build
+   never creates any of them (flatColourMode/seaShadowStyle rule them
+   all out), so there's no collision and no new colour rules needed,
+   they already read off the same theme-reactive tokens the rest of the
+   map uses. Note .v3-sea-shadow-taper is deliberately NOT in the hide
+   list above any more -- it used to sit there as a "Medieval effects"
+   target that Medieval's own build never actually produces anyway, but
+   now that this function reuses that exact class name for real content,
+   hiding it here would hide the very shadow this rule exists to show. */
+.v3-topo-structural {
+  /* transition comes from the broad #v3-stage * rule above (already
+     includes opacity), not repeated here -- that rule's ID selector
+     would win the cascade over a class-only one anyway. */
+  opacity: 0;
+}
+
+body.v3-proto[data-theme="satellite"] .v3-topo-structural {
   opacity: 1;
 }
 
