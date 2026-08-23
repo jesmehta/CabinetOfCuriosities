@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.58 -- Working with AI, Prompt Generator, Oblique Strategies, SSD Creative Coding become real map entries (#71)](#v3758----working-with-ai-prompt-generator-oblique-strategies-ssd-creative-coding-become-real-map-entries-71)
   - [v3.7.57 -- mkdocs nav restructured around Compass/Teaching, first `cabinet-sections.tsv` gap found (#41/#44/#46/#66-69)](#v3757----mkdocs-nav-restructured-around-compassteaching-first-cabinet-sectionstsv-gap-found-4144466-69)
   - [v3.7.56 -- `deploy.yml`'s long inline comments trimmed to a help note](#v3756----deployymls-long-inline-comments-trimmed-to-a-help-note)
   - [v3.7.55 -- a dummy colophon page, and the archive finally deployed for real (#20/#61/#62)](#v3755----a-dummy-colophon-page-and-the-archive-finally-deployed-for-real-2061-62)
@@ -117,7 +118,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.57**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.58**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1537,6 +1538,65 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.58 -- Working with AI, Prompt Generator, Oblique Strategies, SSD Creative Coding become real map entries (#71)
+
+Follow-up to `v3.7.57`, same day: asked how to get Teaching content onto
+the actual archipelago map rather than just `mkdocs.yml`'s sidebar. The
+map (`cabinet-sections.tsv`/`cabinet-entries.tsv`) and the docs sidebar
+are genuinely separate systems -- the `teaching` section already existed
+and rendered (that's where "Student Work" came from), Working with AI
+just had no `cabinet-entries.tsv` row.
+
+Added four entries: `working-with-ai`, `prompt-generator`,
+`oblique-strategies` (all new), and `teaching-student-work`'s `href`
+switched from the external SSD Creative Coding URL to its own assembled
+path -- all four under the `teaching` section. Confirmed a non-obvious
+fact about the packing algorithm before relying on it: an entry's `x`/`y`
+TSV columns are dead for `placement: land` entries -- `cabinet-v3-
+circlepack.js` seeds its own random `(x, y)` per item from a string seed,
+and `cabinet-v3-layout.js` only ever reads `entry.visual.anchor` (for
+`coast`-placement port cards), never `.x`/`.y`. Only `weight` (circle
+size) and `order` matter; left the columns blank rather than filling in
+values that do nothing.
+
+Follow-up direct request: route Prompt Generator, Oblique Strategies and
+SSD Creative Coding through the same Cabinet-local assembly as Working
+with AI, at `/teaching/<slug>/`, not their external GitHub Pages URLs.
+`deploy.yml` gained three more Checkout/Assemble/Validate step groups,
+copy-pasted from `#43`'s pattern rather than generalized -- four real
+examples now exist, which is exactly the threshold the concept note's
+own Phase 2 section named as worth generalizing at, logged as a live
+open question rather than acted on unprompted. Each source repo was
+inspected first, same bar as `#43`: fetched each deployed page, grepped
+for absolute-path `href`/`src` attributes and hardcoded
+`jesmehta.github.io` references -- none of the three has either, so
+remounting under `/teaching/` doesn't break their relative asset paths.
+Oblique Strategies turned out to be a single self-contained HTML file
+(inline `<script>`, no separate JS/CSS), so its Validate step checks
+page content with `grep` instead of a second file's existence.
+
+`prompt-generator` and `oblique-strategies` had briefly been added to
+`interfaces-data-texts` earlier the same session (matching `tracery-bots`/
+`webtech`'s "web pieces that don't belong inside fffx" precedent) --
+moved to `teaching` once the direct request came in for where they
+should actually live.
+
+Last: `mkdocs.yml`'s `Teaching` nav section, added a few hours earlier in
+`v3.7.57`, was removed entirely -- direct instruction, "eliminate the
+lower one, Working with AI already covered." Once Teaching content is
+real map entries, listing the same four links a second time in the docs
+sidebar is pure duplication with no second purpose.
+
+Verified locally: all three source repos' relative-path safety confirmed
+before touching `deploy.yml`; `node tools/build-cabinet-content.js` (8
+sections, 31 entries) and `build-static.mjs` succeeded; `mkdocs build`
+clean; Playwright screenshot shows Teaching now holding six entries
+(Student Work, History & Approach, Research & Interests, Working with
+AI, Prompt Generator, Oblique Strategies), `interfaces-data-texts`
+correctly back to its original five. The live GitHub Actions run and the
+newly assembled `/teaching/<slug>/` paths still need confirming once
+pushed, same content-aware method as `#43`/`#46`.
 
 ### v3.7.57 -- mkdocs nav restructured around Compass/Teaching, first `cabinet-sections.tsv` gap found (#41/#44/#46/#66-69)
 

@@ -396,7 +396,7 @@ export const entries = [
     "section": "teaching",
     "title": "Student Work",
     "subtitle": "Selected student work and showcases from SSD Creative Coding.",
-    "href": "https://jesmehta.github.io/SSD_CreativeCodingPage/",
+    "href": "teaching/ssd-creative-coding/",
     "order": 10,
     "weight": 3,
     "status": true,
@@ -406,7 +406,7 @@ export const entries = [
       "students",
       "showcase"
     ],
-    "location": "external",
+    "location": "assembly",
     "visual": {
       "placement": "land",
       "size": "medium",
@@ -414,7 +414,8 @@ export const entries = [
       "x": 28.7,
       "y": 49.2
     },
-    "icon": "icon-cap"
+    "icon": "icon-cap",
+    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding/ (jesmehta/SSD_CreativeCodingPage) -- was an external link before 2026-08-24."
   },
   {
     "id": "teaching-approach",
@@ -864,5 +865,102 @@ export const entries = [
       "cardType": "",
       "anchor": "W"
     }
+  },
+  {
+    "id": "working-with-ai",
+    "section": "teaching",
+    "title": "Working with AI",
+    "subtitle": "15 principles for working with AI tools, assembled straight into Cabinet.",
+    "href": "teaching/working-with-ai/",
+    "order": 40,
+    "weight": 3,
+    "status": true,
+    "kind": "teaching-page",
+    "tags": [
+      "teaching",
+      "ai",
+      "guide"
+    ],
+    "location": "assembly",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-book",
+    "notes": "Multi-repo assembly (#43), mounted at /teaching/working-with-ai/ -- not built by mkdocs. location: assembly is a new value (field is descriptive only, not read by the layout code) since existing subdomain/mkdocs/external didn't fit."
+  },
+  {
+    "id": "swatch-fields",
+    "section": "machines-makings",
+    "title": "Swatch Fields",
+    "subtitle": "An atlas of material swatches and colour fields.",
+    "href": "https://jesmehta.github.io/swatchFields/",
+    "order": 60,
+    "weight": 3,
+    "status": true,
+    "kind": "material-collection",
+    "tags": [
+      "materials",
+      "swatches",
+      "colour"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-swatch"
+  },
+  {
+    "id": "prompt-generator",
+    "section": "teaching",
+    "title": "Prompt Generator",
+    "subtitle": "A generator for transformation and creative-writing prompts.",
+    "href": "teaching/prompt-generator/",
+    "order": 50,
+    "weight": 2,
+    "status": true,
+    "kind": "web-experiment",
+    "tags": [
+      "teaching",
+      "generative-text",
+      "prompts",
+      "tool"
+    ],
+    "location": "assembly",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-code",
+    "notes": "Multi-repo assembly, mounted at /teaching/prompt-generator/ (jesmehta/PromptGenerator)."
+  },
+  {
+    "id": "oblique-strategies",
+    "section": "teaching",
+    "title": "Oblique Strategies",
+    "subtitle": "A digital deck of Oblique Strategies cards for creative blocks.",
+    "href": "teaching/oblique-strategies/",
+    "order": 60,
+    "weight": 2,
+    "status": true,
+    "kind": "web-experiment",
+    "tags": [
+      "teaching",
+      "generative",
+      "cards",
+      "tool"
+    ],
+    "location": "assembly",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-cards",
+    "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
   }
 ];

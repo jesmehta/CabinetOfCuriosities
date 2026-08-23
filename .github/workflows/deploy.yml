@@ -50,6 +50,24 @@ jobs:
         repository: jesmehta/working-with-ai
         path: _external/working-with-ai
 
+    - name: Checkout Prompt Generator
+      uses: actions/checkout@v4
+      with:
+        repository: jesmehta/PromptGenerator
+        path: _external/prompt-generator
+
+    - name: Checkout Oblique Strategies
+      uses: actions/checkout@v4
+      with:
+        repository: jesmehta/ObliqueStrategies
+        path: _external/oblique-strategies
+
+    - name: Checkout SSD Creative Coding
+      uses: actions/checkout@v4
+      with:
+        repository: jesmehta/SSD_CreativeCodingPage
+        path: _external/ssd-creative-coding
+
     - name: Build MkDocs Site
       run: mkdocs build --site-dir public
 
@@ -62,10 +80,34 @@ jobs:
         cp -r _external/working-with-ai/. public/teaching/working-with-ai/
         rm -rf public/teaching/working-with-ai/.git
 
+    - name: Assemble Prompt Generator
+      run: |
+        mkdir -p public/teaching/prompt-generator
+        cp -r _external/prompt-generator/. public/teaching/prompt-generator/
+        rm -rf public/teaching/prompt-generator/.git
+
+    - name: Assemble Oblique Strategies
+      run: |
+        mkdir -p public/teaching/oblique-strategies
+        cp -r _external/oblique-strategies/. public/teaching/oblique-strategies/
+        rm -rf public/teaching/oblique-strategies/.git
+
+    - name: Assemble SSD Creative Coding
+      run: |
+        mkdir -p public/teaching/ssd-creative-coding
+        cp -r _external/ssd-creative-coding/. public/teaching/ssd-creative-coding/
+        rm -rf public/teaching/ssd-creative-coding/.git
+
     - name: Validate assembled output
       run: |
         test -f public/teaching/working-with-ai/index.html || (echo "ERROR: assembled Working with AI is missing its index.html" && exit 1)
         test -f public/teaching/working-with-ai/working-with-ai/01.html || (echo "ERROR: assembled Working with AI is missing its own content" && exit 1)
+        test -f public/teaching/prompt-generator/index.html || (echo "ERROR: assembled Prompt Generator is missing its index.html" && exit 1)
+        test -f public/teaching/prompt-generator/app.js || (echo "ERROR: assembled Prompt Generator is missing its own content" && exit 1)
+        test -f public/teaching/oblique-strategies/index.html || (echo "ERROR: assembled Oblique Strategies is missing its index.html" && exit 1)
+        grep -q "Oblique Strategies" public/teaching/oblique-strategies/index.html || (echo "ERROR: assembled Oblique Strategies is missing its own content" && exit 1)
+        test -f public/teaching/ssd-creative-coding/index.html || (echo "ERROR: assembled SSD Creative Coding is missing its index.html" && exit 1)
+        test -f public/teaching/ssd-creative-coding/script.js || (echo "ERROR: assembled SSD Creative Coding is missing its own content" && exit 1)
 
     # Same pattern as the assembly above, local dir instead of a checkout --
     # makes colophon.md's v1/v2 links resolve instead of 404ing. #61

@@ -615,10 +615,14 @@ failures remain.*
       Branch/production transition entries below for the full mechanics.
 - [ ] **#41** Align the landing-page hierarchy with `mkdocs.yml` -- **first pass,
       2026-08-24**: `mkdocs.yml` nav restructured to mirror the compass/world
-      names -- new `Compass` (About/Colophon/Now) and `Teaching` sections
-      added, `Thingamajigs` renamed to `Machines & Makings` to match
-      `cabinet-sections.tsv`'s `machines-makings` title. `Wild wild web` is
-      still nav-only with no TSV section of its own -- see #69.
+      names -- new `Compass` section (About/Colophon/Now) added,
+      `Thingamajigs` renamed to `Machines & Makings` to match
+      `cabinet-sections.tsv`'s `machines-makings` title. The `Teaching` nav
+      section added the same day was removed again a few hours later
+      (`#71`) once Working with AI and friends became real map entries
+      instead -- the map is now the canonical home for Teaching content,
+      not a second mkdocs listing. `Wild wild web` is still nav-only with
+      no TSV section of its own -- see #69.
 - [ ] **#42** Finish essential personal pages: About Me, Contact, any other page
       necessary for the site to feel complete at launch -- see #66 (About).
 - [x] **#43** Implement the first multi-repo assembly, beginning with Working
@@ -650,10 +654,12 @@ failures remain.*
 - [x] **#44** Change public links from Working with AI's external GitHub Pages
       URL to the Cabinet-local path once assembled and tested --
       **done, 2026-08-24**: confirmed `https://cabinetofcuriosities.in/
-      teaching/working-with-ai/` live (200, real title) before adding it,
-      so the new `mkdocs.yml` Teaching entry links straight to the
-      Cabinet-local path -- there was never an external link to change,
-      this is the first link in either direction.
+      teaching/working-with-ai/` live (200, real title) before linking it.
+      **Superseded same day (#71)**: initially linked from a new
+      `mkdocs.yml` Teaching nav entry, then that entry was removed in
+      favour of a real `cabinet-entries.tsv` row under the `teaching`
+      section -- the Cabinet-local path is now reached from the landing
+      page map, not the docs sidebar.
 
 ### Branch / production transition
 
@@ -762,6 +768,47 @@ marked as such.*
       adding an 8th region needs a layout decision (resize the grid?
       demote an existing region? different mapForm entirely?) before
       flipping `status` to `wip`/`true`.
+- [ ] **#70** Check whether section/island labels are real headings (`h2` etc.)
+      or SVG `<text>`, and what that implies for SEO/search, page
+      structure and responsiveness -- **quick check, 2026-08-24**: they're
+      SVG `<text class="v3-section-label">`, built in
+      `cabinet-v3-layout.js`'s `computeSectionLabel()`/render path (around
+      line 766), not semantic HTML. Only the page `<h1>` (Cabinet of
+      Curiosities) and its subtitle are real HTML -- see `docs/index.html`'s
+      own header comment for why that one was deliberately kept semantic
+      (crawlers/screen readers). Section titles ("Bookshelf of
+      Curiosities", "Teaching", etc.) don't participate in the document's
+      heading outline, aren't reachable via screen-reader heading
+      navigation, and don't reflow with the rest of the page the way HTML
+      text does -- they scale with the SVG viewBox instead. Not yet
+      assessed: whether this actually hurts search ranking in practice
+      (search engines do index SVG `<text>` content, just not as
+      headings), or whether an `aria-label`/hidden HTML heading pass
+      would be the right fix vs. leaving it as an intentional map
+      metaphor. Needs a real look before deciding.
+- [x] **#71** Working with AI, Prompt Generator, Oblique Strategies and SSD
+      Creative Coding all mapped as real `cabinet-entries.tsv` entries
+      under `teaching`, at Cabinet-local assembled paths -- **done,
+      2026-08-24**: `deploy.yml` extended with three more Checkout/
+      Assemble/Validate step groups (`#43`'s pattern, copy-pasted, not yet
+      the Phase 2 manifest -- four real examples now exist, worth
+      revisiting whether to generalize). New paths:
+      `/teaching/prompt-generator/`, `/teaching/oblique-strategies/`,
+      `/teaching/ssd-creative-coding/` (alongside the existing
+      `/teaching/working-with-ai/`). All three source repos inspected
+      first, same bar as `#43`: no absolute-path `href`/`src`, no
+      hardcoded `jesmehta.github.io` references, so remounting under
+      `/teaching/` doesn't break their asset paths. `prompt-generator` and
+      `oblique-strategies` moved out of `interfaces-data-texts` (where
+      they were first added, same session) into `teaching`, since that's
+      where they actually belong; `teaching-student-work`'s `href`
+      switched from the external SSD Creative Coding URL to its own new
+      assembled path. `mkdocs.yml`'s `Teaching` nav section (added a few
+      hours earlier, same session) was then removed entirely -- the map
+      is the canonical listing now, a second copy in the docs sidebar was
+      redundant. Still needs the live GitHub Actions run confirmed (no
+      `gh` CLI here) and each assembled path fetched directly, same
+      content-aware verification as `#43`/`#46`.
 
 ---
 
