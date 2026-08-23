@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.52 -- compass spin gets a real ease-in/cruise/ease-out shape](#v3752----compass-spin-gets-a-real-ease-incruiseease-out-shape)
   - [v3.7.51 -- v3.7.50 was itself wrong: a real full-canvas structural layer, not a global hover reveal](#v3751----v3750-was-itself-wrong-a-real-full-canvas-structural-layer-not-a-global-hover-reveal)
   - [v3.7.50 -- the theme swap actually works now: reusing the hover-preview mechanism instead of rebuilding anything](#v3750----the-theme-swap-actually-works-now-reusing-the-hover-preview-mechanism-instead-of-rebuilding-anything)
   - [v3.7.49 -- full-width header, diagonals now spin with the compass, and a real structural gap found in the theme swap](#v3749----full-width-header-diagonals-now-spin-with-the-compass-and-a-real-structural-gap-found-in-the-theme-swap)
@@ -111,7 +112,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.51**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.52**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1531,6 +1532,39 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.52 -- compass spin gets a real ease-in/cruise/ease-out shape
+
+Direct request: "compass spin rate needs to slowdown - or even better,
+start slow, speed to current speed, and slow down - use an easing
+function to start-stop, over the first 90 and last 90 degrees, top
+speed only at 180 +- 45 degrees, or however you see fit."
+
+`@keyframes v3-compass-spin` (`#29`) went from one flat `ease-in-out`
+across the whole 360 degrees to three explicit segments, each with its
+own `animation-timing-function` set per-keyframe (applies to the
+segment leading out of that keyframe -- standard CSS, well-supported):
+`ease-in` from 0deg to -90deg, `linear` (constant cruise) from -90deg to
+-270deg -- the middle 180 degrees, comfortably covering "top speed at
+180+-45" with room either side -- then `ease-out` from -270deg to
+-360deg.
+
+Total duration: 1350ms, not 900ms. Chosen deliberately, not guessed:
+the cruise segment's own angular rate (180deg over 450ms = 0.4deg/ms)
+matches the OLD flat animation's rate exactly (360deg over 900ms, also
+0.4deg/ms) -- "speed to current speed," meaning the fast part still
+feels the same speed it always did, the two eased ends are pure addition
+on top of that rather than a retune of the cruise itself.
+
+Verified by sampling the live rotation matrix (`getComputedStyle(...).
+transform`) at roughly 15 timestamps across one full spin, not just
+eyeballing a screenshot: near-zero angular velocity at both the very
+start and the very end, ramping up to ~0.35-0.43deg/ms through the
+middle -- matching the 0.4 target within normal timing-sample jitter.
+Both spin groups (the rose itself and the diagonal rays, `#29`'s
+v3.7.49 follow-up) stay in exact lockstep throughout, since they share
+one `@keyframes` rule, one duration, and one hover trigger by
+construction -- no separate verification needed for that part.
 
 ### v3.7.51 -- v3.7.50 was itself wrong: a real full-canvas structural layer, not a global hover reveal
 

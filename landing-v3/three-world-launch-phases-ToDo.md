@@ -420,6 +420,26 @@ own numbering note near the top) -- a move, not a re-add.
       common ancestor -- instead of `.v3-compass`. Verified via
       computed-style inspection (not just a screenshot) that both spin
       groups share the same live rotation matrix mid-animation.
+      **v3.7.52 follow-up, direct feedback**: "compass spin rate needs
+      to slowdown - or even better, start slow, speed to current speed,
+      and slow down - use an easing function to start-stop, over the
+      first 90 and last 90 degrees, top speed only at 180 +- 45
+      degrees." `@keyframes v3-compass-spin` now has three explicit
+      segments instead of one flat `ease-in-out`: `ease-in` from 0deg to
+      -90deg, `linear` (constant cruise) from -90deg to -270deg -- the
+      middle 180 degrees, comfortably covering the requested "top speed
+      at 180+-45" -- then `ease-out` from -270deg to -360deg. Total
+      duration went from 900ms to 1350ms, chosen so the CRUISE segment's
+      own angular rate matches the OLD flat animation's rate exactly
+      (both 0.4deg/ms) -- "speed to current speed" -- the two eased ends
+      are pure addition on top of that, not a retune of how fast the
+      fast part feels. Verified by sampling the live rotation matrix at
+      ~15 timestamps across one full spin (not just eyeballing a
+      screenshot): confirmed near-zero velocity at the very start and
+      end, ramping up to ~0.35-0.43deg/ms (matching the target 0.4)
+      through the middle, both spin groups (rose + diagonals) staying in
+      lockstep throughout since they share one keyframes rule and
+      trigger.
 - [ ] **#63** Compass arms: hovering one reveals intricate scrollwork
       ornament on that arm, plus a colour change. Blocked on the user's
       own hand-drawn/traced/digitized SVG artwork before this can be
