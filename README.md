@@ -23,17 +23,31 @@ repo/world) rather than duplicating their content.
   etc.) get the normal Material theme/sidebar. There is no `docs/index.md`
   — see "Homepage rule" in `WORLD-SYSTEMS.md` for why that would collide
   with `docs/index.html`.
+- **As of v3.0 (2026-08-23), `docs/index.html` is a static build produced
+  from `landing-v3/`** (the "archipelago-tool" rebuild — data-driven
+  treemap/circle-packing layout, not the hand-authored SVG below) — see
+  `landing-v3/Landing-page-notes.2.0.md` for that system's own full
+  documentation, and `landing-v3/three-world-launch-phases-ToDo.md` for
+  how/why it got promoted. Everything in this section and in
+  `LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md` below describes the
+  *previous* (v2) system, kept as-is because it's genuinely still true of
+  how that version was built and is preserved, fully browsable, in
+  `archived-landing-pages/v2/` — just no longer what serves the live
+  page.
 - `docs/assets/css/cabinet-tokens.css` — single source of truth for the
   parchment/ink palette and type (`--cab-*`), shared between
-  `cabinet-landing.css` (the map page) and `docs/stylesheets/cabinet-material.css`
-  (maps the same tokens into Material's `--md-*` variables for every other
-  page).
-- `docs/assets/js/` — `cabinet-data.js` (hand-edited, landing-page-level
-  config only: cartouche/legend text, viewBox size), `cabinet-generated-content.js`
-  (auto-generated, do not hand-edit — see Data pipeline below),
-  `cabinet-render.js` (renders island link state + entry card layer +
-  mobile stacked fallback from data), `cabinet-interactions.js` (hover/focus
-  island↔card highlight linking).
+  `cabinet-landing.css` (the v2 map page, superseded, see above) and
+  `docs/stylesheets/cabinet-material.css` (maps the same tokens into
+  Material's `--md-*` variables for every other page — this part is
+  still live, unrelated to which map version serves `/`).
+- `docs/assets/js/` — **superseded, unused by the current homepage, kept
+  in place rather than deleted** (see the note above): `cabinet-data.js`
+  (hand-edited, landing-page-level config only: cartouche/legend text,
+  viewBox size), `cabinet-generated-content.js` (auto-generated, do not
+  hand-edit — see Data pipeline below), `cabinet-render.js` (rendered
+  island link state + entry card layer + mobile stacked fallback from
+  data), `cabinet-interactions.js` (hover/focus island↔card highlight
+  linking). Nothing else in `docs/` references these anymore.
 - `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv` — the
   actual editable content source (islands and their entries, including
   visual placement columns). Edit these, not the generated JS.
@@ -97,13 +111,53 @@ action's runtime was being retired). This requires **Settings → Pages →
 Build and deployment → Source → "GitHub Actions"** to be set on the repo
 (one-time, not in the YAML).
 
-Cabinet has no `CNAME` file — it deploys to the GitHub Pages project
-subpath (`jesmehta.github.io/CabinetOfCuriosities/`), not a custom domain.
-This is why every internal link in the TSVs is path-relative with no
-leading slash (`about/`, not `/about/`) — see `WORLD-SYSTEMS.md`'s note on
-`href` safety.
+As of v3.0 (2026-08-23), Cabinet has a real `docs/CNAME` file
+(`cabinetofcuriosities.in`) and deploys to that custom domain, not the
+GitHub Pages project subpath. This is a change from earlier versions of
+this doc: `main` had independently picked up CNAME handling for a
+`peaceiris/actions-gh-pages`-based deploy back on 2026-08-14, which got
+lost in translation when `landing-v3-prototype` (already on the
+first-party `deploy-pages` mechanism below, which has no equivalent
+`cname:` workflow parameter) was merged in — caught and fixed as
+`docs/CNAME` before that merge landed, not after. Every internal link
+in the TSVs is still path-relative with no leading slash (`about/`, not
+`/about/`) regardless — that convention doesn't depend on which domain
+serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### v3.0 — archipelago-tool rebuild, promoted to production (branch `landing-v3-prototype` merged to `main`, 2026-08-23)
+
+`docs/index.html` now serves a build produced from `landing-v3/` — a
+from-scratch rebuild (weighted-treemap section layout, circle-packed
+islands, per-section coastline tracing, live theme system, hover
+previews) rather than a revision of the v2 SVG below. Full iteration
+history (v3.0 through this promotion) lives in
+`landing-v3/Landing-page-notes.2.0.md`'s changelog and
+`conversation-landing-page-v3.md`'s narrative account — not duplicated
+here. What's relevant at this level:
+
+- v2 (`docs/index.html` + `cabinet-render.js`/`cabinet-interactions.js`
+  below) is fully preserved and browsable, not deleted — see
+  `archived-landing-pages/v2/`, plus its own four earlier visual states
+  in `archived-landing-pages/v2-history/`. v1 (the original MkDocs
+  Material homepage, before v2.0 below) is similarly preserved as a full
+  rebuilt site in `archived-landing-pages/v1/`, from a `cabinet-v1-
+  before-map` tag that had been referenced in that folder's README but
+  never actually existed as git state until this pass created it.
+  `main`'s own state immediately before this merge is tagged
+  `cabinet-v2-before-v3`.
+- The merge surfaced that `main` had diverged independently since the
+  branch split: a CNAME (`cabinetofcuriosities.in`) had been added to
+  the old `peaceiris/actions-gh-pages`-based `deploy.yml` on 2026-08-14,
+  which `landing-v3-prototype`'s already-migrated `deploy-pages`-based
+  workflow (see "Deploy pipeline" above) had no equivalent parameter
+  for. Fixed by adding a `docs/CNAME` file before merging, which the
+  newer mechanism honours the same way — not a formatting loss, this
+  would otherwise have silently dropped custom-domain support.
+- `docs/assets/js/cabinet-render.js` and friends are now dead code,
+  unreferenced by anything live — left in place rather than deleted, to
+  keep the promotion itself minimal and reversible.
 
 ### v2.1 — Round 1 visual pass (branch `cabinet-map-v2`, 2026-07-07)
 

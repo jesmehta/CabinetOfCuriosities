@@ -114,10 +114,14 @@ Bookshelf).
 id              // stable, unique within the world
 title
 subtitle
-href            // relative, never root-absolute (breaks under a GitHub
-                // Pages project subpath -- Cabinet has no CNAME and
-                // deploys to a project subpath, which is exactly this
-                // failure mode; see LANDING-PAGE-NOTES.md)
+href            // relative, never root-absolute -- root-absolute hrefs
+                // break under a GitHub Pages project subpath (no
+                // custom domain), which was Cabinet's own deploy
+                // target until 2026-08-23; keep this convention
+                // regardless of whether the current deploy target has
+                // a CNAME, since any Level 1 world without one still
+                // hits exactly this failure mode; see
+                // LANDING-PAGE-NOTES.md)
 section         // singular; entry's one home section/island
 sections        // optional, for genuinely cross-listed-within-one-world entries
 kind
@@ -223,8 +227,13 @@ These live here rather than in Cabinet's `DESIGN-SYSTEM.md`/
 `LANDING-PAGE-NOTES.md` because they're about how Cabinet *relates* to
 its sibling worlds, not about Cabinet's own internals:
 
-- Cabinet has no `CNAME`; Bookshelf has `bookshelf.cabinetofcuriosities.in`;
-  fffx has `site_url` configured for `fffx.cabinetofcuriosities.in` but no
+- As of 2026-08-23, Cabinet has a `docs/CNAME` (`cabinetofcuriosities.in`
+  itself, the root domain) -- added when `landing-v3-prototype` was
+  promoted to production, since the old `main` had independently picked
+  up CNAME handling under the previous `peaceiris/actions-gh-pages`
+  deploy mechanism that the newer `deploy-pages` one had no equivalent
+  for. Bookshelf has `bookshelf.cabinetofcuriosities.in`; fffx has
+  `site_url` configured for `fffx.cabinetofcuriosities.in` but no
   `CNAME` file committed yet (verify DNS is actually live before treating
   fffx links from Cabinet as production).
 - Cabinet should link into Bookshelf/fffx, never duplicate their full
