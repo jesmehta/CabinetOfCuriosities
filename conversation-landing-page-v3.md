@@ -2194,6 +2194,132 @@ the real map's own values untouched:
 
 ![Sea-depth bands and a hint of directional shadow clearly visible at real, non-forced opacity](landing-v3/dev-screenshots/v3.7.39-boosted-sea-shadow-opacity.png)
 
+### v3.7.40-v3.7.42: v3.7.39 wasn't actually the end of it
+
+The very next message, after v3.7.39 shipped with a confident writeup,
+was a direct correction of exactly that confidence: **"ok, I need you to
+backtrack. This is not working. Solo Island - no wave contours or sea
+bands. Section - faintly visible whether it is wave contour or sea
+band, regardless. No sea topology visible anywhere."** Then, mid-report,
+a debugging idea rather than another vague "still broken": **"Why don't
+you turn off the blue halo and let the rest of the visual come
+through?"**
+
+That question landed harder than it might have read at the time. Every
+verification up to that point had been screenshots and computed-style
+checks confirming the mechanism *fired* -- opacity flipped, elements
+existed, clip holes were the right shape -- without ever weighing
+whether the result actually *looked* right. When the user pointed that
+out directly a message later -- **"again, you can show things to me and
+get feedback - clearly your screenshots have been telling you the job
+has been done for the past hour, and I am here telling you it
+isnt"** -- the response was to stop presenting self-verification as
+proof and just make the concrete change asked for, then hand it back.
+
+Turning the wash off did exactly what the suggestion was for: it
+revealed that the wash and `seaBandThresholds`' own translucent bands
+were painted in the literal same colour (`--v3-sea-shallow`), so the
+bottommost "deepest sea" tier had been invisibly fusing into the tier
+right above it the entire time -- not a clipping bug, not an opacity
+bug, a colour collision. The user's own diagnosis, once they could see
+the un-hidden layers: **"ok, so the sea topology is there, it was
+buried under the halo. The last layer of the sea, the part that should
+be visible with the halo outline and the colour for the -1.4 sea anchor
+level, is missing. Colour the hover outline with that colour but layer
+it bottommost while stacking the topologies. In the original theme it
+is just the base colour for the whole canvas, here you will have to
+give it an outer bound."** A new token, `--v3-preview-sea-deep`, mapped
+to the previewed theme's real `--v3-sea-deep`, fixed it outright --
+same position in the paint stack, just its own colour instead of a
+borrowed one.
+
+Two follow-on rounds of feedback landed almost immediately after,
+confirming the core mechanism but flagging real gaps at the edges:
+
+**"Sectionals - It takes a composite shape of all the isslands but not
+the section label textbox / Otherwise, yes, the effect is finally
+working. / The wave contour lines are still visible underneath the
+deepsea colour for section hovers, but not for island hovers"**
+
+The label-textbox fix's first attempt introduced a genuine new bug,
+caught immediately by the user's own instinct for what was going wrong:
+**"The textbox inclusion is behaving weirdly. I think some overlap/
+vector direction are messing things up, there are white patches over
+all textboxes like this. - correct that - i dont need the entire
+section band highlighted, just the textbox + proportional margins."**
+The overlap read was right (though not the direction part -- `evenodd`
+doesn't care about winding direction, only crossing count): concatenating
+the label rectangle into the SAME `d` string as the composite island
+blob, both under one `fill-rule="evenodd"`, only unions two shapes
+where they don't overlap -- wherever the label rect intersected the
+(often much bigger) island halo, the shared rule XORed the overlap back
+out, punching a real hole exactly there. Fixed by making the label wash
+a separate sibling `<path>` (same trick the codebase's own hit/glow
+band-rect pairing already uses), sized to the label's actual rendered
+bounding box plus a proportional margin instead of the full,
+much-larger label band reserved for packing. The wave-contour bleed
+turned out to be a second, unrelated cause: the section wash was
+deliberately left at 0.85 opacity (vs. the island wash's 1.0) so a big
+flat fill wouldn't read as a hard block -- exactly opaque enough to let
+Medieval's clipped-but-blur-edged wave-rings show faintly through.
+Since this layer now stands in for the real theme's own literal flat
+backdrop, reading as one flat block is correct here -- bumped to 1.
+
+Immediately after confirming the fix, a design simplification, framed
+as a question first: **"Just checking - the stack of shadows is below
+the coastline but above the sea, right? Because I am seeing some kind
+of shadow effect - a lighter effect in the direction opposite the
+shadow, across the islands."** -- confirmed in code (wash below sea
+bands below shadow below land bands below coastline, as intended) and
+read as the expected asymmetry of a one-directional shadow, not a
+found bug. Then, unprompted mid-turn, a real to-do addition: **"Add
+todo - dual scheme the boats - side view, triangle sail generative, and
+muted colours in medieval, and top view as current ellipse, lighter
+outline, more intense version of same hue in topology"** -- folded into
+an existing blocked to-do item rather than duplicated, since it was
+exactly the missing spec that item had been waiting on.
+
+A separate, direct feature request followed: **"Also do give me
+controls for the coastal and sea bands width, individually, in the
+control panel"** -- ten new sliders (`coastOutwardBandDistances` x3,
+`coastInwardBandDistances` x3, `seaRadialShadowDistances` x4), the exact
+three arrays a moment earlier confirmed had never had width controls at
+all. That immediately provoked a design correction, not a bug report:
+**"Land baseline should be costline by default, to subtract from,
+shouldnt be extending out to sea. This will make it simpler, remove 3
+extra sliders."** `coastOutwardBandDistances` (the sea-ward half of the
+pair) set to `[]` -- kept as a real, re-enablable array rather than
+deleted, since `placeBand()` already treats an empty list as a clean
+no-op -- and the three now-pointless "outward" sliders dropped, leaving
+seven.
+
+### v3.7.43-v3.7.44: panel reorganization and a dev-only resolution bump
+
+A full, precisely specified reorganization of the Visuals control
+panel followed, given as a literal nested list rather than prose --
+implemented as a single re-parenting pass at the end of the section's
+construction (everything's own build logic stayed exactly where it
+already lived; only which container each piece got appended to, and in
+what order, changed), plus five new subsection-local Reset buttons
+(Hover theme, Bands width, Wave ring, Topological offset, Particle
+counts) factored out of what had been one monolithic `resetVisuals()`.
+
+Separately, mid-review of the reorganized panel: **"Island noise
+heightmap needs to be finer than what it is currently. It doesnt cost
+the user anything, only at the tool level to me, so atleast double the
+resolution from current."** -- `NOISE_DEBUG_CELL_PX` (the Diagnostics >
+Island noise debug overlay's own tint-swatch size) 24px -> 12px, a
+dev-only rendering-cost tradeoff with no bearing on what an actual site
+visitor ever sees.
+
+Also raised in the same stretch, still open: a direct question about
+what "Copy config" actually captures now that the tool has grown
+several independent pieces of live-tunable state (island shape/bands,
+per-theme colours, hover-preview parameters) it was never extended to
+cover, and whether the paste-back-into-source workflow still makes
+sense at this scale -- see `three-world-launch-phases-ToDo.md` for
+where that stands.
+
 ## This handoff
 
 This file and the two-section to-do list in `Landing-page-notes.2.0.md`

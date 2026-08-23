@@ -27,6 +27,11 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.44 -- Island noise debug overlay resolution doubled](#v3744----island-noise-debug-overlay-resolution-doubled)
+  - [v3.7.43 -- control panel reorganized into a fixed sequence, five new subsection-local Reset buttons](#v3743----control-panel-reorganized-into-a-fixed-sequence-five-new-subsection-local-reset-buttons)
+  - [v3.7.42 -- coastal band model simplified: "land baseline" only, sea-ward outward fade dropped](#v3742----coastal-band-model-simplified-land-baseline-only-sea-ward-outward-fade-dropped)
+  - [v3.7.41 bugfix -- section label textbox wasn't covered by the hover wash; the fix that added it broke rendering, then a second fix corrected both](#v3741-bugfix----section-label-textbox-wasnt-covered-by-the-hover-wash-the-fix-that-added-it-broke-rendering-then-a-second-fix-corrected-both)
+  - [v3.7.40 -- the hover wash's own colour was identical to the sea-depth bands painted on top of it; separated and re-enabled](#v3740----the-hover-washs-own-colour-was-identical-to-the-sea-depth-bands-painted-on-top-of-it-separated-and-re-enabled)
   - [v3.7.39 bugfix -- inward-band clip conflict was the real cause behind three of four reported problems](#v3739-bugfix----inward-band-clip-conflict-was-the-real-cause-behind-three-of-four-reported-problems)
   - [v3.7.38 -- Wave-ring blur bleed fixed; Topology's own sea-depth bands added to the preview](#v3738----wave-ring-blur-bleed-fixed-topologys-own-sea-depth-bands-added-to-the-preview)
   - [v3.7.37 -- Mechanism 3 complete for now: Topology's directional shadow swaps in on hover; default theme reverted to Medieval](#v3737----mechanism-3-complete-for-now-topologys-directional-shadow-swaps-in-on-hover-default-theme-reverted-to-medieval)
@@ -99,7 +104,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.39** (domain warping for real concave coastlines,
+Currently on **v3.7.44** (domain warping for real concave coastlines,
 interactively tuned via an on-page control panel, split across three
 pages -- `index.html` a zero-JS static build of the evolving real
 prototype, `islands-tool.html` the permanent live tuning tool,
@@ -157,16 +162,36 @@ v3.7.11 -> v3.7.12 -> v3.7.13 -> v3.7.14 -> v3.7.15 -> v3.7.16 -> v3.7.17
 -> v3.7.18 -> v3.7.19 -> v3.7.20 -> v3.7.21 -> v3.7.22 -> v3.7.23 ->
 v3.7.24 -> v3.7.25 -> v3.7.26 -> v3.7.27 -> v3.7.28 -> v3.7.29 -> v3.7.30
 -> v3.7.31 -> v3.7.32 -> v3.7.33 -> v3.7.34 -> v3.7.35 -> v3.7.36 -> v3.7.37
--> v3.7.38 -> v3.7.39
+-> v3.7.38 -> v3.7.39 -> v3.7.40 -> v3.7.41 -> v3.7.42 -> v3.7.43 ->
+v3.7.44
 progression and why each pass changed what it did. Most recently
-(v3.7.39): the REAL cause of v3.7.38's "still visible" report -- one
-`.v3-coast-inward-band` (each section's own colour-hued inland band,
-the actual biggest source of visible land colour in Medieval Map) was
-silently losing its ESSENTIAL per-section confinement clip every time
-the hover mechanism's CSS rule overwrote it, un-confining every
-section's band across the whole map. Explains three of the four things
-reported at once -- wave/band bleed on both islands and sections, AND
-the separately-reported "Medieval island colour is gone, inland is
+(v3.7.44, a small one): the Diagnostics > Island noise debug overlay's
+own resolution doubled, dev-tool-only with no cost to an actual site
+visitor. Before that (v3.7.43): the Visuals control panel reorganized
+into a fixed,
+predictable sequence with five new subsection-local Reset buttons
+(Hover theme, Bands width, Wave ring, Topological offset, Particle
+counts), on top of three straight rounds of theme x hover fixes
+(v3.7.40-v3.7.42) that finally landed the mechanism after v3.7.39
+still wasn't reading correctly live: the hover wash was hiding its own
+sea-depth bands under an identically-coloured layer (v3.7.40, fixed by
+giving the wash its own distinct "deepest sea" tone and re-enabling
+it), the section-level wash never covered the section label's own
+textbox at all -- and the first attempt to fix that punched a real hole
+in the wash via an evenodd self-intersection bug (v3.7.41, fixed with a
+separate sibling shape sized to the label's own rendered bbox, not the
+full label band) -- and finally a live request to simplify the coastal
+band model itself, dropping the sea-ward "outward" band as a separate
+tunable concept entirely (v3.7.42). For the earlier v3.7.39 fix (still
+valid, just not the end of the story): the REAL cause of v3.7.38's
+"still visible" report -- one `.v3-coast-inward-band` (each section's
+own colour-hued inland band, the actual biggest source of visible land
+colour in Medieval Map) was silently losing its ESSENTIAL per-section
+confinement clip every time the hover mechanism's CSS rule overwrote
+it, un-confining every section's band across the whole map. Explains
+three of the four things reported at once -- wave/band bleed on both
+islands and sections, AND the separately-reported "Medieval island
+colour is gone, inland is
 white" (the confined, colour-hued bands ARE most of that colour). Fixed
 by moving the hover clip onto a wrapping group instead of the individual
 band elements, so both clips (confinement + hover-hole) now compose
@@ -1492,6 +1517,181 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.44 -- Island noise debug overlay resolution doubled
+
+Direct request: "Island noise heightmap needs to be finer than what it
+is currently. It doesnt cost the user anything, only at the tool level
+to me, so atleast double the resolution from current." `NOISE_DEBUG_CELL_PX`
+(the Diagnostics > Island noise debug overlay's own tint-swatch size,
+`cabinet-v3-layout.js`) 24px -> 12px -- doubles resolution on both axes
+(4x the SVG rect count). Dev-only overlay, never shipped in
+index.html/the production build, so the extra render cost lands only on
+this tool, never on an actual site visitor -- confirmed live via
+Playwright: rect count went from ~2100 to ~8400 with no console errors.
+
+### v3.7.43 -- control panel reorganized into a fixed sequence, five new subsection-local Reset buttons
+
+Direct request: a full re-sequencing of the Visuals section (Theme
+dropdown, Hover theme, Coastal effects, Text label style, Bands width,
+Wave ring, Topological offset, Particle counts, Geo grid, Theme
+colours, Diagnostics, Reset visuals) plus dedicated Reset buttons on
+five subsections that never had their own (Hover theme, Bands width,
+Wave ring parameters, Topological offset parameters, Particle counts).
+
+Implemented as one final re-parenting pass at the end of the Visuals
+section's construction, not by moving each block of construction code
+around the file. Every row/subsection stayed built and wired exactly
+where its own logic already lived (`applyThemePreset()`, for one,
+reads `bandCheck`/`waveCheck`/`coastalBandCheck` -- declared earlier in
+the file specifically so it can) -- `appendChild()` on an element
+already in the document moves it rather than cloning, so a single
+ordered list of `visualsSection.appendChild(node)` calls both created
+the one genuinely new grouping ("Coastal effects," wrapping five rows
+-- Wave contours, Colour bands, Coastal band, Sea shadow, Shadow style
+-- that were previously loose top-level children of Visuals) and
+re-sequenced everything else, with zero risk of breaking declaration
+order.
+
+The five new local Resets required extracting logic that used to live
+only inline inside the monolithic `resetVisuals()` into named functions
+(`resetHoverTheme`, `resetBandWidths`, `resetWaveRing`,
+`resetTopoOffsets`, `resetParticleCounts`) -- the master Reset visuals
+button now just calls all five plus whatever never got its own button
+(Coastal effects' checkboxes, the Theme dropdown, Geo grid,
+Diagnostics), rather than duplicating the restoration logic in two
+places. One of the five, Hover theme, had never had ANY reset path at
+all before this -- `v3Config.themePreview` (previewTheme/islandHaloPx/
+sectionHaloPx/blurPx) was simply never touched by the old
+`resetVisuals()`, so its defaults snapshot (`visualsDefaults`) had to
+be captured here for the first time too.
+
+Verified via Playwright: the panel's top-level Visuals children now
+read, in order, Theme row / Hover theme / Coastal effects / Label style
+row / Bands width / Wave ring parameters / Topological offset
+parameters / Particle counts / Geo grid / Theme colours / Diagnostics /
+Reset visuals button -- exactly the requested sequence -- and all five
+new local Reset buttons plus the master Reset visuals button run with
+zero console errors.
+
+### v3.7.42 -- coastal band model simplified: "land baseline" only, sea-ward outward fade dropped
+
+Direct feedback after the v3.7.41 slider work above: "Land baseline
+should be coastline by default, to subtract from, shouldnt be
+extending out to sea. This will make it simpler, remove 3 extra
+sliders."
+
+`coastOutwardBandDistances` (the sea-ward half of the v3.7.9
+coast-hugging fade pair) set to `[]` in `cabinet-v3-data.js` --
+kept as a real, re-enablable array rather than deleted outright
+(`placeBand()` already treats an empty distance list as a clean no-op,
+same as every other optional layer here), just no longer shipping a
+default effect or a slider. The "coastal band" is now purely a
+land-side concept: `coastInwardBandDistances` measures inward from the
+coastline baseline, full stop. The sea side's own depth/shadow was
+never dependent on this array anyway -- `seaBandThresholds` and
+`seaRadialShadowDistances` cover it independently -- so nothing else
+needed to change to keep the sea reading correctly.
+
+Panel-side: the three "Coastal band, outward" sliders (added one
+version earlier, v3.7.42's own precursor) removed from "Bands width
+(px)"; the remaining "Coastal band, inward" sliders renamed to just
+"Coastal band" (no more counterpart to disambiguate against), leaving
+7 sliders instead of 10. `visualsDefaults`/reset code updated to match.
+Verified via Playwright: `.v3-coast-outward-band` no longer appears in
+the rendered DOM at all, and "Reset visuals" still runs clean.
+
+### v3.7.41 bugfix -- section label textbox wasn't covered by the hover wash; the fix that added it broke rendering, then a second fix corrected both
+
+Direct report, screenshots included: "Wave contour is gone, ok. The
+textbox inclusion is behaving weirdly. I think some overlap/vector
+direction are messing things up, there are white patches over all
+textboxes like this. - correct that - i dont need the entire section
+band highlighted, just the textbox + proportional margins."
+
+Two rounds. First: the section-level theme-preview wash was traced
+from the section's circles alone (`buildIsolatedHeightmap`), same as
+the per-island version -- but a section's own hit/glow shape has
+always been the label BAND (a generous full-width strip reserved by
+`splitLabelBand()` so packing never touches it) unioned with the
+islands trace, a v3.6.26 request. The preview wash never got that same
+union, so hovering a section left its label rectangle uncovered: no
+deep-sea fill, no hover-clip hole, so whatever Medieval content sat
+under the label stayed fully visible and unclipped. First attempt
+concatenated a rect subpath for the full label BAND directly onto the
+wash's own `d` string, sharing one `fill-rule="evenodd"` -- which only
+unions two shapes where they DON'T overlap; wherever the label rect
+intersected the (often much bigger) island halo blob, the shared
+evenodd rule XORed the overlap back out, punching a real hole -- a
+self-intersection bug, not a winding-direction one (evenodd doesn't
+look at direction at all, despite the user's own reasonable guess),
+but the same class of "don't merge shapes into one path unless certain
+they never touch" mistake the codebase's own sibling-element
+convention (the hit/glow band rect sitting next to the islands path,
+not merged with it) already exists to avoid.
+
+Fixed properly: the label's own wash is now a SEPARATE sibling
+`<path>` (same shared `.v3-section-theme-preview` class, so it still
+inherits the fill/opacity/blur/hover rules automatically), so no XOR
+interaction with the composite blob is possible. Also switched its
+size from the full label band to the label's own rendered bounding box
+(`labelGroup.getBBox()`, measured by attaching to the already-live
+`stage` just long enough to read it, then detaching -- final DOM
+placement, after every island so it still paints on top, is unchanged)
+plus a margin proportional to the label's own font size, not the
+generous hit-testing band -- direct request: "i dont need the entire
+section band highlighted, just the textbox + proportional margins." No
+hover-clip-hole contribution from the label rect at all: the label
+band is a reserved, packing-free strip by construction, so real
+coastline effects never reach it in the first place, only the visible
+tint needed covering.
+
+Separately, same round: "The wave contour lines are still visible
+underneath the deep sea colour for section hovers, but not for island
+hovers" -- the section wash was deliberately left at 0.85 opacity (vs.
+the island wash's 1.0) so a big flat fill wouldn't read as "a hard
+block"; that was exactly opaque enough to let Medieval's
+clipped-but-blur-edged wave-rings show faintly through. Since this
+layer now correctly stands in for the real theme's own literal flat
+deep-sea backdrop (see v3.7.40 below), reading as one flat block is
+correct here, not a flaw -- bumped to 1, matching islands.
+
+Verified via Playwright (subpath counts on the `d`/`data-clip-d`
+strings, computed opacity), not just screenshots.
+
+### v3.7.40 -- the hover wash's own colour was identical to the sea-depth bands painted on top of it; separated and re-enabled
+
+Direct feedback after the wash was temporarily disabled entirely
+(v3.7.39's own fix hadn't resolved the underlying report): "ok, so the
+sea topology is there, it was buried under the halo. The last layer of
+the sea, the part that should be visible with the halo outline and the
+colour for the -1.4 sea anchor level, is missing. Colour the hover
+outline with that colour but layer it bottommost while stacking the
+topologies. In the original theme it is just the base colour for the
+whole canvas, here you will have to give it an outer bound."
+
+The wash (`.v3-island-theme-preview`/`.v3-section-theme-preview`) and
+`seaBandThresholds`' own translucent bands were BOTH reading
+`--v3-sea-shallow` -- the exact same hex -- so the bottommost "-1.4
+anchor" tier (in the real map, never its own element at all, just
+`.v3-stage`'s own solid background colour showing through wherever the
+sea-band contours don't reach) was fusing invisibly into the tier
+directly above it instead of reading as a distinct deeper layer. New
+token, `--v3-preview-sea-deep`, mapped to the previewed theme's real
+`--v3-sea-deep` (via `applyThemePreviewTokens()`); the wash stays
+exactly where it already was in the paint order (bottommost, appended
+first) and re-enabled at full opacity. Its blurred edge is what stands
+in for "an outer bound" in place of the real theme's infinite canvas
+background, per the user's own framing.
+
+Preceded by a debugging detour, also from direct feedback ("This is
+not working. Solo Island - no wave contours or sea bands. Section -
+faintly visible whether it is wave contour or sea band, regardless. No
+sea topology visible anywhere. Why don't you turn off the blue halo
+and let the rest of the visual come through?"): the wash's opacity-on-
+hover reveal was set to 0 as a diagnostic, per that direct suggestion,
+which is what surfaced the sea-band/wash colour collision above
+clearly enough to find it.
 
 ### v3.7.39 bugfix -- inward-band clip conflict was the real cause behind three of four reported problems
 
