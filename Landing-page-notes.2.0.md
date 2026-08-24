@@ -27,7 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
-  - [v3.7.64 -- review/ and dev-archive/ folders, screenshot workflow codified](#v3764----review-and-dev-archive-folders-screenshot-workflow-codified)
+  - [v3.7.64 -- review/ folder added; the "permanent archive" half of this pass had to be corrected same day](#v3764----review-folder-added-the-permanent-archive-half-of-this-pass-had-to-be-corrected-same-day)
   - [v3.7.63 -- MkDocs colour scheme attempt (#68): built, reviewed, rejected as bland, reverted](#v3763----mkdocs-colour-scheme-attempt-68-built-reviewed-rejected-as-bland-reverted)
   - [v3.7.62 -- ToDo file: done items collapsed, then a real rendering bug found and fixed same day](#v3762----todo-file-done-items-collapsed-then-a-real-rendering-bug-found-and-fixed-same-day)
   - [v3.7.61 -- new Fab section; corrected a wrong assumption about how section placement actually works (#27/#123)](#v3761----new-fab-section-corrected-a-wrong-assumption-about-how-section-placement-actually-works-27123)
@@ -1545,20 +1545,31 @@ made in the v3-prototype phase.
 
 ## Changelog
 
-### v3.7.64 -- review/ and dev-archive/ folders, screenshot workflow codified
+### v3.7.64 -- review/ folder added; the "permanent archive" half of this pass had to be corrected same day
 
 Direct feedback after a colour-scheme review round: review screenshots
 were only shown as "after," not before/after, and were left in the
 session's temp scratchpad instead of somewhere easy to reach locally.
-Two new repo-root folders: `review/` (gitignored except its own
-`README.md`, ephemeral -- overwritten freely between rounds) for
-in-progress before/after pairs, and `dev-archive/` (committed,
-permanent) for screenshots worth keeping as visual history once a
-feature ships -- added to proactively while working, not just on
-request, same "don't wait to be asked" instinct as commits/changelog
-entries at natural closing points. The user will also hand-pick some
-`review/` images into `dev-archive/` themselves. Saved as a standing
-workflow memory, not just a one-off ask.
+New repo-root `review/` folder (gitignored except its own `README.md`,
+ephemeral -- overwritten freely between rounds) for in-progress
+before/after pairs.
+
+The other half of this pass got it wrong: also created a new
+`dev-archive/` folder at the repo root for permanent, committed
+feature-history screenshots, without first checking whether an
+equivalent already existed. It did --  `landing-v3/dev-screenshots/`,
+56+ files, an established `vX.Y.Z-description.png` naming convention,
+in use since early in v3's development, flagged directly the same day:
+"there was already dev screenshots inside landing-v3." Removed the
+redundant folder, corrected `review/README.md` and the saved workflow
+memory to point at the real one. Screenshots worth keeping should be
+added there proactively while working on a feature, not just on
+request -- same "don't wait to be asked" instinct as commits/changelog
+entries at natural closing points, now saved as a standing workflow
+memory rather than a one-off ask, corrected version included. Where
+MkDocs-side (non-v3) screenshots without an obvious existing home
+should live is still open -- folded into ToDo #125 (file organization)
+rather than decided ad hoc a second time.
 
 ### v3.7.63 -- MkDocs colour scheme attempt (#68): built, reviewed, rejected as bland, reverted
 
