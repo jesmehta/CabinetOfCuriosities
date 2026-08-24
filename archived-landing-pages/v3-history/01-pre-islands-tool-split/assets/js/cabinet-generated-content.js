@@ -28,8 +28,7 @@ export const sections = [
       "cy": 370,
       "rx": 250,
       "ry": 135
-    },
-    "extraCount": 2
+    }
   },
   {
     "id": "fffx",
@@ -54,23 +53,22 @@ export const sections = [
       "rx": 260,
       "ry": 130
     },
-    "extraCount": 2,
     "notes": "fffx site_url is configured for this subdomain but no CNAME file exists in the fffx repo yet -- verify DNS is live before treating this link as production-ready."
   },
   {
     "id": "teaching",
     "title": "Teaching",
     "subtitle": "Teaching history, approach, and student work.",
-    "href": "teaching/",
+    "href": "https://jesmehta.github.io/SSD_CreativeCodingPage/",
     "order": 30,
     "weight": 2,
-    "status": true,
+    "status": "wip",
     "kind": "region",
     "tags": [
       "teaching",
       "students"
     ],
-    "location": "mkdocs",
+    "location": "external",
     "map": {
       "islandId": "island-teaching",
       "mapForm": "medium-island",
@@ -79,8 +77,7 @@ export const sections = [
       "rx": 245,
       "ry": 120
     },
-    "extraCount": 3,
-    "notes": "Real dedicated Teaching landing page (docs/teaching.md) added 2026-08-24 -- href was a placeholder pointing at the external SSD Creative Coding showcase before this."
+    "notes": "No dedicated Cabinet Teaching page yet; href is a placeholder pointing at the real student showcase until one exists."
   },
   {
     "id": "visual-field-notes",
@@ -105,7 +102,6 @@ export const sections = [
       "rx": 270,
       "ry": 130
     },
-    "extraCount": 2,
     "notes": "Entirely new section, no built pages yet anywhere -- island renders as non-navigating (coming soon) until content exists."
   },
   {
@@ -130,8 +126,7 @@ export const sections = [
       "cy": 1090,
       "rx": 290,
       "ry": 110
-    },
-    "extraCount": 3
+    }
   },
   {
     "id": "interfaces-data-texts",
@@ -155,84 +150,31 @@ export const sections = [
       "cy": 1090,
       "rx": 260,
       "ry": 105
-    },
-    "extraCount": 2
+    }
   },
   {
-    "id": "compass",
-    "title": "Compass Rose",
-    "subtitle": "",
-    "href": "",
-    "order": 80,
-    "weight": 4,
-    "status": true,
-    "kind": "compass",
-    "tags": [],
-    "location": "",
-    "map": {
-      "islandId": "island-compass",
-      "mapForm": "compass",
-      "cx": 1470,
-      "cy": 1170,
-      "rx": 115,
-      "ry": 115
-    },
-    "extraCount": 0,
-    "notes": "SE-reserved compass rose section -- kind: compass triggers a dedicated render path in landing-v3 (no archipelago growth, no filler islands); cx/cy/rx/ry are unused placeholders, real placement comes from the deterministic SE-corner square carve in cabinet-v3-layout.js."
-  },
-  {
-    "id": "wild-wild-web",
-    "title": "Wild wild web",
-    "subtitle": "Generative bots, mandalas, twine and other web ephemera.",
-    "href": "",
+    "id": "about",
+    "title": "About Me",
+    "subtitle": "CV, links, and current work.",
+    "href": "about/",
     "order": 70,
-    "weight": 2,
-    "status": false,
-    "kind": "region",
+    "weight": 1,
+    "status": true,
+    "kind": "world",
     "tags": [
-      "creative-coding",
-      "bots",
-      "generative",
-      "web"
+      "about",
+      "cv"
     ],
     "location": "mkdocs",
     "map": {
-      "islandId": "",
-      "mapForm": "",
-      "cx": 0,
-      "cy": 0,
-      "rx": 0,
-      "ry": 0
+      "islandId": "island-about",
+      "mapForm": "small-island",
+      "cx": 1470,
+      "cy": 170,
+      "rx": 115,
+      "ry": 85
     },
-    "extraCount": 3,
-    "notes": "status: false -- has an mkdocs nav section already (TraceryBots/Dot Mandala/Twine/Creative Coding) but no map placement yet; the 6-region + compass grid is currently full (see machines-makings/interfaces-data-texts/visual-field-notes/teaching cx/cy). Needs a layout decision before flipping to wip/true -- see ToDo #69."
-  },
-  {
-    "id": "fab",
-    "title": "Fab",
-    "subtitle": "Fab Academy, Fabricademy, and reflections from Fab Academy cohorts.",
-    "href": "",
-    "order": 65,
-    "weight": 2,
-    "status": "wip",
-    "kind": "region",
-    "tags": [
-      "fabacademy",
-      "fabricademy",
-      "making",
-      "reflections"
-    ],
-    "location": "external",
-    "map": {
-      "islandId": "",
-      "mapForm": "",
-      "cx": 0,
-      "cy": 0,
-      "rx": 0,
-      "ry": 0
-    },
-    "extraCount": 1,
-    "notes": "New section, 2026-08-24, direct request (#27 intercession -- Fab/Fabricademy are not Level-1 worlds per the standing WORLD-SYSTEMS.md rule, but a Fab SECTION with a couple of program-link islands plus reflection writeups is fine). cx/cy/rx/ry left blank -- confirmed vestigial, squarify() computes placement live from weight."
+    "notes": "Deliberately peripheral (top-right), not central, per design brief."
   }
 ];
 
@@ -423,7 +365,7 @@ export const entries = [
     "section": "teaching",
     "title": "Student Work",
     "subtitle": "Selected student work and showcases from SSD Creative Coding.",
-    "href": "teaching/ssd-creative-coding/",
+    "href": "https://jesmehta.github.io/SSD_CreativeCodingPage/",
     "order": 10,
     "weight": 3,
     "status": true,
@@ -433,7 +375,7 @@ export const entries = [
       "students",
       "showcase"
     ],
-    "location": "assembly",
+    "location": "external",
     "visual": {
       "placement": "land",
       "size": "medium",
@@ -441,8 +383,7 @@ export const entries = [
       "x": 28.7,
       "y": 49.2
     },
-    "icon": "icon-cap",
-    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding/ (jesmehta/SSD_CreativeCodingPage) -- was an external link before 2026-08-24."
+    "icon": "icon-cap"
   },
   {
     "id": "teaching-approach",
@@ -598,10 +539,10 @@ export const entries = [
     "section": "machines-makings",
     "title": "Origami & Paper",
     "subtitle": "Paper structures, folds, surfaces, and material logic.",
-    "href": "makings/origami-paper/",
+    "href": "",
     "order": 20,
     "weight": 2,
-    "status": true,
+    "status": "wip",
     "kind": "making-notes",
     "tags": [
       "origami",
@@ -615,18 +556,17 @@ export const entries = [
       "x": 16.5,
       "y": 87.2
     },
-    "icon": "icon-origami",
-    "notes": "Stub page, 2026-08-24 -- content coming later."
+    "icon": "icon-origami"
   },
   {
     "id": "makings-lasercutting",
     "section": "machines-makings",
     "title": "Lasercutting",
     "subtitle": "Laser cutting notes, examples, and making references.",
-    "href": "makings/lasercutting/",
+    "href": "",
     "order": 30,
     "weight": 2,
-    "status": true,
+    "status": "wip",
     "kind": "making-notes",
     "tags": [
       "lasercutting",
@@ -640,8 +580,7 @@ export const entries = [
       "x": 36,
       "y": 87.2
     },
-    "icon": "icon-laser",
-    "notes": "Stub page, 2026-08-24 -- content coming later."
+    "icon": "icon-laser"
   },
   {
     "id": "looms",
@@ -673,10 +612,10 @@ export const entries = [
     "section": "machines-makings",
     "title": "Drawing Machines",
     "subtitle": "Drawing machines, plotters, and mechanical mark-making systems.",
-    "href": "makings/drawing-machines/",
+    "href": "",
     "order": 50,
     "weight": 2,
-    "status": true,
+    "status": "wip",
     "kind": "machine-collection",
     "tags": [
       "plotters",
@@ -690,8 +629,7 @@ export const entries = [
       "anchor": "south",
       "order": 2
     },
-    "icon": "icon-gear",
-    "notes": "Stub page, 2026-08-24 -- content coming later."
+    "icon": "icon-gear"
   },
   {
     "id": "branching-narrative",
@@ -723,17 +661,17 @@ export const entries = [
     "section": "interfaces-data-texts",
     "title": "Data Visualisations",
     "subtitle": "Charts, maps, datasets, and visual systems.",
-    "href": "",
+    "href": "https://bookshelf.cabinetofcuriosities.in/agatha/",
     "order": 20,
     "weight": 3,
-    "status": "wip",
+    "status": true,
     "kind": "dataviz",
     "tags": [
       "dataviz",
       "maps",
       "data"
     ],
-    "location": "mkdocs",
+    "location": "subdomain",
     "visual": {
       "placement": "land",
       "size": "medium",
@@ -742,7 +680,7 @@ export const entries = [
       "y": 79.4
     },
     "icon": "icon-chart",
-    "notes": "Direct correction, 2026-08-24: was cross-listed to Bookshelf's Christie/agatha page, but that's not actually Data Visualisations content -- reverted to a real stub (no page yet) like the section's other wip entries."
+    "notes": "Cross-listed from Bookshelf's Christie geography-of-murder dataviz page."
   },
   {
     "id": "writings",
@@ -818,296 +756,51 @@ export const entries = [
     "icon": "icon-bot"
   },
   {
-    "id": "compass-n",
-    "section": "compass",
-    "title": "About Me",
-    "subtitle": "",
+    "id": "cv",
+    "section": "about",
+    "title": "CV",
+    "subtitle": "Professional profile and experience.",
+    "href": "https://www.jesalmehta.com",
+    "order": 10,
+    "weight": 1,
+    "status": true,
+    "kind": "profile-page",
+    "tags": [
+      "cv",
+      "profile"
+    ],
+    "location": "external",
+    "visual": {
+      "placement": "land",
+      "size": "small",
+      "cardType": "thumbnail-plaque",
+      "x": 87.8,
+      "y": 9.2
+    },
+    "icon": "icon-scroll"
+  },
+  {
+    "id": "currently",
+    "section": "about",
+    "title": "Currently",
+    "subtitle": "Current work, study, and ongoing directions.",
     "href": "about/",
-    "order": 10,
-    "weight": 1,
-    "status": true,
-    "kind": "compass-direction",
-    "tags": [],
-    "location": "",
-    "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
-      "anchor": "N"
-    },
-    "notes": "Links to docs/about.md. CV and Contact live inside that page, not as their own compass points."
-  },
-  {
-    "id": "compass-e",
-    "section": "compass",
-    "title": "Now",
-    "subtitle": "",
-    "href": "now/",
     "order": 20,
     "weight": 1,
     "status": true,
-    "kind": "compass-direction",
-    "tags": [],
-    "location": "",
-    "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
-      "anchor": "E"
-    },
-    "notes": "Links to docs/now.md. Contact also lives on that page, not as its own compass point. Replaces the earlier \"Contact me\" placeholder at this compass point."
-  },
-  {
-    "id": "compass-s",
-    "section": "compass",
-    "title": "Colophon",
-    "subtitle": "",
-    "href": "colophon/",
-    "order": 30,
-    "weight": 1,
-    "status": true,
-    "kind": "compass-direction",
-    "tags": [],
-    "location": "",
-    "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
-      "anchor": "S"
-    },
-    "notes": "Dummy page for now (docs/colophon.md) -- links straight to the v1/v2 archive; user will add the actual writing later."
-  },
-  {
-    "id": "compass-w",
-    "section": "compass",
-    "title": "Site map",
-    "subtitle": "",
-    "href": "",
-    "order": 40,
-    "weight": 1,
-    "status": "wip",
-    "kind": "compass-direction",
-    "tags": [],
-    "location": "",
-    "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
-      "anchor": "W"
-    },
-    "notes": "To be done -- no site-map page exists yet. CV moved off this compass point; it now lives inside the About Me page instead."
-  },
-  {
-    "id": "working-with-ai",
-    "section": "teaching",
-    "title": "Working with AI",
-    "subtitle": "15 principles for working with AI tools, assembled straight into Cabinet.",
-    "href": "teaching/working-with-ai/",
-    "order": 40,
-    "weight": 3,
-    "status": true,
-    "kind": "teaching-page",
+    "kind": "profile-page",
     "tags": [
-      "teaching",
-      "ai",
-      "guide"
+      "currently",
+      "profile"
     ],
-    "location": "assembly",
+    "location": "mkdocs",
     "visual": {
       "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
+      "size": "small",
+      "cardType": "thumbnail-plaque",
+      "x": 95.9,
+      "y": 16.9
     },
-    "icon": "icon-book",
-    "notes": "Multi-repo assembly (#43), mounted at /teaching/working-with-ai/ -- not built by mkdocs. location: assembly is a new value (field is descriptive only, not read by the layout code) since existing subdomain/mkdocs/external didn't fit."
-  },
-  {
-    "id": "swatch-fields",
-    "section": "machines-makings",
-    "title": "Swatch Fields",
-    "subtitle": "An atlas of material swatches and colour fields.",
-    "href": "https://jesmehta.github.io/swatchFields/",
-    "order": 60,
-    "weight": 3,
-    "status": true,
-    "kind": "material-collection",
-    "tags": [
-      "materials",
-      "swatches",
-      "colour"
-    ],
-    "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-swatch"
-  },
-  {
-    "id": "prompt-generator",
-    "section": "teaching",
-    "title": "Prompt Generator",
-    "subtitle": "A generator for transformation and creative-writing prompts.",
-    "href": "teaching/prompt-generator/",
-    "order": 50,
-    "weight": 2,
-    "status": true,
-    "kind": "web-experiment",
-    "tags": [
-      "teaching",
-      "generative-text",
-      "prompts",
-      "tool"
-    ],
-    "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-code",
-    "notes": "Multi-repo assembly, mounted at /teaching/prompt-generator/ (jesmehta/PromptGenerator)."
-  },
-  {
-    "id": "oblique-strategies",
-    "section": "teaching",
-    "title": "Oblique Strategies",
-    "subtitle": "A digital deck of Oblique Strategies cards for creative blocks.",
-    "href": "teaching/oblique-strategies/",
-    "order": 60,
-    "weight": 2,
-    "status": true,
-    "kind": "web-experiment",
-    "tags": [
-      "teaching",
-      "generative",
-      "cards",
-      "tool"
-    ],
-    "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-cards",
-    "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
-  },
-  {
-    "id": "swatch-fields-interfaces",
-    "section": "interfaces-data-texts",
-    "title": "Swatch Fields",
-    "subtitle": "An atlas of material swatches and colour fields -- dye and colour work, cross-listed from Machines & Makings.",
-    "href": "https://jesmehta.github.io/swatchFields/",
-    "order": 60,
-    "weight": 2,
-    "status": true,
-    "kind": "web-experiment",
-    "tags": [
-      "materials",
-      "swatches",
-      "colour",
-      "dye"
-    ],
-    "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-swatch",
-    "notes": "Intersectional entry (2026-08-24) -- same repo as machines-makings's swatch-fields, cross-listed here since it's equally a colour/data-texture piece. Two separate TSV rows, two islands, deliberate."
-  },
-  {
-    "id": "fab-academy",
-    "section": "fab",
-    "title": "Fab Academy",
-    "subtitle": "The official Fab Academy program.",
-    "href": "https://fabacademy.org/",
-    "order": 10,
-    "weight": 3,
-    "status": true,
-    "kind": "program-link",
-    "tags": [
-      "fabacademy"
-    ],
-    "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-cap",
-    "notes": "Root domain inferred from the confirmed personal-page URL (fabacademy.org/2023/...) -- high confidence, but this is the general program site, not fab-23's specific page."
-  },
-  {
-    "id": "fabricademy",
-    "section": "fab",
-    "title": "Fabricademy",
-    "subtitle": "The official Fabricademy program.",
-    "href": "",
-    "order": 20,
-    "weight": 3,
-    "status": "wip",
-    "kind": "program-link",
-    "tags": [
-      "fabricademy"
-    ],
-    "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-cap",
-    "notes": "href still blank -- confirmed domain family is textile-academy.org (from fab-26's class.textile-academy.org/2026/... page), but unsure if the general public site is at textile-academy.org root or a separate fabricademy.net -- confirm before setting."
-  },
-  {
-    "id": "fab-23",
-    "section": "fab",
-    "title": "Fab 23",
-    "subtitle": "Jesal's FabAcademy Chronicles -- write-up and reflections from Fab Academy 2023.",
-    "href": "https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/",
-    "order": 30,
-    "weight": 3,
-    "status": true,
-    "kind": "reflection",
-    "tags": [
-      "fabacademy",
-      "writeup",
-      "2023"
-    ],
-    "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-quill"
-  },
-  {
-    "id": "fab-26",
-    "section": "fab",
-    "title": "Fab 26",
-    "subtitle": "Fabricademy 2026 coursework and journal.",
-    "href": "https://class.textile-academy.org/2026/jesal-mehta/",
-    "order": 40,
-    "weight": 3,
-    "status": true,
-    "kind": "reflection",
-    "tags": [
-      "fabricademy",
-      "writeup",
-      "2026"
-    ],
-    "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-quill",
-    "notes": "Fabricademy, not Fab Academy -- sister program, different year cohort (2026) than fab-23 (2023)."
+    "icon": "icon-hourglass"
   }
 ];
