@@ -27,6 +27,11 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.64 -- review/ and dev-archive/ folders, screenshot workflow codified](#v3764----review-and-dev-archive-folders-screenshot-workflow-codified)
+  - [v3.7.63 -- MkDocs colour scheme attempt (#68): built, reviewed, rejected as bland, reverted](#v3763----mkdocs-colour-scheme-attempt-68-built-reviewed-rejected-as-bland-reverted)
+  - [v3.7.62 -- ToDo file: done items collapsed, then a real rendering bug found and fixed same day](#v3762----todo-file-done-items-collapsed-then-a-real-rendering-bug-found-and-fixed-same-day)
+  - [v3.7.61 -- new Fab section; corrected a wrong assumption about how section placement actually works (#27/#123)](#v3761----new-fab-section-corrected-a-wrong-assumption-about-how-section-placement-actually-works-27123)
+  - [v3.7.60 -- label glow's contrast collision fixed; Data Visualisations reverted to a real stub](#v3760----label-glows-contrast-collision-fixed-data-visualisations-reverted-to-a-real-stub)
   - [v3.7.59 -- Bookshelf/FFFX split from Cabinet's own nav, real Teaching/Makings landing pages, Swatch Fields cross-listed on purpose (#72)](#v3759----bookshelffffx-split-from-cabinets-own-nav-real-teachingmakings-landing-pages-swatch-fields-cross-listed-on-purpose-72)
   - [v3.7.58 -- Working with AI, Prompt Generator, Oblique Strategies, SSD Creative Coding become real map entries (#71)](#v3758----working-with-ai-prompt-generator-oblique-strategies-ssd-creative-coding-become-real-map-entries-71)
   - [v3.7.57 -- mkdocs nav restructured around Compass/Teaching, first `cabinet-sections.tsv` gap found (#41/#44/#46/#66-69)](#v3757----mkdocs-nav-restructured-around-compassteaching-first-cabinet-sectionstsv-gap-found-4144466-69)
@@ -119,7 +124,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.59**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.64**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1539,6 +1544,146 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.64 -- review/ and dev-archive/ folders, screenshot workflow codified
+
+Direct feedback after a colour-scheme review round: review screenshots
+were only shown as "after," not before/after, and were left in the
+session's temp scratchpad instead of somewhere easy to reach locally.
+Two new repo-root folders: `review/` (gitignored except its own
+`README.md`, ephemeral -- overwritten freely between rounds) for
+in-progress before/after pairs, and `dev-archive/` (committed,
+permanent) for screenshots worth keeping as visual history once a
+feature ships -- added to proactively while working, not just on
+request, same "don't wait to be asked" instinct as commits/changelog
+entries at natural closing points. The user will also hand-pick some
+`review/` images into `dev-archive/` themselves. Saved as a standing
+workflow memory, not just a one-off ask.
+
+### v3.7.63 -- MkDocs colour scheme attempt (#68): built, reviewed, rejected as bland, reverted
+
+Direct request: make MkDocs feel like the same site as the v3 landing
+page -- "a mix of medieval and topo, bright accents from topo over the
+medieval cream." Built as a local-only override in
+`docs/stylesheets/cabinet-material.css` (deliberately not touching
+`cabinet-tokens.css`, which the v3 landing page also depends on --
+`cabinet-material.css` is MkDocs-only, loaded via `mkdocs.yml`'s
+`extra_css`, so this couldn't leak into the map regardless of outcome).
+Cream/ink base from medieval-map's own tokens, three Topology accents
+(cyan links-on-hover, coral primary/links, gold code/admonitions) pulled
+directly from `cabinet-v3-style.css`'s `satellite` theme block.
+
+Found and fixed a real, independent bug while testing: the *existing*
+(pre-this-pass) colour overrides had never actually been taking effect
+on the live site. MkDocs Material scopes its own default token values
+under `[data-md-color-scheme="default"]`, which beats a bare `:root`
+selector on specificity -- silently, no error, the custom property is
+just never used. Only `.md-header`/`.md-tabs` ever visibly themed,
+because those set `background-color` directly via a class selector, not
+through a custom property Material could out-specificity. Fixed by
+matching the scheme selector -- this fix is real regardless of the
+palette's fate below.
+
+Screenshotted (`review/`, see the new workflow above) and shown for
+approval before committing, per direct instruction. **Rejected**: "very
+bland... a lot of the brighter pops from topology, which is missing."
+Reverted `cabinet-material.css` to its original committed state
+(`git checkout --`) -- the specificity bug fix went with it, since it
+was only ever meaningful in service of the new palette; MkDocs is
+back to its pre-#68 look pending a bolder second attempt.
+
+### v3.7.62 -- ToDo file: done items collapsed, then a real rendering bug found and fixed same day
+
+Direct request: 40+ done items were making the ToDo file hard to scan --
+collapse them, individually, hiding the whole item behind just its `#N`.
+Implemented as `<details><summary>#N</summary>...</details>` around
+every top-level `- [x] **#N**` item (nested sub-items like `#35`/`#36`
+under `#34` deliberately left alone, not individually wrapped -- lower
+risk, and they're already visually subordinate to their parent).
+
+Shipped, then a screenshot from the user showed real breakage: item
+`#15`'s own text rendered as a giant stray heading instead of normal
+paragraph text. Root cause: CommonMark requires a blank line to both
+open AND close an HTML block cleanly; the first pass didn't guarantee a
+blank line after every `</details>` (only before content going in), so
+adjacent blocks merged into one continuous raw-HTML parse region --
+`#15` sat between two collapsed blocks, its own backtick-protected
+`` `<h1>` `` text got swept into that region and real-HTML-parsed
+instead of read as an inline code span. Fixed by reverting to a
+pre-collapse backup and rerunning with blank lines guaranteed on both
+sides of every `<details>`/`</details>` pair, unconditionally. Verified
+this time, not just re-shipped: confirmed all 43 blocks are blank-line-
+isolated on both sides programmatically, plus a full diff of every `#NN`
+reference before vs. after the whole exercise (identical set, nothing
+lost or duplicated) -- the kind of check that would have caught the
+first pass's bug before it shipped.
+
+### v3.7.61 -- new Fab section; corrected a wrong assumption about how section placement actually works (#27/#123)
+
+Direct intercession on the standing `WORLD-SYSTEMS.md` rule (#27):
+FabAcademy/Fabricademy stay out of the world/Level-1 tier, but a **Fab**
+*section* -- a couple of program-link islands plus reflection write-ups
+-- doesn't violate that rule, since it was specifically about the
+world tier, not sections in general.
+
+`cabinet-sections.tsv` gained a `fab` region and four entries: Fab
+Academy (`fabacademy.org`, inferred root domain, high confidence), Fab
+23 ("Jesal's FabAcademy Chronicles," the confirmed personal 2023 page,
+given directly), Fab 26 (Fabricademy 2026 -- a different sister program
+than Fab Academy, confirmed via the `class.textile-academy.org` domain
+rather than guessed), and Fabricademy itself (still no confirmed
+general/public URL -- `textile-academy.org` root vs. a separate
+`fabricademy.net` unresolved, left blank rather than guessed wrong into
+production). Matching `mkdocs.yml` `Fab` nav section added, two stub
+pages created then deleted again within the same pass once real URLs
+arrived for what were originally going to be "coming soon" placeholders.
+
+Corrected a wrong assumption made while scoping this, which also
+resolves #69's earlier "the archipelago grid is full" blocker:
+`cabinet-sections.tsv`'s `cx`/`cy`/`rx`/`ry` columns are NOT
+authoritative fixed positions -- they read that way, but
+`cabinet-v3-layout.js` actually computes section placement live via
+`squarify()` (a real treemap algorithm), keyed only on `weight`. Proven
+by actually adding the Fab section and rebuilding: the treemap reflowed
+on its own, all four Fab islands rendered correctly on the first build,
+no manual layout work needed. #41 (landing-page/mkdocs hierarchy
+alignment) marked done on the same pass, on similarly honest accounting
+-- every `cabinet-sections.tsv` row now has a matching `mkdocs.yml`
+section except two explicitly-accepted exceptions (Visual Field Notes
+has no mkdocs section because nothing exists there yet; Wild wild web
+is present in both but still `status: false` on the map, a placement
+decision not a hierarchy gap).
+
+Also closed out a verification backlog from the Phase 1 launch
+checklist while in the area: #25/#56 (fffx DNS/CNAME confirmed live),
+#57 (Cabinet's own nav/routes verified, Bookshelf/FFFX's internal nav
+out of scope -- no local repo access), #67 (the earlier content audit
+marked done -- the audit itself is complete, follow-up items tracked
+separately).
+
+### v3.7.60 -- label glow's contrast collision fixed; Data Visualisations reverted to a real stub
+
+Direct report: "All text labels need the soft glow but it seems to not
+be working anymore." Investigated rather than assumed -- the glow
+mechanism (`filter: drop-shadow`, `data-label-style="glow"`) was firing
+correctly the whole time, confirmed via computed styles. The actual bug:
+`--v3-label-outline` (the glow's colour) defaults to `--cab-land-light`
+(`#f4ead0`, pale cream) -- fine when set, but v3.7.16 later repainted
+medieval-map's own `--v3-veg` to `#fbf0ee`, a near-identical pale cream,
+for an unrelated direct colour request. Two independently-edited values
+silently collided months apart -- the glow was still rendering, just in
+a colour almost indistinguishable from the land it sat on. Fixed with a
+medieval-map-specific override reusing the theme's own `--v3-sea-shallow`
+amber (already in-palette, not a new colour) for real contrast against
+both the pale land/sea fills and the label's dark ink. Verified with a
+before/after zoomed screenshot comparison, not just a computed-style
+check -- the difference is dramatic once seen at the label scale.
+
+Separately, direct correction: Data Visualisations was cross-listed to
+Bookshelf's Christie/`agatha` dataviz page, but that's not actually
+Data Visualisations content -- reverted to a real `wip` stub (no page
+yet), matching the section's other genuinely-empty entries, rather than
+a link that happened to resolve to something unrelated.
 
 ### v3.7.59 -- Bookshelf/FFFX split from Cabinet's own nav, real Teaching/Makings landing pages, Swatch Fields cross-listed on purpose (#72)
 

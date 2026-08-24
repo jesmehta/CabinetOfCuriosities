@@ -16,3 +16,10 @@ node_modules/
 # Third-party map/design reference images, local-only (unclear licensing
 # for a public repo) -- used as visual reference for the map redesign.
 mapRefs/
+
+# Working before/after screenshots for in-progress review, 2026-08-24 --
+# ephemeral, overwritten freely, never part of history. Keep README.md
+# tracked so the folder still explains itself. Curated/kept images belong
+# in dev-archive/ instead (not gitignored -- that one's permanent).
+review/*
+!review/README.md
