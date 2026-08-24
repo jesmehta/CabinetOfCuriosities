@@ -1049,6 +1049,20 @@ marked as such.*
       page, and add some light background graphics -- currently plain
       Material defaults, wants to feel like the same site as the v3
       landing page rather than a bolted-on docs theme. Related to #41.
+      **First attempt built and rejected, 2026-08-24**: medieval-map
+      cream base + three Topology accents (cyan/coral/gold), reviewed via
+      screenshot before committing -- direct feedback: "very bland,"
+      wanted a lot more of Topology's brighter pops, not just accents on
+      top of a mostly-cream page. Reverted (`git checkout --`) rather
+      than left half-applied. Real, independent bug found and fixed
+      along the way (kept regardless of the palette's fate, but only
+      matters once a new attempt lands): MkDocs Material scopes its own
+      default token values under `[data-md-color-scheme="default"]`,
+      which beats a bare `:root` override on specificity -- the
+      *existing* colour mapping had likely never actually been taking
+      effect on the live site because of this, only the hardcoded
+      `.md-header`/`.md-tabs` background ever visibly themed. Still
+      needs a second, bolder pass -- not done.
 - [ ] **#69** `wild-wild-web` added to `cabinet-sections.tsv` (2026-08-24,
       `status: false` so it doesn't render) -- has an `mkdocs.yml` nav
       section already (TraceryBots, Dot Mandala Generator, Twine,
@@ -1317,6 +1331,16 @@ section to empty out.*
       on its own: no manual layout work needed, screenshot showed all 4
       Fab islands rendered correctly on the first build. `mkdocs build`
       clean, Playwright confirms zero console errors.
+- [x] **#124** Screenshot review workflow -- **done, 2026-08-24**: direct
+      feedback that review screenshots were "after"-only (no before) and
+      sat in the session scratchpad instead of somewhere easy to reach.
+      New `review/` folder (repo root, gitignored except its own
+      `README.md`) for ephemeral before/after review pairs, and a
+      separate committed `dev-archive/` folder for screenshots worth
+      keeping as permanent visual history once a feature ships -- added
+      to proactively while working, not just on request. Saved as a
+      standing workflow memory (not project-specific to this repo alone
+      in principle, but the folders themselves are).
 
 
 </details>
