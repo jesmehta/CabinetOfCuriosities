@@ -1335,12 +1335,39 @@ section to empty out.*
       feedback that review screenshots were "after"-only (no before) and
       sat in the session scratchpad instead of somewhere easy to reach.
       New `review/` folder (repo root, gitignored except its own
-      `README.md`) for ephemeral before/after review pairs, and a
-      separate committed `dev-archive/` folder for screenshots worth
-      keeping as permanent visual history once a feature ships -- added
-      to proactively while working, not just on request. Saved as a
-      standing workflow memory (not project-specific to this repo alone
-      in principle, but the folders themselves are).
+      `README.md`) for ephemeral before/after review pairs -- added to
+      proactively while working, not just on request. **Correction, same
+      day**: initially also created a new `dev-archive/` folder for
+      permanent feature-history screenshots, without checking whether an
+      equivalent already existed -- it did, `landing-v3/dev-screenshots/`
+      (56+ files, established `vX.Y.Z-description.png` naming, in use
+      since early in v3's development). Removed the redundant folder,
+      corrected `review/README.md` and the saved workflow memory to
+      point at the real one. Where MkDocs-side or other non-v3
+      screenshots without an obvious existing home should live is still
+      open -- folded into #125 below rather than decided ad hoc.
+- [ ] **#125** Organize files of v3, MkDocs, and stray leftover versions --
+      direct request, 2026-08-24, broader than #121 (v3-only): #121 was
+      scoped to `landing-v3/`'s own accumulated dev/test artifacts
+      (`islands-tool.html`, `archive/`, test HTML); this extends the same
+      pass to MkDocs-side files (`docs/stylesheets/`, `docs/assets/`,
+      wherever else things have piled up) and to "stray versions
+      leftover" generally -- prompted directly by #124's own mistake
+      (creating a redundant `dev-archive/` without checking whether
+      `landing-v3/dev-screenshots/` already covered it), which is exactly
+      the kind of thing this pass should catch and prevent. Not started.
+- [ ] **#126** Split up documentation coherently -- direct request,
+      2026-08-24, related to but not the same ask as #122
+      (consolidate v3-specific vs. whole-Cabinet docs): #122 is about
+      overlap between documents that shouldn't both cover the same
+      ground; this is about whether any SINGLE document has grown too
+      large/mixed-purpose and should be split into coherently-scoped
+      pieces (this ToDo file itself is a candidate -- Phase 0-3 plus a
+      Content Inventory reference table plus a 120+ item numbered
+      sequence, all in one file). Do both passes together once started,
+      not #122 then #126 as fully separate efforts -- splitting and
+      consolidating are the same underlying question (what belongs
+      where) approached from opposite directions. Not started.
 
 
 </details>
