@@ -822,7 +822,7 @@ export const entries = [
     "section": "compass",
     "title": "About Me",
     "subtitle": "",
-    "href": "",
+    "href": "about/",
     "order": 10,
     "weight": 1,
     "status": true,
@@ -835,14 +835,14 @@ export const entries = [
       "cardType": "",
       "anchor": "N"
     },
-    "notes": "href intentionally blank for now -- set directly in this TSV when ready."
+    "notes": "Links to docs/about.md. CV and Contact live inside that page, not as their own compass points."
   },
   {
     "id": "compass-e",
     "section": "compass",
-    "title": "Contact me",
+    "title": "Now",
     "subtitle": "",
-    "href": "",
+    "href": "now/",
     "order": 20,
     "weight": 1,
     "status": true,
@@ -855,7 +855,7 @@ export const entries = [
       "cardType": "",
       "anchor": "E"
     },
-    "notes": "href intentionally blank for now -- set directly in this TSV when ready."
+    "notes": "Links to docs/now.md. Contact also lives on that page, not as its own compass point. Replaces the earlier \"Contact me\" placeholder at this compass point."
   },
   {
     "id": "compass-s",
@@ -880,12 +880,12 @@ export const entries = [
   {
     "id": "compass-w",
     "section": "compass",
-    "title": "CV",
+    "title": "Site map",
     "subtitle": "",
-    "href": "https://www.jesalmehta.com",
+    "href": "",
     "order": 40,
     "weight": 1,
-    "status": true,
+    "status": "wip",
     "kind": "compass-direction",
     "tags": [],
     "location": "",
@@ -894,7 +894,8 @@ export const entries = [
       "size": "",
       "cardType": "",
       "anchor": "W"
-    }
+    },
+    "notes": "To be done -- no site-map page exists yet. CV moved off this compass point; it now lives inside the About Me page instead."
   },
   {
     "id": "working-with-ai",
