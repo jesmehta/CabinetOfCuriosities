@@ -926,7 +926,7 @@ export const entries = [
     "section": "machines-makings",
     "title": "Swatch Fields",
     "subtitle": "An atlas of material swatches and colour fields.",
-    "href": "https://jesmehta.github.io/swatchFields/",
+    "href": "swatch-fields/",
     "order": 60,
     "weight": 3,
     "status": true,
@@ -936,7 +936,7 @@ export const entries = [
       "swatches",
       "colour"
     ],
-    "location": "external",
+    "location": "assembly",
     "visual": {
       "placement": "land",
       "size": "medium",
@@ -995,11 +995,35 @@ export const entries = [
     "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
   },
   {
+    "id": "emergent-technology",
+    "section": "teaching",
+    "title": "Emergent Technology",
+    "subtitle": "Working with AI, Coding with AI, and class write-ups.",
+    "href": "teaching/#emergent-technology",
+    "order": 70,
+    "weight": 2,
+    "status": true,
+    "kind": "teaching-page",
+    "tags": [
+      "teaching",
+      "ai",
+      "emergent-technology"
+    ],
+    "location": "mkdocs",
+    "visual": {
+      "placement": "land",
+      "size": "medium",
+      "cardType": "thumbnail-plaque"
+    },
+    "icon": "icon-rocket",
+    "notes": "Links to the Emergent Technology subheading on teaching.md."
+  },
+  {
     "id": "swatch-fields-interfaces",
     "section": "interfaces-data-texts",
     "title": "Swatch Fields",
     "subtitle": "An atlas of material swatches and colour fields -- dye and colour work, cross-listed from Machines & Makings.",
-    "href": "https://jesmehta.github.io/swatchFields/",
+    "href": "swatch-fields/",
     "order": 60,
     "weight": 2,
     "status": true,
@@ -1010,7 +1034,7 @@ export const entries = [
       "colour",
       "dye"
     ],
-    "location": "external",
+    "location": "assembly",
     "visual": {
       "placement": "land",
       "size": "medium",
