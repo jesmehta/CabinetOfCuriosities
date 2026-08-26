@@ -20,7 +20,7 @@ nav:
     - Origami & Paper : makings/origami-paper.md
     - Lasercutting : makings/lasercutting.md
     - Drawing Machines : makings/drawing-machines.md
-    - Swatch Fields : https://jesmehta.github.io/swatchFields/
+    - Swatch Fields : https://cabinetofcuriosities.in/swatch-fields/
     - 3D Printing :
       - Print Projects :
         - Mecha : 3dp/3DP_mecha.md
@@ -40,14 +40,14 @@ nav:
     - Fab 26 (Fabricademy 2026) : https://class.textile-academy.org/2026/jesal-mehta/
     # Fabricademy's general/public site URL still unconfirmed -- see cabinet-entries.tsv's fabricademy row.
   - Interfaces, Data & Texts :
-    - Swatch Fields : https://jesmehta.github.io/swatchFields/
+    - Swatch Fields : https://cabinetofcuriosities.in/swatch-fields/
   - Wild wild web :
     - Dot Mandala Generator : dotMandalaTool.md
     - Tracery Bots :
       - Tracery Bots : traceryBots.md
       # - Trippy Gourmet : trippyGourmet.md
-      - Trippy Gourmet : https://jesmehta.github.io/TraceryBots/TrippyGourmetBot/
-      - Mad Solutionist : https://jesmehta.github.io/TraceryBots/MadSolutionistBot/
+      - Trippy Gourmet : https://cabinetofcuriosities.in/tracery-bots/TrippyGourmetBot/
+      - Mad Solutionist : https://cabinetofcuriosities.in/tracery-bots/MadSolutionistBot/
     - Twine : emergent_twine.md
     - Creative Coding : creative_code.md
   - Bookshelf of Curiosities : https://bookshelf.cabinetofcuriosities.in/

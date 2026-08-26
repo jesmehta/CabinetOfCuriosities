@@ -1346,6 +1346,9 @@ section to empty out.*
       point at the real one. Where MkDocs-side or other non-v3
       screenshots without an obvious existing home should live is still
       open -- folded into #125 below rather than decided ad hoc.
+
+</details>
+
 - [ ] **#125** Organize files of v3, MkDocs, and stray leftover versions --
       direct request, 2026-08-24, broader than #121 (v3-only): #121 was
       scoped to `landing-v3/`'s own accumulated dev/test artifacts
@@ -1369,6 +1372,55 @@ section to empty out.*
       consolidating are the same underlying question (what belongs
       where) approached from opposite directions. Not started.
 
+<details>
+<summary>#127</summary>
+
+- [x] **#127** Branch hygiene: mirror a stray cross-machine session's work to
+      `main`, revert it on `landing-v3-prototype`, strip co-author
+      trailers on both -- **done, 2026-08-25**: another machine had
+      pushed 3 commits (Algorithm Bench + v3-history archive, colophon
+      links, the 4 compass points wired) straight to
+      `landing-v3-prototype` without merging to `main`, even though they
+      touched live-site content (`docs/`, `content/cabinet-entries.tsv`),
+      not just prototype work. Cherry-picked all 3 onto a clean branch,
+      amended each message to drop its `Co-Authored-By: Claude` trailer
+      (tree verified byte-identical to the originals), force-pushed as
+      the new `landing-v3-prototype` tip, merged cleanly into `main`.
+      Reverted the same 3 (now-clean) commits on `landing-v3-prototype`
+      in one commit, verified via an empty `git diff` against the last
+      known-good commit that its tree matches exactly. Only one other
+      machine touches this repo and a rebase there was confirmed fine,
+      so the force-push was authorized rather than avoided.
+
+</details>
+
+<details>
+<summary>#128</summary>
+
+- [x] **#128** Swatch Fields and Tracery Bots assembled onto the custom
+      domain instead of linking straight to `jesmehta.github.io` --
+      **done, 2026-08-27**, direct question ("Are there any links...
+      that would show up as a github page in someone's browser?") turned
+      up 5 spots: Swatch Fields' two nav listings (Machines & Makings,
+      Interfaces Data & Texts) and two map entries, plus Tracery Bots'
+      two sub-pages (Trippy Gourmet, Mad Solutionist) including the
+      iframe in `docs/traceryBots.md` and the orphaned
+      `docs/trippyGourmet.md`. Extended `deploy.yml` with the same
+      Checkout/Assemble/Validate pattern as #43/#71
+      (`jesmehta/swatchFields` -> `public/swatch-fields/`,
+      `jesmehta/TraceryBots` -> `public/tracery-bots/`, whole repo so
+      both bot subfolders come along), each Validate step checking a
+      real content file beyond `index.html`. `mkdocs.yml` and the
+      `cabinet-entries.tsv` `swatch-fields`/`swatch-fields-interfaces`
+      rows now point at `cabinetofcuriosities.in/swatch-fields/` and
+      `.../tracery-bots/<Bot>/`. Verified with a local `mkdocs build`
+      that the new URLs land correctly in the rendered nav and iframe.
+      Not touched: `docs/dotMandalaTool.md`'s iframe (a third repo,
+      outside this request's scope).
+      Also fixed in passing: #125/#126 above had ended up trapped inside
+      #123's collapsed `<details>` block from an earlier editing pass --
+      both are still open items, not done, so shouldn't have been
+      hidden; moved the closing tag back to right after #124.
 
 </details>
 
