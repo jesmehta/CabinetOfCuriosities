@@ -68,6 +68,18 @@ jobs:
         repository: jesmehta/SSD_CreativeCodingPage
         path: _external/ssd-creative-coding
 
+    - name: Checkout Swatch Fields
+      uses: actions/checkout@v4
+      with:
+        repository: jesmehta/swatchFields
+        path: _external/swatch-fields
+
+    - name: Checkout Tracery Bots
+      uses: actions/checkout@v4
+      with:
+        repository: jesmehta/TraceryBots
+        path: _external/tracery-bots
+
     - name: Build MkDocs Site
       run: mkdocs build --site-dir public
 
@@ -98,6 +110,18 @@ jobs:
         cp -r _external/ssd-creative-coding/. public/teaching/ssd-creative-coding/
         rm -rf public/teaching/ssd-creative-coding/.git
 
+    - name: Assemble Swatch Fields
+      run: |
+        mkdir -p public/swatch-fields
+        cp -r _external/swatch-fields/. public/swatch-fields/
+        rm -rf public/swatch-fields/.git
+
+    - name: Assemble Tracery Bots
+      run: |
+        mkdir -p public/tracery-bots
+        cp -r _external/tracery-bots/. public/tracery-bots/
+        rm -rf public/tracery-bots/.git
+
     - name: Validate assembled output
       run: |
         test -f public/teaching/working-with-ai/index.html || (echo "ERROR: assembled Working with AI is missing its index.html" && exit 1)
@@ -108,6 +132,11 @@ jobs:
         grep -q "Oblique Strategies" public/teaching/oblique-strategies/index.html || (echo "ERROR: assembled Oblique Strategies is missing its own content" && exit 1)
         test -f public/teaching/ssd-creative-coding/index.html || (echo "ERROR: assembled SSD Creative Coding is missing its index.html" && exit 1)
         test -f public/teaching/ssd-creative-coding/script.js || (echo "ERROR: assembled SSD Creative Coding is missing its own content" && exit 1)
+        test -f public/swatch-fields/index.html || (echo "ERROR: assembled Swatch Fields is missing its index.html" && exit 1)
+        test -f public/swatch-fields/swatch_lookup.json || (echo "ERROR: assembled Swatch Fields is missing its own content" && exit 1)
+        test -f public/tracery-bots/index.html || (echo "ERROR: assembled Tracery Bots is missing its index.html" && exit 1)
+        test -f public/tracery-bots/TrippyGourmetBot/sketch.js || (echo "ERROR: assembled Tracery Bots is missing TrippyGourmetBot content" && exit 1)
+        test -f public/tracery-bots/MadSolutionistBot/sketch.js || (echo "ERROR: assembled Tracery Bots is missing MadSolutionistBot content" && exit 1)
 
     # Same pattern as the assembly above, local dir instead of a checkout --
     # makes colophon.md's v1/v2 links resolve instead of 404ing. #61

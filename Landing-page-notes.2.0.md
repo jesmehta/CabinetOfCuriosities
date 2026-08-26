@@ -27,6 +27,8 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.66 -- Swatch Fields and Tracery Bots assembled onto the custom domain, no more raw github.io links](#v3766----swatch-fields-and-tracery-bots-assembled-onto-the-custom-domain-no-more-raw-githubio-links)
+  - [v3.7.65 -- branch hygiene: a stray cross-machine session's work mirrored to main, reverted on v3, co-author trailers stripped](#v3765----branch-hygiene-a-stray-cross-machine-sessions-work-mirrored-to-main-reverted-on-v3-co-author-trailers-stripped)
   - [v3.7.64 -- review/ folder added; the "permanent archive" half of this pass had to be corrected same day](#v3764----review-folder-added-the-permanent-archive-half-of-this-pass-had-to-be-corrected-same-day)
   - [v3.7.63 -- MkDocs colour scheme attempt (#68): built, reviewed, rejected as bland, reverted](#v3763----mkdocs-colour-scheme-attempt-68-built-reviewed-rejected-as-bland-reverted)
   - [v3.7.62 -- ToDo file: done items collapsed, then a real rendering bug found and fixed same day](#v3762----todo-file-done-items-collapsed-then-a-real-rendering-bug-found-and-fixed-same-day)
@@ -124,7 +126,7 @@ not a diary. Sections below describe how `landing-v3/` actually works
 right now; the "Changelog" section at the bottom is where superseded
 reasoning (approaches tried and rejected, bugs found and fixed) is
 preserved instead, same convention as fffx's own `LANDING-PAGE-NOTES.md`.
-Currently on **v3.7.64**. As of 2026-08-23, this is no longer just a
+Currently on **v3.7.66**. As of 2026-08-23, this is no longer just a
 prototype -- `landing-v3` was promoted into production (merged
 `landing-v3-prototype` -> `main`) and `index.html`'s build now serves as
 `docs/index.html`, live at cabinetofcuriosities.in. Domain warping for
@@ -1544,6 +1546,54 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.66 -- Swatch Fields and Tracery Bots assembled onto the custom domain, no more raw github.io links
+
+Direct question: "Are there any links on the landing page or the
+connected pages that would show up as a github page in someone's
+browser?" Audit found five spots still resolving to raw
+`jesmehta.github.io` URLs instead of `cabinetofcuriosities.in` --
+Swatch Fields (both the Machines & Makings and Interfaces, Data & Texts
+nav listings, plus its two map entries in `cabinet-entries.tsv`), and
+Tracery Bots' two bot sub-pages (Trippy Gourmet, Mad Solutionist),
+including the iframe embed inside `docs/traceryBots.md` (and the
+orphaned, nav-commented-out `docs/trippyGourmet.md`).
+
+Wired both onto the multi-repo assembly pattern from #43/v3.7.54,
+`deploy.yml`'s `jesmehta/swatchFields` -> `public/swatch-fields/` and
+`jesmehta/TraceryBots` -> `public/tracery-bots/` (whole repo copied,
+so its `TrippyGourmetBot/`/`MadSolutionistBot/` subfolders come along
+for free), each with its own Validate step checking a real content
+file beyond `index.html` (`swatch_lookup.json`, and both bots'
+`sketch.js`). `mkdocs.yml`'s four external links and the iframe now
+point at `cabinetofcuriosities.in/swatch-fields/` and
+`.../tracery-bots/<Bot>/`; the two `swatch-fields*` TSV rows' `href`
+and `location` columns updated to match the `assembly` convention
+already used for the Teaching repos. Verified with a local `mkdocs
+build` that the new URLs land correctly in the rendered nav and
+iframe. Not touched: `docs/dotMandalaTool.md`'s iframe, which embeds a
+third repo (`DotMandalaGenerator`) not covered by this request.
+
+### v3.7.65 -- branch hygiene: a stray cross-machine session's work mirrored to main, reverted on v3, co-author trailers stripped
+
+A prior session on another machine had committed 3 commits directly to
+`landing-v3-prototype` and pushed without merging to `main` --
+archiving Algorithm Bench + a pre-split v3-history snapshot, linking
+them from `docs/colophon.md`, and wiring the compass's 4 points (About
+Me/Now/Colophon/Site map). These touched live-site content
+(`docs/`, `content/cabinet-entries.tsv`), not just prototype work, so
+they belonged on `main` and shouldn't have stayed v3-only.
+
+Cherry-picked all 3 onto a clean branch off the pre-mess commit,
+amending each message to drop its `Co-Authored-By: Claude` trailer
+(content verified byte-identical to the originals via `git diff
+--stat`), force-pushed that as the new `landing-v3-prototype` tip,
+merged into `main` (clean, no conflicts). Then reverted the same 3
+commits on `landing-v3-prototype` in one commit, restoring its tree to
+exactly the pre-mess state (verified via an empty `git diff` against
+the last known-good commit). Only one other machine touches this repo
+and the user confirmed a rebase there is fine, so the force-push was
+authorized rather than worked around.
 
 ### v3.7.64 -- review/ folder added; the "permanent archive" half of this pass had to be corrected same day
 
