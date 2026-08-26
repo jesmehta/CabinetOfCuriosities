@@ -99,9 +99,23 @@ field conventions (`status`, `weight`, `tags`, etc.) that these TSVs follow.
 
 1. **`build`** — checks out the repo, installs Python deps, guards against
    `docs/index.md` ever being reintroduced (see `WORLD-SYSTEMS.md`'s
-   homepage rule), runs `mkdocs build --site-dir public`, uploads `public/`
-   as the Pages artifact.
+   homepage rule), checks out external repos (`jesmehta/working-with-ai`,
+   `jesmehta/PromptGenerator`) into `_external/` and copies each into its
+   `public/teaching/<name>/` slot, runs `mkdocs build --site-dir public`,
+   uploads `public/` as the Pages artifact.
 2. **`deploy`** — publishes that artifact via `actions/deploy-pages`.
+
+**Multi-repo assembly gotcha**: the external checkouts above pull whatever
+is currently on those repos' default branch at build time — they are not
+pinned to a SHA. That means pushing to `working-with-ai` or `PromptGenerator`
+alone does **not** update the live site; this workflow only triggers on a
+push to *this* repo's `main`. To pick up a change made in one of the
+external repos, either push a commit here (anything, even a doc tweak like
+this one) or re-run the latest "Deploy MkDocs to GitHub Pages" workflow run
+from the Actions tab — the re-run re-fetches the external repos fresh since
+the checkout step has no pinned ref. See `.github/workflows/deploy.yml`'s
+"Multi-repo assembly" comment block for the copy-this-pattern how-to when
+adding another external repo.
 
 Migrated from `peaceiris/actions-gh-pages@v3` to GitHub's first-party
 Pages actions (`configure-pages` → `upload-pages-artifact` →
