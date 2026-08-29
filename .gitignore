@@ -20,6 +20,8 @@ mapRefs/
 # Working before/after screenshots for in-progress review, 2026-08-24 --
 # ephemeral, overwritten freely, never part of history. Keep README.md
 # tracked so the folder still explains itself. Curated/kept images belong
-# in dev-archive/ instead (not gitignored -- that one's permanent).
+# in landing-v3/dev-screenshots/ instead (not gitignored -- that one's
+# permanent). (2026-08-29: corrected the folder name here -- previously
+# said "dev-archive/", which never actually existed.)
 review/*
 !review/README.md
