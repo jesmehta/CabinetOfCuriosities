@@ -1252,12 +1252,20 @@ tools/build-now-content.js`, `mkdocs build`, then from `landing-v3/`:
 and a screenshot diff against the prior item's baseline. Do not start
 the next item on a red gate.
 
-- [ ] **#129** Reorg 1/5 -- safety net. Tag current state
+- [x] **#129** Reorg 1/5 -- safety net. Tag current state
       (`git tag pre-file-reorg`) as a one-command rollback point before
       any move. Confirm `mkdocs` is installed locally (`pip install -r
       requirements.txt`) so the verification gate above can actually run
       `mkdocs build` -- it could not be run locally as of this item being
-      opened.
+      opened. -- **Done, 2026-08-29**: `pre-file-reorg` tag created at
+      `06a3813`. `mkdocs` (1.6.1) and the full plugin set from
+      `requirements.txt` installed into the local Python environment
+      (none of it existed before this item). `mkdocs build --strict`
+      confirmed clean, exit 0 -- the only console output is pre-existing
+      INFO-level noise (orphan pages not in `nav`, a few unrecognized
+      relative links in `colophon.md`/`teaching.md`/`fffx/PackingShapes.md`),
+      none of it new, none of it an error. Verification gate is now
+      real, not aspirational.
 - [ ] **#130** Reorg 2/5 -- remove confirmed-dead v1/v2 code sitting in
       `docs/assets/`, unreferenced by anything live and already
       byte-identical to copies preserved at
