@@ -1370,11 +1370,21 @@ the next item on a red gate.
       established convention). Zero console/request errors on the real
       promoted `docs/index.html`, compass-rose screenshot confirms all
       four points still render identically to the `#131` baseline.
-- [ ] **#133** Reorg 5/5 -- two loose ends, neither auto-actioned:
+- [x] **#133** Reorg 5/5 -- two loose ends, neither auto-actioned:
       `content/now.tsv.bak` (untracked stray backup, likely disposable --
       confirm not read by `tools/build-now-content.js` before deleting)
       and `docs/3dp/GCodeBending.md` (untracked, possibly in-progress
-      content -- ask before touching).
+      content -- ask before touching). -- **Done, 2026-08-29**: confirmed
+      `tools/build-now-content.js` only ever reads `content/now.tsv`,
+      never the `.bak`; deleted on explicit confirmation.
+      `docs/3dp/GCodeBending.md` left untouched on explicit instruction --
+      still untracked, still there. `node tools/build-now-content.js` and
+      `mkdocs build --strict` both clean after the deletion.
+
+**Reorg closed, 2026-08-29.** All five items (`#129`-`#133`) done and
+pushed to `main`. `pre-file-reorg` (tag, `06a3813`) remains as a
+rollback point if anything surfaces later that this pass's
+verification gates didn't catch.
 
 Deliberately out of scope for all five items above, confirmed
 intentional rather than overlooked: `landing-v3/dev-screenshots/` (the
