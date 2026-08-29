@@ -1266,14 +1266,23 @@ the next item on a red gate.
       relative links in `colophon.md`/`teaching.md`/`fffx/PackingShapes.md`),
       none of it new, none of it an error. Verification gate is now
       real, not aspirational.
-- [ ] **#130** Reorg 2/5 -- remove confirmed-dead v1/v2 code sitting in
+- [x] **#130** Reorg 2/5 -- remove confirmed-dead v1/v2 code sitting in
       `docs/assets/`, unreferenced by anything live and already
       byte-identical to copies preserved at
       `archived-landing-pages/v2/assets/`. Delete:
       `docs/assets/css/cabinet-landing.css`,
       `docs/assets/js/cabinet-data.js`,
       `docs/assets/js/cabinet-interactions.js`,
-      `docs/assets/js/cabinet-render.js`.
+      `docs/assets/js/cabinet-render.js`. -- **Done, 2026-08-29**:
+      re-verified byte-identical to the archive and zero live references
+      immediately before deleting (not just relying on the earlier
+      audit), then deleted all four. Full gate green: both TSV->JS
+      builds produced no diff, `mkdocs build --strict` exit 0,
+      `build-static.mjs` rebuilt `landing-v3/index.html`
+      byte-for-byte identical to before the deletion (expected --
+      nothing live ever loaded these files), zero console/request
+      errors on a fresh headless render. `docs/index.html` did not need
+      re-promotion since its own input didn't change.
 - [ ] **#131** Reorg 3/5 -- relocate legacy root files into the archive
       tree, updating every doc that cross-references their old path
       (`README.md`, `WORLD-SYSTEMS.md`, `NOW-PAGE.md`, and each moved
