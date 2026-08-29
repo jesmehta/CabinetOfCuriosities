@@ -1,10 +1,12 @@
 # The Cabinet of Curiosities
 
-Repo-level practical guide and changelog. Two companion docs:
-[`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) (the map's visual design rules —
-palette, typography, island/card anatomy) and
-[`LANDING-PAGE-NOTES.md`](LANDING-PAGE-NOTES.md) (implementation notes:
-archive process, data pipeline, map-regeneration workflow, known gotchas).
+Repo-level practical guide and changelog. Two companion docs, now living
+alongside the v2 system they document (see "Structure" below):
+[`DESIGN-SYSTEM.md`](archived-landing-pages/v2/DESIGN-SYSTEM.md) (the
+map's visual design rules — palette, typography, island/card anatomy) and
+[`LANDING-PAGE-NOTES.md`](archived-landing-pages/v2/LANDING-PAGE-NOTES.md)
+(implementation notes: archive process, data pipeline, map-regeneration
+workflow, known gotchas).
 [`WORLD-SYSTEMS.md`](WORLD-SYSTEMS.md) documents the conventions this repo
 shares with its sibling Level 1 worlds, [The Bookshelf of
 Curiosities](https://github.com/jesmehta/TheBookshelfOfCuriosities) and
@@ -28,28 +30,29 @@ repo/world) rather than duplicating their content.
 - **As of v3.0 (2026-08-23), `docs/index.html` is a static build produced
   from `landing-v3/`** (the "archipelago-tool" rebuild — data-driven
   treemap/circle-packing layout, not the hand-authored SVG below) — see
-  `landing-v3/Landing-page-notes.2.0.md` for that system's own full
+  `Landing-page-notes.2.0.md` (repo root) for that system's own full
   documentation, and `landing-v3/three-world-launch-phases-ToDo.md` for
   how/why it got promoted. Everything in this section and in
-  `LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md` below describes the
-  *previous* (v2) system, kept as-is because it's genuinely still true of
-  how that version was built and is preserved, fully browsable, in
-  `archived-landing-pages/v2/` — just no longer what serves the live
-  page.
+  `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md`
+  describes the *previous* (v2) system, kept as-is because it's genuinely
+  still true of how that version was built and is preserved, fully
+  browsable, in `archived-landing-pages/v2/` — just no longer what serves
+  the live page. (2026-08-29: both docs physically moved into
+  `archived-landing-pages/v2/` alongside the system they describe,
+  content unchanged.)
 - `docs/assets/css/cabinet-tokens.css` — single source of truth for the
-  parchment/ink palette and type (`--cab-*`), shared between
-  `cabinet-landing.css` (the v2 map page, superseded, see above) and
-  `docs/stylesheets/cabinet-material.css` (maps the same tokens into
-  Material's `--md-*` variables for every other page — this part is
-  still live, unrelated to which map version serves `/`).
-- `docs/assets/js/` — **superseded, unused by the current homepage, kept
-  in place rather than deleted** (see the note above): `cabinet-data.js`
-  (hand-edited, landing-page-level config only: cartouche/legend text,
-  viewBox size), `cabinet-generated-content.js` (auto-generated, do not
-  hand-edit — see Data pipeline below), `cabinet-render.js` (rendered
-  island link state + entry card layer + mobile stacked fallback from
-  data), `cabinet-interactions.js` (hover/focus island↔card highlight
-  linking). Nothing else in `docs/` references these anymore.
+  parchment/ink palette and type (`--cab-*`), shared between the v3 map
+  page's own stylesheet and `docs/stylesheets/cabinet-material.css`
+  (maps the same tokens into Material's `--md-*` variables for every
+  other page — this part is still live, unrelated to which map version
+  serves `/`).
+- `docs/assets/js/cabinet-generated-content.js` — auto-generated from the
+  TSVs, do not hand-edit — see Data pipeline below. (2026-08-29: the
+  superseded v2 files that used to sit alongside it —
+  `cabinet-data.js`/`cabinet-render.js`/`cabinet-interactions.js`/
+  `docs/assets/css/cabinet-landing.css` — were deleted; unreferenced by
+  anything live, and already preserved byte-identical at
+  `archived-landing-pages/v2/assets/`.)
 - `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv` — the
   actual editable content source (islands and their entries, including
   visual placement columns). Edit these, not the generated JS.
@@ -67,11 +70,13 @@ repo/world) rather than duplicating their content.
   `run-now-editor.bat`) — a local-only admin server/browser UI for editing
   `now.tsv` entries and `now-data.js` sections without hand-editing either
   file. Never deployed; see `NOW-PAGE.md`'s "Local admin server".
-- `assets/map/source/` — the one-time island-shape generator
-  (`generate-cabinet-map.js`) and its seed config
-  (`cabinet-map-source.json`), kept for reproducibility. Authoring-only,
-  outside `docs/`, never loaded at runtime — see "Map regeneration" in
-  `LANDING-PAGE-NOTES.md`.
+- `archived-landing-pages/v2/source/` — the one-time island-shape
+  generator (`generate-cabinet-map.js`) and its seed config
+  (`cabinet-map-source.json`) for the v2 map, kept for reproducibility.
+  Authoring-only, never loaded at runtime — see "Map regeneration" in
+  `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`. (2026-08-29: moved
+  here from root-level `assets/map/source/`, alongside the rest of the
+  v2 system it belongs to.)
 - `archived-landing-pages/` — the pre-map Cabinet homepage
   (`cabinet-index.md.bak`), kept outside `docs/` so MkDocs never builds it
   as a live page. The pre-rebuild state of `main` is also tagged
@@ -101,7 +106,7 @@ Most content changes do **not** require touching the SVG map at all:
 3. `mkdocs serve` and check the result, desktop and mobile.
 4. Commit the TSV + generated-content changes together.
 
-See `LANDING-PAGE-NOTES.md` for the full escalation path (when a section
+See `archived-landing-pages/v2/LANDING-PAGE-NOTES.md` for the full escalation path (when a section
 outgrows its island, when a new top-level island is actually needed, and
 the full regeneration workflow) and `WORLD-SYSTEMS.md` for the shared data
 field conventions (`status`, `weight`, `tags`, etc.) that these TSVs follow.
@@ -190,12 +195,13 @@ from-scratch rebuild (weighted-treemap section layout, circle-packed
 islands, per-section coastline tracing, live theme system, hover
 previews) rather than a revision of the v2 SVG below. Full iteration
 history (v3.0 through this promotion) lives in
-`landing-v3/Landing-page-notes.2.0.md`'s changelog and
+`Landing-page-notes.2.0.md`'s (repo root) changelog and
 `conversation-landing-page-v3.md`'s narrative account — not duplicated
 here. What's relevant at this level:
 
-- v2 (`docs/index.html` + `cabinet-render.js`/`cabinet-interactions.js`
-  below) is fully preserved and browsable, not deleted — see
+- v2 (`docs/index.html` + `cabinet-render.js`/`cabinet-interactions.js`,
+  deleted from `docs/assets/` 2026-08-29, see the Structure list above)
+  is fully preserved and browsable, not deleted — see
   `archived-landing-pages/v2/`, plus its own four earlier visual states
   in `archived-landing-pages/v2-history/`. v1 (the original MkDocs
   Material homepage, before v2.0 below) is similarly preserved as a full

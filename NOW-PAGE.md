@@ -194,7 +194,7 @@ from the repo root). Prints a URL — open `http://127.0.0.1:5757/admin/`
 `127.0.0.1` only, no authentication — nothing here is meant to be
 reachable from another machine, let alone deployed; it never ships to
 `docs/` as served content (`tools/` is authoring-only, same status as
-`assets/map/source/`, see `README.md`'s Structure list).
+`archived-landing-pages/v2/source/`, see `README.md`'s Structure list).
 
 **What it can do**: add/edit/delete/reorder entries within a section
 (the up/down buttons swap a row with its nearest same-section neighbour

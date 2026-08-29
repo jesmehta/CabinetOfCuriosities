@@ -1283,7 +1283,7 @@ the next item on a red gate.
       nothing live ever loaded these files), zero console/request
       errors on a fresh headless render. `docs/index.html` did not need
       re-promotion since its own input didn't change.
-- [ ] **#131** Reorg 3/5 -- relocate legacy root files into the archive
+- [x] **#131** Reorg 3/5 -- relocate legacy root files into the archive
       tree, updating every doc that cross-references their old path
       (`README.md`, `WORLD-SYSTEMS.md`, `NOW-PAGE.md`, and each moved
       file's own banner). Mapping:
@@ -1296,7 +1296,29 @@ the next item on a red gate.
       `landing-v3/Landing-page-notes.2.0.md`, but that file actually
       lives at the repo root (`Landing-page-notes.2.0.md`) -- broken
       before this item, unrelated to the move itself, fix while touching
-      the same cross-references.
+      the same cross-references. -- **Done, 2026-08-29**: all three moved
+      via `git mv`; root `assets/` (now empty) removed entirely. Fixed
+      every literal path reference in `README.md` (7 spots, including
+      both occurrences of the pre-existing wrong `Landing-page-notes.2.0.md`
+      path, and a bonus catch -- the `docs/assets/js/` structure bullet
+      still described `cabinet-data.js`/`cabinet-render.js`/
+      `cabinet-interactions.js` as "kept in place," stale since `#130`
+      deleted them), `NOW-PAGE.md`, `.github/workflows/deploy.yml`'s
+      guard-step error message, and the two moved files' own internal
+      cross-references to `assets/map/source/...` (5 spots between them).
+      Deliberately left untouched: `WORLD-SYSTEMS.md` (its mentions are
+      bare filenames naming a shared convention, not literal paths --
+      it's hand-synced identically across Cabinet/Bookshelf/fffx, and
+      editing prose here without touching the other two repos' copies
+      would just create new drift) and `conversation-landing-page-v3.md`
+      / this file's own earlier "surfaced by reading..." lines (genuine
+      historical narrative describing where these files were *at the
+      time*, same category as `archived-landing-pages/`'s own frozen
+      HTML comments -- not rewritten, matching how those are already
+      handled). Gate: both TSV->JS builds produced no diff, `mkdocs
+      build --strict` exit 0, a follow-up repo-wide grep for any
+      remaining non-archive/non-historical hit on the old paths came back
+      empty.
 - [ ] **#132** Reorg 4/5 -- regroup `landing-v3/`'s internals by actual
       role (traced via real `import`/`<script src>` graphs, not by file
       type), moved and verified one group at a time, A before B before

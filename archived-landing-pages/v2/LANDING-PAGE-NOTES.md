@@ -96,11 +96,12 @@ placement (`placement`, `x`/`y`, `anchor`, `cardOrder`, `size`,
 ## Map generation pipeline (how the island shapes were made)
 
 Island/coastline shapes are **not** generated at runtime. They were
-produced once by `assets/map/source/generate-cabinet-map.js` — a small
-seeded generator (Mulberry32 PRNG → per-island base radius array, jittered
-and lightly smoothed for a jagged-but-closed outline → Catmull-Rom-to-
-Bézier closed path for the land) — and the resulting `d` path strings
-were hand-pasted into `docs/index.html`. `assets/map/source/cabinet-map-source.json`
+produced once by `archived-landing-pages/v2/source/generate-cabinet-map.js`
+— a small seeded generator (Mulberry32 PRNG → per-island base radius
+array, jittered and lightly smoothed for a jagged-but-closed outline →
+Catmull-Rom-to-Bézier closed path for the land) — and the resulting `d`
+path strings were hand-pasted into `docs/index.html`.
+`archived-landing-pages/v2/source/cabinet-map-source.json`
 records the seed/center/radius per island so the exact shapes can be
 reproduced or revised.
 
@@ -115,7 +116,7 @@ random angle/length wobble, approximating the hand-drawn hachure texture
 in old engraved maps.
 
 ```
-node assets/map/source/generate-cabinet-map.js
+node archived-landing-pages/v2/source/generate-cabinet-map.js
 ```
 
 prints LAND + three RIPPLE path strings per island plus a few islet
@@ -145,7 +146,7 @@ Full regeneration (new seeds for every island) is reserved for a
 deliberate visual refresh or a genuine information-architecture change
 (several new top-level sections, sections merging/splitting) — archive
 the previous `docs/index.html`'s SVG block into
-`assets/map/source/archive/` first if that ever happens.
+`archived-landing-pages/v2/source/archive/` first if that ever happens.
 
 ## Known gotchas hit while building this
 

@@ -67,7 +67,7 @@ deliberately close to the paper/sea tone (`--cab-land-light`) — islands
 should read mainly through ink linework, the way the Earthsea/Gont/
 fantasticmaps.com reference set does, not through a block of contrasting
 fill color. All island shapes come from one seeded generator
-(`assets/map/source/generate-cabinet-map.js`) so every island shares the
+(`archived-landing-pages/v2/source/generate-cabinet-map.js`) so every island shares the
 same coastline "handwriting" regardless of size — see
 `LANDING-PAGE-NOTES.md` for the generation pipeline.
 
