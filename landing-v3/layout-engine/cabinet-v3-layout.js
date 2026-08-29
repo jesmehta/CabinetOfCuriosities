@@ -24,14 +24,14 @@
 // did -- only the INITIAL shape adapts to viewport now, not every
 // subsequent resize.
 
-import { v3Config, EXTRA_WEIGHT } from "./cabinet-v3-data.js";
-import { sections, entries } from "../docs/assets/js/cabinet-generated-content.js";
+import { v3Config, EXTRA_WEIGHT } from "../shared/cabinet-v3-data.js";
+import { sections, entries } from "../../docs/assets/js/cabinet-generated-content.js";
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
-import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField, buildInlandDistanceField } from "./cabinet-v3-islandshape.js";
-import { buildFlowField, createFlowSampler } from "./cabinet-v3-flowfield.js";
-import { createParticlePool, stepParticle } from "./cabinet-v3-particles.js";
-import { spawnDragon, stepDragon } from "./cabinet-v3-dragon.js";
+import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField, buildInlandDistanceField } from "../shared/cabinet-v3-islandshape.js";
+import { buildFlowField, createFlowSampler } from "../shared/cabinet-v3-flowfield.js";
+import { createParticlePool, stepParticle } from "../shared/cabinet-v3-particles.js";
+import { spawnDragon, stepDragon } from "../shared/cabinet-v3-dragon.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 

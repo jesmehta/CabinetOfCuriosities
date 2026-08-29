@@ -1319,7 +1319,7 @@ the next item on a red gate.
       build --strict` exit 0, a follow-up repo-wide grep for any
       remaining non-archive/non-historical hit on the old paths came back
       empty.
-- [ ] **#132** Reorg 4/5 -- regroup `landing-v3/`'s internals by actual
+- [x] **#132** Reorg 4/5 -- regroup `landing-v3/`'s internals by actual
       role (traced via real `import`/`<script src>` graphs, not by file
       type), moved and verified one group at a time, A before B before
       C, since B and C's own cross-imports need path updates on each
@@ -1340,7 +1340,36 @@ the next item on a red gate.
       Destination subfolder names not yet decided -- pick at execution
       time. `landing-v3/dev-screenshots/`, `landing-v3/archive/v3.6/`,
       `node_modules/`, `package.json`, `build-static.mjs`, `index.html`
-      (build output) stay at the top level, untouched.
+      (build output) stay at the top level, untouched. -- **Done,
+      2026-08-29**: subfolders named `dev-tool/`, `layout-engine/`,
+      `shared/`. Full import/script-tag graph mapped for all three
+      groups *before* any move (not just doc-grepped) -- this caught a
+      real load-bearing bug doc search alone would have missed:
+      `build-static.mjs` navigates Playwright to a hardcoded literal URL
+      string, `` `http://localhost:${PORT}/landing-v3/build-render.html` ``
+      -- moving `build-render.html` without updating that string would
+      have silently broken every future static rebuild (Playwright would
+      404, `page.waitForSelector` would time out). Fixed alongside the
+      move. Also found `compass_rose.svg` is not actually loaded at
+      runtime at all -- same as `dragon.svg`, its shapes were hand-
+      inlined into `cabinet-v3-layout.js` as literal path data (per that
+      file's own v3.7 comment); moved with Group B as a design-source
+      companion, no code reference to update.
+
+      Each group moved, cross-imports rewritten, then gated: both
+      TSV->JS builds clean, `mkdocs build --strict` exit 0,
+      `build-static.mjs` rebuild byte-identical (Groups A/B) or with only
+      the exact expected path-line diff (Group C), zero console/request
+      errors on a real headless render of every touched entry point
+      (`dev-tool/islands-tool.html`, `landing-v3/index.html`). After
+      Group C, `docs/index.html` re-promoted with the same asset-path
+      rewrite this system has always needed (`shared/cabinet-v3-*` ->
+      `assets/{css,js}/cabinet-v3-*`) -- including a stale comment at
+      `docs/index.html:16` this pass also fixed (`cabinet-v3-style.css`
+      -> `assets/css/cabinet-v3-style.css`, matching `ed45d15`'s
+      established convention). Zero console/request errors on the real
+      promoted `docs/index.html`, compass-rose screenshot confirms all
+      four points still render identically to the `#131` baseline.
 - [ ] **#133** Reorg 5/5 -- two loose ends, neither auto-actioned:
       `content/now.tsv.bak` (untracked stray backup, likely disposable --
       confirm not read by `tools/build-now-content.js` before deleting)

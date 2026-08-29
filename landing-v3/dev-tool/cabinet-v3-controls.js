@@ -26,8 +26,8 @@
 // for why this is no more expensive than what every other slider here
 // already costs per tick.
 
-import { v3Config } from "./cabinet-v3-data.js";
-import { retraceIslands, retraceThemePreviews, render, rerollPacking, resetReroll, startCurrentAnimation, refreshParticleCount } from "./cabinet-v3-layout.js";
+import { v3Config } from "../shared/cabinet-v3-data.js";
+import { retraceIslands, retraceThemePreviews, render, rerollPacking, resetReroll, startCurrentAnimation, refreshParticleCount } from "../layout-engine/cabinet-v3-layout.js";
 
 // Each entry drives one Island-shape slider. `get`/`set` default to
 // reading/writing v3Config.island[key] directly; only warpPeriod

@@ -83,7 +83,7 @@ try {
     page.on("pageerror", e => consoleErrors.push(e.message));
     page.on("console", msg => { if (msg.type() === "error") consoleErrors.push(msg.text()); });
 
-    await page.goto(`http://localhost:${PORT}/landing-v3/build-render.html`, { waitUntil: "networkidle" });
+    await page.goto(`http://localhost:${PORT}/landing-v3/layout-engine/build-render.html`, { waitUntil: "networkidle" });
     // render()'s last act is drawing the shared islands path -- its
     // presence means the whole pipeline (treemap, packing, tracing) has
     // already completed, not just that the page loaded.
