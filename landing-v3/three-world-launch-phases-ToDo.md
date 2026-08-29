@@ -1238,6 +1238,91 @@ routine publishing.*
 - [ ] **#86** Replace obvious placeholder metadata/thumbnails where easy (see
       the doc-audit item above)
 
+**Cabinet file/folder reorganization** -- direct request, 2026-08-29:
+"the v3 folder has a lot going on, there are a lot of legacy files from
+v1 which may or may not be relevant anymore, and they are scattered
+across the folders and subfolders." Full inventory (what's confirmed
+dead vs. superseded-but-kept vs. genuinely live-but-flat) discussed in
+conversation before any item below was opened; each item's own
+before/after mapping is the result of that audit, not a guess. Five
+items, meant to execute in order -- each ends with the same
+verification gate: `node tools/build-cabinet-content.js`, `node
+tools/build-now-content.js`, `mkdocs build`, then from `landing-v3/`:
+`node build-static.mjs`, a headless-Chromium zero-console-error check,
+and a screenshot diff against the prior item's baseline. Do not start
+the next item on a red gate.
+
+- [ ] **#129** Reorg 1/5 -- safety net. Tag current state
+      (`git tag pre-file-reorg`) as a one-command rollback point before
+      any move. Confirm `mkdocs` is installed locally (`pip install -r
+      requirements.txt`) so the verification gate above can actually run
+      `mkdocs build` -- it could not be run locally as of this item being
+      opened.
+- [ ] **#130** Reorg 2/5 -- remove confirmed-dead v1/v2 code sitting in
+      `docs/assets/`, unreferenced by anything live and already
+      byte-identical to copies preserved at
+      `archived-landing-pages/v2/assets/`. Delete:
+      `docs/assets/css/cabinet-landing.css`,
+      `docs/assets/js/cabinet-data.js`,
+      `docs/assets/js/cabinet-interactions.js`,
+      `docs/assets/js/cabinet-render.js`.
+- [ ] **#131** Reorg 3/5 -- relocate legacy root files into the archive
+      tree, updating every doc that cross-references their old path
+      (`README.md`, `WORLD-SYSTEMS.md`, `NOW-PAGE.md`, and each moved
+      file's own banner). Mapping:
+      `assets/map/source/{cabinet-map-source.json,generate-cabinet-map.js}`
+      -> `archived-landing-pages/v2/source/`;
+      `LANDING-PAGE-NOTES.md` -> `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`;
+      `DESIGN-SYSTEM.md` -> `archived-landing-pages/v2/DESIGN-SYSTEM.md`.
+      In passing, also fix a pre-existing wrong path this audit found:
+      `README.md`'s v3.0 changelog entry points at
+      `landing-v3/Landing-page-notes.2.0.md`, but that file actually
+      lives at the repo root (`Landing-page-notes.2.0.md`) -- broken
+      before this item, unrelated to the move itself, fix while touching
+      the same cross-references.
+- [ ] **#132** Reorg 4/5 -- regroup `landing-v3/`'s internals by actual
+      role (traced via real `import`/`<script src>` graphs, not by file
+      type), moved and verified one group at a time, A before B before
+      C, since B and C's own cross-imports need path updates on each
+      move:
+      - Group A, dev-tool-only, never ships: `cabinet-v3-controls.js`,
+        `islands-tool.html`.
+      - Group B, build-time layout engine (used by both the dev tool and
+        `build-static.mjs`'s headless render, never shipped as a file to
+        browsers): `cabinet-v3-layout.js`, `cabinet-v3-treemap.js`,
+        `cabinet-v3-circlepack.js`, `build-render.html`,
+        `compass_rose.svg`.
+      - Group C, shared modules that *do* ship (promoted into
+        `docs/assets/`) and are also imported by Group B at build time:
+        `cabinet-v3-data.js`, `cabinet-v3-islandshape.js`,
+        `cabinet-v3-flowfield.js`, `cabinet-v3-particles.js`,
+        `cabinet-v3-dragon.js`, `cabinet-v3-production-animate.js`,
+        `cabinet-v3-style.css`.
+      Destination subfolder names not yet decided -- pick at execution
+      time. `landing-v3/dev-screenshots/`, `landing-v3/archive/v3.6/`,
+      `node_modules/`, `package.json`, `build-static.mjs`, `index.html`
+      (build output) stay at the top level, untouched.
+- [ ] **#133** Reorg 5/5 -- two loose ends, neither auto-actioned:
+      `content/now.tsv.bak` (untracked stray backup, likely disposable --
+      confirm not read by `tools/build-now-content.js` before deleting)
+      and `docs/3dp/GCodeBending.md` (untracked, possibly in-progress
+      content -- ask before touching).
+
+Deliberately out of scope for all five items above, confirmed
+intentional rather than overlooked: `landing-v3/dev-screenshots/` (the
+established per-version screenshot convention), `landing-v3/archive/
+v3.6/` (a real, referenced comparison snapshot, linked from the static
+page's own footnote), `review/` (already correctly scoped by
+`.gitignore`), `docs/now.html`/`docs/now.md` coexisting (already
+documented as intentional in `NOW-PAGE.md`), and `now-page-helpers/`
+(superseded planning spec, same relationship `NOW-PAGE.md` has to it as
+`LANDING-PAGE-NOTES.md` has to `landing-v3/`'s system -- deferred to a
+future documentation-consolidation pass, not this reorg, by direct
+request). Renaming `landing-v3/` itself was also discussed and raised
+no functional blocker (nothing executable hardcodes the name -- only
+~9 docs reference it in prose) but was not requested; not tracked here
+unless it is.
+
 ---
 
 ## Phase 3A -- Short-Term / Already Underway
