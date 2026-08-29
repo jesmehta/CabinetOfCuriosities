@@ -34,7 +34,7 @@ export const v3Config = {
   // Descriptive metadata -- not currently read by any code (the actual
   // page title/tagline live as real HTML in index.template.html/
   // islands-tool.html/build-render.html's own <header>, not generated
-  // from here -- see "Canvas + legend" in Landing-page-notes.2.0.md for
+  // from here -- see "Canvas + legend" in documentation/Landing-page-notes.2.0.md for
   // why that stayed real HTML, position:absolute over the map via CSS,
   // rather than becoming SVG-drawn text).
   title: "Cabinet of Curiosities",
@@ -75,7 +75,7 @@ export const v3Config = {
     // sliver, not enough to erase weight differences among the sections
     // that already have real content. Distorts "region area == actual
     // content weight" for any section at or below this floor; see
-    // Landing-page-notes.2.0.md's "About Me" section for the trade-off
+    // documentation/Landing-page-notes.2.0.md's "About Me" section for the trade-off
     // and the two alternatives not taken.
     minSectionWeight: 5
   },
@@ -102,7 +102,7 @@ export const v3Config = {
     // circle grows by the same growStep per pass, exactly like the
     // reference library) -- so weight's influence on *final* size is
     // real (it sets this starting gap, which tends to persist) but
-    // secondary to local density; see Landing-page-notes.2.0.md.
+    // secondary to local density; see documentation/Landing-page-notes.2.0.md.
     maxWeightExtra: 14,
     // Radius gained per growth pass -- ported directly from
     // CirclePack.js's Bubble.grow() (bubRadius++, i.e. 1 unit/pass).
@@ -355,7 +355,7 @@ export const v3Config = {
   // Particle advection isn't built yet; this first slice is the field
   // math plus the two dev-panel debug toggles below, so the field can
   // be judged/tuned by feel before anything animates on top of it. See
-  // Landing-page-notes.2.0.md's "Flow field" entry for the design
+  // documentation/Landing-page-notes.2.0.md's "Flow field" entry for the design
   // conversation, and the field-notes block below for what each value
   // does and how the defaults were picked.
   flow: {
@@ -502,7 +502,7 @@ export const v3Config = {
     // still the better of the two, not because the gap was decisive.
     coastSpawnDirMode: "repulsion",
     // v3.6.23 -- demo/comparison build for the "one giant trash drift"
-    // discussion (conversation-landing-page-v3.md): every particle
+    // discussion (documentation/conversation-landing-page-v3.md): every particle
     // otherwise samples the exact same deterministic field, so density
     // alone can't add variety. "off" (default, no change to shipped
     // behaviour) / "bias" (constant personal speed+heading, see
@@ -834,7 +834,7 @@ export const v3Config = {
 // coastline more than once -- direct proof of a real fold, not just
 // texture). Current values are the first real interactive-tuning pass,
 // done via islands-tool.html's panel and applied here with its "Copy
-// config" button -- see Landing-page-notes.2.0.md's v3.6/v3.6.1
+// config" button -- see documentation/Landing-page-notes.2.0.md's v3.6/v3.6.1
 // changelog entries for the full history of both passes.
 //
 // seaBandThresholds / sandThresholds / vegThresholds -- v3.6.5, replaces

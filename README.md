@@ -10,7 +10,7 @@ workflow, known gotchas).
 [`WORLD-SYSTEMS.md`](WORLD-SYSTEMS.md) documents the conventions this repo
 shares with its sibling Level 1 worlds, [The Bookshelf of
 Curiosities](https://github.com/jesmehta/TheBookshelfOfCuriosities) and
-[fffx](https://github.com/jesmehta/form-follows-fx). [`NOW-PAGE.md`](NOW-PAGE.md)
+[fffx](https://github.com/jesmehta/form-follows-fx). [`NOW-PAGE.md`](documentation/NOW-PAGE.md)
 documents the `/now` page (`docs/now.html`) — a separate feature from the
 map landing page, with its own data pipeline.
 
@@ -30,9 +30,9 @@ repo/world) rather than duplicating their content.
 - **As of v3.0 (2026-08-23), `docs/index.html` is a static build produced
   from `landing-v3/`** (the "archipelago-tool" rebuild — data-driven
   treemap/circle-packing layout, not the hand-authored SVG below) — see
-  `Landing-page-notes.2.0.md` (repo root) for that system's own full
-  documentation, and `landing-v3/three-world-launch-phases-ToDo.md` for
-  how/why it got promoted. Everything in this section and in
+  `documentation/Landing-page-notes.2.0.md` for that system's own full
+  documentation, and `documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`
+  for how/why it got promoted. Everything in this section and in
   `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md`
   describes the *previous* (v2) system, kept as-is because it's genuinely
   still true of how that version was built and is preserved, fully
@@ -81,6 +81,15 @@ repo/world) rather than duplicating their content.
   (`cabinet-index.md.bak`), kept outside `docs/` so MkDocs never builds it
   as a live page. The pre-rebuild state of `main` is also tagged
   `cabinet-v1-before-map` in git.
+- `documentation/` — non-root-required project documentation:
+  `NOW-PAGE.md`, `Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`,
+  `FILE-MANIFEST.md` (the exhaustive per-file role listing), `now-page-helpers/`
+  (superseded pre-code `/now` spec), and `landing-v3-notes/` (that system's
+  own to-do tracker, supporting rationale, multi-repo-assembly concept
+  note, and open colour-scheme proposals). Everything here *could* live
+  at root but doesn't need to, unlike `README.md`/`WORLD-SYSTEMS.md` — see
+  the "Root-level file verdicts" reasoning in git history (2026-08-29) if
+  the distinction ever needs re-litigating.
 - `mkdocs.yml`, `requirements.txt` — MkDocs config and its Python
   dependencies.
 - `.github/workflows/deploy.yml` — the deploy pipeline (see below).
@@ -195,9 +204,11 @@ from-scratch rebuild (weighted-treemap section layout, circle-packed
 islands, per-section coastline tracing, live theme system, hover
 previews) rather than a revision of the v2 SVG below. Full iteration
 history (v3.0 through this promotion) lives in
-`Landing-page-notes.2.0.md`'s (repo root) changelog and
-`conversation-landing-page-v3.md`'s narrative account — not duplicated
-here. What's relevant at this level:
+`documentation/Landing-page-notes.2.0.md`'s changelog and
+`documentation/conversation-landing-page-v3.md`'s narrative account — not
+duplicated here (the two serve different purposes: reference/changelog
+vs. process log, not two accounts of the same thing). What's relevant at
+this level:
 
 - v2 (`docs/index.html` + `cabinet-render.js`/`cabinet-interactions.js`,
   deleted from `docs/assets/` 2026-08-29, see the Structure list above)

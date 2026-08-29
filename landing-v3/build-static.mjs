@@ -12,7 +12,7 @@
 //
 // (from within landing-v3/, so playwright resolves from this folder's own
 // node_modules -- same constraint as every other script in this file, see
-// Landing-page-notes.2.0.md's "Verification" section.)
+// documentation/Landing-page-notes.2.0.md's "Verification" section.)
 //
 // Why a real browser instead of a hand-written string-based SVG
 // serializer: a second renderer would need every future change to

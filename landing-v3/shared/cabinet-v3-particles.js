@@ -11,11 +11,11 @@
 // flow field, and recycle back to a fresh off-canvas point whenever they
 // wander back outside that same padded ring -- one mechanism handles
 // both "enter" and "exit," since it's the same rect test either way. See
-// Landing-page-notes.2.0.md's "Flow field" entries for the design
+// documentation/Landing-page-notes.2.0.md's "Flow field" entries for the design
 // conversation.
 
 // v3.6.23 -- demo/comparison build for the "one giant trash drift"
-// discussion (conversation-landing-page-v3.md): every particle otherwise
+// discussion (documentation/conversation-landing-page-v3.md): every particle otherwise
 // samples the exact same deterministic field, so the only thing telling
 // two particles apart is position, and a smooth field means nearby
 // particles look identical. Assigns each particle a small personal

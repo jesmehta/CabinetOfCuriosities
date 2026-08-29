@@ -2,9 +2,9 @@
 
 **Superseded, 2026-08-23**: `docs/index.html` is now a static build
 produced from `landing-v3/` (the "archipelago-tool" rebuild — see
-`landing-v3/Landing-page-notes.2.0.md` for that system's own full
-documentation, `landing-v3/three-world-launch-phases-ToDo.md` for how it
-got promoted). Everything below describes the *previous* (v2)
+`documentation/Landing-page-notes.2.0.md` for that system's own full
+documentation, `documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`
+for how it got promoted). Everything below describes the *previous* (v2)
 implementation this file was written for — kept as-is, not rewritten,
 because it's genuinely still an accurate record of that version, which is
 itself preserved and browsable in `archived-landing-pages/v2/`. Read it

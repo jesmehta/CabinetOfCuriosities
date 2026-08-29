@@ -1,14 +1,14 @@
 # Cabinet `/now` Page — Design Decisions & As-Built Notes
 
-Companion to [`README.md`](README.md) (repo-level guide), in the same
-family as `DESIGN-SYSTEM.md`/`LANDING-PAGE-NOTES.md` for the map landing
-page. Original planning input for this feature lives in
+Companion to [`README.md`](../README.md) (repo-level guide), in the same
+family as `archived-landing-pages/v2/DESIGN-SYSTEM.md`/`LANDING-PAGE-NOTES.md`
+for the map landing page. Original planning input for this feature lives in
 [`now-page-helpers/`](now-page-helpers/) (`NOW-PAGE-DOCUMENTATION.md`,
 `NOW-PAGE-FILE-LIST.md`, `NOW-PAGE-VSCODE-PROMPT.md`) — written before any
 code existed, as a spec for whichever tool implemented it. This doc
 records what was *actually built* and where it deviated from that spec
-and why, the same relationship `landing-v3/Landing-page-notes.2.0.md` has
-to `LANDING-PAGE-NOTES.md`.
+and why, the same relationship `Landing-page-notes.2.0.md` (this same
+folder) has to `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`.
 
 ## Purpose
 

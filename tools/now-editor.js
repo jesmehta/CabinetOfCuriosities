@@ -1,7 +1,7 @@
 // Now page -- local admin server for content/now.tsv and now-data.js.
 // Zero dependencies (matches build-now-content.js/build-cabinet-content.js),
 // localhost-only, no auth (nothing here is meant to be reachable off the
-// machine it runs on). See NOW-PAGE.md's "Local admin server" for the full
+// machine it runs on). See documentation/NOW-PAGE.md's "Local admin server" for the full
 // design decisions and how this differs from the CLI-only v1.
 
 const http = require("http");

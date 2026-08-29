@@ -3,7 +3,7 @@
 // approach for a small local single-user tool -- no client-side state
 // reconciliation to get subtly wrong). Reuses the live page's own Markdown
 // renderer for the value-field preview so "what you see here" and "what
-// renders on /now.html" can never drift apart -- see NOW-PAGE.md's "Local
+// renders on /now.html" can never drift apart -- see documentation/NOW-PAGE.md's "Local
 // admin server".
 
 import { renderInline, splitParagraphs } from "../assets/js/now-markdown.js";
@@ -57,7 +57,7 @@ function renderValuePreview(value) {
 // The up/down arrows swap this entry with its nearest same-section neighbour
 // in now.tsv's row order -- which only ever affects the page's display order
 // when both entries share the same date (the tie-break rule; see
-// NOW-PAGE.md's "Sorting and Grouping"). Disabled whenever the neighbour in
+// documentation/NOW-PAGE.md's "Sorting and Grouping"). Disabled whenever the neighbour in
 // that direction has a different date, so a clickable arrow always means
 // "this will visibly change the page."
 function entryViewRow(entry, entries, position) {

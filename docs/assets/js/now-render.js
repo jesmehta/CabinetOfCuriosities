@@ -2,7 +2,7 @@
 // using the display rules from now-data.js. Section containers are built
 // here, not hand-authored in now.html -- adding a section is meant to be a
 // one-file change to now-data.js's sectionConfig/sectionOrder (see
-// NOW-PAGE.md's "Adding a section").
+// documentation/NOW-PAGE.md's "Adding a section").
 
 import { nowEntries } from "./now-generated-content.js";
 import { nowPageConfig, sectionConfig, sectionOrder } from "./now-data.js";
@@ -30,7 +30,7 @@ function entriesForSection(sectionKey) {
 // last fade tier works out to be -- "kept around on purpose", not "brand
 // new"). They count toward `visible`, not on top of it: pinning one entry
 // in a visible:6 section means 5 slots go to recency, not 6 -- see
-// NOW-PAGE.md's "Pinning" for why (this is what the "still at the bottom
+// documentation/NOW-PAGE.md's "Pinning" for why (this is what the "still at the bottom
 // after the latest 5" request actually meant).
 function selectVisibleEntries(sectionKey, config) {
   const all = entriesForSection(sectionKey);

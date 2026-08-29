@@ -9,7 +9,7 @@
 // a perfect circle, it traces an organic coastline that roughly follows
 // the circle's footprint. Ported from the classic "noise minus a radial
 // gradient, then threshold" island-generation technique (see
-// Landing-page-notes.2.0.md for the reference article) -- adapted here so
+// documentation/Landing-page-notes.2.0.md for the reference article) -- adapted here so
 // every circle contributes to ONE shared heightmap instead of each
 // getting its own independent canvas, which is what lets two close
 // circles' coastlines fuse into a single landmass instead of always
@@ -125,7 +125,7 @@ function smoothstep(edge0, edge1, x) {
 
 // v3.5.2 -- angle-modulated radius, the actual silhouette fix (octaves
 // on the *edge* noise, tried first, only added detail below the grid's
-// own sampling resolution -- see Landing-page-notes.2.0.md). Rather than
+// own sampling resolution -- see documentation/Landing-page-notes.2.0.md). Rather than
 // a constant falloff radius in every direction (a jittered-edge circle
 // no matter how much noise rides on top of it), the radius itself
 // becomes a function of angle around the circle's own center: sample
@@ -232,7 +232,7 @@ function angularRadiusScale(perm, theta, freqRadius, phaseX, phaseY, strength, o
 // edge or past it, while a neighbouring point (offset by only a few
 // noise-field wavelengths) doesn't -- that's a real fold: a bay that
 // curves back on itself, or a peninsula that narrows then widens again,
-// not just a radius dip. See Landing-page-notes.2.0.md for the fuller
+// not just a radius dip. See documentation/Landing-page-notes.2.0.md for the fuller
 // writeup and the verification proxy used to confirm this actually
 // changes topology (multi-crossing rays), not just edge texture.
 //
@@ -743,7 +743,7 @@ export function buildInlandDistanceField(H, cols, rows, cellSize, threshold) {
 
 // v3.6.4: concentric "ripple" rings echoing the coastline outward into
 // open water (same spirit as the v2 map's coast-ripples-global, see
-// Landing-page-notes.2.0.md) are built by the caller as: build H once
+// documentation/Landing-page-notes.2.0.md) are built by the caller as: build H once
 // via buildIslandHeightmap(), call traceContourFromHeightmap() once for
 // config.threshold (the coastline) and once per entry in
 // config.rippleThresholds (each strictly below config.threshold, since

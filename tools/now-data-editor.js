@@ -5,7 +5,7 @@
 // object's and sectionOrder array's balanced-bracket span by scanning brace
 // depth from each `export const NAME` marker, and replaces only that span --
 // everything else in the file (the header comment, nowPageConfig, the
-// stream-vs-snapshot explainer comment) is untouched. See NOW-PAGE.md's
+// stream-vs-snapshot explainer comment) is untouched. See documentation/NOW-PAGE.md's
 // "Adding a section" for the file's role.
 
 const fs = require("fs");

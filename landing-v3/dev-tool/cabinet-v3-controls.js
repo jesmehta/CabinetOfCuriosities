@@ -70,7 +70,7 @@ function formatValue(v, step) {
 // v3.7.19 -- direct request, "start eliminating": dropped "" (none --
 // current default), "medieval" (Wave Contour draft), "neon" (Neon
 // Memphis), "ukiyo" (Ukiyo-e Woodblock). Full design descriptions for all
-// of these stay in v3-scheme-candidates.md regardless -- that doc records
+// of these stay in documentation/landing-v3-notes/v3-scheme-candidates.md regardless -- that doc records
 // the candidates themselves, independent of which ones still have a live
 // CSS block (cabinet-v3-style.css's own body.v3-proto[data-theme=...]
 // rules for these four were removed alongside this list).
@@ -81,7 +81,7 @@ function formatValue(v, step) {
 // comment).
 // Direct request: only Topology + Medieval Map will go forward to
 // PRODUCTION. Riso dropped entirely here (CSS removed too -- its
-// reasoning stays in v3-scheme-candidates.md and git history if ever
+// reasoning stays in documentation/landing-v3-notes/v3-scheme-candidates.md and git history if ever
 // wanted back) since it was explicitly disposable ("can go"). Cyanotype
 // and MedieRiso both stay live/selectable here even though neither will
 // ship -- "archive" and "scratchpad" describe their FUTURE, not present
@@ -498,8 +498,8 @@ function buildControlPanel() {
 
   // -- Theme (v3.6.14, expanded v3.6.15) -- seven parallel colour/type
   // treatments, meant to be compared against each other rather than one
-  // replacing the other (see Landing-page-notes.2.0.md punch-list item 10
-  // and v3-scheme-candidates.md for the reasoning behind each one). Pure
+  // replacing the other (see documentation/Landing-page-notes.2.0.md punch-list item 10
+  // and documentation/landing-v3-notes/v3-scheme-candidates.md for the reasoning behind each one). Pure
   // CSS switch via a data-theme attribute on <body> (cabinet-v3-style.css),
   // same pattern as Label style below -- except this ALSO nudges the Wave
   // contours / Colour bands checkboxes to whichever combination each

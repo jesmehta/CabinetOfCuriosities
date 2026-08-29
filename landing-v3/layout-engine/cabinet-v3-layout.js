@@ -9,7 +9,7 @@
 // viewport-sized field. This prototype's premise is the opposite --
 // "the layout is not recomputed every time the page loads, it is
 // recomputed only when new entries (or sections) are added (or
-// removed)" (explicit design decision, see Landing-page-notes.2.0.md) --
+// removed)" (explicit design decision, see documentation/Landing-page-notes.2.0.md) --
 // so it draws to an SVG viewBox and lets the browser scale that viewBox
 // responsively via CSS, the same technique the real docs/index.html map
 // already uses (see DESIGN-SYSTEM.md). Re-running the layout means
@@ -38,7 +38,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // v3.6.24 -- dragon.svg's own path data, copied directly rather than
 // loaded via <use>/<symbol> (that hit a genuine, never-resolved Chromium
 // painting bug earlier in this project -- see the "Boats attempt"
-// section in conversation-landing-page-v3.md -- an SVG <use> referencing
+// section in documentation/conversation-landing-page-v3.md -- an SVG <use> referencing
 // a <symbol> with a closed bezier path would silently fail to paint when
 // created during initial synchronous render; two targeted fixes didn't
 // resolve it, and it was reverted rather than chased further) and rather
@@ -98,7 +98,7 @@ function el(tag, attrs = {}, text) {
 // Step 1: fold entries into sections. A section's weight is the sum of
 // its own visible entries' weights (not an independently authored
 // number) -- see the "Section weight" decision in
-// Landing-page-notes.2.0.md. Sections with zero visible entries (hence
+// documentation/Landing-page-notes.2.0.md. Sections with zero visible entries (hence
 // zero weight) are dropped: no region to reserve for a section with
 // nothing to show.
 function buildSectionMetas() {
@@ -449,7 +449,7 @@ function splitLabelBand(region, label) {
 // second (scattered into whatever room the now-fixed entries left,
 // zipped in whatever order they were generated -- no reading order or
 // centering of their own). See "How archipelagos are packed" in
-// Landing-page-notes.2.0.md for why entries and extras no longer share
+// documentation/Landing-page-notes.2.0.md for why entries and extras no longer share
 // one scatter+center pass. Position is decided once, here -- growth (a
 // separate, later, GLOBAL step in render(), see its growCircles() call)
 // only ever changes radius, never position, and runs across every
@@ -3066,7 +3066,7 @@ export function render() {
   // the whole page isn't clipped by the SVG boundary itself the way an
   // island near an *interior* region seam still can be (that's the
   // general label-overflow limitation, still open -- see
-  // Landing-page-notes.2.0.md).
+  // documentation/Landing-page-notes.2.0.md).
   const outerMargin = 20;
   const canvasBounds = {
     x: -outerMargin,
@@ -3124,7 +3124,7 @@ export function render() {
   if (compassRegion) obstacles.push(compassRegion.outer);
 
   // v3.6.10 registered the page's title/tagline (real HTML, not SVG --
-  // see Landing-page-notes.2.0.md's "Canvas + legend" entry for why) as
+  // see documentation/Landing-page-notes.2.0.md's "Canvas + legend" entry for why) as
   // a growth obstacle here, since that version overlaid it directly on
   // top of the canvas's own corner. v3.6.12 moved the header back to a
   // normal top-of-flow row above .v3-stage-wrap, so it no longer
@@ -3147,7 +3147,7 @@ export function render() {
   // section, traced once and drawn first so every region group (labels,
   // hit circles, status rings) layers on top of it -- see
   // cabinet-v3-islandshape.js and the "Fusion behaviour" decision in
-  // Landing-page-notes.2.0.md for why this is a single combined trace
+  // documentation/Landing-page-notes.2.0.md for why this is a single combined trace
   // rather than one shape per circle.
   //
   // gridOrigin computed here (not just below, next to its own

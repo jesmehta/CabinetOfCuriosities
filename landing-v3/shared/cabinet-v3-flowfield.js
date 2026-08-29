@@ -24,7 +24,7 @@
 //    distance-to-nearest-island query needed. Never time-varying --
 //    islands don't move, only the current drifts.
 //
-// See Landing-page-notes.2.0.md's "Flow field" entries for the fuller
+// See documentation/Landing-page-notes.2.0.md's "Flow field" entries for the fuller
 // design conversation this implements.
 
 import { mulberry32, seedFromString, buildPermutation, fbm2D } from "./cabinet-v3-islandshape.js";
@@ -129,7 +129,7 @@ export function createFlowSampler(H, hCols, hRows, hCellSize, heightmapBounds, c
   // -- so two particles standing at the same real point can genuinely
   // read different local current structure, without ever touching the
   // safety-critical "is there land here" half of the field. Demo/cost
-  // discussion in conversation-landing-page-v3.md's "one giant trash
+  // discussion in documentation/conversation-landing-page-v3.md's "one giant trash
   // drift" section.
   function vectorAt(x, y, t = 0, offsetX = 0, offsetY = 0) {
     const potentialFn = (px, py) => potentialAt(px, py, t);

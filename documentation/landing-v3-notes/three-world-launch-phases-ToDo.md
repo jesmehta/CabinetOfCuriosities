@@ -1386,19 +1386,63 @@ pushed to `main`. `pre-file-reorg` (tag, `06a3813`) remains as a
 rollback point if anything surfaces later that this pass's
 verification gates didn't catch.
 
-Deliberately out of scope for all five items above, confirmed
-intentional rather than overlooked: `landing-v3/dev-screenshots/` (the
-established per-version screenshot convention), `landing-v3/archive/
-v3.6/` (a real, referenced comparison snapshot, linked from the static
-page's own footnote), `review/` (already correctly scoped by
-`.gitignore`), `docs/now.html`/`docs/now.md` coexisting (already
-documented as intentional in `NOW-PAGE.md`), and `now-page-helpers/`
-(superseded planning spec, same relationship `NOW-PAGE.md` has to it as
-`LANDING-PAGE-NOTES.md` has to `landing-v3/`'s system -- deferred to a
-future documentation-consolidation pass, not this reorg, by direct
-request). Renaming `landing-v3/` itself was also discussed and raised
-no functional blocker (nothing executable hardcodes the name -- only
-~9 docs reference it in prose) but was not requested; not tracked here
+- [x] **#134** Follow-up reorg, same day: gather root-level project
+      documentation into `documentation/`, and fix a real inconsistency
+      the file-by-file review that prompted this surfaced --
+      `dragon.svg` sat alone at repo root while its exact analog,
+      `compass_rose.svg`, had already moved to `landing-v3/layout-engine/`
+      in `#132`, for no real reason (an oversight, not a deliberate
+      split -- both are hand-inlined source art, neither loaded at
+      runtime). Direct request, with two hard constraints identified
+      first: `README.md` can't move (git/GitHub root-rendering
+      convention) and `WORLD-SYSTEMS.md` can't move alone (byte-identical
+      duplicate across Cabinet/Bookshelf/fffx, path assumed the same in
+      all three). Also directly asked and answered before moving
+      anything: whether `Landing-page-notes.2.0.md` and
+      `conversation-landing-page-v3.md` are actually redundant despite
+      covering the same period -- read both in full rather than assumed;
+      they're not (reference/changelog vs. narrative process log, and
+      the latter's own "documentation survey" section states the
+      non-duplication policy directly). **Done, 2026-08-29**: moved
+      `NOW-PAGE.md`, `Landing-page-notes.2.0.md`,
+      `conversation-landing-page-v3.md`, `FILE-MANIFEST.md`,
+      `now-page-helpers/` (whole folder -- see below, this *is* its
+      relocation, content consolidation still separately deferred), and
+      `landing-v3/`'s four documentation files (into a new
+      `documentation/landing-v3-notes/` subfolder, kept near each other
+      rather than flattened into `documentation/` directly, per direct
+      request) into `documentation/`; `dragon.svg` joined
+      `compass_rose.svg` in `landing-v3/layout-engine/`. Reference-fixing
+      pass: every real markdown-link-syntax reference repo-wide checked
+      and fixed (2 found), every code-comment "see X for details"
+      pointer in the v3 dev sources and Now-page tooling updated (~50
+      occurrences across 18 files, via scoped substitution after manually
+      reading every occurrence's context first -- none were ambiguous),
+      the promoted `docs/assets/` twins of every edited `landing-v3/shared/`
+      file re-synced, `docs/index.html` re-fixed the same way it was in
+      `#132`. Left as bare filename mentions in prose (not literal
+      broken links, matches this repo's own established citation
+      convention): the many casual "see NOW-PAGE.md" / "see
+      Landing-page-notes.2.0.md" references inside `documentation/*.md`
+      themselves. `FILE-MANIFEST.md` rewritten to match both the new
+      paths and the corrected Landing-page-notes/conversation-log
+      understanding. Full gate green: TSV builds clean, `mkdocs build
+      --strict` exit 0, `build-static.mjs` rebuild diff was exactly the
+      expected comment-only lines, zero console/request errors on both
+      `docs/index.html` and `landing-v3/dev-tool/islands-tool.html`.
+
+Deliberately out of scope, confirmed intentional rather than
+overlooked: `landing-v3/dev-screenshots/` (the established per-version
+screenshot convention), `landing-v3/archive/v3.6/` (a real, referenced
+comparison snapshot, linked from the static page's own footnote),
+`review/` (already correctly scoped by `.gitignore`), `docs/now.html`/
+`docs/now.md` coexisting (already documented as intentional in
+`NOW-PAGE.md`), and `now-page-helpers/`'s own *content* -- its location
+moved in `#134` above, but whether to keep/edit/split/append its three
+files is still deferred to a future documentation-consolidation pass,
+by direct request. Renaming `landing-v3/` itself was also discussed and
+raised no functional blocker (nothing executable hardcodes the name --
+only ~9 docs reference it in prose) but was not requested; not tracked here
 unless it is.
 
 ---

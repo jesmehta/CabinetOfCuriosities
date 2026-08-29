@@ -1,6 +1,6 @@
 // Now page -- hand-edited display config, kept separate from now.tsv's
 // content so that section titles, fade behaviour, and visible counts can
-// change without touching data (see NOW-PAGE.md's "Section Configuration").
+// change without touching data (see documentation/NOW-PAGE.md's "Section Configuration").
 
 export const nowPageConfig = {
   title: "Now",

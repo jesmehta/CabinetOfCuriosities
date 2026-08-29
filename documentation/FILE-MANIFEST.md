@@ -5,31 +5,43 @@ Bulk-content folders (images, screenshots, frozen archive snapshots) are
 described as one entry each rather than file-by-file — see each area's own
 docs (linked below) for exhaustive detail where it exists. Companion to
 `README.md`'s "Structure" section (the practical guide); this is the
-exhaustive map. Generated 2026-08-29, not auto-built — update by hand
-alongside structural changes, same as every other doc here.
+exhaustive map. Generated 2026-08-29, updated 2026-08-29 (documentation/
+relocation) — not auto-built, update by hand alongside structural changes,
+same as every other doc here.
 
-## Root-level documentation
+## Root-level files
+
+Only two `.md` files are root-required — everything else that used to sit
+at root moved into `documentation/` on 2026-08-29 (see that section
+below). `README.md` is a git/GitHub hosting convention (root is where
+it's expected to render); `WORLD-SYSTEMS.md` is duplicated byte-for-byte
+across Cabinet/Bookshelf/fffx with its own path assumed identical in all
+three, so it can't move here alone without desyncing the other two repos.
 
 | File | Role |
 |---|---|
 | `README.md` | Practical guide: structure, running locally, editing content, deploy pipeline, changelog. Start here. |
 | `WORLD-SYSTEMS.md` | Conventions shared across Cabinet/Bookshelf/fffx (data schema, status model, homepage rule). Hand-synced identically across all three repos — don't edit without also updating the other two. |
-| `NOW-PAGE.md` | Design decisions and as-built record for the `/now` page. Has its own per-file "Files" section (`NOW-PAGE.md:148`) scoped to that subsystem. |
-| `Landing-page-notes.2.0.md` | Exhaustive versioned dev log (v3.0–v3.7.67) for the `landing-v3/` map rebuild — design decisions, verification, changelog. Large (374KB). |
-| `conversation-landing-page-v3.md` | Narrative conversation-log account of the same v3 development period, companion to the file above. Large (2,800 lines) — some overlap with `Landing-page-notes.2.0.md`, flagged for a future documentation-consolidation pass. |
-| `FILE-MANIFEST.md` | This file. |
-
-## Root-level config/scripts
-
-| File | Role |
-|---|---|
 | `mkdocs.yml` | MkDocs site config: nav tree, theme, plugins, extra CSS/JS. |
 | `requirements.txt` | Python deps for `mkdocs build`/`mkdocs serve`. |
 | `.github/workflows/deploy.yml` | CI: builds the mkdocs site + assembles external repos into `public/teaching/<name>/`, deploys to GitHub Pages on every push to `main`. |
 | `.gitignore` / `.gitattributes` | Standard git config (line-ending normalization; ignores `site/`, `node_modules/`, `review/*`, generated build dirs). |
 | `run Mkdocs serve.bat` | Double-click launcher for `mkdocs serve`. |
 | `run-now-editor.bat` | Double-click launcher for `tools/now-editor.js` (the Now-page local admin server). |
-| `dragon.svg` | Design-source file for the v3 map's sea-dragon artwork — hand-inlined into `landing-v3/layout-engine/cabinet-v3-layout.js` as literal path data at build time, never loaded at runtime. Kept for reference/future edits. |
+
+## `documentation/` — project documentation, not root-required
+
+| File | Role |
+|---|---|
+| `NOW-PAGE.md` | Design decisions and as-built record for the `/now` page. Has its own per-file "Files" section scoped to that subsystem. |
+| `Landing-page-notes.2.0.md` | Exhaustive versioned dev log (v3.0–v3.7.67) for the `landing-v3/` map rebuild — design decisions, verification, changelog. Large (374KB). Technical reference: what the system is and how it works. |
+| `conversation-landing-page-v3.md` | Chronological process log of the same v3 development period — actual back-and-forth, corrected mistakes, direct quotes, meta-decisions about how to work. **Not a duplicate** of `Landing-page-notes.2.0.md` despite covering the same period: that file is reference/changelog (what shipped), this one is narrative (how it happened and why). The file's own "documentation survey" section states the policy directly — findings get folded into the reference doc's to-do list, not left duplicated here. Large (2,800 lines); size is a real cost, but not redundancy. |
+| `FILE-MANIFEST.md` | This file. |
+| `now-page-helpers/NOW-PAGE-DOCUMENTATION.md`, `NOW-PAGE-FILE-LIST.md`, `NOW-PAGE-VSCODE-PROMPT.md` | Original pre-code planning spec for the `/now` page, written before any code existed. Superseded by `NOW-PAGE.md`'s as-built record (which documents every deviation) — kept for the record, not actively maintained. Revisit in a future documentation-consolidation round, by direct request, not this pass. |
+| `landing-v3-notes/three-world-launch-phases-ToDo.md` | Master to-do tracker across Cabinet/Bookshelf/fffx launch phases — numbered items, checkboxes, resolution notes. Moved from `landing-v3/` 2026-08-29. |
+| `landing-v3-notes/three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
+| `landing-v3-notes/cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` at deploy time. Actively referenced from `deploy.yml`'s own comments. |
+| `landing-v3-notes/v3-scheme-candidates.md` | Five competing colour/font token-set proposals for one still-open decision, referenced from `Landing-page-notes.2.0.md`'s own to-do item #10 — a scratch/proposal doc, not a competing reference. |
 
 ## `content/` — canonical data sources (hand-edited)
 
@@ -87,7 +99,11 @@ alongside structural changes, same as every other doc here.
 
 ## `landing-v3/` — the v3 map's dev/build system
 
-Regrouped 2026-08-29 by actual role (see `three-world-launch-phases-ToDo.md` `#132` for the full import-graph reasoning behind the grouping).
+Regrouped 2026-08-29 by actual role (see
+`documentation/landing-v3-notes/three-world-launch-phases-ToDo.md` `#132`
+for the full import-graph reasoning behind the grouping); its own four
+documentation files moved into `documentation/landing-v3-notes/` the same
+day (see above) — this folder is code/build only now.
 
 | Path | Role |
 |---|---|
@@ -95,10 +111,6 @@ Regrouped 2026-08-29 by actual role (see `three-world-launch-phases-ToDo.md` `#1
 | `index.template.html` | Hand-edited source template for the static build — edit this, not `index.html`. |
 | `index.html` | Auto-generated by `build-static.mjs` — the dev-served copy; promoted (with an asset-path rewrite) to `docs/index.html` for production. |
 | `package.json` / `package-lock.json` / `node_modules/` | npm project for Playwright (used by `build-static.mjs`'s headless render). |
-| `three-world-launch-phases-ToDo.md` | Master to-do tracker across Cabinet/Bookshelf/fffx launch phases — numbered items, checkboxes, resolution notes. |
-| `three-world-launch-phases-Notes.md` | Supporting rationale: deployment mechanism, branch-transition reasoning, TSV-editor spec. |
-| `cabinet-multi-repo-assembly-concept-note-short.md` | Design note for how independent repos (Working with AI, Prompt Generator, etc.) get mounted into `public/teaching/<name>/` at deploy time. |
-| `v3-scheme-candidates.md` | Five competing colour/font token-set proposals for an open visual-polish item — not yet decided between. |
 | `dev-screenshots/` | Committed per-version screenshots documenting the v3 visual history — established workflow, not clutter. |
 | `archive/v3.6/` | Frozen snapshot of the v3.6 build for visual comparison, linked from the static page's own footnote. |
 
@@ -110,7 +122,7 @@ Regrouped 2026-08-29 by actual role (see `three-world-launch-phases-ToDo.md` `#1
 | `cabinet-v3-treemap.js` | Weighted-treemap section-region layout (`squarify()`). Pure logic, DOM-free, runs under plain Node too. |
 | `cabinet-v3-circlepack.js` | Growth-based circle-packing for islands within each region. Pure logic, DOM-free. |
 | `build-render.html` | Headless-Chromium entry point `build-static.mjs` loads to capture the SVG. Not for humans. |
-| `compass_rose.svg` | Design-source file for the compass rose artwork — hand-inlined into `cabinet-v3-layout.js`, same pattern as root `dragon.svg`. |
+| `compass_rose.svg`, `dragon.svg` | Design-source files for the compass rose and sea-dragon artwork — both hand-inlined into `cabinet-v3-layout.js` as literal path data, never loaded at runtime. `dragon.svg` joined `compass_rose.svg` here 2026-08-29 (previously sat alone at repo root — an inconsistency, not a deliberate split, both play the exact same role). |
 
 ### `shared/` — imported by the layout engine at build time, and shipped to production
 
@@ -143,12 +155,6 @@ Regrouped 2026-08-29 by actual role (see `three-world-launch-phases-ToDo.md` `#1
 | `index.html` | Archive landing page — largely bypassed now (Colophon links `v1/`/`v2/` directly). |
 | `cabinet-index.md.bak` | The pre-map Cabinet homepage, kept outside `docs/` so MkDocs never builds it. |
 | `README.md` | Archive's own index/explanation. |
-
-## `now-page-helpers/` — pre-code planning spec, superseded
-
-| File | Role |
-|---|---|
-| `NOW-PAGE-DOCUMENTATION.md`, `NOW-PAGE-FILE-LIST.md`, `NOW-PAGE-VSCODE-PROMPT.md` | Original planning spec for the `/now` page, written before any code existed. Superseded by `NOW-PAGE.md`'s as-built record (which documents every deviation) — kept for the record, not actively maintained. Deferred to a future documentation-consolidation round rather than touched now, by direct request. |
 
 ## `review/`
 

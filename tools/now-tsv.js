@@ -1,12 +1,12 @@
 // Now page -- shared TSV parse/serialize logic for content/now.tsv, used by
 // both build-now-content.js (CLI build) and now-editor.js (the local admin
-// server), so the two never drift apart. See NOW-PAGE.md's "Excel
+// server), so the two never drift apart. See documentation/NOW-PAGE.md's "Excel
 // round-trip" and "Data model" for why this parser looks the way it does.
 
 // "pinned" is last, not right after "date" where it'd read more naturally,
 // specifically so every pre-existing row (none of which have it) keeps
 // parsing via the trailing-column padding below instead of needing every
-// row rewritten just to insert a column in the middle -- see NOW-PAGE.md's
+// row rewritten just to insert a column in the middle -- see documentation/NOW-PAGE.md's
 // "Pinning" for why this shape was chosen.
 const REQUIRED_HEADERS = ["date", "section", "value", "image", "notes", "pinned"];
 const ISO_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;

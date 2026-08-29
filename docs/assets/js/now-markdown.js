@@ -1,7 +1,7 @@
 // Now page -- the tiny Markdown-subset renderer, shared between now-render.js
 // (the live page) and tools/now-editor's browser UI (its live preview), so
 // the two can never drift apart. Pure functions, no DOM dependency beyond
-// the strings/HTML they produce -- see NOW-PAGE.md's "Markdown subset".
+// the strings/HTML they produce -- see documentation/NOW-PAGE.md's "Markdown subset".
 
 const SAFE_URL_RE = /^(https?:|mailto:)/i;
 
@@ -14,7 +14,7 @@ export function escapeHtml(str) {
 }
 
 // Deliberately tiny: bold, italic, links only -- see now.tsv's "value"
-// field rules in NOW-PAGE.md. Escapes HTML first so the Markdown syntax
+// field rules in documentation/NOW-PAGE.md. Escapes HTML first so the Markdown syntax
 // below is the only source of tags in the output.
 export function renderInline(value) {
   let html = escapeHtml(value);

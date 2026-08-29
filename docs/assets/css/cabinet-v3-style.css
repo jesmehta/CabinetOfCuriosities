@@ -113,7 +113,7 @@ body.v3-proto {
 /* v3.6.14-v3.6.15 -- originally seven parallel colour/type treatments,
    explicitly meant to be compared against each other rather than one
    replacing the other (see Landing-page-notes.2.0.md's punch-list item 10
-   and v3-scheme-candidates.md for the full reasoning behind each one) --
+   and documentation/landing-v3-notes/v3-scheme-candidates.md for the full reasoning behind each one) --
    switched live via a `data-theme` attribute on <body> (dev panel:
    Visuals > Theme, cabinet-v3-controls.js), same pattern as
    `data-label-style`. Overriding the map's own tokens here only ever
@@ -125,7 +125,7 @@ body.v3-proto {
    default, "medieval" (Wave Contour draft), "neon" (Memphis-Milano), and
    "ukiyo" (woodblock) dropped from both this stylesheet and the dropdown
    (THEME_OPTIONS/THEME_PRESETS, cabinet-v3-controls.js) -- their full
-   descriptions stay in v3-scheme-candidates.md regardless, since that
+   descriptions stay in documentation/landing-v3-notes/v3-scheme-candidates.md regardless, since that
    doc records the DESIGN candidates, not which ones happen to still have
    a live CSS block. "medieval" was the rough v3.6.14 first-guess reusing
    the site's pre-existing --cab-paper/--cab-land tokens rather than the
@@ -174,7 +174,7 @@ body.v3-proto[data-theme="satellite"] {
   --v3-compass-white: var(--v3-halo-ink);
 }
 
-/* "medieval-map" -- v3-scheme-candidates.md scheme 1 (Tolkien / plain
+/* "medieval-map" -- documentation/landing-v3-notes/v3-scheme-candidates.md scheme 1 (Tolkien / plain
    engraved-map linework). Three-tier type: Cinzel for the title, IM Fell
    English (not its small-caps cut) for section labels, EB Garamond for
    the small dense island labels.
@@ -250,8 +250,8 @@ body.v3-proto[data-theme="medieval-map"] .v3-island-label {
    "scratchpad" status; neither is archived out of the dropdown. ("riso"
    itself, a separate/plainer theme, WAS deleted outright, since that one
    was explicitly disposable -- its reasoning still lives in
-   v3-scheme-candidates.md and git history if ever wanted back.)
-   v3-scheme-candidates.md scheme 3b. Every tier below is
+   documentation/landing-v3-notes/v3-scheme-candidates.md and git history if ever wanted back.)
+   documentation/landing-v3-notes/v3-scheme-candidates.md scheme 3b. Every tier below is
    the same pigment (#003153, Prussian blue) at reduced alpha over the
    paper tone (#f2ead9), precomposited by hand into flat hexes since
    --v3-sea-deep etc feed solid backgrounds, not translucent fills -- see
