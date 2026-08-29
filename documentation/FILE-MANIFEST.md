@@ -22,7 +22,7 @@ three, so it can't move here alone without desyncing the other two repos.
 |---|---|
 | `README.md` | Practical guide: structure, running locally, editing content, deploy pipeline, changelog. Start here. |
 | `WORLD-SYSTEMS.md` | Conventions shared across Cabinet/Bookshelf/fffx (data schema, status model, homepage rule). Hand-synced identically across all three repos — don't edit without also updating the other two. |
-| `mkdocs.yml` | MkDocs site config: nav tree, theme, plugins, extra CSS/JS. |
+| `mkdocs.yml` | MkDocs site config: nav tree, theme, plugins, extra CSS/JS. `theme.custom_dir: overrides` (2026-08-29) points at the theme override below. |
 | `requirements.txt` | Python deps for `mkdocs build`/`mkdocs serve`. |
 | `.github/workflows/deploy.yml` | CI: builds the mkdocs site + assembles external repos into `public/teaching/<name>/`, deploys to GitHub Pages on every push to `main`. |
 | `.gitignore` / `.gitattributes` | Standard git config (line-ending normalization; ignores `site/`, `node_modules/`, `review/*`, generated build dirs). |
@@ -34,6 +34,8 @@ three, so it can't move here alone without desyncing the other two repos.
 | File | Role |
 |---|---|
 | `NOW-PAGE.md` | Design decisions and as-built record for the `/now` page. Has its own per-file "Files" section scoped to that subsystem. |
+| `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md` #135/#136. |
+| `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |
 | `Landing-page-notes.2.0.md` | Exhaustive versioned dev log (v3.0–v3.7.67) for the `landing-v3/` map rebuild — design decisions, verification, changelog. Large (374KB). Technical reference: what the system is and how it works. |
 | `conversation-landing-page-v3.md` | Chronological process log of the same v3 development period — actual back-and-forth, corrected mistakes, direct quotes, meta-decisions about how to work. **Not a duplicate** of `Landing-page-notes.2.0.md` despite covering the same period: that file is reference/changelog (what shipped), this one is narrative (how it happened and why). The file's own "documentation survey" section states the policy directly — findings get folded into the reference doc's to-do list, not left duplicated here. Large (2,800 lines); size is a real cost, but not redundancy. |
 | `FILE-MANIFEST.md` | This file. |
@@ -42,6 +44,12 @@ three, so it can't move here alone without desyncing the other two repos.
 | `landing-v3-notes/three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
 | `landing-v3-notes/cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` at deploy time. Actively referenced from `deploy.yml`'s own comments. |
 | `landing-v3-notes/v3-scheme-candidates.md` | Five competing colour/font token-set proposals for one still-open decision, referenced from `Landing-page-notes.2.0.md`'s own to-do item #10 — a scratch/proposal doc, not a competing reference. |
+
+## `overrides/` — MkDocs Material theme override
+
+| File | Role |
+|---|---|
+| `main.html` | Extends Material's `base.html`, injects the Cloudflare Web Analytics beacon into the `extrahead` block so every MkDocs-generated page inherits it from one place — see `documentation/cloudflare-web-analytics-setup.md`. Added 2026-08-29. |
 
 ## `content/` — canonical data sources (hand-edited)
 

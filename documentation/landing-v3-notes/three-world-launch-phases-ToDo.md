@@ -1644,6 +1644,33 @@ section to empty out.*
 
 </details>
 
+- [ ] **#135** Roll out Cloudflare Web Analytics to Bookshelf and FFFX --
+      Cabinet's own beacon is done, 2026-08-29 (see
+      `documentation/cloudflare-web-analytics-setup.md` and
+      `cloudflare-js-snippet.md` for the token/snippet): `mkdocs.yml`
+      gained `theme.custom_dir: overrides`, a new `overrides/main.html`
+      extends `base.html`'s `extrahead` block so every MkDocs-generated
+      page gets the beacon in one place (not hand-added per Markdown
+      file), and the standalone `docs/index.html` landing page got the
+      same script tag added directly to `landing-v3/index.template.html`
+      (its hand-edited source, so it survives the next `build-static.mjs`
+      + promote cycle) and, for now, to the already-promoted
+      `docs/index.html` too so tracking is live without forcing an
+      immediate full rebuild. `TheBookshelfOfCuriosities` and
+      `form-follows-fx` are separate repos with their own `mkdocs.yml` --
+      same two-part pattern applies there (MkDocs template override +
+      each site's own standalone/custom pages, if any), using each site's
+      own Cloudflare Web Analytics token, not Cabinet's.
+- [ ] **#136** Same beacon rollout for other external repos assembled into
+      Cabinet/Bookshelf/FFFX at deploy time (the `deploy.yml`
+      checkout-and-copy pattern from #43/#71/#128: Working with AI,
+      Prompt Generator, Oblique Strategies, Swatch Fields, Tracery Bots,
+      and any future additions) -- each is its own standalone repo/site,
+      so each needs the beacon added directly to its own page(s)/shared
+      template, with its own Cloudflare Web Analytics token if tracked as
+      a distinct property, rather than inheriting Cabinet's mkdocs
+      override.
+
 ---
 
 ## Content Inventory -- Pages, Entries & Their Statuses

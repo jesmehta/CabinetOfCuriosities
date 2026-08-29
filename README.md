@@ -91,7 +91,10 @@ repo/world) rather than duplicating their content.
   the "Root-level file verdicts" reasoning in git history (2026-08-29) if
   the distinction ever needs re-litigating.
 - `mkdocs.yml`, `requirements.txt` — MkDocs config and its Python
-  dependencies.
+  dependencies. `theme.custom_dir: overrides` (2026-08-29) points at
+  `overrides/main.html`, which extends MkDocs Material's `base.html` to
+  inject the Cloudflare Web Analytics beacon into every generated page —
+  see `documentation/cloudflare-web-analytics-setup.md`.
 - `.github/workflows/deploy.yml` — the deploy pipeline (see below).
 
 ## Running locally
@@ -166,6 +169,25 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### Cloudflare Web Analytics — MkDocs + landing page beacon (2026-08-29)
+
+Added tracking for Cabinet, per `documentation/cloudflare-web-analytics-setup.md`.
+Two injection points, both one-place-covers-everything rather than
+per-page: `mkdocs.yml` gained `theme.custom_dir: overrides`, and the new
+`overrides/main.html` extends Material's `base.html` `extrahead` block
+so every `docs/*.md` page inherits the beacon automatically. The
+standalone `docs/index.html` landing page isn't MkDocs-templated, so it
+needed its own copy — added to `landing-v3/index.template.html` (the
+hand-edited source, survives the next `build-static.mjs` + promote
+cycle) and, the same day, directly to the already-promoted
+`docs/index.html` too, so tracking went live without forcing a full
+Playwright rebuild for a one-line addition. Verified with a local
+`mkdocs build`: beacon present in every built page, zero build errors.
+Bookshelf/fffx and the externally-assembled repos (Working with AI,
+Prompt Generator, Swatch Fields, Tracery Bots, etc.) still need their
+own rollout — tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md`
+items #135/#136.
 
 ### `/now` v2.0 — moved from standalone now.html to a generated now.md (2026-08-29)
 

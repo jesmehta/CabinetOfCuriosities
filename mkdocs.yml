@@ -68,6 +68,7 @@ extra:
 
 theme:
   name: material
+  custom_dir: overrides
   palette:
     # try other colors https://squidfunk.github.io/mkdocs-material/getting-started/#primary-colors
     primary: custom

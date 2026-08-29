@@ -25,3 +25,9 @@ mapRefs/
 # said "dev-archive/", which never actually existed.)
 review/*
 !review/README.md
+
+# Plaintext Cloudflare beacon token -- temp working notes, the token
+# itself already ships baked into the live pages (overrides/main.html,
+# landing-v3/index.template.html), so this file adds nothing but
+# duplication if committed. 2026-08-29.
+documentation/cloudflare-js-snippet.md
