@@ -241,7 +241,6 @@ export const entries = [
     "id": "scifi",
     "section": "bookshelf",
     "title": "Golden Age SciFi",
-    "subtitle": "Timeline and reading project on the writers who imagined tomorrow.",
     "href": "https://bookshelf.cabinetofcuriosities.in/scifi/",
     "order": 10,
     "weight": 3,
@@ -252,20 +251,12 @@ export const entries = [
       "golden-age"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 20.8,
-      "y": 33.7
-    },
-    "icon": "icon-rocket"
+    "subtitle": "Timeline and reading project on the writers who imagined tomorrow."
   },
   {
     "id": "asimov",
     "section": "bookshelf",
     "title": "Asimov",
-    "subtitle": "Foundation, Robots, and the Grand Unification.",
     "href": "https://bookshelf.cabinetofcuriosities.in/asimov/",
     "order": 20,
     "weight": 3,
@@ -277,20 +268,12 @@ export const entries = [
       "asimov"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 30,
-      "y": 22.2
-    },
-    "icon": "icon-book"
+    "subtitle": "Foundation, Robots, and the Grand Unification."
   },
   {
     "id": "christie",
     "section": "bookshelf",
     "title": "Christie",
-    "subtitle": "The geography of murder -- places, books, literary maps.",
     "href": "https://bookshelf.cabinetofcuriosities.in/",
     "order": 30,
     "weight": 2,
@@ -302,21 +285,13 @@ export const entries = [
       "christie"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 39.2,
-      "y": 33.7
-    },
-    "icon": "icon-typewriter",
+    "subtitle": "The geography of murder -- places, books, literary maps.",
     "notes": "Author page not live yet; links to Bookshelf root as placeholder."
   },
   {
     "id": "vera-molnar",
     "section": "fffx",
     "title": "Vera Molnar",
-    "subtitle": "A code-driven homage and study.",
     "href": "https://fffx.cabinetofcuriosities.in/recreating-the-past/vera-molnar/",
     "order": 10,
     "weight": 4,
@@ -327,20 +302,12 @@ export const entries = [
       "geometry"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 54.9,
-      "y": 31.9
-    },
-    "icon": "icon-circles"
+    "subtitle": "A code-driven homage and study."
   },
   {
     "id": "circle-packing-library",
     "section": "fffx",
     "title": "Circle Packing Library",
-    "subtitle": "From Bookclubs to Libraries -- circle packing with code.",
     "href": "https://fffx.cabinetofcuriosities.in/tools-and-libraries/circle-packing-library/",
     "order": 20,
     "weight": 4,
@@ -352,14 +319,7 @@ export const entries = [
       "library"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 64.4,
-      "y": 20.9
-    },
-    "icon": "icon-circles",
+    "subtitle": "From Bookclubs to Libraries -- circle packing with code.",
     "relatedLinks": [
       {
         "label": "GitHub repository",
@@ -372,7 +332,6 @@ export const entries = [
     "id": "particle-systems",
     "section": "fffx",
     "title": "Particle Systems",
-    "subtitle": "Particles, motion, and emergent behaviour.",
     "href": "https://fffx.cabinetofcuriosities.in/deep-studies/particle-systems/",
     "order": 30,
     "weight": 3,
@@ -384,20 +343,12 @@ export const entries = [
       "motion"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 73.9,
-      "y": 31.9
-    },
-    "icon": "icon-particles"
+    "subtitle": "Particles, motion, and emergent behaviour."
   },
   {
     "id": "100-gradients",
     "section": "fffx",
     "title": "100 Gradients",
-    "subtitle": "A study in generated colour fields.",
     "href": "https://fffx.cabinetofcuriosities.in/deep-studies/100-gradients/",
     "order": 40,
     "weight": 3,
@@ -409,20 +360,12 @@ export const entries = [
       "generative"
     ],
     "location": "subdomain",
-    "visual": {
-      "placement": "coast",
-      "size": "medium",
-      "cardType": "port-card",
-      "anchor": "north",
-      "order": 1
-    },
-    "icon": "icon-gradient"
+    "subtitle": "A study in generated colour fields."
   },
   {
     "id": "teaching-student-work",
     "section": "teaching",
     "title": "Student Work",
-    "subtitle": "Selected student work and showcases from SSD Creative Coding.",
     "href": "teaching/ssd-creative-coding/",
     "order": 10,
     "weight": 3,
@@ -434,21 +377,13 @@ export const entries = [
       "showcase"
     ],
     "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 28.7,
-      "y": 49.2
-    },
-    "icon": "icon-cap",
+    "subtitle": "Selected student work and showcases from SSD Creative Coding.",
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding/ (jesmehta/SSD_CreativeCodingPage) -- was an external link before 2026-08-24."
   },
   {
     "id": "teaching-approach",
     "section": "teaching",
     "title": "History & Approach",
-    "subtitle": "A concise teaching history and approach statement.",
     "href": "",
     "order": 20,
     "weight": 2,
@@ -459,21 +394,13 @@ export const entries = [
       "approach"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 19.7,
-      "y": 59.5
-    },
-    "icon": "icon-book",
+    "subtitle": "A concise teaching history and approach statement.",
     "notes": "No page yet -- renders as non-navigating (coming soon)."
   },
   {
     "id": "teaching-research",
     "section": "teaching",
     "title": "Research & Interests",
-    "subtitle": "Research directions and pedagogical interests.",
     "href": "",
     "order": 30,
     "weight": 2,
@@ -484,21 +411,13 @@ export const entries = [
       "research"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 37.8,
-      "y": 59.5
-    },
-    "icon": "icon-magnifier",
+    "subtitle": "Research directions and pedagogical interests.",
     "notes": "No page yet."
   },
   {
     "id": "gujarati-type",
     "section": "visual-field-notes",
     "title": "Gujarati Type",
-    "subtitle": "A photographic collection of Gujarati letterforms.",
     "href": "",
     "order": 10,
     "weight": 2,
@@ -510,20 +429,12 @@ export const entries = [
       "photography"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 53.1,
-      "y": 59.4
-    },
-    "icon": "icon-type"
+    "subtitle": "A photographic collection of Gujarati letterforms."
   },
   {
     "id": "doors-of-kutch",
     "section": "visual-field-notes",
     "title": "Doors of Kutch",
-    "subtitle": "A place-based visual gallery of doors, thresholds, and surfaces.",
     "href": "",
     "order": 20,
     "weight": 2,
@@ -535,20 +446,12 @@ export const entries = [
       "photography"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 62.8,
-      "y": 49.4
-    },
-    "icon": "icon-door"
+    "subtitle": "A place-based visual gallery of doors, thresholds, and surfaces."
   },
   {
     "id": "kochi",
     "section": "visual-field-notes",
     "title": "Kochi",
-    "subtitle": "Visual notes and photographic observations from Kochi.",
     "href": "",
     "order": 30,
     "weight": 2,
@@ -560,20 +463,12 @@ export const entries = [
       "travel"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 72.5,
-      "y": 59.4
-    },
-    "icon": "icon-boat"
+    "subtitle": "Visual notes and photographic observations from Kochi."
   },
   {
     "id": "makings-3d-printing",
     "section": "machines-makings",
     "title": "3D Printing",
-    "subtitle": "Notes, examples, and reflections on 3D printing as a making process.",
     "href": "3dp/3DP_2019/",
     "order": 10,
     "weight": 3,
@@ -584,20 +479,12 @@ export const entries = [
       "fabrication"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 26.3,
-      "y": 78.8
-    },
-    "icon": "icon-layers"
+    "subtitle": "Notes, examples, and reflections on 3D printing as a making process."
   },
   {
     "id": "makings-origami-paper",
     "section": "machines-makings",
     "title": "Origami & Paper",
-    "subtitle": "Paper structures, folds, surfaces, and material logic.",
     "href": "makings/origami-paper/",
     "order": 20,
     "weight": 2,
@@ -608,21 +495,13 @@ export const entries = [
       "paper"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 16.5,
-      "y": 87.2
-    },
-    "icon": "icon-origami",
+    "subtitle": "Paper structures, folds, surfaces, and material logic.",
     "notes": "Stub page, 2026-08-24 -- content coming later."
   },
   {
     "id": "makings-lasercutting",
     "section": "machines-makings",
     "title": "Lasercutting",
-    "subtitle": "Laser cutting notes, examples, and making references.",
     "href": "makings/lasercutting/",
     "order": 30,
     "weight": 2,
@@ -633,21 +512,13 @@ export const entries = [
       "fabrication"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 36,
-      "y": 87.2
-    },
-    "icon": "icon-laser",
+    "subtitle": "Laser cutting notes, examples, and making references.",
     "notes": "Stub page, 2026-08-24 -- content coming later."
   },
   {
     "id": "looms",
     "section": "machines-makings",
     "title": "Looms",
-    "subtitle": "A machine collection around weaving, textiles, and mechanisms.",
     "href": "mini_loom/",
     "order": 40,
     "weight": 3,
@@ -659,20 +530,12 @@ export const entries = [
       "textiles"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "coast",
-      "size": "medium",
-      "cardType": "port-card",
-      "anchor": "south",
-      "order": 1
-    },
-    "icon": "icon-loom"
+    "subtitle": "A machine collection around weaving, textiles, and mechanisms."
   },
   {
     "id": "drawing-machines",
     "section": "machines-makings",
     "title": "Drawing Machines",
-    "subtitle": "Drawing machines, plotters, and mechanical mark-making systems.",
     "href": "makings/drawing-machines/",
     "order": 50,
     "weight": 2,
@@ -683,21 +546,13 @@ export const entries = [
       "drawing-machines"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "coast",
-      "size": "medium",
-      "cardType": "port-card",
-      "anchor": "south",
-      "order": 2
-    },
-    "icon": "icon-gear",
+    "subtitle": "Drawing machines, plotters, and mechanical mark-making systems.",
     "notes": "Stub page, 2026-08-24 -- content coming later."
   },
   {
     "id": "branching-narrative",
     "section": "interfaces-data-texts",
     "title": "Branching Narrative",
-    "subtitle": "A Twine-based interactive narrative experiment.",
     "href": "emergent_twine/",
     "order": 10,
     "weight": 3,
@@ -709,20 +564,12 @@ export const entries = [
       "interactive"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 55.2,
-      "y": 79.4
-    },
-    "icon": "icon-branch"
+    "subtitle": "A Twine-based interactive narrative experiment."
   },
   {
     "id": "dataviz",
     "section": "interfaces-data-texts",
     "title": "Data Visualisations",
-    "subtitle": "Charts, maps, datasets, and visual systems.",
     "href": "",
     "order": 20,
     "weight": 3,
@@ -734,21 +581,13 @@ export const entries = [
       "data"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 70.4,
-      "y": 79.4
-    },
-    "icon": "icon-chart",
+    "subtitle": "Charts, maps, datasets, and visual systems.",
     "notes": "Direct correction, 2026-08-24: was cross-listed to Bookshelf's Christie/agatha page, but that's not actually Data Visualisations content -- reverted to a real stub (no page yet) like the section's other wip entries."
   },
   {
     "id": "writings",
     "section": "interfaces-data-texts",
     "title": "Writings",
-    "subtitle": "Essays, notes, reflections, and digital texts.",
     "href": "",
     "order": 30,
     "weight": 2,
@@ -759,20 +598,12 @@ export const entries = [
       "essays"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 55.2,
-      "y": 88.3
-    },
-    "icon": "icon-quill"
+    "subtitle": "Essays, notes, reflections, and digital texts."
   },
   {
     "id": "webtech",
     "section": "interfaces-data-texts",
     "title": "WebTech",
-    "subtitle": "Web pieces that do not belong inside fffx.",
     "href": "dotMandalaTool/",
     "order": 40,
     "weight": 3,
@@ -783,20 +614,12 @@ export const entries = [
       "tools"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque",
-      "x": 70.4,
-      "y": 88.3
-    },
-    "icon": "icon-code"
+    "subtitle": "Web pieces that do not belong inside fffx."
   },
   {
     "id": "tracery-bots",
     "section": "interfaces-data-texts",
     "title": "Tracery Bots",
-    "subtitle": "Generative text bots built with Tracery.",
     "href": "traceryBots/",
     "order": 50,
     "weight": 2,
@@ -808,20 +631,12 @@ export const entries = [
       "generative-text"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "coast",
-      "size": "medium",
-      "cardType": "port-card",
-      "anchor": "east",
-      "order": 1
-    },
-    "icon": "icon-bot"
+    "subtitle": "Generative text bots built with Tracery."
   },
   {
     "id": "compass-n",
     "section": "compass",
     "title": "About Me",
-    "subtitle": "",
     "href": "about/",
     "order": 10,
     "weight": 1,
@@ -830,9 +645,6 @@ export const entries = [
     "tags": [],
     "location": "",
     "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
       "anchor": "N"
     },
     "notes": "Links to docs/about.md. CV and Contact live inside that page, not as their own compass points."
@@ -841,7 +653,6 @@ export const entries = [
     "id": "compass-e",
     "section": "compass",
     "title": "Now",
-    "subtitle": "",
     "href": "now/",
     "order": 20,
     "weight": 1,
@@ -850,9 +661,6 @@ export const entries = [
     "tags": [],
     "location": "",
     "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
       "anchor": "E"
     },
     "notes": "Links to docs/now.md. Contact also lives on that page, not as its own compass point. Replaces the earlier \"Contact me\" placeholder at this compass point."
@@ -861,7 +669,6 @@ export const entries = [
     "id": "compass-s",
     "section": "compass",
     "title": "Colophon",
-    "subtitle": "",
     "href": "colophon/",
     "order": 30,
     "weight": 1,
@@ -870,9 +677,6 @@ export const entries = [
     "tags": [],
     "location": "",
     "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
       "anchor": "S"
     },
     "notes": "Dummy page for now (docs/colophon.md) -- links straight to the v1/v2 archive; user will add the actual writing later."
@@ -881,7 +685,6 @@ export const entries = [
     "id": "compass-w",
     "section": "compass",
     "title": "Site map",
-    "subtitle": "",
     "href": "sitemap/",
     "order": 40,
     "weight": 1,
@@ -890,9 +693,6 @@ export const entries = [
     "tags": [],
     "location": "",
     "visual": {
-      "placement": "",
-      "size": "",
-      "cardType": "",
       "anchor": "W"
     },
     "notes": "Auto-generated from all three worlds' TSVs by tools/generate_sitemap.py -> docs/sitemap.md, mirroring build-cabinet-content.js's own TSV-as-source-of-truth pattern. CV moved off this compass point; it now lives inside the About Me page instead."
@@ -901,7 +701,6 @@ export const entries = [
     "id": "working-with-ai",
     "section": "teaching",
     "title": "Working with AI",
-    "subtitle": "15 principles for working with AI tools, assembled straight into Cabinet.",
     "href": "teaching/working-with-ai/",
     "order": 40,
     "weight": 3,
@@ -913,19 +712,13 @@ export const entries = [
       "guide"
     ],
     "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-book",
+    "subtitle": "15 principles for working with AI tools, assembled straight into Cabinet.",
     "notes": "Multi-repo assembly (#43), mounted at /teaching/working-with-ai/ -- not built by mkdocs. location: assembly is a new value (field is descriptive only, not read by the layout code) since existing subdomain/mkdocs/external didn't fit."
   },
   {
     "id": "swatch-fields",
     "section": "machines-makings",
     "title": "Swatch Fields",
-    "subtitle": "An atlas of material swatches and colour fields.",
     "href": "swatch-fields/",
     "order": 60,
     "weight": 3,
@@ -937,18 +730,12 @@ export const entries = [
       "colour"
     ],
     "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-swatch"
+    "subtitle": "An atlas of material swatches and colour fields."
   },
   {
     "id": "prompt-generator",
     "section": "teaching",
     "title": "Prompt Generator",
-    "subtitle": "A generator for transformation and creative-writing prompts.",
     "href": "teaching/prompt-generator/",
     "order": 50,
     "weight": 2,
@@ -961,19 +748,13 @@ export const entries = [
       "tool"
     ],
     "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-code",
+    "subtitle": "A generator for transformation and creative-writing prompts.",
     "notes": "Multi-repo assembly, mounted at /teaching/prompt-generator/ (jesmehta/PromptGenerator)."
   },
   {
     "id": "oblique-strategies",
     "section": "teaching",
     "title": "Oblique Strategies",
-    "subtitle": "A digital deck of Oblique Strategies cards for creative blocks.",
     "href": "teaching/oblique-strategies/",
     "order": 60,
     "weight": 2,
@@ -986,19 +767,13 @@ export const entries = [
       "tool"
     ],
     "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-cards",
+    "subtitle": "A digital deck of Oblique Strategies cards for creative blocks.",
     "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
   },
   {
     "id": "emergent-technology",
     "section": "teaching",
     "title": "Emergent Technology",
-    "subtitle": "Working with AI, Coding with AI, and class write-ups.",
     "href": "teaching/#emergent-technology",
     "order": 70,
     "weight": 2,
@@ -1010,19 +785,13 @@ export const entries = [
       "emergent-technology"
     ],
     "location": "mkdocs",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-rocket",
+    "subtitle": "Working with AI, Coding with AI, and class write-ups.",
     "notes": "Links to the Emergent Technology subheading on teaching.md."
   },
   {
     "id": "swatch-fields-interfaces",
     "section": "interfaces-data-texts",
     "title": "Swatch Fields",
-    "subtitle": "An atlas of material swatches and colour fields -- dye and colour work, cross-listed from Machines & Makings.",
     "href": "swatch-fields/",
     "order": 60,
     "weight": 2,
@@ -1035,19 +804,13 @@ export const entries = [
       "dye"
     ],
     "location": "assembly",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-swatch",
+    "subtitle": "An atlas of material swatches and colour fields -- dye and colour work, cross-listed from Machines & Makings.",
     "notes": "Intersectional entry (2026-08-24) -- same repo as machines-makings's swatch-fields, cross-listed here since it's equally a colour/data-texture piece. Two separate TSV rows, two islands, deliberate."
   },
   {
     "id": "fab-academy",
     "section": "fab",
     "title": "Fab Academy",
-    "subtitle": "The official Fab Academy program.",
     "href": "https://fabacademy.org/",
     "order": 10,
     "weight": 3,
@@ -1057,19 +820,13 @@ export const entries = [
       "fabacademy"
     ],
     "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-cap",
+    "subtitle": "The official Fab Academy program.",
     "notes": "Root domain inferred from the confirmed personal-page URL (fabacademy.org/2023/...) -- high confidence, but this is the general program site, not fab-23's specific page."
   },
   {
     "id": "fabricademy",
     "section": "fab",
     "title": "Fabricademy",
-    "subtitle": "The official Fabricademy program.",
     "href": "",
     "order": 20,
     "weight": 3,
@@ -1079,19 +836,13 @@ export const entries = [
       "fabricademy"
     ],
     "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-cap",
+    "subtitle": "The official Fabricademy program.",
     "notes": "href still blank -- confirmed domain family is textile-academy.org (from fab-26's class.textile-academy.org/2026/... page), but unsure if the general public site is at textile-academy.org root or a separate fabricademy.net -- confirm before setting."
   },
   {
     "id": "fab-23",
     "section": "fab",
     "title": "Fab 23",
-    "subtitle": "Jesal's FabAcademy Chronicles -- write-up and reflections from Fab Academy 2023.",
     "href": "https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/",
     "order": 30,
     "weight": 3,
@@ -1103,18 +854,12 @@ export const entries = [
       "2023"
     ],
     "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-quill"
+    "subtitle": "Jesal's FabAcademy Chronicles -- write-up and reflections from Fab Academy 2023."
   },
   {
     "id": "fab-26",
     "section": "fab",
     "title": "Fab 26",
-    "subtitle": "Fabricademy 2026 coursework and journal.",
     "href": "https://class.textile-academy.org/2026/jesal-mehta/",
     "order": 40,
     "weight": 3,
@@ -1126,12 +871,7 @@ export const entries = [
       "2026"
     ],
     "location": "external",
-    "visual": {
-      "placement": "land",
-      "size": "medium",
-      "cardType": "thumbnail-plaque"
-    },
-    "icon": "icon-quill",
+    "subtitle": "Fabricademy 2026 coursework and journal.",
     "notes": "Fabricademy, not Fab Academy -- sister program, different year cohort (2026) than fab-23 (2023)."
   }
 ];

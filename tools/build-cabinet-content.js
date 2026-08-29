@@ -1,89 +1,20 @@
 const fs = require("fs");
 const path = require("path");
+const {
+  readSections, readEntries, validateSections, validateEntries,
+  parseStatus, parseNumber, parseOptionalNumber, parseList, parseRelatedLinks, defaultExtraCount,
+} = require("./cabinet-tsv");
 
 const root = path.resolve(__dirname, "..");
 const sectionsPath = path.join(root, "content", "cabinet-sections.tsv");
 const entriesPath = path.join(root, "content", "cabinet-entries.tsv");
 const outputPath = path.join(root, "docs", "assets", "js", "cabinet-generated-content.js");
 
-function readTsv(filePath) {
-  const raw = fs.readFileSync(filePath, "utf8").replace(/^﻿/, "");
-  const lines = raw.split(/\r?\n/).filter(line => line.length > 0);
-  if (!lines.length) return [];
-
-  const headers = lines[0].split("\t");
-  return lines.slice(1).map((line, index) => {
-    const cells = line.split("\t");
-    if (cells.length !== headers.length) {
-      throw new Error(
-        `${path.relative(root, filePath)} line ${index + 2}: expected ${headers.length} cells, got ${cells.length}`
-      );
-    }
-
-    return Object.fromEntries(headers.map((header, cellIndex) => [header, cells[cellIndex]]));
-  });
-}
-
-function parseStatus(value, context) {
-  const normalized = value.trim().toLowerCase();
-  if (normalized === "true") return true;
-  if (normalized === "false") return false;
-  if (normalized === "wip") return "wip";
-  throw new Error(`${context}: status must be true, wip, or false (case-insensitive)`);
-}
-
-function parseNumber(value, field, context) {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) {
-    throw new Error(`${context}: ${field} must be numeric`);
-  }
-  return parsed;
-}
-
-function parseOptionalNumber(value) {
-  if (value === undefined || value === null || value.trim() === "") return undefined;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-// Deterministic fallback for any section that leaves extraCount blank --
-// stable per section id (not random) so a section's filler-island count
-// doesn't change between builds just because it wasn't hand-tuned yet.
-// Ported from landing-v3/cabinet-v3-extras-config.js's defaultExtrasFor(),
-// now folded in here since extraCount is a real TSV column, not a
-// separate hand-authored JS object.
-function defaultExtraCount(sectionId) {
-  let hash = 0;
-  for (let i = 0; i < sectionId.length; i++) {
-    hash = (hash * 31 + sectionId.charCodeAt(i)) >>> 0;
-  }
-  return 1 + (hash % 3); // 1-3
-}
-
-function parseList(value, separator = ";") {
-  if (!value) return [];
-  return value.split(separator).map(item => item.trim()).filter(Boolean);
-}
-
-function parseRelatedLinks(value, context) {
-  return parseList(value).map((item, index) => {
-    const separatorIndex = item.indexOf("|");
-    if (separatorIndex === -1) {
-      throw new Error(`${context}: relatedLinks item ${index + 1} must use label|href`);
-    }
-
-    const label = item.slice(0, separatorIndex).trim();
-    const href = item.slice(separatorIndex + 1).trim();
-    if (!label || !href) {
-      throw new Error(`${context}: relatedLinks item ${index + 1} needs both label and href`);
-    }
-
-    return { label, href };
-  });
-}
-
 function buildSections() {
-  return readTsv(sectionsPath).map(row => {
+  const rows = readSections(fs.readFileSync(sectionsPath, "utf8"), path.relative(root, sectionsPath));
+  validateSections(rows);
+
+  return rows.map(row => {
     const section = {
       id: row.id,
       title: row.title,
@@ -111,38 +42,34 @@ function buildSections() {
   });
 }
 
-function buildEntries() {
-  return readTsv(entriesPath).map(row => {
+function buildEntries(sections) {
+  const rows = readEntries(fs.readFileSync(entriesPath, "utf8"), path.relative(root, entriesPath));
+  validateEntries(rows, new Set(sections.map(s => s.id)));
+
+  return rows.map(row => {
     const entry = {
       id: row.id,
       section: row.section,
       title: row.title,
-      subtitle: row.subtitle,
       href: row.href,
       order: parseNumber(row.order, "order", `entry ${row.id}`),
       weight: parseNumber(row.weight, "weight", `entry ${row.id}`),
       status: parseStatus(row.status, `entry ${row.id}`),
       kind: row.kind,
       tags: parseList(row.tags),
-      location: row.location,
-      visual: {
-        placement: row.placement,
-        size: row.size,
-        cardType: row.cardType
-      }
+      location: row.location
     };
 
-    const x = parseOptionalNumber(row.x);
-    const y = parseOptionalNumber(row.y);
-    if (x !== undefined) entry.visual.x = x;
-    if (y !== undefined) entry.visual.y = y;
-    if (row.anchor) entry.visual.anchor = row.anchor;
-    const cardOrder = parseOptionalNumber(row.cardOrder);
-    if (cardOrder !== undefined) entry.visual.order = cardOrder;
-    if (row.leaderTo) entry.visual.leaderTo = row.leaderTo;
+    // `visual.anchor` is the one surviving field from what used to be a
+    // whole visual/placement sub-object -- landing-v3-layout.js's
+    // computeCompassNominalLabels() reads it (only for the compass-n/e/s/w
+    // entries, values N/E/S/W) to place the compass rose's direction
+    // labels. Nothing else under the old `visual` shape is read anywhere
+    // in the live renderer -- see cabinet-tsv.js's schema comment.
+    if (row.anchor) entry.visual = { anchor: row.anchor };
 
     if (row.thumbnail) entry.thumbnail = row.thumbnail;
-    if (row.icon) entry.icon = row.icon;
+    if (row.subtitle) entry.subtitle = row.subtitle;
 
     const relatedLinks = parseRelatedLinks(row.relatedLinks, `entry ${row.id}`);
     if (relatedLinks.length) entry.relatedLinks = relatedLinks;
@@ -152,22 +79,12 @@ function buildEntries() {
   });
 }
 
-function validateReferences(sections, entries) {
-  const sectionIds = new Set(sections.map(s => s.id));
-  for (const entry of entries) {
-    if (!sectionIds.has(entry.section)) {
-      throw new Error(`entry ${entry.id}: section "${entry.section}" does not match any section id`);
-    }
-  }
-}
-
 function serializeExport(name, value) {
   return `export const ${name} = ${JSON.stringify(value, null, 2)};\n`;
 }
 
 const sections = buildSections();
-const entries = buildEntries();
-validateReferences(sections, entries);
+const entries = buildEntries(sections);
 
 const output = `// AUTO-GENERATED FILE.
 // Do not edit.
