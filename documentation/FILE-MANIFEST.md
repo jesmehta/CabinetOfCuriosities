@@ -56,7 +56,7 @@ three, so it can't move here alone without desyncing the other two repos.
 | File | Role |
 |---|---|
 | `build-cabinet-content.js` | Parses the two `cabinet-*.tsv` files into `docs/assets/js/cabinet-generated-content.js`. |
-| `build-now-content.js` | Parses `content/now.tsv` into `docs/assets/js/now-generated-content.js`. |
+| `build-now-content.js` | Parses `content/now.tsv` + `now-data.js` directly into `docs/now.md` — same "script writes Markdown into `docs/`" pattern as `generate_sitemap.py`. Pre-renders entry text through `now-markdown.js` first. (2026-08-29: previously wrote a `now-generated-content.js` JS blob for a client-rendered `docs/now.html`; that page and its generated-JS output are both gone now — see `NOW-PAGE.md`'s v2.0 entry.) |
 | `generate_sitemap.py` | Fetches sections/entries TSVs live from all three worlds' repos (Cabinet, fffx, Bookshelf) over GitHub raw, writes `docs/sitemap.md`. |
 | `now-tsv.js` | Shared TSV parse/serialize logic, used by both `build-now-content.js` and the admin editor — kept in one place so the two can't quietly diverge. |
 | `now-data-editor.js` | Programmatic reader/writer for `now-data.js`'s `sectionConfig`/`sectionOrder` (balanced-bracket-span replace, not full-file rewrite). Editor-only. |
