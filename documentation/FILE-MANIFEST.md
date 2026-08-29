@@ -28,12 +28,14 @@ three, so it can't move here alone without desyncing the other two repos.
 | `.gitignore` / `.gitattributes` | Standard git config (line-ending normalization; ignores `site/`, `node_modules/`, `review/*`, generated build dirs). |
 | `run Mkdocs serve.bat` | Double-click launcher for `mkdocs serve`. |
 | `run-now-editor.bat` | Double-click launcher for `tools/now-editor.js` (the Now-page local admin server). |
+| `run-cabinet-editor.bat` | Double-click launcher for `tools/cabinet-editor.js` (the Cabinet sections/entries local admin server). |
 
 ## `documentation/` — project documentation, not root-required
 
 | File | Role |
 |---|---|
 | `NOW-PAGE.md` | Design decisions and as-built record for the `/now` page. Has its own per-file "Files" section scoped to that subsystem. |
+| `CABINET-EDITOR.md` | Design decisions and as-built record for the Cabinet sections/entries local admin server (mirrors `NOW-PAGE.md`'s "Local admin server" section for the `now-editor.js` pattern). Covers the live-vs-reserved TSV column split and notes Bookshelf/fffx copies as future work. |
 | `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md` #135/#136. |
 | `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |
 | `Landing-page-notes.2.0.md` | Exhaustive versioned dev log (v3.0–v3.7.67) for the `landing-v3/` map rebuild — design decisions, verification, changelog. Large (374KB). Technical reference: what the system is and how it works. |
@@ -55,21 +57,24 @@ three, so it can't move here alone without desyncing the other two repos.
 
 | File | Role |
 |---|---|
-| `content/cabinet-sections.tsv` | Cabinet's top-level islands/sections (Bookshelf, fffx, Teaching, etc.) — id, title, href, status, weight, layout columns. |
-| `content/cabinet-entries.tsv` | Individual plaques/port-cards within each section, including the compass rose's four direction entries. |
+| `content/cabinet-sections.tsv` | Cabinet's top-level islands/sections (Bookshelf, fffx, Teaching, etc.) — id, title, href, status, weight, layout columns. Hand-edited or via `tools/cabinet-editor.js`. |
+| `content/cabinet-entries.tsv` | Individual plaques/port-cards within each section, including the compass rose's four direction entries. Hand-edited or via `tools/cabinet-editor.js`. |
 | `content/now.tsv` | `/now` page entries (reading/watching/travel/etc.), one row per item. |
 
 ## `tools/` — build and authoring scripts (never shipped to `docs/`)
 
 | File | Role |
 |---|---|
-| `build-cabinet-content.js` | Parses the two `cabinet-*.tsv` files into `docs/assets/js/cabinet-generated-content.js`. |
+| `build-cabinet-content.js` | Parses the two `cabinet-*.tsv` files into `docs/assets/js/cabinet-generated-content.js`. Refactored 2026-08-29 onto `cabinet-tsv.js`'s shared reader/validator (byte-identical output verified) — see `CABINET-EDITOR.md`. |
 | `build-now-content.js` | Parses `content/now.tsv` + `now-data.js` directly into `docs/now.md` — same "script writes Markdown into `docs/`" pattern as `generate_sitemap.py`. Pre-renders entry text through `now-markdown.js` first. (2026-08-29: previously wrote a `now-generated-content.js` JS blob for a client-rendered `docs/now.html`; that page and its generated-JS output are both gone now — see `NOW-PAGE.md`'s v2.0 entry.) |
 | `generate_sitemap.py` | Fetches sections/entries TSVs live from all three worlds' repos (Cabinet, fffx, Bookshelf) over GitHub raw, writes `docs/sitemap.md`. |
 | `now-tsv.js` | Shared TSV parse/serialize logic, used by both `build-now-content.js` and the admin editor — kept in one place so the two can't quietly diverge. |
 | `now-data-editor.js` | Programmatic reader/writer for `now-data.js`'s `sectionConfig`/`sectionOrder` (balanced-bracket-span replace, not full-file rewrite). Editor-only. |
 | `now-editor.js` | Local-only zero-dependency Node HTTP admin server (`/admin/`, port 5757) for editing `now.tsv` entries and `now-data.js` sections through a browser UI. |
 | `now-editor-ui/index.html`, `editor.css`, `editor.js` | The admin server's browser UI. |
+| `cabinet-tsv.js` | Shared TSV parse/serialize/validate logic for `content/cabinet-*.tsv`, used by both `build-cabinet-content.js` and `cabinet-editor.js` — same "one shared module" reasoning as `now-tsv.js`. Strict plain splitter (not CSV-quote-aware like `now-tsv.js`), matching Cabinet's TSVs' own convention. Added 2026-08-29, see `CABINET-EDITOR.md`. |
+| `cabinet-editor.js` | Local-only zero-dependency Node HTTP admin server (`/admin/`, port 5858) for editing `cabinet-sections.tsv`/`cabinet-entries.tsv` through a browser UI, plus a Rebuild button that shells out to `build-cabinet-content.js`. Added 2026-08-29. |
+| `cabinet-editor-ui/index.html`, `editor.css`, `editor.js` | The admin server's browser UI — grid editor with a collapsed "reserved/layout" panel per row for TSV columns the live v3 renderer doesn't currently read (see `CABINET-EDITOR.md`). Replaces the earlier one-file `cabinet-data-editor.html` sketch (deleted). |
 
 ## `docs/` — the live MkDocs site + standalone static pages
 

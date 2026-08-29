@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cabinet — Ledger</title>
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Cabinet — Ledger</h1>
+    <div class="sub">Local editor for content/cabinet-sections.tsv &amp; content/cabinet-entries.tsv — reads and writes the real files directly.</div>
+  </div>
+  <div class="header-actions">
+    <span class="compass">jesmehta / CabinetOfCuriosities</span>
+    <button class="btn primary" id="rebuild-btn">Rebuild</button>
+  </div>
+</header>
+
+<div id="status-banner" class="status-banner" hidden></div>
+
+<nav class="tabs">
+  <button data-tab="sections" class="active">Sections</button>
+  <button data-tab="entries">Entries</button>
+</nav>
+
+<main>
+
+  <section class="panel active" id="panel-sections">
+    <div class="toolbar">
+      <input type="text" id="search-sections" placeholder="Filter sections by id, title, tag…">
+      <span class="count-pill" id="count-sections">0 sections</span>
+      <button class="btn primary" id="add-section">+ Add section</button>
+    </div>
+    <div class="table-wrap"><div id="table-sections"></div></div>
+    <footer class="hint">
+      <strong>id</strong> must be unique — it's what entries reference in their <strong>section</strong> column.
+      <strong>order</strong> controls draw sequence within the map; <strong>weight</strong> controls relative island size.
+      Use ▲▼ to reorder — order values renumber automatically in steps of 10.
+      The <strong>▸ layout</strong> panel (mapForm/islandId/cx/cy/rx/ry) is read-only — those columns aren't read by the live v3 renderer at all; squarify() computes island placement live from weight. Kept in the file for the record, not for editing.
+    </footer>
+  </section>
+
+  <section class="panel" id="panel-entries">
+    <div class="toolbar">
+      <input type="text" id="search-entries" placeholder="Filter entries by id, title, section, tag…">
+      <span class="count-pill" id="count-entries">0 entries</span>
+      <button class="btn primary" id="add-entry">+ Add entry</button>
+    </div>
+    <div class="table-wrap"><div id="table-entries"></div></div>
+    <footer class="hint">
+      <strong>section</strong> is validated live against the Sections tab — rows in red reference a section id that doesn't exist there, or duplicate another row's id.
+      ▲▼ reorders and renumbers <strong>order</strong> within that entry's section only.
+      <strong>anchor</strong> only matters for the four compass entries (N/E/S/W) — everywhere else it's unused.
+      The <strong>▸ reserved</strong> panel (subtitle/thumbnail) is editable but currently unread by the live v3 renderer — kept as a just-in-case/reminder, not for an active feature.
+    </footer>
+  </section>
+
+</main>
+
+<dialog id="confirm-dialog">
+  <h2 id="confirm-dialog-title">Are you sure?</h2>
+  <div class="body"><p id="confirm-dialog-body"></p></div>
+  <div class="actions">
+    <button class="btn" id="confirm-cancel">Cancel</button>
+    <button class="btn danger" id="confirm-ok">Delete</button>
+  </div>
+</dialog>
+
+<script src="editor.js"></script>
+</body>
+</html>
