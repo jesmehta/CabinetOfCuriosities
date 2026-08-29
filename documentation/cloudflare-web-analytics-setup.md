@@ -120,8 +120,22 @@ Covers both page types, injected once each, not per-page:
     just for a one-line addition.
 
 Explicitly **not** covered, by design: `tools/now-editor.js` (the local
-`/now` admin server) — never deployed, not part of the MkDocs build at
-all, so there's no public page for a beacon to go on.
+`/now` admin server) and `landing-v3/dev-tool/islands-tool.html` — never
+deployed, not part of the MkDocs build or `public/` output at all, so
+there's no public page for a beacon to go on.
+
+**`archived-landing-pages/`** (frozen v1/v2/v2-history/v3-history/
+algorithm-bench snapshots) initially missed too — direct question
+surfaced the gap: `deploy.yml` copies this whole tree into
+`public/archived-landing-pages/` and the live Colophon page links
+straight into it, so it's genuinely public and viewer-facing, same as
+everything else here, even though it's otherwise frozen/not-rewritten
+content. Added the same day, scripted (28 HTML files, one line each,
+before `</body>` — except `algorithm-bench/index.html`, which has no
+closing `</body>`/`</html>` tags at all, so it's appended at EOF
+instead). Pure addition, no visual/behavioural change to the archived
+pages themselves. Verified: 0 of 28 files missing the beacon after the
+script ran.
 
 Not yet done: Bookshelf (`TheBookshelfOfCuriosities`) and FFFX
 (`form-follows-fx`) each need the same two-part treatment in their own

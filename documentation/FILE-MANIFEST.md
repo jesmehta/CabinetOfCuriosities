@@ -150,6 +150,17 @@ day (see above) — this folder is code/build only now.
 
 ## `archived-landing-pages/` — frozen historical snapshots, not rewritten
 
+Content/structure frozen as documented below. One narrow exception,
+2026-08-29: all 28 HTML files across this tree got the Cloudflare Web
+Analytics beacon appended before `</body>` (or at EOF for
+`algorithm-bench/index.html`, which has no closing `</body>`/`</html>`
+tags at all) — these pages are genuinely deployed
+(`public/archived-landing-pages/`) and publicly linked from the live
+Colophon page, so they're viewer-facing by the same standard as the
+current site, direct request. Pure addition, no visual/behavioural
+change, scripted rather than hand-edited (28 files) — see
+`documentation/cloudflare-web-analytics-setup.md`.
+
 | Path | Role |
 |---|---|
 | `v1/` | Full rebuilt v1 site (original MkDocs Material homepage, pre-map). |

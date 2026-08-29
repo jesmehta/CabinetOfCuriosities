@@ -187,7 +187,11 @@ Playwright rebuild for a one-line addition. Verified with a local
 Bookshelf/fffx and the externally-assembled repos (Working with AI,
 Prompt Generator, Swatch Fields, Tracery Bots, etc.) still need their
 own rollout — tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md`
-items #135/#136.
+items #135/#136. **Same-day follow-up**: `archived-landing-pages/`
+(frozen v1/v2/v2-history/v3-history/algorithm-bench snapshots) initially
+missed, despite being genuinely deployed and Colophon-linked — added to
+all 28 HTML files there too, scripted, pure addition with no
+visual/behavioural change.
 
 ### `/now` v2.0 — moved from standalone now.html to a generated now.md (2026-08-29)
 
