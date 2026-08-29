@@ -1,20 +1,18 @@
-/* Now page -- editorial/notebook layout, not the map/island chrome.
-   Consumes cabinet-tokens.css's --cab-* palette. See NOW-PAGE.md for the
-   design decisions this implements (fade hierarchy, stream vs snapshot). */
+/* Now page -- structural/accent CSS for docs/now.md's generated entry lists
+   (tools/build-now-content.js). now.md is a real MkDocs Material page now
+   (see documentation/NOW-PAGE.md's "TSV -> JS pipeline" for why), so page
+   chrome, typography, and colours already come from cabinet-material.css
+   the same way they do on every other content page (about.md, colophon.md,
+   ...) -- this file only adds the bits Material's own .md-typeset styles
+   don't know about: the entry-list layout and the fade-hierarchy accent.
 
-body.now-page {
-  margin: 0;
-  /* --cab-paper, not --cab-paper-deep -- paper-deep is the map shell's
-     backdrop tone (see DESIGN-SYSTEM.md's palette table), not a content
-     background. --cab-paper is what every Material-rendered content page
-     (about.md, colophon.md, teaching.md, ...) actually sits on via
-     cabinet-material.css's --md-default-bg-color mapping -- matching it
-     here is what makes /now read as the same site as those pages. */
-  background: var(--cab-paper);
-  color: var(--cab-ink);
-  font-family: var(--cab-font-body);
-  line-height: 1.5;
+   Every selector below is prefixed with .md-typeset, matching or exceeding
+   the specificity of Material's own element-level rules (e.g. ".md-typeset
+   h2", ".md-typeset ul") so these reliably win regardless of stylesheet
+   load order -- a bare class selector like ".now-section-title" would lose
+   to ".md-typeset h2" on specificity alone. */
 
+:root {
   /* Locally-defined, not imported from cabinet-v3-style.css's --v3-* tokens
      on purpose -- that file is still an in-flux prototype system (see its
      own header comment), and /now should stay stable and self-contained
@@ -31,93 +29,49 @@ body.now-page {
   --now-accent-bright: #2a9797;
 }
 
-.now-shell {
-  max-width: 42rem;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
-}
-
-.now-back-link {
-  display: inline-block;
-  margin-bottom: 2rem;
-  color: var(--cab-ink-soft);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.now-back-link:hover,
-.now-back-link:focus-visible {
-  color: var(--now-accent);
-}
-
-.now-header h1 {
-  font-family: var(--cab-font-heading);
-  font-size: 2.4rem;
-  margin: 0 0 0.5rem;
-  letter-spacing: 0.02em;
-}
-
-.now-tagline {
-  color: var(--cab-ink-soft);
-  font-size: 1.05rem;
-  margin: 0 0 0.4rem;
-  max-width: 34rem;
-}
-
-.now-updated {
-  color: var(--cab-ink-faint);
-  font-size: 0.85rem;
-  font-style: italic;
-  margin: 0 0 3rem;
-}
-
-.now-section {
-  margin-bottom: 2.75rem;
-}
-
-.now-section-title {
-  font-family: var(--cab-font-heading);
+.md-typeset h2.now-section-title {
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   border-bottom: 2px solid var(--now-accent-bright);
   padding-bottom: 0.4rem;
-  margin: 0 0 1rem;
+  margin: 2rem 0 1rem;
 }
 
-.now-entry-list {
+.md-typeset ul.now-entry-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 2rem;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 }
 
-.now-entry {
+.md-typeset .now-entry {
   display: flex;
   gap: 0.9rem;
   align-items: flex-start;
+  margin: 0;
 }
 
 /* One flex item alongside the optional image, so a multi-paragraph entry
    (e.g. a longer reaction) stacks its <p> tags in a column instead of the
    <li>'s own flex row treating each paragraph as a separate side-by-side
    item. */
-.now-entry-text {
+.md-typeset .now-entry-text {
   flex: 1;
   min-width: 0;
 }
 
-.now-entry-value {
+.md-typeset .now-entry-value {
   margin: 0 0 0.6rem;
 }
 
-.now-entry-value:last-child {
+.md-typeset .now-entry-value:last-child {
   margin-bottom: 0;
 }
 
-.now-entry-value a {
+.md-typeset .now-entry-value a {
   /* inherit, not a hardcoded ink colour -- most "current"-tier entries
      (book/film titles) ARE links, so the link needs to pick up whichever
      fade-tier colour its paragraph has (now-current's blue accent included)
@@ -126,8 +80,8 @@ body.now-page {
   text-decoration-color: var(--cab-ink-faint);
 }
 
-.now-entry-value a:hover,
-.now-entry-value a:focus-visible {
+.md-typeset .now-entry-value a:hover,
+.md-typeset .now-entry-value a:focus-visible {
   color: var(--now-accent);
 }
 
@@ -135,7 +89,7 @@ body.now-page {
    reads as a book-cover/thumbnail rather than a profile picture. Sized for
    the reading/found sections' actual images (book covers, link
    screenshots). */
-.now-entry-image {
+.md-typeset img.now-entry-image {
   width: 6rem;
   height: 8.5rem;
   object-fit: cover;
@@ -145,14 +99,14 @@ body.now-page {
 }
 
 /* "full" layout: image spans the entry, sits above the text instead of
-   beside it -- see now-render.js's imageLayout handling and now-data.js's
-   per-section config. */
-.now-entry--image-full {
+   beside it -- see tools/build-now-content.js's imageLayout handling and
+   now-data.js's per-section config. */
+.md-typeset .now-entry--image-full {
   flex-direction: column;
   align-items: stretch;
 }
 
-.now-entry-image--full {
+.md-typeset img.now-entry-image--full {
   width: 100%;
   height: auto;
   max-height: 22rem;
@@ -161,36 +115,33 @@ body.now-page {
 
 /* Fade hierarchy: colour + weight, not literal opacity, so text stays
    legible against the parchment background at every step (see
-   NOW-PAGE.md's "Important Visual Rule"). The freshest tier gets the blue
-   accent instead of plain ink -- "current" reads as genuinely alive, not
-   just heavier, and it's what actually delivers the "a lot of" blue-green
-   presence the page asked for (repeated at the top of every section)
-   rather than confining the accent to one-off link colours. */
-.now-current .now-entry-value {
+   documentation/NOW-PAGE.md's "Important Visual Rule"). The freshest tier
+   gets the blue accent instead of plain ink -- "current" reads as
+   genuinely alive, not just heavier, and it's what actually delivers the
+   "a lot of" blue-green presence the page asked for (repeated at the top
+   of every section) rather than confining the accent to one-off link
+   colours. */
+.md-typeset .now-current .now-entry-value {
   color: var(--now-accent);
   font-weight: 500;
 }
 
-.now-recent .now-entry-value {
+.md-typeset .now-recent .now-entry-value {
   color: var(--cab-ink-soft);
 }
 
-.now-old .now-entry-value {
+.md-typeset .now-old .now-entry-value {
   color: var(--cab-ink-faint);
   font-size: 0.95rem;
 }
 
 @media (max-width: 32rem) {
-  .now-header h1 {
-    font-size: 1.9rem;
-  }
-
-  .now-entry-image {
+  .md-typeset img.now-entry-image {
     width: 4.5rem;
     height: 6.5rem;
   }
 
-  .now-entry-image--full {
+  .md-typeset img.now-entry-image--full {
     max-height: 14rem;
   }
 }

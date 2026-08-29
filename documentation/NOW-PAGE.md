@@ -12,7 +12,7 @@ folder) has to `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`.
 
 ## Purpose
 
-`/now` (`docs/now.html`) is a periodically updated snapshot of what
+`/now` (`docs/now.md`) is a periodically updated snapshot of what
 currently has Jesal's attention: reading, watching, music, projects,
 teaching, travel, curiosities, making/experimenting, and recent finds.
 
@@ -26,21 +26,37 @@ count in `now-data.js`). Older rows stay in `now.tsv` — the data is
 append-only and can later support a `/now/archive/` page — but are not
 rendered on the current page.
 
-## Why a standalone `docs/now.html`, not an MkDocs `now.md`
+## Why a generated `now.md`, not a standalone HTML page
 
-Cabinet already has one precedent for a hand-built static page living
-directly in `docs/` alongside the MkDocs-rendered `.md` pages:
-`docs/index.html` (see `WORLD-SYSTEMS.md`'s "Homepage rule"). `/now`
-follows the same pattern for the same reason — page-specific JS-driven
-layout (fade emphasis, stream/snapshot grouping) is simpler to hand-build
-than to fight into Material's theme/Markdown pipeline.
+**This reverses v1.0's original decision** (a standalone `docs/now.html`,
+same pattern as `docs/index.html` — see v1.0-v1.1 below and `git log` for
+that era). v2.0 (see Changelog) moved to a real MkDocs Material page
+instead, once a second, stronger precedent existed for generating a real
+`.md` page rather than hand-building HTML: `tools/generate_sitemap.py` →
+`docs/sitemap.md`, which does exactly that — a script writes plain
+Markdown straight into `docs/`, MkDocs renders it as a normal page,
+nothing hand-authored. `/now` mirrors that pattern instead.
 
-**`docs/now.md` (the old "coming soon" stub) has deliberately been left
-in place and untouched**, and `mkdocs.yml`'s nav still points "Now" at
-it. `docs/now.html` exists and is fully functional at `/now.html`, but is
-not yet linked from the sidebar. Wiring the nav over to `now.html` (and
-deciding what happens to the `now.md` stub — delete it, or turn it into a
-redirect) is a deliberate follow-up, not an oversight.
+What this buys over the v1.x approach: real sidebar nav/breadcrumbs, a
+working "on this page" TOC (one entry per section, since each section is
+a genuine Markdown heading), and search-index inclusion — none of which a
+client-side-rendered `docs/now.html` could offer, since its content
+didn't exist in the page until JS ran after load. It also means `/now`
+finally reads as the same kind of page as `about.md`/`colophon.md`/
+`sitemap.md` structurally, not just colour-matched.
+
+What it costs, accepted deliberately: the page is now static per
+rebuild rather than client-rendered (was already effectively true, since
+nothing recomputed against "today" at render time — see "Fade hierarchy"
+below, tiers are rank-based, not date-of-viewing-based); and previewing a
+change requires an actual `mkdocs build`/`serve` pass rather than a
+static file refresh, since `now.md` is raw Markdown source, not
+renderable HTML by itself.
+
+`docs/now.md` is now the single, real `/now` page — `mkdocs.yml`'s nav
+entry ("Now : now.md") needed no change, since it already pointed there
+(the old "coming soon" stub just hadn't been replaced yet). There is no
+more separate `docs/now.html`.
 
 ## Data model
 
@@ -53,7 +69,7 @@ date	section	value	image	notes	pinned
 - `date` — ISO `YYYY-MM-DD`, **or** `DD-MM-YYYY` (see "Excel round-trip"
   below — both are accepted and normalized to ISO at build time). Sort
   key; ties break on TSV row order (see `entriesForSection()` in
-  `now-render.js`).
+  `tools/build-now-content.js`).
 - `section` — stable key: `reading`, `watching`, `music`, `projects`,
   `teaching`, `travel`, `curiosities`, `making`, `found`, `andThenSome`,
   plus whatever's been added since — see "Adding a section" below.
@@ -64,14 +80,19 @@ date	section	value	image	notes	pinned
   "Markdown subset" below). A book/film entry with a reaction is one
   `value` cell, title line then a blank line then the reaction:
   `[Title](url) — Author\n\n<reaction>`.
-- `image` — optional repo-relative path under `docs/` (e.g.
-  `assets/now/reading/somebook.jpg`). Blank is valid — most entries don't
-  have one. See "Files" below for where uploaded images actually live, and
-  "Display configuration" for how a section's `imageLayout` controls
-  whether it renders beside the text or full-width above it.
+- `image` — optional **site-root-relative** path (leading `/`, e.g.
+  `/assets/now/reading/somebook.jpg`). Blank is valid — most entries
+  don't have one. Root-relative, not `docs/`-relative, because `now.md`
+  renders at `site/now/` (MkDocs' directory-URL "pretty links", the site
+  default) — one level deeper than a same-directory-relative path would
+  resolve from; see v2.0 in the Changelog. See "Files" below for where
+  uploaded images actually live, and "Display configuration" for how a
+  section's `imageLayout` controls whether it renders beside the text or
+  full-width above it.
 - `notes` — **private, never rendered — not where reactions go.**
-  `now-render.js` never reads this field for display, by design, so
-  anything meant to reach the public page belongs in `value`. Reserve
+  `tools/build-now-content.js` never reads this field for display, by
+  design, so anything meant to reach the public page belongs in `value`.
+  Reserve
   `notes` for genuinely private editorial state: `DIF: ...` TODO
   placeholders, "needs photo", etc. See v1.3/v1.4 in the Changelog for why
   this distinction gets its own callout — it was the site's actual first
@@ -114,32 +135,45 @@ does on save that the parser has to tolerate, not fight:
 
 The original `now-page-helpers` spec called for Python
 (`tools/build-now.py`) generating a plain `data/now.json`, fetched by the
-browser at runtime. **This was intentionally not followed.** Cabinet
-already has a live, working version of this exact pipeline for its map
-content, documented as a *shared cross-world convention* in
-`WORLD-SYSTEMS.md` ("no content strings or entry data live in
-gallery/layout code" / "Asset naming"):
+browser at runtime. **This was intentionally not followed**, and the
+pipeline has changed shape once since (v1.x's ES-module output, replaced
+by v2.0's real Markdown output — see "Why a generated now.md" above and
+the Changelog). The current pipeline:
 
 ```text
-content/now.tsv
+content/now.tsv  +  docs/assets/js/now-data.js
       ↓  (node tools/build-now-content.js)
-docs/assets/js/now-generated-content.js   -- ES module, export const nowEntries
+docs/now.md      -- real MkDocs page, headings + raw HTML entry-list blocks
 ```
 
-Reasons for following the repo's real convention instead of the spec's
-generic one:
+`build-now-content.js` dynamically `import()`s two ES modules at build
+time to do this: `now-data.js` (section config, cache-busted the same way
+`now-data-editor.js` does, since it's hand-edited between rebuilds) and
+`now-markdown.js` (the shared `renderInline`/`splitParagraphs` Markdown-
+subset renderer — see "Markdown subset" below) to pre-render each entry's
+`value` text into HTML before writing it into the `.md` file.
 
-- Matches `content/cabinet-*.tsv` → `tools/build-cabinet-content.js` →
-  `docs/assets/js/cabinet-generated-content.js` exactly — one pattern to
-  understand for the whole repo, not two.
-- An ES module import needs no `fetch()`, so the page works from a plain
-  `file://` open (e.g. via VS Code's Live Server) with no CORS/local-server
-  gotcha.
-- Consistent with the `*-data.js` (hand-edited config) /
-  `*-generated-content.js` (generated data) split used everywhere else in
-  Cabinet, Bookshelf, and fffx.
+Each section becomes a real Markdown heading (`## Title {: .now-section-
+title }`, using the `attr_list` extension already enabled in
+`mkdocs.yml` for the styling class) so it shows up in Material's sidebar
+TOC and search index, immediately followed by one contiguous raw HTML
+block (`<ul class="now-entry-list">...</ul>`) for that section's entries
+— attr_list alone can't express the side-thumbnail/full-width image
+layouts, but a plain Markdown heading followed by an adjacent raw HTML
+block needs no special extension (`md_in_html` was deliberately *not*
+enabled — entry text is pre-rendered to HTML by the generator instead of
+written as literal Markdown inside the block, sidestepping the
+blank-line-sensitivity `md_in_html` would otherwise add).
 
-Run after every edit to `content/now.tsv`:
+This still matches the *spirit* of the repo's real convention
+(`content/cabinet-*.tsv` → `tools/build-cabinet-content.js` →
+`docs/assets/js/cabinet-generated-content.js`, and now also
+`tools/generate_sitemap.py` → `docs/sitemap.md`) more closely than the
+original spec's Python/JSON+fetch approach would have — a build script
+writing directly into `docs/` is exactly what `generate_sitemap.py`
+already does for `sitemap.md`.
+
+Run after every edit to `content/now.tsv` or `now-data.js`:
 
 ```bash
 node tools/build-now-content.js
@@ -149,14 +183,15 @@ node tools/build-now-content.js
 
 ```text
 content/now.tsv                          -- source of truth, hand-edited
-tools/build-now-content.js                -- TSV -> JS build script
+tools/build-now-content.js                -- TSV+now-data.js -> now.md build script
 
-docs/now.html                             -- standalone page shell
-docs/assets/js/now-generated-content.js   -- AUTO-GENERATED, do not edit
+docs/now.md                               -- AUTO-GENERATED, do not edit -- the real /now page, wired into mkdocs.yml's nav
 docs/assets/js/now-data.js                -- hand-edited: section titles, mode, visible, groupSize, imageLayout
-docs/assets/js/now-render.js              -- grouping/sorting/fade/pinning rendering (live page)
-docs/assets/js/now-markdown.js            -- shared tiny Markdown renderer (now-render.js + the editor's preview)
-docs/assets/css/now.css                   -- layout + fade hierarchy + colour accents, built on cabinet-tokens.css
+docs/assets/js/now-markdown.js            -- shared tiny Markdown renderer (dynamically imported by build-now-content.js
+                                              at build time, and by the editor's browser-side live preview)
+docs/assets/css/now.css                   -- entry-list layout + fade hierarchy + colour accents, wired in via
+                                              mkdocs.yml's extra_css (page chrome/typography itself comes from
+                                              cabinet-material.css, same as every other MkDocs page)
 docs/assets/now/<section>/                -- uploaded images, one subfolder per section (e.g. reading/, travel/,
                                               found/) -- populated by the admin server's upload endpoint, see
                                               "Local admin server" below. Not to be confused with a root-level
@@ -169,10 +204,6 @@ tools/now-editor.js                       -- local admin server (see "Local admi
 tools/now-editor-ui/                      -- the admin server's browser UI (index.html/editor.css/editor.js)
 run-now-editor.bat                        -- launches tools/now-editor.js (no spaces, unlike "run Mkdocs serve.bat" -- see its own note below for why)
 ```
-
-`docs/now.md` — the pre-existing "coming soon" stub, still linked from
-`mkdocs.yml`'s nav. Left as-is; see "Why a standalone docs/now.html"
-above for that decision.
 
 ## Local admin server
 
@@ -208,11 +239,12 @@ be inside the repo first), uploads it to the server, which writes a *copy*
 to `docs/assets/now/<section>/<sanitized filename>` (lowercased,
 special characters stripped, a `-1`/`-2` suffix appended on a name
 collision so nothing already there gets overwritten) and fills the
-entry's `image` field with that path — the original file you picked is
-never moved or modified; a live Markdown preview of
+entry's `image` field with a **root-relative** path (`/assets/now/...`,
+not `assets/now/...` — see "Data model" above for why) — the original
+file you picked is never moved or modified; a live Markdown preview of
 the `value` field, rendered with the exact same `now-markdown.js` the
-live page uses, so the preview can't drift from what actually ships; a
-"Rebuild site data" button that runs the equivalent of
+generator uses, so the preview can't drift from what actually ships; a
+"Rebuild now.md" button that runs the equivalent of
 `build-now-content.js` and surfaces its validation errors (bad date,
 missing required field, malformed TSV) directly in the UI instead of a
 terminal. **Rebuild is a separate manual step, not automatic on save** —
@@ -230,10 +262,13 @@ invocation (no auto-start, no background service).
 
 **Architecture note**: `tools/now-tsv.js` (TSV parse/serialize) and
 `docs/assets/js/now-markdown.js` (the Markdown subset renderer) are each
-now a single shared module consumed by both the CLI build script and this
-server/its UI, specifically so the editor's behaviour and the live page's
-behaviour cannot quietly diverge — see v1.5's Changelog entry for why
-this mattered enough to refactor for, not just add alongside.
+a single shared module consumed by both the CLI build script and this
+server/its UI, specifically so the editor's behaviour and the generated
+page's behaviour cannot quietly diverge — see v1.5's Changelog entry for
+why this mattered enough to refactor for, not just add alongside. Since
+v2.0, `build-now-content.js` (CommonJS) reaches `now-markdown.js` (an ES
+module) via a dynamic `import()`, the same technique
+`now-data-editor.js` already used to read `now-data.js`.
 
 **`now-data.js` write mechanism**: reads go through a real ESM dynamic
 `import()` (so they're always parsed as actual JS, immune to whitespace
@@ -256,10 +291,10 @@ produce a full-file diff the first time.
 
 ## Adding a section
 
-`now-render.js` builds every `<section>` element itself from
-`sectionConfig`/`sectionOrder` — `now.html`'s `<main>` is an empty mount
-point, not a set of hand-authored placeholders. Adding a section is a
-one-file change:
+`build-now-content.js` builds every heading + entry-list block itself
+from `sectionConfig`/`sectionOrder` — nothing is hand-authored in
+`now.md` (it's fully regenerated on every rebuild). Adding a section is
+still a one-file-plus-data change:
 
 1. Add an entry to both `sectionConfig` and `sectionOrder` in
    `docs/assets/js/now-data.js`.
@@ -270,14 +305,17 @@ A section with a `sectionOrder` entry but zero matching `now.tsv` rows is
 **silently omitted**, not rendered empty — this is deliberate (an empty
 heading with no content reads as broken, not as "nothing here yet"), but
 it means "I added the section and it's not showing" is more often a
-missing-data problem than a config problem. `now-render.js` does log a
-`console.warn` for the other failure mode — a `sectionOrder` key with no
-matching `sectionConfig` entry (a typo between the two arrays) — check the
-browser console first.
+missing-data problem than a config problem. `build-now-content.js` does
+log a `console.warn` (to the terminal running the build, or the admin
+server's Rebuild-status banner) for the other failure mode — a
+`sectionOrder` key with no matching `sectionConfig` entry (a typo between
+the two arrays) — check there first.
 
 (v1.0 shipped with the section markup hand-authored in `now.html` instead
 of generated — see the Changelog's "section rendering" entry for why that
-was a bug, not a feature.)
+was a bug, not a feature. v2.0 replaced `now.html`/client-side rendering
+entirely with this build-time generation into `now.md` — see "Why a
+generated now.md" above.)
 
 ## Display configuration (`now-data.js`)
 
@@ -345,7 +383,8 @@ where it'd read more naturally, specifically so every pre-existing row
 padding leniency instead of needing every row rewritten just to insert a
 column in the middle.
 
-**Selection algorithm** (`now-render.js`'s `selectVisibleEntries()`):
+**Selection algorithm** (`tools/build-now-content.js`'s
+`selectVisibleEntries()`):
 pinned entries always make the cut, appended *after* the recency-selected
 ones (so a pinned entry lands wherever the last fade tier works out to
 be — "kept around on purpose," not "brand new," which is the correct
@@ -384,8 +423,8 @@ against the `--cab-paper` background from `cabinet-tokens.css` instead
 legible rather than fading toward unreadable.
 
 **Current tier uses a blue accent, not ink** (`--now-accent: #1c5f8a`,
-`now.css`, `body.now-page`) — see "Colour accents" below for where that
-token comes from and why. `.now-entry-value a`'s base colour is
+defined at `:root` in `now.css`) — see "Colour accents" below for where
+that token comes from and why. `.now-entry-value a`'s base colour is
 `inherit` rather than a hardcoded ink value specifically so a link inside
 a current-tier paragraph (most `reading`/`watching` entries are
 `[Title](url)` as their first line) picks up that blue instead of
@@ -393,10 +432,11 @@ overriding it back to plain ink; recent/old-tier links inherit their own
 tier's muted colour the same way.
 
 **Scoped down from the spec**: the spec asked for tuning "in Cabinet's
-light and dark themes." Cabinet's standalone pages (`index.html`, and now
-`now.html`) don't currently have a dark theme at all — `cabinet-tokens.css`
-defines one palette, full stop. `now.css` only tunes for that one
-palette. Revisit if/when Cabinet gets a real dark mode.
+light and dark themes." Cabinet's standalone pages (`index.html`) and its
+MkDocs Material pages (`/now` included, since v2.0) don't currently have
+a dark theme at all — `cabinet-tokens.css` defines one palette, full
+stop. `now.css` only tunes for that one palette. Revisit if/when Cabinet
+gets a real dark mode.
 
 ## Colour accents
 
@@ -405,8 +445,11 @@ Direct request: bring in some of the live homepage's "Topology" theme
 "Topology" — blue/cyan/green/coral, the one theme that isn't
 medieval-map's ambers) as accent colour on `/now`, on top of the existing
 parchment/ink base, without wiring `now.css` up to that file's `--v3-*`
-custom properties. Two new tokens, defined locally in `now.css`'s
-`body.now-page` block, values *matching* (not referencing)
+custom properties. Two new tokens, defined locally at `:root` in `now.css` (originally
+scoped to a `body.now-page` block in v1.x's standalone page — moved to
+bare `:root` in v2.0 since a Material page has no such body class to
+hook into; harmless at `:root`, these names collide with nothing else in
+the site), values *matching* (not referencing)
 `--v3-sea-deep`/`--v3-sea-shallow`:
 
 ```css
@@ -438,15 +481,19 @@ spec: the current fade tier's text colour (`.now-current .now-entry-value`
 — see "Fade hierarchy" above, this is what actually delivers a
 repeated-throughout-the-page presence rather than one link colour
 buried in prose), every section title's underline (`.now-section-title`,
-2px, was a thin neutral `--cab-card-border` line), and link/back-link
-hover states (`--cab-accent`'s brown, previously used for both of those,
-is unchanged everywhere else — colophon/about/etc.'s Material pages keep
-their existing accent untouched; this is scoped to `now.css` alone).
+2px, was a thin neutral `--cab-card-border` line), and entry-link hover
+states (`--cab-accent`'s brown, Material's own default link accent
+site-wide via `cabinet-material.css`'s `--md-typeset-a-color` mapping, is
+unchanged everywhere else including `/now`'s own body text — this accent
+is scoped to `now.css`'s entry-list classes alone, not a site-wide
+repaint).
 
 ## Markdown subset
 
-`now-markdown.js`'s `renderInline()` (shared between `now-render.js` and
-the editor's live preview — see "Local admin server" above) escapes HTML
+`now-markdown.js`'s `renderInline()` (shared between
+`build-now-content.js`, which dynamically imports it to pre-render entry
+text at build time, and the editor's live preview — see "Local admin
+server" above) escapes HTML
 first, then supports exactly three inline patterns: `[text](url)`,
 `**bold**`, `*italic*`. Link URLs are checked against
 `^(https?:|mailto:)/i` before being used as an `href` — anything else
@@ -477,25 +524,27 @@ preserved verbatim in `now.tsv`'s `notes` field rather than invented.
 ## Update workflow
 
 **Via the admin server** (see "Local admin server" above) — the
-preferred path as of v1.5:
+preferred path as of v1.5, still true post-v2.0:
 
 1. `node tools/now-editor.js`, open `http://127.0.0.1:5757/admin/`.
 2. Add/edit/reorder entries and sections through the UI.
-3. Click "Rebuild site data".
-4. Preview via the "Preview /now.html" link in the same tool (served from
-   the same server, so it's the real deployed-relative-path behaviour,
-   not a separate local server).
-5. Commit the TSV, `now-data.js` (if sections changed), the generated JS,
-   and any added images together — the editor never commits anything
-   itself.
+3. Click "Rebuild now.md".
+4. Preview by running `mkdocs serve` separately (`now.md` is real
+   Markdown, not directly viewable HTML, so the admin server itself
+   can't render a preview of it the way it used to serve `now.html`
+   statically — see "Why a generated now.md" above). `mkdocs serve`
+   watches `docs/` and live-reloads, so a rebuild's fresh `now.md` shows
+   up there without a manual restart.
+5. Commit the TSV, `now-data.js` (if sections changed), the generated
+   `now.md`, and any added images together — the editor never commits
+   anything itself.
 
 **Hand-editing `now.tsv` directly** still works and is sometimes faster
 for bulk changes (e.g. pasting several rows from elsewhere) — Excel or a
 text editor, then:
 
 1. `node tools/build-now-content.js`.
-2. Preview `docs/now.html` locally (e.g. VS Code Live Server, or
-   `python -m http.server` from `docs/`).
+2. Preview via `mkdocs serve`, same as above.
 3. Commit as above.
 
 Both paths write the same `content/now.tsv` — mixing them across
@@ -509,6 +558,64 @@ separate content types for prose vs. list vs. stream, per-row
 presentation metadata, stored opacity values, archive UI.
 
 ## Changelog
+
+### v2.0 — moved from standalone now.html to a generated now.md (2026-08-29)
+
+Reverses v1.0's original "standalone `docs/now.html`" decision. Motivated
+by a direct request to match `about.md`/`colophon.md`/`sitemap.md`
+structurally (sidebar nav, breadcrumbs, TOC, search — none of which a
+client-rendered standalone page could offer), not just visually — and by
+`tools/generate_sitemap.py` → `docs/sitemap.md` already being a working,
+committed precedent in this exact repo for "a script writes real
+Markdown straight into `docs/`, MkDocs renders it as a normal page." See
+"Why a generated now.md, not a standalone HTML page" above for the full
+reasoning and tradeoffs accepted.
+
+Changed:
+
+- `tools/build-now-content.js` rewritten: instead of serializing
+  `nowEntries` to `docs/assets/js/now-generated-content.js` (an ES module
+  for client-side rendering), it now dynamically imports `now-data.js`
+  and `now-markdown.js` at build time and writes `docs/now.md` directly —
+  a real Markdown heading per section (`attr_list`-styled,
+  `## Title {: .now-section-title }`) followed by one raw HTML block per
+  section for the entry list (image-layout structure isn't expressible
+  in `attr_list` alone; entry text is pre-rendered to HTML via the
+  ported `now-markdown.js` call rather than left as literal Markdown
+  inside the block, so `md_in_html` was never needed).
+- `docs/now.html`, `docs/assets/js/now-render.js`, and
+  `docs/assets/js/now-generated-content.js` deleted — client-side
+  rendering is retired entirely. `now-markdown.js` survives (still used
+  by both the generator and the admin editor's live preview).
+- Image paths switched from `docs/`-relative (`assets/now/...`) to
+  site-root-relative (`/assets/now/...`) — `now.md` renders at
+  `site/now/` (MkDocs' directory-URL pretty-links), one level deeper
+  than the old flat `docs/now.html`, so a same-directory-relative path
+  would have resolved one directory too deep. One-time migration of all
+  existing `now.tsv` image paths, plus `tools/now-editor.js`'s upload
+  handler updated to write the new format for every future upload.
+- `docs/assets/css/now.css` rewritten: dropped page-chrome rules
+  (`body.now-page`'s background/font, `.now-shell`, `.now-back-link`,
+  `.now-header h1`, `.now-tagline`, `.now-updated`) now that Material's
+  own typesetting (via `cabinet-material.css`, already applied to every
+  other content page) handles those; kept and re-scoped the entry-list/
+  fade-hierarchy/accent rules, prefixing every selector with
+  `.md-typeset` so they reliably out-specificity Material's own
+  element-level rules (e.g. `.md-typeset h2`, `.md-typeset ul`) rather
+  than risking a load-order-dependent loss. Wired into `mkdocs.yml`'s
+  `extra_css`.
+- `tools/now-editor-ui/`'s "Preview /now.html" link removed (no more
+  static file to preview) and its "Rebuild site data" button/copy
+  retitled "Rebuild now.md"; subhead and server startup log now point
+  at running `mkdocs serve` separately for a live preview instead.
+
+Verified: `mkdocs build --strict` clean (no new warnings attributable to
+`now.md`); inspected the actual rendered `site/now/index.html` output —
+confirmed real `<h2 class="now-section-title" id="...">` elements with
+working permalink anchors, the sidebar/secondary TOC nav linking to those
+same ids, entries' raw HTML blocks passed through intact (images, links,
+`<em>`/paragraph structure all correct), and root-relative image `src`
+paths resolving as authored.
 
 ### v1.8 — documentation pass; found orphaned root-level image duplicates (2026-08-29)
 
@@ -732,5 +839,5 @@ the v3 palette ever gets promoted into `cabinet-tokens.css` itself.
   rather than hand-combined prose.
 - Goodreads links for all seven `reading` entries verified via web search,
   not fabricated.
-- `mkdocs.yml` nav and `docs/now.md` deliberately left untouched — see
-  "Why a standalone docs/now.html" above.
+- `mkdocs.yml` nav and `docs/now.md` deliberately left untouched at this
+  point (reversed in v2.0 — see "Why a generated now.md" above).

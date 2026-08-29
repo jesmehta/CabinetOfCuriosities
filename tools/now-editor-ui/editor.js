@@ -2,9 +2,9 @@
 // /api/*, re-fetches full state after every mutation (simplest correct
 // approach for a small local single-user tool -- no client-side state
 // reconciliation to get subtly wrong). Reuses the live page's own Markdown
-// renderer for the value-field preview so "what you see here" and "what
-// renders on /now.html" can never drift apart -- see documentation/NOW-PAGE.md's "Local
-// admin server".
+// renderer for the value-field preview so "what you see here" and "what the
+// generator renders into now.md" can never drift apart -- see
+// documentation/NOW-PAGE.md's "Local admin server".
 
 import { renderInline, splitParagraphs } from "../assets/js/now-markdown.js";
 
@@ -69,7 +69,7 @@ function entryViewRow(entry, entries, position) {
   const preview = entry.value.length > 160 ? entry.value.slice(0, 160) + "…" : entry.value;
   return `
     <li class="entry-row">
-      ${entry.image ? `<img class="entry-thumb" src="/${esc(entry.image)}" alt="" />` : ""}
+      ${entry.image ? `<img class="entry-thumb" src="${esc(entry.image)}" alt="" />` : ""}
       <div class="entry-main">
         <div class="entry-date">${esc(entry.date)}${entry.pinned ? ' <span class="pin-badge">pinned</span>' : ""}</div>
         <div class="entry-value-preview">${esc(preview)}</div>
@@ -117,8 +117,8 @@ function entryFormHtml({ formAction, dataAttrs, initial, submitLabel, showCancel
       <div class="value-preview" data-role="value-preview">${renderValuePreview(v.value || "")}</div>
       <label>Image
         <div class="image-row">
-          ${v.image ? `<img src="/${esc(v.image)}" alt="" />` : ""}
-          <input type="text" name="image" value="${esc(v.image)}" placeholder="assets/now/section/file.jpg" class="image-path" />
+          ${v.image ? `<img src="${esc(v.image)}" alt="" />` : ""}
+          <input type="text" name="image" value="${esc(v.image)}" placeholder="/assets/now/section/file.jpg" class="image-path" />
           <input type="file" accept="image/*" data-role="image-upload" />
           <span data-role="upload-status"></span>
         </div>
@@ -440,7 +440,7 @@ document.getElementById("rebuild-btn").addEventListener("click", async () => {
   try {
     const result = await api("POST", "/api/rebuild");
     rebuildStatus.className = "status-banner status-success";
-    rebuildStatus.textContent = result.output || "Rebuilt now-generated-content.js.";
+    rebuildStatus.textContent = result.output || "Rebuilt now.md.";
   } catch (err) {
     rebuildStatus.className = "status-banner status-error";
     rebuildStatus.textContent = `Rebuild failed:\n${err.message}`;

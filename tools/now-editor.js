@@ -324,7 +324,11 @@ async function apiUploadImage(req, res) {
     }
 
     fs.writeFileSync(path.join(sectionDir, safeName), buffer);
-    const relPath = `assets/now/${section}/${safeName}`;
+    // Root-relative, not docs-relative -- now.md renders at site/now/ (MkDocs'
+    // directory-URL pretty-links), one level deeper than the old flat
+    // docs/now.html, so a bare "assets/now/..." would resolve one directory
+    // too deep once deployed. See documentation/NOW-PAGE.md's "Image paths".
+    const relPath = `/assets/now/${section}/${safeName}`;
     sendJson(res, 200, { ok: true, path: relPath });
   } catch (err) {
     sendJson(res, 422, { error: err.message });
@@ -392,8 +396,11 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Everything else: serve docs/ as the static site root, same relative
-    // paths as production (so /now.html previews exactly as it will deploy).
+    // Everything else: serve docs/ as the static site root -- mainly so
+    // uploaded images (docs/assets/now/...) are viewable by the same
+    // root-relative path the generated now.md and this UI both use. now.md
+    // itself isn't previewable here (it's raw Markdown, not rendered HTML);
+    // run `mkdocs serve` separately for a live-rendered preview.
     const target = safeJoin(DOCS_ROOT, pathname);
     if (!target) { res.writeHead(400); res.end("Bad path"); return; }
     serveStaticFile(res, target);
@@ -404,5 +411,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`Now editor running at http://127.0.0.1:${PORT}/admin/`);
-  console.log(`(site preview at http://127.0.0.1:${PORT}/now.html -- localhost only, Ctrl+C to stop)`);
+  console.log(`(localhost only, Ctrl+C to stop -- run "mkdocs serve" separately for a live now.md preview)`);
 });

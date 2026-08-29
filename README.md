@@ -11,7 +11,7 @@ workflow, known gotchas).
 shares with its sibling Level 1 worlds, [The Bookshelf of
 Curiosities](https://github.com/jesmehta/TheBookshelfOfCuriosities) and
 [fffx](https://github.com/jesmehta/form-follows-fx). [`NOW-PAGE.md`](documentation/NOW-PAGE.md)
-documents the `/now` page (`docs/now.html`) — a separate feature from the
+documents the `/now` page (`docs/now.md`) — a separate feature from the
 map landing page, with its own data pipeline.
 
 Cabinet is the umbrella landing page / web-world index: an illustrated
@@ -59,13 +59,13 @@ repo/world) rather than duplicating their content.
 - `tools/build-cabinet-content.js` — parses the two TSVs into
   `docs/assets/js/cabinet-generated-content.js`. Run with
   `node tools/build-cabinet-content.js` after editing either TSV.
-- `content/now.tsv`, `tools/build-now-content.js`, `docs/now.html`,
-  `docs/assets/js/now-*.js`, `docs/assets/css/now.css` — the `/now` page,
-  a separate standalone-HTML page (same pattern as `docs/index.html`, not
-  routed through Material) with its own TSV → generated-JS pipeline. See
-  `NOW-PAGE.md` for the full design decisions. `docs/now.md` (MkDocs nav's
-  "Now" stub) is currently unrelated/unwired to this page — see
-  `NOW-PAGE.md` for why.
+- `content/now.tsv`, `tools/build-now-content.js`, `docs/now.md`,
+  `docs/assets/js/now-data.js`, `docs/assets/js/now-markdown.js`,
+  `docs/assets/css/now.css` — the `/now` page, a real MkDocs Material page
+  (wired into `mkdocs.yml`'s nav, same as `docs/sitemap.md`) generated
+  directly from `content/now.tsv` + `now-data.js`. See `NOW-PAGE.md` for
+  the full design decisions, including why this replaced an earlier
+  standalone-HTML approach.
 - `tools/now-editor.js` (+ `tools/now-editor-ui/`, launched via
   `run-now-editor.bat`) — a local-only admin server/browser UI for editing
   `now.tsv` entries and `now-data.js` sections without hand-editing either
@@ -166,6 +166,20 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### `/now` v2.0 — moved from standalone now.html to a generated now.md (2026-08-29)
+
+Reverses v1.0 below: `docs/now.html` (client-side rendered) retired in
+favor of `docs/now.md`, a real MkDocs Material page generated directly by
+`tools/build-now-content.js`, wired into `mkdocs.yml`'s existing nav
+entry — same "script writes real Markdown into `docs/`" pattern
+`tools/generate_sitemap.py` → `docs/sitemap.md` already established in
+this repo. Gets `/now` genuine sidebar nav/breadcrumbs, a working
+per-section TOC, and search-index inclusion, none of which the old
+client-rendered page could offer. Image paths switched to site-root-
+relative (`/assets/now/...`) to match where `now.md` actually renders.
+Full reasoning, tradeoffs, and verification in `NOW-PAGE.md`'s own
+changelog.
 
 ### `/now` v1.5 — local admin server (2026-08-29)
 

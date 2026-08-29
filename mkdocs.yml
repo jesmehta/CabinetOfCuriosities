@@ -102,6 +102,7 @@ plugins:
 extra_css:
   - stylesheets/extra.css
   - stylesheets/cabinet-material.css
+  - assets/css/now.css
 
 extra_javascript:
   - js/extra.js
