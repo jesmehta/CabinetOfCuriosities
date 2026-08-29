@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Now editor</title>
+<link rel="stylesheet" href="editor.css" />
+</head>
+<body>
+  <header class="editor-header">
+    <div>
+      <h1>Now editor</h1>
+      <p class="editor-subhead">Edits content/now.tsv and now-data.js directly on disk. Local only -- nothing here is deployed.</p>
+    </div>
+    <div class="editor-header-actions">
+      <a class="preview-link" href="/now.html" target="_blank" rel="noopener">Preview /now.html &rarr;</a>
+      <button id="rebuild-btn" type="button" class="btn btn-primary">Rebuild site data</button>
+    </div>
+  </header>
+
+  <div id="rebuild-status" class="status-banner" hidden></div>
+  <div id="load-error" class="status-banner status-error" hidden></div>
+
+  <main id="sections-root" aria-live="polite"></main>
+
+  <section class="panel add-section-panel">
+    <h2>Add a new section</h2>
+    <p class="panel-note">Adding a section here only edits now-data.js's config -- it won't show on the page until it has at least one entry in now.tsv.</p>
+    <form id="add-section-form" class="entry-form">
+      <label>Key (used in now.tsv's section column, plain identifier only)
+        <input type="text" name="key" required pattern="[a-zA-Z_$][a-zA-Z0-9_$]*" placeholder="e.g. cooking" />
+      </label>
+      <label>Title (shown on the page)
+        <input type="text" name="title" required placeholder="e.g. Cooking lately" />
+      </label>
+      <label>Mode
+        <select name="mode">
+          <option value="stream">stream (several short-lived entries)</option>
+          <option value="snapshot">snapshot (a few longer-lived entries)</option>
+        </select>
+      </label>
+      <label>Visible count
+        <input type="number" name="visible" min="1" value="6" required />
+      </label>
+      <label>Group size (fade tier size)
+        <input type="number" name="groupSize" min="1" value="2" required />
+      </label>
+      <label>Image layout
+        <select name="imageLayout">
+          <option value="side">side (thumbnail beside the text)</option>
+          <option value="full">full width (image above the text)</option>
+        </select>
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add section</button>
+        <span class="form-error" data-role="error"></span>
+      </div>
+    </form>
+  </section>
+
+  <script type="module" src="editor.js"></script>
+</body>
+</html>

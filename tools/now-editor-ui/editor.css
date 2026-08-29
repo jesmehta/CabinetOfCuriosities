@@ -1,0 +1,340 @@
+/* Now editor -- local admin UI. Deliberately plain/functional (this is a
+   tool, not a public page) but reuses Cabinet's ink/paper palette via CSS
+   custom properties defined right here (not importing cabinet-tokens.css --
+   this UI is intentionally decoupled from the deployed site's stylesheets,
+   see NOW-PAGE.md's "Local admin server"). */
+
+:root {
+  --ed-paper: #f4ebe0;
+  --ed-panel: #fffaf2;
+  --ed-ink: #2e2418;
+  --ed-ink-soft: #6d5a3f;
+  --ed-border: rgba(46, 36, 24, 0.2);
+  --ed-accent: #7a4b2a;
+  --ed-danger: #a3352b;
+  --ed-success: #2f6b3f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ed-paper);
+  color: var(--ed-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.45;
+  padding: 1.5rem 2rem 4rem;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 0.15rem;
+  font-size: 1.5rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ed-border);
+  margin-bottom: 1.5rem;
+}
+
+.editor-subhead {
+  margin: 0;
+  color: var(--ed-ink-soft);
+  font-size: 0.85rem;
+}
+
+.editor-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.preview-link {
+  color: var(--ed-accent);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.preview-link:hover { text-decoration: underline; }
+
+.btn {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid var(--ed-border);
+  background: var(--ed-panel);
+  color: var(--ed-ink);
+  cursor: pointer;
+}
+
+.btn:hover { border-color: var(--ed-accent); }
+
+.btn-primary {
+  background: var(--ed-accent);
+  color: #fff;
+  border-color: var(--ed-accent);
+}
+
+.btn-primary:hover { opacity: 0.9; }
+
+.btn-danger {
+  color: var(--ed-danger);
+  border-color: var(--ed-danger);
+  background: var(--ed-panel);
+}
+
+.btn-small {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.status-banner {
+  padding: 0.6rem 0.9rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+
+.status-banner.status-success { background: rgba(47, 107, 63, 0.12); color: var(--ed-success); }
+.status-error, .status-banner.status-error { background: rgba(163, 53, 43, 0.12); color: var(--ed-danger); }
+
+.panel {
+  background: var(--ed-panel);
+  border: 1px solid var(--ed-border);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.panel-note {
+  font-size: 0.8rem;
+  color: var(--ed-ink-soft);
+  margin: 0 0 0.75rem;
+}
+
+.section-card {
+  background: var(--ed-panel);
+  border: 1px solid var(--ed-border);
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.section-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.1rem;
+  background: rgba(46, 36, 24, 0.04);
+  border-bottom: 1px solid var(--ed-border);
+  flex-wrap: wrap;
+}
+
+.section-card-title {
+  font-weight: 600;
+}
+
+.section-card-meta {
+  font-size: 0.75rem;
+  color: var(--ed-ink-soft);
+}
+
+.section-card-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.section-order-note {
+  font-size: 0.75rem;
+  color: var(--ed-ink-soft);
+  padding: 0.5rem 1.1rem 0;
+}
+
+.entry-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 1.1rem 1rem;
+}
+
+.pin-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ed-accent);
+  border: 1px solid var(--ed-accent);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+  vertical-align: middle;
+}
+
+.checkbox-label {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.4rem !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+}
+
+.entry-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.6rem 0;
+  border-bottom: 1px dashed var(--ed-border);
+}
+
+.entry-row:last-child { border-bottom: none; }
+
+.entry-thumb {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--ed-border);
+  flex-shrink: 0;
+}
+
+.entry-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-date {
+  font-size: 0.75rem;
+  color: var(--ed-ink-soft);
+}
+
+.entry-value-preview {
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.entry-notes-preview {
+  font-size: 0.78rem;
+  color: var(--ed-ink-soft);
+  font-style: italic;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.entry-form,
+.section-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem 1.1rem 1rem;
+}
+
+.entry-form label,
+.section-edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--ed-ink-soft);
+}
+
+.entry-form input,
+.entry-form select,
+.entry-form textarea,
+.section-edit-form input,
+.section-edit-form select {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--ed-border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ed-ink);
+}
+
+.entry-form textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+  font-family: Georgia, serif;
+}
+
+.value-toolbar {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.value-preview {
+  border: 1px dashed var(--ed-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.7rem;
+  font-family: Georgia, serif;
+  font-size: 0.9rem;
+  background: #fffdf8;
+}
+
+.value-preview p { margin: 0 0 0.5rem; }
+.value-preview p:last-child { margin-bottom: 0; }
+
+.image-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.image-row img {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--ed-border);
+}
+
+.image-path {
+  font-size: 0.78rem;
+  color: var(--ed-ink-soft);
+  word-break: break-all;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.form-error {
+  color: var(--ed-danger);
+  font-size: 0.8rem;
+}
+
+.add-entry-toggle {
+  margin: 0.5rem 1.1rem 1rem;
+}
+
+.empty-note {
+  padding: 0.75rem 1.1rem;
+  color: var(--ed-ink-soft);
+  font-size: 0.85rem;
+  font-style: italic;
+}
