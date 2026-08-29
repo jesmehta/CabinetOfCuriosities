@@ -1,0 +1,208 @@
+// AUTO-GENERATED FILE.
+// Do not edit.
+// Edit content/now.tsv, then run:
+//
+// node tools/build-now-content.js
+
+export const nowEntries = [
+  {
+    "date": "2026-08-27",
+    "section": "reading",
+    "value": "[Once & Future, Vol. 1–4](https://www.goodreads.com/book/show/51201509-once-future-vol-1) — Kieron Gillen\n\nA fun subversion of the Arthurian legends. My favourite line in recent times come from the first book: \"You can never trust a bloody prophecy that you can't read two ways.\"",
+    "image": "assets/now/reading/onceandfuture.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-20",
+    "section": "reading",
+    "value": "[The Name of the Wind](https://www.goodreads.com/book/show/186074.The_Name_of_the_Wind) — Patrick Rothfuss\n\nAn epic fantasy, recommended long ago by a friend, I finally got down to reading it while in Landour. Hits the genre squarely in the head and rings the bell nicely. Magic and music, lore and lifetimes. And an innkeeper who serves strawberry wine. And I understood why I'm called the Artificer. Absoloutely loved it, absoloutely stricken that the third book isn't out yet.",
+    "image": "assets/now/reading/nameofthewindcover.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-10",
+    "section": "reading",
+    "value": "[Strange Houses](https://www.goodreads.com/book/show/218671839-strange-houses) — Uketsu\n\nA birthday gift from a friend, this was a short read, fun, and not actual horror, though somewhat horrific. Good stuff.",
+    "image": "assets/now/reading/strangehouses.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-07-28",
+    "section": "reading",
+    "value": "[The Draco Tavern](https://www.goodreads.com/book/show/100343.The_Draco_Tavern) — Larry Niven\n\nRecommended by the inimitable Dr Kurush Dalal, during his Science Fiction workshop. Amazing set of short stories, perfectly scratching the sci-fi itch.",
+    "image": "assets/now/reading/thedracotavern.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-07-15",
+    "section": "reading",
+    "value": "[Grotto of the Dancing Deer and Other Stories](https://www.goodreads.com/en/book/show/27277484) — Clifford D. Simak\n\nAlso came up during the Science Fiction workshop, a set of old-school sci-fi stories, doubly sweet for being distant from now in both directions, for writing about a future from so far back in the past.",
+    "image": "assets/now/reading/grottoofthedancingdeer.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-07-01",
+    "section": "reading",
+    "value": "[Airplane Mode](https://www.goodreads.com/book/show/50831138-airplane-mode) — Shahnaz Habib\n\nPicked this up from KitabKhana a while ago, the blurb was interesting enough but the contents ! The book is a perfect blend of personal anecdotes woven into the much larger history of travel. Which works for me in three ways - history being something I'm always interested in, travel being one of my favourite things I am not doing much of, and so many questions I'd always had - some spoken out loud, some I hadn't realised I had - from my own experiences and from what I know of the world. I loved this book and would recommend it to anyone and everyone.",
+    "image": "assets/now/reading/airplanemode.jpg",
+    "notes": "",
+    "pinned": true
+  },
+  {
+    "date": "2026-06-15",
+    "section": "reading",
+    "value": "[Shattered Lands](https://www.goodreads.com/book/show/222717408-shattered-lands) — Sam Dalrymple\n\nAn absolutely amazing read, I don't remember how I bumped into this one, but this was a fantastic early-in-the-year read, and a book I actually can't stop talking about. Another one of those books that answers so many questions I had and more that I didn't know I needed answers to. It traces the history of British India, a territory that once stretched from the Aden in the west to Rangoon in the east, and how it got broken, divided, and distributed into the 11-odd countries of modern-day South Asia as well as the origins of the \"Middle-East\". Sam Dalrymple's first book is rich in research and delicious on the story-telling.\n\nI managed to get a signed copy from Trilogy, though I missed the signing itself since I was travelling.",
+    "image": "assets/now/reading/shatteredlands.jpg",
+    "notes": "",
+    "pinned": true
+  },
+  {
+    "date": "2026-08-22",
+    "section": "watching",
+    "value": "The Expanse — currently around Season 3\n\nLoving it. Must watch, highly recommend.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-18",
+    "section": "watching",
+    "value": "Spider-Man: Brand New Day\n\nNot bad. Lots of holes but a fun enough watch. Don't expect epicness, the overhype is a killjoy, but go expecting nothing and it's a fun ride.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-25",
+    "section": "watching",
+    "value": "Christopher Nolan's *The Odyssey*\n\nDespite the naysaying, this was a movie I am glad got made - having said that, my opinion is that a second watch is entirely unnecessary. \n\nI was not put off by the anachronic costumes or language or Tom Holland going \"Dad!\" (not much atleast by that last one) or the Imax vs regular film debate, and I do definitely like that it is a ReTelling of the story not a movie version of the Same story. But at the same time, it was not very satisfying - the first half felt too long, though that is to be expected of a story that is literally the original archetype for the long and tiresome tale, an odyssey after all. But maybe the people who make the MCU should have tried their hand at this one. \n\nAnne Hathaway was wasted, and while Tom Halland was fine, that screentime would have been better spent on Penelope - then again, she should have channeled a little inner Cersei, instead of having a Smeagol-Gollum moment. Matt Damon spent a lot of time running on beaches. Good for him. The entire Calypso aspect was lost. \n\nThe Cyclops and Circe body-hoorror bits were.. unnecessary. The glimpse of Goya's Cronus Eating His Children reference was a good stroke though. The funny one post interval was Calypso channeling her inner Raabert and essentially telling our brilliant beach bum \"Poseidon tumhe jeene nahi dega, par Zeus tumhe marne nahi dega.\"\n\nIn retrospect, knowing that it was The Odyssey being worked on, and an odyssey it would need to be, this would have been better off as a 10-episode Netflix series rather than the movie it became. I am glad it became something, but it could have been so much more.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-26",
+    "section": "music",
+    "value": "Morni — Silk Route",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-12",
+    "section": "music",
+    "value": "Dhindhora Baje — *Rocky Aur Rani Kii Prem Kahaani*",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-15",
+    "section": "music",
+    "value": "Running Through My Head — t.A.T.u. version",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-15",
+    "section": "music",
+    "value": "Running Through My Head — Harrison version",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-28",
+    "section": "andThenSome",
+    "value": "I've been awaiting the Sci-Fi workshop by Kurush Dalal and the GyanFactory since the day we chatted about it, almost a year ago(?) A romp through the Golden Age of Sci-Fi, horror, modern sci-fi, in movies, in comics - so much fun, with so many like-minded participants. The session on the Golden Age led me to compile a reading lust which led me to decide to sort them, from where I finally decided to create the whole Golden Age of Sci-Fi page here, which precipitated the need to revamp this whole site, and so rolled the ball.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-07-16",
+    "section": "travel",
+    "value": "I spent some quiet time in Landour to decompress. Read The Name of the Wind, finally. Went to Sir George Everest's estate which has now been converted to a cartography museum. Tracked down some old maps, picked up some new books. Stood at the northern end of the spine of the Great Trigonometric Survey that started off at Marina beach in then Madras and turned north around Bangalore, where I was the previous week. It's been quite an arc.",
+    "image": "assets/now/travel/2026_0713_114843-114843.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-07-01",
+    "section": "travel",
+    "value": "India's first community conference on Data Visualisation, the second edition. So. Much. Fun. Amazing workshops, warm people, tirelessly working volunteers and teams. New people to meet, new things to discover, everyone nerding out on the same jokes. Amazing time.",
+    "image": "assets/now/travel/vizchitra.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-28",
+    "section": "curiosities",
+    "value": "HTTPoetics as an area of practice and interest, including SFPC's HTTPoetics course. Thinking about the line between hand-coded web work and pages built in collaboration with AI — where the intent, structure, and logic stay human-directed. Not hand-coded, but also not usefully described as \"vibe coded.\"",
+    "image": "",
+    "notes": "DIF: expand",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-22",
+    "section": "found",
+    "value": "[Floor796.com](https://floor796.com/) was sent to me by a close friend many moons ago, and I remembered it enough to not only sit and stare at it in appreciation all over again but also showcase it to my students to prove that the web does not have to be a boring set of login screens.",
+    "image": "assets/now/found/floor796.jpg",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-18",
+    "section": "found",
+    "value": "[neal.fun](neal.fun) is a fun collection of webpages and webgames, weird and quirky. I periodically stumble upon this and wonder why I forgot it in the first place.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-10",
+    "section": "found",
+    "value": "*Ascension* at Afghan Church - a short but fun projection-mapping experience inside Afghan Church, Colaba.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-29",
+    "section": "teaching",
+    "value": "Currently wrapping up a course on Emergent Technologies, it has been a fun ride rewriting the entire course this year. Lots of AI, but lots of the social impact, ethics, implications and enshittification that big tech suffers from.\n\nApart from this, I'm teaching the opening Materials course to the FY, Material Explorations 1 : Paper. Later in the semester, I have Lighting Design for the TY Tangible students, and a Design Challenge for the FY again. I'm not meeting the SYs at all this semester, except in the corridors.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-29",
+    "section": "projects",
+    "value": "Cabinet is taking off, so it's own essential pages as well as backend deployment work has been the biggest piece of work. At work, I'm also working on collection and showcase pages for Emergent Tech student work, some Emergent tech teaching material (working with AI, coding with AI), a Warli Art thing. Apart from the digital based stuff, some origami stuff is being rounded up to start on.\n\nI've been too occupied with getting Cabinet off the ground, so active personal projects have been a bit of a backburner compared to the meta-projects. Among the meta-projects, I have worked on a ToDo list manager that works for me and my workflows, a Projects and Ideas manager to dump as well surface ideas and pick up next projects off, and a quick tool to help me tick off what+how many issues of a set of magazines I already have.\n\nThe last few projects I was working on, which were also the ones that made me realise I needed Cabinet to be cohesive and reworked out, were the Timeline of the SciFi Golden Age dataViz, and a couple of WIP dataViz pages on Issac Asimov as well as the Hamzanama.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-29",
+    "section": "making",
+    "value": "A set of scripts that takes the SSD timetable and gives reports for individual faculty workloads, module hours, calendars generated per visiting faculty, module or internal faculty, and .ics calendar files that can be sent to faculty directly to add their timetables into their calendars. Some scripts to analyse my personal spending.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  },
+  {
+    "date": "2026-08-29",
+    "section": "making",
+    "value": "A few 3d printed thingamajigs; a collar for a clamp stand that broke down and had to be remade, a bit that turns IKEA Skadis hooks into a set of plier hangers. A sofa-armrest caddy to keep things on, lasercut ply and fabric.",
+    "image": "",
+    "notes": "",
+    "pinned": false
+  }
+];

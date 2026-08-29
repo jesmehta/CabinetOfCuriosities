@@ -8,7 +8,9 @@ archive process, data pipeline, map-regeneration workflow, known gotchas).
 [`WORLD-SYSTEMS.md`](WORLD-SYSTEMS.md) documents the conventions this repo
 shares with its sibling Level 1 worlds, [The Bookshelf of
 Curiosities](https://github.com/jesmehta/TheBookshelfOfCuriosities) and
-[fffx](https://github.com/jesmehta/form-follows-fx).
+[fffx](https://github.com/jesmehta/form-follows-fx). [`NOW-PAGE.md`](NOW-PAGE.md)
+documents the `/now` page (`docs/now.html`) — a separate feature from the
+map landing page, with its own data pipeline.
 
 Cabinet is the umbrella landing page / web-world index: an illustrated
 archipelago map where each major section of Jesal's web presence is an
@@ -54,6 +56,17 @@ repo/world) rather than duplicating their content.
 - `tools/build-cabinet-content.js` — parses the two TSVs into
   `docs/assets/js/cabinet-generated-content.js`. Run with
   `node tools/build-cabinet-content.js` after editing either TSV.
+- `content/now.tsv`, `tools/build-now-content.js`, `docs/now.html`,
+  `docs/assets/js/now-*.js`, `docs/assets/css/now.css` — the `/now` page,
+  a separate standalone-HTML page (same pattern as `docs/index.html`, not
+  routed through Material) with its own TSV → generated-JS pipeline. See
+  `NOW-PAGE.md` for the full design decisions. `docs/now.md` (MkDocs nav's
+  "Now" stub) is currently unrelated/unwired to this page — see
+  `NOW-PAGE.md` for why.
+- `tools/now-editor.js` (+ `tools/now-editor-ui/`, launched via
+  `run-now-editor.bat`) — a local-only admin server/browser UI for editing
+  `now.tsv` entries and `now-data.js` sections without hand-editing either
+  file. Never deployed; see `NOW-PAGE.md`'s "Local admin server".
 - `assets/map/source/` — the one-time island-shape generator
   (`generate-cabinet-map.js`) and its seed config
   (`cabinet-map-source.json`), kept for reproducibility. Authoring-only,
@@ -139,6 +152,36 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### `/now` v1.5 — local admin server (2026-08-29)
+
+`tools/now-editor.js` (`run-now-editor.bat`) added: a local-only
+zero-dependency Node server + browser UI at `/admin/` for managing
+`now.tsv` entries and `now-data.js` sections without hand-editing either
+file (native date picker, live Markdown preview, image upload, section
+reordering) — also serves `docs/` so `/now.html` previews at the real
+deployed relative paths from the same server. Motivated by two real bugs
+in the `/now` v1.3/v1.4 changelog entries (see `NOW-PAGE.md`) that both
+traced back to hand-editing `now.tsv` in Excel. Full details, the shared-
+module refactor this prompted (`tools/now-tsv.js`,
+`docs/assets/js/now-markdown.js`), and how it was tested in `NOW-PAGE.md`'s
+own changelog.
+
+### `/now` v1.0 — initial build (2026-08-28)
+
+`docs/now.html` shipped: a standalone page (same "hand-built HTML file
+directly in `docs/`" pattern as `docs/index.html`, not an MkDocs Material
+page) showing a periodically updated, fading-by-recency snapshot of
+reading/watching/music/projects/teaching/travel/curiosities/making/finds.
+Own TSV → generated-JS data pipeline (`content/now.tsv` →
+`tools/build-now-content.js` → `docs/assets/js/now-generated-content.js`),
+matching the `cabinet-*`/`fffx-*`/`bookshelf-*` convention documented in
+`WORLD-SYSTEMS.md` rather than the plain-JSON-fetch approach originally
+sketched in `now-page-helpers/`. Full design decisions, deviations from
+that original spec, and content-sourcing notes in `NOW-PAGE.md`. Not yet
+linked from `mkdocs.yml`'s nav — `docs/now.md`'s "coming soon" stub is
+still what the sidebar points at, left as-is deliberately (see
+`NOW-PAGE.md`).
 
 ### v3.0 — archipelago-tool rebuild, promoted to production (branch `landing-v3-prototype` merged to `main`, 2026-08-23)
 

@@ -1,0 +1,196 @@
+/* Now page -- editorial/notebook layout, not the map/island chrome.
+   Consumes cabinet-tokens.css's --cab-* palette. See NOW-PAGE.md for the
+   design decisions this implements (fade hierarchy, stream vs snapshot). */
+
+body.now-page {
+  margin: 0;
+  /* --cab-paper, not --cab-paper-deep -- paper-deep is the map shell's
+     backdrop tone (see DESIGN-SYSTEM.md's palette table), not a content
+     background. --cab-paper is what every Material-rendered content page
+     (about.md, colophon.md, teaching.md, ...) actually sits on via
+     cabinet-material.css's --md-default-bg-color mapping -- matching it
+     here is what makes /now read as the same site as those pages. */
+  background: var(--cab-paper);
+  color: var(--cab-ink);
+  font-family: var(--cab-font-body);
+  line-height: 1.5;
+
+  /* Locally-defined, not imported from cabinet-v3-style.css's --v3-* tokens
+     on purpose -- that file is still an in-flux prototype system (see its
+     own header comment), and /now should stay stable and self-contained
+     rather than picking up its future retuning. Values below MATCH (not
+     reference) that stylesheet's "satellite"/Topology theme
+     (--v3-sea-deep/--v3-sea-shallow: #1c5f8a / #43d6d6) -- the deep-blue
+     one used as-is for text-weight accents (links, the freshest fade tier),
+     the bright cyan darkened one step (#43d6d6 -> #2a9797) for the same
+     reason cabinet-tokens.css's own --cab-focus-ring (#1c5f6b, already a
+     close cousin of the deep-blue value here) is a cool teal rather than a
+     literal saturated one: enough contrast against parchment to read as
+     text/rule colour, not just a decorative wash. */
+  --now-accent: #1c5f8a;
+  --now-accent-bright: #2a9797;
+}
+
+.now-shell {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+.now-back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: var(--cab-ink-soft);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.now-back-link:hover,
+.now-back-link:focus-visible {
+  color: var(--now-accent);
+}
+
+.now-header h1 {
+  font-family: var(--cab-font-heading);
+  font-size: 2.4rem;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.now-tagline {
+  color: var(--cab-ink-soft);
+  font-size: 1.05rem;
+  margin: 0 0 0.4rem;
+  max-width: 34rem;
+}
+
+.now-updated {
+  color: var(--cab-ink-faint);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0 0 3rem;
+}
+
+.now-section {
+  margin-bottom: 2.75rem;
+}
+
+.now-section-title {
+  font-family: var(--cab-font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid var(--now-accent-bright);
+  padding-bottom: 0.4rem;
+  margin: 0 0 1rem;
+}
+
+.now-entry-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.now-entry {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+/* One flex item alongside the optional image, so a multi-paragraph entry
+   (e.g. a longer reaction) stacks its <p> tags in a column instead of the
+   <li>'s own flex row treating each paragraph as a separate side-by-side
+   item. */
+.now-entry-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.now-entry-value {
+  margin: 0 0 0.6rem;
+}
+
+.now-entry-value:last-child {
+  margin-bottom: 0;
+}
+
+.now-entry-value a {
+  /* inherit, not a hardcoded ink colour -- most "current"-tier entries
+     (book/film titles) ARE links, so the link needs to pick up whichever
+     fade-tier colour its paragraph has (now-current's blue accent included)
+     rather than overriding it back to plain ink. */
+  color: inherit;
+  text-decoration-color: var(--cab-ink-faint);
+}
+
+.now-entry-value a:hover,
+.now-entry-value a:focus-visible {
+  color: var(--now-accent);
+}
+
+/* "side" layout (default): a portrait-ish box, not a square avatar crop --
+   reads as a book-cover/thumbnail rather than a profile picture. Sized for
+   the reading/found sections' actual images (book covers, link
+   screenshots). */
+.now-entry-image {
+  width: 6rem;
+  height: 8.5rem;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--cab-card-border);
+  flex-shrink: 0;
+}
+
+/* "full" layout: image spans the entry, sits above the text instead of
+   beside it -- see now-render.js's imageLayout handling and now-data.js's
+   per-section config. */
+.now-entry--image-full {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.now-entry-image--full {
+  width: 100%;
+  height: auto;
+  max-height: 22rem;
+  object-fit: cover;
+}
+
+/* Fade hierarchy: colour + weight, not literal opacity, so text stays
+   legible against the parchment background at every step (see
+   NOW-PAGE.md's "Important Visual Rule"). The freshest tier gets the blue
+   accent instead of plain ink -- "current" reads as genuinely alive, not
+   just heavier, and it's what actually delivers the "a lot of" blue-green
+   presence the page asked for (repeated at the top of every section)
+   rather than confining the accent to one-off link colours. */
+.now-current .now-entry-value {
+  color: var(--now-accent);
+  font-weight: 500;
+}
+
+.now-recent .now-entry-value {
+  color: var(--cab-ink-soft);
+}
+
+.now-old .now-entry-value {
+  color: var(--cab-ink-faint);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 32rem) {
+  .now-header h1 {
+    font-size: 1.9rem;
+  }
+
+  .now-entry-image {
+    width: 4.5rem;
+    height: 6.5rem;
+  }
+
+  .now-entry-image--full {
+    max-height: 14rem;
+  }
+}
