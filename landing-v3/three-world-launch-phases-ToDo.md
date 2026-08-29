@@ -1178,7 +1178,10 @@ marked as such.*
 
 </details>
 
-- [ ] **#73** Compass rose's 4 directions decided (not yet built): N = About
+<details>
+<summary>#73</summary>
+
+- [x] **#73** Compass rose's 4 directions decided (not yet built): N = About
       Me, S = Colophon (both stay as-is), E/W = Now and a new **Site
       IA / Sitemap** page, once Contact (`compass-e`) and CV
       (`compass-w`) are absorbed elsewhere rather than each holding their
@@ -1190,7 +1193,17 @@ marked as such.*
       does the Site IA/Sitemap page get hand-written or generated from
       `mkdocs.yml` + `cabinet-sections.tsv` directly (the latter would
       need to stay in sync with both, same drift risk as everything else
-      audited in `#67`).
+      audited in `#67`). -- **Resolved, v3.7.67, 2026-08-29**: CV and
+      Contact were already absorbed (CV into About Me, Contact into the
+      Now page -- see `compass-w`/`compass-e`'s own notes in
+      `cabinet-entries.tsv`), leaving only the W point itself. Went with
+      generated, but broader than the question assumed: `tools/
+      generate_sitemap.py` pulls sections/entries TSVs live from all
+      three worlds' own repos (Cabinet, fffx, Bookshelf), not just this
+      repo's two, into `docs/sitemap.md`. Full details in
+      `Landing-page-notes.2.0.md`'s v3.7.67 changelog entry.
+
+</details>
 
 ---
 

@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.67 -- Site map compass point wired, closing #73](#v3767----site-map-compass-point-wired-closing-73)
   - [v3.7.66 -- Swatch Fields and Tracery Bots assembled onto the custom domain, no more raw github.io links](#v3766----swatch-fields-and-tracery-bots-assembled-onto-the-custom-domain-no-more-raw-githubio-links)
   - [v3.7.65 -- branch hygiene: a stray cross-machine session's work mirrored to main, reverted on v3, co-author trailers stripped](#v3765----branch-hygiene-a-stray-cross-machine-sessions-work-mirrored-to-main-reverted-on-v3-co-author-trailers-stripped)
   - [v3.7.64 -- review/ folder added; the "permanent archive" half of this pass had to be corrected same day](#v3764----review-folder-added-the-permanent-archive-half-of-this-pass-had-to-be-corrected-same-day)
@@ -1546,6 +1547,38 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.67 -- Site map compass point wired, closing #73
+
+`#73` left the compass rose's W point open pending a decision on where
+the Site IA/Sitemap page's content would come from -- "hand-written or
+generated from `mkdocs.yml` + `cabinet-sections.tsv` directly." Settled
+in favour of generation, but wider than that question anticipated: a
+single `tools/generate_sitemap.py` (moved here from a throwaway
+`sitemap/` scratch folder it started in) pulls the sections/entries TSVs
+live from all three worlds' own repos over GitHub raw -- Cabinet,
+`form-follows-fx`, and `TheBookshelfOfCuriosities` -- not just this
+repo's own `cabinet-sections.tsv`/`cabinet-entries.tsv`, so one page
+covers the whole map. Writes `docs/sitemap.md`, an MkDocs source page
+like `about.md`/`colophon.md`, added to `mkdocs.yml`'s Compass nav
+block. `cabinet-entries.tsv`'s `compass-w` row: `href` `sitemap/`,
+`status` `wip` -> `true`.
+
+Rebuilding `docs/assets/js/cabinet-generated-content.js` (`node
+tools/build-cabinet-content.js`) and re-running `build-static.mjs`
+surfaced a real promotion bug, not just a data change: naively `cp`-ing
+`landing-v3/index.html` over `docs/index.html` carries the dev build's
+own-folder-relative asset paths (bare `cabinet-v3-style.css`,
+`cabinet-v3-production-animate.js`, `../docs/assets/css/cabinet-tokens.css`)
+straight across, which don't resolve from `docs/`'s location -- silently
+drops all styling and the boat/dragon animation. Same three paths
+`ed45d15`'s commit message already named as "the usual asset-path
+rewrites"; rewritten to `assets/css/...`/`assets/js/...` again here.
+Verified: `node tools/build-cabinet-content.js` clean, `docs/sitemap.md`
+generated from a live fetch of all three repos' TSVs, headless-Chromium
+render of the promoted `docs/index.html` with zero console/request
+errors, and a compass-rose screenshot confirming all four points --
+About Me, Now, Colophon, Site map -- render live.
 
 ### v3.7.66 -- Swatch Fields and Tracery Bots assembled onto the custom domain, no more raw github.io links
 

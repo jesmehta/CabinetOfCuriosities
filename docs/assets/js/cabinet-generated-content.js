@@ -882,10 +882,10 @@ export const entries = [
     "section": "compass",
     "title": "Site map",
     "subtitle": "",
-    "href": "",
+    "href": "sitemap/",
     "order": 40,
     "weight": 1,
-    "status": "wip",
+    "status": true,
     "kind": "compass-direction",
     "tags": [],
     "location": "",
@@ -895,7 +895,7 @@ export const entries = [
       "cardType": "",
       "anchor": "W"
     },
-    "notes": "To be done -- no site-map page exists yet. CV moved off this compass point; it now lives inside the About Me page instead."
+    "notes": "Auto-generated from all three worlds' TSVs by tools/generate_sitemap.py -> docs/sitemap.md, mirroring build-cabinet-content.js's own TSV-as-source-of-truth pattern. CV moved off this compass point; it now lives inside the About Me page instead."
   },
   {
     "id": "working-with-ai",
