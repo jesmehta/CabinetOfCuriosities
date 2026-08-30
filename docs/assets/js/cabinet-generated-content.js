@@ -663,7 +663,7 @@ export const entries = [
     "visual": {
       "anchor": "E"
     },
-    "notes": "Links to docs/now.md. Contact also lives on that page, not as its own compass point. Replaces the earlier \"Contact me\" placeholder at this compass point."
+    "notes": "Links to docs/now.md. Replaces the earlier \"Contact me\" placeholder at this compass point. Contact does NOT live here (corrected 2026-08-30) -- both CV and Contact are folding into About Me instead, same as compass-n's note says."
   },
   {
     "id": "compass-s",

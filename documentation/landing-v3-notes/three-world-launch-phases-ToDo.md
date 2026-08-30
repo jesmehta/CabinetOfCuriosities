@@ -2,6 +2,7 @@
 
 ## Table of contents
 
+- [Immediate priorities (2026-08-30)](#immediate-priorities-2026-08-30)
 - [Phase 0 -- v3-prototype punch list](#phase-0----v3-prototype-punch-list)
   - [Punch list (sea serpent through colophon)](#punch-list-sea-serpent-through-colophon)
   - [Found via documentation survey (v3.6.6 doc audit)](#found-via-documentation-survey-v366-doc-audit)
@@ -59,6 +60,47 @@ Originally this file was two things smashed together (an original
 split between this file and `three-world-launch-phases-Notes.md`) plus
 the Landing-page-notes punch list. Split 2026-08-23 at the user's
 request.
+
+---
+
+## Immediate priorities (2026-08-30)
+
+A working set, not a new phase -- pointers into the numbered items above
+by priority, set directly by the user after a full documentation review.
+Doesn't replace the phase structure; items keep their original numbers
+and phase placement, this is just the current ordering of attention.
+
+1. **`#32`** (Rework "Copy config") -- top priority. Direct reasoning: it's
+   currently a bottleneck to smooth updates of the site's look and feel,
+   and the mechanism itself is "not a stable state" right now. Still
+   needs the (a)-minimal-vs-(b)-bigger decision described in the item
+   itself before building anything.
+2. **The deployment manifesto** -- `#58` (confirm failed builds don't
+   replace the last successful live deployment) + `#80` (expand Cabinet
+   assembly beyond Working with AI: Student Work, Rock Collection,
+   Dupatta Collection, etc.) + `#82` (generalize assembly into a
+   manifest-driven workflow instead of hard-coded per-repo steps),
+   grouped as one initiative -- direct request, 2026-08-30. `#82`'s
+   manifest is naturally what makes `#80`'s expansion cheap instead of
+   more copy-pasted workflow steps, and `#58` is the safety property that
+   initiative needs to actually hold once more repos depend on it.
+3. **`#81`** (Build TSV editors for Cabinet, Bookshelf, FFFX) -- ongoing.
+   Cabinet's own editor is already substantially built (see
+   `documentation/CABINET-EDITOR.md`, v1.0-v1.5); direct note,
+   2026-08-30: "will be easier to port for the other two" once Cabinet's
+   own is settled.
+4. **`#70`** (section/island labels: SVG `<text>` vs. semantic HTML,
+   SEO/accessibility implications) -- prioritized for a real decision,
+   2026-08-30: "for better semantic organisation."
+5. **`#126`** (split up this ToDo file / documentation coherently) --
+   direct note, 2026-08-30: "also an easy task."
+
+Backburner, deliberately not urgent -- direct instruction, 2026-08-30:
+
+- **`#66`/`#42`** (About Me real content) -- low priority, to be written
+  opportunistically alongside other work rather than blocked on.
+- **`#37`/`#39`** (map label overflow, desktop/mobile QA) -- backburner
+  for now.
 
 ---
 
@@ -419,7 +461,10 @@ overall site.
 
 </details>
 
-- [ ] **#26** `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
+<details>
+<summary>#26</summary>
+
+- [x] **#26** `DESIGN-SYSTEM.md`'s `callout-card` layout (external placement,
       dashed border, leader-line to a card sitting off the island
       entirely) is fully built and supported by the renderer but no
       entry currently uses it -- available for future content that needs
@@ -438,6 +483,38 @@ overall site.
       the doc describes. Real open decision, not busywork: either build
       the missing visual treatment, or correct `DESIGN-SYSTEM.md`'s
       claim to match what actually exists.
+      **Closed as moot, 2026-08-30, direct confirmation: "The callout
+      card layout and leaderTo lines are defunct."** Overtaken by events
+      on both sides of the 2026-08-23 discrepancy: `cabinet-render.js`
+      and `cabinet-landing.css` (the renderer this item was about) were
+      themselves deleted as confirmed-dead v1/v2 code in `#130`, and
+      `DESIGN-SYSTEM.md` was archived to
+      `archived-landing-pages/v2/DESIGN-SYSTEM.md` (Superseded banner) in
+      `#131` -- there is no longer a live renderer or a live doc for this
+      item to be a discrepancy BETWEEN. `placement`/`x`/`y`/`cardOrder`/
+      `size`/`cardType`/`leaderTo` are now also gone from the schema
+      itself, not just unread by the renderer -- deleted from
+      `ENTRIES_COLS`, `build-cabinet-content.js`, and the real
+      `content/cabinet-entries.tsv` data during the Cabinet TSV editor
+      work (`#81`, `documentation/CABINET-EDITOR.md` v1.1-v1.2). Direct
+      framing, 2026-08-30, worth preserving since it's easy to
+      conflate the two: **"The callout card layout and leaderTo lines
+      are defunct. The concept of having a finer level of entries on the
+      existing map is not"** -- i.e. the specific v2-era mechanism
+      (external placement + dashed leader-line) is dead for good, but
+      the broader idea it was one implementation of (islands having a
+      second, finer tier of entries -- e.g. on the coast, distinct from
+      the section-level plaques that exist today) is a real live idea,
+      just not designed yet -- see `#137` below, logged separately so it
+      doesn't stay tangled up with a mechanism that's actually gone.
+      Also: `DESIGN-SYSTEM.md` itself is not to be treated as a current
+      source of truth even where it hasn't been formally superseded --
+      direct note, 2026-08-30: "the docu is also not the final source of
+      truth, the page has evolved greatly since then" -- matches how
+      `archived-landing-pages/`'s other frozen docs are already treated
+      (historical record, not rewritten, not authoritative).
+
+</details>
 
 <details>
 <summary>#27</summary>
@@ -1202,6 +1279,18 @@ marked as such.*
       three worlds' own repos (Cabinet, fffx, Bookshelf), not just this
       repo's two, into `docs/sitemap.md`. Full details in
       `Landing-page-notes.2.0.md`'s v3.7.67 changelog entry.
+      **Follow-up, 2026-08-30, direct clarification**: confirmed this
+      item counts as done -- the compass wiring itself (all four
+      directions live) is complete, that's what this item tracks.
+      Separately clarified, since the two TSV rows disagreed with each
+      other: **both CV and Contact fold into About Me**, not split
+      between About Me and Now. `compass-n`'s note already said this
+      correctly; `compass-e`'s note incorrectly also claimed Contact
+      lived on the Now page -- fixed to match. The actual About Me page
+      content doesn't carry CV/Contact yet (`docs/about.md` is still the
+      30-word stub from `#67`'s audit) -- that's `#66`/`#42`'s scope, not
+      this item's; `#73` only tracked the compass structure being
+      decided and wired, which it now is.
 
 </details>
 
@@ -1516,19 +1605,49 @@ section to empty out.*
 - [ ] **#119** Improve search, accessibility, performance and metadata
 - [ ] **#120** Use Cloudflare routing only where a future project genuinely
       needs it
-- [ ] **#121** Organize local files for v3 -- `landing-v3/` has accumulated
+
+<details>
+<summary>#121</summary>
+
+- [x] **#121** Organize local files for v3 -- `landing-v3/` has accumulated
       dev/test artifacts alongside the real prototype over ~60 versions
       (`islands-tool.html`, `archive/` (old per-version copies),
       `v3-scheme-candidates.md`, various one-off test HTML) with no pass
       yet to sort what's still needed for the live build vs. what's
-      historical/dead weight.
-- [ ] **#122** Consolidate documentation for v3 vs. all of Cabinet --
+      historical/dead weight. **Done as a side effect of the Cabinet
+      file/folder reorganization (`#129`-`#134`), confirmed 2026-08-30**:
+      `landing-v3/` top level re-checked directly against this item's own
+      wording -- `islands-tool.html` moved into `dev-tool/` (`#132`),
+      `v3-scheme-candidates.md` moved into
+      `documentation/landing-v3-notes/` (`#134`), no loose one-off test
+      HTML remains at the top level. `archive/` and `dev-screenshots/`
+      stay, unchanged -- both already confirmed intentional, referenced
+      snapshots, not dead weight (`#134`'s own "deliberately out of
+      scope" note).
+
+</details>
+
+<details>
+<summary>#122</summary>
+
+- [x] **#122** Consolidate documentation for v3 vs. all of Cabinet --
       `Landing-page-notes.2.0.md`/`conversation-landing-page-v3.md` (v3-
       prototype-specific) and `three-world-launch-phases-ToDo.md`/`-Notes.md`
       (whole-Cabinet/Bookshelf/FFFX) already overlap in places (this file's
       own intro note admits it was two documents smashed together once
       already, 2026-08-23) -- worth a real pass on what belongs where
-      before the overlap gets worse.
+      before the overlap gets worse. **Done as a side effect of the
+      documentation-folder move (`#134`), confirmed 2026-08-30**: the
+      location split happened there (v3-specific docs grouped into
+      `documentation/landing-v3-notes/`, whole-Cabinet docs directly in
+      `documentation/`), and the overlap question was directly
+      investigated, not assumed -- `Landing-page-notes.2.0.md` and
+      `conversation-landing-page-v3.md` were read in full and found NOT
+      redundant (reference/changelog vs. narrative process log; see
+      `FILE-MANIFEST.md`'s entry for both). "A real pass on what belongs
+      where" is exactly what that review was.
+
+</details>
 
 <details>
 <summary>#123</summary>
@@ -1569,7 +1688,10 @@ section to empty out.*
 
 </details>
 
-- [ ] **#125** Organize files of v3, MkDocs, and stray leftover versions --
+<details>
+<summary>#125</summary>
+
+- [x] **#125** Organize files of v3, MkDocs, and stray leftover versions --
       direct request, 2026-08-24, broader than #121 (v3-only): #121 was
       scoped to `landing-v3/`'s own accumulated dev/test artifacts
       (`islands-tool.html`, `archive/`, test HTML); this extends the same
@@ -1578,7 +1700,16 @@ section to empty out.*
       leftover" generally -- prompted directly by #124's own mistake
       (creating a redundant `dev-archive/` without checking whether
       `landing-v3/dev-screenshots/` already covered it), which is exactly
-      the kind of thing this pass should catch and prevent. Not started.
+      the kind of thing this pass should catch and prevent. **Done as a
+      side effect of the Cabinet file/folder reorganization (`#129`-`#134`),
+      confirmed 2026-08-30**: `docs/assets/css/`, `docs/assets/js/`, and
+      `docs/stylesheets/` re-checked directly -- no dead v1/v2 leftovers
+      (those four files `#130` deleted stay gone), only real,
+      currently-referenced files in each. Combined with `#121`'s
+      confirmation above, both the v3-only and MkDocs-side halves of this
+      pass are covered.
+
+</details>
 - [ ] **#126** Split up documentation coherently -- direct request,
       2026-08-24, related to but not the same ask as #122
       (consolidate v3-specific vs. whole-Cabinet docs): #122 is about
@@ -1670,6 +1801,17 @@ section to empty out.*
       template, with its own Cloudflare Web Analytics token if tracked as
       a distinct property, rather than inheriting Cabinet's mkdocs
       override.
+- [ ] **#137** Speculative, not on the drawing board yet: a finer tier of
+      map entries on the island coast (or similar), a level below the
+      existing section-level plaques -- planned very early on in v3's
+      design, direct note 2026-08-30 while closing `#26`: "I may yet want
+      a system where the islands have a further set of entries on the
+      island coast etc, as planned very early on, but that is currently
+      not even on the drawing board." Explicitly NOT the same thing as
+      `#26`'s now-closed `callout-card`/`leaderTo` mechanism (that v2-era
+      implementation is dead for good) -- logged separately so the live
+      idea doesn't stay tangled up with the dead mechanism. No design yet
+      -- needs one before anything else.
 
 ---
 

@@ -135,10 +135,19 @@ notes
 ```
 
 Cabinet's own extension: sections additionally carry a `map: {islandId,
-cx, cy, rx, ry, mapForm}` object, and entries a `visual: {placement, x,
-y, anchor, order, size, cardType, leaderTo}` object — these are Cabinet's
-world-specific layout fields, in the same spirit as fffx's
-subdivision-`weight` scoring or Bookshelf's `span` grid-width field.
+cx, cy, rx, ry, mapForm}` object (read-only in practice — `squarify()`
+computes live layout from `weight` unconditionally, these are kept for
+a possible future hand-authored mode, not currently load-bearing), and
+entries carry a `visual: {anchor}` object — just the compass direction
+(`N`/`E`/`S`/`W`) for the four `compass-n/e/s/w` rows, in the same
+spirit as fffx's subdivision-`weight` scoring or Bookshelf's `span`
+grid-width field. **(2026-08-30: trimmed from a larger `visual`
+bundle — `placement, x, y, order, size, cardType, leaderTo` — which
+was a v2-era layout scheme with zero current renderer or Bookshelf/fffx
+analogue; deleted from the schema and the real `content/cabinet-entries.tsv`
+data. See Cabinet's own `documentation/CABINET-EDITOR.md`, v1.1–v1.2, for
+the full field-by-field audit. Needs backporting to Bookshelf's and
+fffx's copies of this file per this doc's own sync convention above.)**
 Neither Bookshelf nor fffx needs Cabinet's placement vocabulary, and
 Cabinet doesn't need theirs.
 
