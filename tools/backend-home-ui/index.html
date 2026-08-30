@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cabinet -- Backend Home</title>
+<link rel="stylesheet" href="home.css" />
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Cabinet &mdash; Backend Home</h1>
+    <div class="sub">Local admin dashboard. Everything here is localhost-only, no auth -- nothing on this page is meant to be reachable off this machine.</div>
+  </div>
+  <div class="compass">127.0.0.1:5959</div>
+</header>
+
+<main>
+
+  <section class="block">
+    <h2>Editors &amp; live tools</h2>
+    <div class="cards">
+
+      <div class="card" id="card-cabinet-editor">
+        <div class="card-top">
+          <span class="dot" data-dot="cabinetEditor"></span>
+          <strong>Cabinet TSV editor</strong>
+          <span class="port">:5858</span>
+        </div>
+        <p>Edits <code>content/cabinet-sections.tsv</code> + <code>content/cabinet-entries.tsv</code>. Has its own <em>Rebuild</em> button inside -- use it after editing there, or use "Rebuild Cabinet content" below to rebuild without opening it.</p>
+        <div class="card-actions">
+          <button class="btn" data-start="cabinet-editor">Start server</button>
+          <a class="btn btn-link" data-open="cabinetEditor" href="http://127.0.0.1:5858/admin/" target="_blank" rel="noopener">Open editor &rarr;</a>
+        </div>
+      </div>
+
+      <div class="card" id="card-now-editor">
+        <div class="card-top">
+          <span class="dot" data-dot="nowEditor"></span>
+          <strong>Now TSV editor</strong>
+          <span class="port">:5757</span>
+        </div>
+        <p>Edits <code>content/now.tsv</code> and <code>docs/assets/js/now-data.js</code>'s section config. Also has its own <em>Rebuild</em> button inside.</p>
+        <div class="card-actions">
+          <button class="btn" data-start="now-editor">Start server</button>
+          <a class="btn btn-link" data-open="nowEditor" href="http://127.0.0.1:5757/admin/" target="_blank" rel="noopener">Open editor &rarr;</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="dot dot-static"></span>
+          <strong>Islands tool</strong>
+          <span class="port">v3 live preview</span>
+        </div>
+        <p class="warn"><strong>Not a save-to-file tool.</strong> Live in-browser tuning of the v3 map's visual config (coastlines, particles, layout weights). "Copy config" puts the tuned object on your clipboard only. To actually ship a change made here: hand-paste it into <code>cabinet-v3-layout.js</code>'s defaults, then run Build + Promote below.</p>
+        <div class="card-actions">
+          <a class="btn btn-link" href="/landing-v3/dev-tool/islands-tool.html" target="_blank" rel="noopener">Open islands tool &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Build &amp; publish pipeline</h2>
+    <p class="block-sub">Run top to bottom for a full publish, or run any single step on its own. Nothing here commits to git -- you still commit the changed files yourself.</p>
+
+    <div class="pipeline">
+
+      <div class="step" data-run="cabinet-content">
+        <div class="step-row">
+          <button class="btn btn-run" data-run-btn="cabinet-content">Rebuild Cabinet content</button>
+          <code>content/cabinet-*.tsv &rarr; docs/assets/js/cabinet-generated-content.js</code>
+        </div>
+        <p class="hint">Convenience mirror of the Cabinet editor's own Rebuild button, for when you edited the TSVs by hand and don't need the UI open.</p>
+        <pre class="output" data-run-out="cabinet-content"></pre>
+      </div>
+
+      <div class="step" data-run="now-content">
+        <div class="step-row">
+          <button class="btn btn-run" data-run-btn="now-content">Rebuild Now content</button>
+          <code>content/now.tsv &rarr; docs/now.md</code>
+        </div>
+        <p class="hint">Convenience mirror of the Now editor's own Rebuild button.</p>
+        <pre class="output" data-run-out="now-content"></pre>
+      </div>
+
+      <div class="step" data-run="build-static">
+        <div class="step-row">
+          <button class="btn btn-run" data-run-btn="build-static">Build static map</button>
+          <code>landing-v3/index.template.html + current content &rarr; landing-v3/index.html</code>
+        </div>
+        <p class="hint">Renders the real client-side map in headless Chromium and bakes the result. <strong>Dev-only output</strong> -- this never touches <code>docs/</code>, so the live site is untouched until you Promote.</p>
+        <pre class="output" data-run-out="build-static"></pre>
+      </div>
+
+      <div class="step" data-run="promote">
+        <div class="step-row">
+          <button class="btn btn-run" data-run-btn="promote">Promote to docs/</button>
+          <code>landing-v3/index.html + shared/ &rarr; docs/index.html + docs/assets/</code>
+        </div>
+        <p class="hint">Copies the built map into <code>docs/</code>, rewriting dev-relative asset paths to production ones, then re-renders the promoted page in headless Chromium to confirm zero console/request errors. This exact path-rewrite step caused a real shipped bug once when done by hand -- see Gotchas below.</p>
+        <pre class="output" data-run-out="promote"></pre>
+      </div>
+
+      <div class="step step-primary" data-run="build-and-promote">
+        <div class="step-row">
+          <button class="btn btn-run btn-primary" data-run-btn="build-and-promote">Build + Promote</button>
+          <code>runs the two steps above, in order</code>
+        </div>
+        <p class="hint">The normal way to ship a map/content change. Stops before Promote if Build fails.</p>
+        <pre class="output" data-run-out="build-and-promote"></pre>
+      </div>
+
+      <div class="step" data-run="sitemap">
+        <div class="step-row">
+          <button class="btn btn-run" data-run-btn="sitemap">Refresh sitemap</button>
+          <code>fetches Bookshelf + fffx TSVs live &rarr; docs/sitemap.md, documentation/CONTENT-INVENTORY.md</code>
+        </div>
+        <p class="hint warn">Goes stale when <strong>Bookshelf's or fffx's own content changes</strong>, not just this repo's -- nothing currently reminds you to re-run this. A dead compass-rose link shipped once because of exactly that. Safe to run any time; needs network access.</p>
+        <pre class="output" data-run-out="sitemap"></pre>
+      </div>
+
+      <div class="step" data-run="mkdocs-check">
+        <div class="step-row">
+          <button class="btn btn-run" data-run-btn="mkdocs-check">mkdocs build --strict (check only)</button>
+          <code>catches broken links/nav before you push</code>
+        </div>
+        <p class="hint">Builds to a throwaway temp directory and deletes it after -- doesn't publish anything, doesn't touch <code>docs/</code> or <code>public/</code>.</p>
+        <pre class="output" data-run-out="mkdocs-check"></pre>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Documentation</h2>
+    <p class="block-sub">Rendered by GitHub (or claude.ai for the one diagram), not this page. Ordered broadest-scope first, specific features/tools last. <strong>Paths below are pre-reorg</strong> -- <code>documentation/</code> is mid-restructure in another session; will update once that's committed (see Gotchas).</p>
+    <table class="doctable">
+      <tbody>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/README.md" target="_blank" rel="noopener">README.md</a></td>
+          <td>Structure, editing workflow, deploy pipeline, changelog -- start here.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/WORLD-SYSTEMS.md" target="_blank" rel="noopener">WORLD-SYSTEMS.md</a></td>
+          <td>Shared conventions across Cabinet / Bookshelf / fffx -- hand-synced byte-for-byte across all three repos. Check before deleting a "dead" TSV column.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/FILE-MANIFEST.md" target="_blank" rel="noopener">FILE-MANIFEST.md</a></td>
+          <td>Exhaustive per-file role listing for the whole repo.</td>
+        </tr>
+        <tr>
+          <td><a href="https://claude.ai/code/artifact/b69fceba-1590-4897-8c13-75a61bcf7f46" target="_blank" rel="noopener">Data &rarr; Map &rarr; Page<span class="tag">Claude artifact</span></a></td>
+          <td>Hand-made visual map of the landing-v3 build pipeline (TSVs &rarr; build-cabinet-content.js &rarr; cabinet-v3-layout.js &rarr; islands-tool.html / build-static.mjs &rarr; index.html). Made before <code>promote.mjs</code> existed, so it stops at "index.html, frozen snapshot" -- doesn't show the docs/ promotion step (tracked as ToDo #138). Still the clearest orientation to everything upstream of that.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/Landing-page-notes.2.0.md" target="_blank" rel="noopener">Landing-page-notes.2.0.md</a></td>
+          <td>Full reference/changelog for the v3 map system (build-static.mjs, promotion, layout engine).</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/conversation-landing-page-v3.md" target="_blank" rel="noopener">conversation-landing-page-v3.md</a></td>
+          <td>Narrative process log for the v3 rebuild -- not a duplicate of the notes above.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/CABINET-EDITOR.md" target="_blank" rel="noopener">CABINET-EDITOR.md</a></td>
+          <td>Design decisions for the Cabinet TSV editor above.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/NOW-PAGE.md" target="_blank" rel="noopener">NOW-PAGE.md</a></td>
+          <td>Design decisions for the <code>/now</code> page and its editor.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/CONTENT-INVENTORY.md" target="_blank" rel="noopener">CONTENT-INVENTORY.md</a></td>
+          <td>Auto-generated by Refresh sitemap -- cross-checks TSV content against <code>mkdocs.yml</code>'s nav.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cloudflare-web-analytics-setup.md" target="_blank" rel="noopener">cloudflare-web-analytics-setup.md</a></td>
+          <td>How the analytics beacon is wired into every page.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/tree/main/documentation/landing-v3-notes" target="_blank" rel="noopener">landing-v3-notes/</a></td>
+          <td>v3's own to-do tracker, rationale, and open proposals (folder).</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="block">
+    <h2>Gotchas &amp; conventions</h2>
+    <ul class="gotchas">
+      <li><strong>Auto-generated files -- never hand-edit:</strong> <code>docs/index.html</code>, <code>docs/assets/css/cabinet-v3-style.css</code>, <code>docs/assets/js/cabinet-v3-*.js</code> (all via Promote), <code>docs/assets/js/cabinet-generated-content.js</code> (via Rebuild Cabinet content), <code>docs/now.md</code> (via Rebuild Now content), <code>docs/sitemap.md</code> + <code>documentation/CONTENT-INVENTORY.md</code> (via Refresh sitemap). Every one of these gets silently overwritten by its own script the next time it runs -- edit the real source (TSVs, <code>index.template.html</code>, etc.) instead.</li>
+      <li><strong>Build and Promote are deliberately two separate scripts.</strong> Build alone (<code>landing-v3/build-static.mjs</code>) never writes to <code>docs/</code> -- it's also used on its own while iterating, without wanting every run to touch the live site. Promote is the explicit "ship this" step.</li>
+      <li><strong>External repos assembled at deploy time are not pinned to a commit.</strong> <code>.github/workflows/deploy.yml</code> pulls Working with AI / Prompt Generator / Oblique Strategies / SSD Creative Coding / Swatch Fields / Tracery Bots' current default branch at build time. Pushing to one of those repos alone does <strong>not</strong> update the live site -- push a commit here too (anything, even a doc tweak), or re-run the latest "Deploy MkDocs to GitHub Pages" Action run.</li>
+      <li><strong>Always commit TSVs and their generated output together.</strong> None of the build scripts (or this page) commit anything for you.</li>
+      <li><strong>Port map:</strong> Now editor <code>5757</code> &middot; Cabinet editor <code>5858</code> &middot; this page <code>5959</code>. Override with <code>NOW_EDITOR_PORT</code> / <code>CABINET_EDITOR_PORT</code> / <code>CABINET_HOME_PORT</code> if one's taken.</li>
+      <li><strong>generate_sitemap.py needs network access</strong> (fetches raw TSVs from GitHub for all three worlds) -- if it fails, check connectivity before assuming a code problem.</li>
+    </ul>
+  </section>
+
+</main>
+
+<script src="home.js"></script>
+</body>
+</html>
