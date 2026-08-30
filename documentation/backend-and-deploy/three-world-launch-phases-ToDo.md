@@ -44,7 +44,7 @@ code spans elsewhere (this happened once, 2026-08-24, fixed). This only
 renders as collapsible on GitHub/most markdown previews -- in a plain
 text editor the tags just sit there uncollapsed.
 
-- `Landing-page-notes.2.0.md` (parent directory) -- v3-prototype concept
+- `landing-page-v3-notes.2.0.md` (parent directory) -- v3-prototype concept
   notes, discussions, and full changelog. This file's Phase 0 used to
   live there as the "punch list"; moved out here because it had outgrown
   that doc's format.
@@ -76,7 +76,7 @@ and phase placement, this is just the current ordering of attention.
    feel, and the mechanism itself is "not a stable state" right now.
    **Done, 2026-08-30, commit `555587b`** -- see the item itself for the
    shipped approach (full state export/import via `apply-config.mjs`,
-   colours/fonts moved into `v3Config`) and `Landing-page-notes.2.0.md`'s
+   colours/fonts moved into `v3Config`) and `landing-page-v3-notes.2.0.md`'s
    v3.7.69 entry for the full narrative.
 2. **The deployment manifesto** -- `#58` (confirm failed builds don't
    replace the last successful live deployment) + `#80` (expand Cabinet
@@ -891,7 +891,7 @@ own numbering note near the top) -- a move, not a re-add.
       caught by testing against scratch copies before either touched the
       real file (a regex crossing a newline boundary; a missed 9th
       `COLOR_TOKENS` entry that would have shipped a silently-wrong
-      fallback colour) -- full narrative in `Landing-page-notes.2.0.md`'s
+      fallback colour) -- full narrative in `landing-page-v3-notes.2.0.md`'s
       v3.7.69 entry, not duplicated here. Also surfaced `#139`/`#140`
       (dragon/boat have no live dev-panel management at all) as a direct
       byproduct of checking what the panel actually controls today.
@@ -1109,7 +1109,7 @@ failures remain.*
       is serving v3. Two real bugs found by actually looking at the live
       result rather than trusting the build alone: production's H1/
       section/island-label fonts were never loading (v3.7.46 -- see
-      `Landing-page-notes.2.0.md`), fixed and reconfirmed live; boats and
+      `landing-page-v3-notes.2.0.md`), fixed and reconfirmed live; boats and
       dragons don't appear at all (not a regression -- see #64 below,
       this is #38's "consciously deferred" made concrete).
 
@@ -1452,7 +1452,7 @@ marked as such.*
       generate_sitemap.py` pulls sections/entries TSVs live from all
       three worlds' own repos (Cabinet, fffx, Bookshelf), not just this
       repo's two, into `docs/sitemap.md`. Full details in
-      `Landing-page-notes.2.0.md`'s v3.7.67 changelog entry.
+      `landing-page-v3-notes.2.0.md`'s v3.7.67 changelog entry.
       **Follow-up, 2026-08-30, direct clarification**: confirmed this
       item counts as done -- the compass wiring itself (all four
       directions live) is complete, that's what this item tracks.
@@ -1571,13 +1571,13 @@ the next item on a red gate.
       `DESIGN-SYSTEM.md` -> `archived-landing-pages/v2/DESIGN-SYSTEM.md`.
       In passing, also fix a pre-existing wrong path this audit found:
       `README.md`'s v3.0 changelog entry points at
-      `landing-v3/Landing-page-notes.2.0.md`, but that file actually
-      lives at the repo root (`Landing-page-notes.2.0.md`) -- broken
+      `landing-v3/landing-page-v3-notes.2.0.md`, but that file actually
+      lives at the repo root (`landing-page-v3-notes.2.0.md`) -- broken
       before this item, unrelated to the move itself, fix while touching
       the same cross-references. -- **Done, 2026-08-29**: all three moved
       via `git mv`; root `assets/` (now empty) removed entirely. Fixed
       every literal path reference in `README.md` (7 spots, including
-      both occurrences of the pre-existing wrong `Landing-page-notes.2.0.md`
+      both occurrences of the pre-existing wrong `landing-page-v3-notes.2.0.md`
       path, and a bonus catch -- the `docs/assets/js/` structure bullet
       still described `cabinet-data.js`/`cabinet-render.js`/
       `cabinet-interactions.js` as "kept in place," stale since `#130`
@@ -1693,13 +1693,13 @@ verification gates didn't catch.
       convention) and `WORLD-SYSTEMS.md` can't move alone (byte-identical
       duplicate across Cabinet/Bookshelf/fffx, path assumed the same in
       all three). Also directly asked and answered before moving
-      anything: whether `Landing-page-notes.2.0.md` and
+      anything: whether `landing-page-v3-notes.2.0.md` and
       `conversation-landing-page-v3.md` are actually redundant despite
       covering the same period -- read both in full rather than assumed;
       they're not (reference/changelog vs. narrative process log, and
       the latter's own "documentation survey" section states the
       non-duplication policy directly). **Done, 2026-08-29**: moved
-      `NOW-PAGE.md`, `Landing-page-notes.2.0.md`,
+      `NOW-PAGE.md`, `landing-page-v3-notes.2.0.md`,
       `conversation-landing-page-v3.md`, `FILE-MANIFEST.md`,
       `now-page-helpers/` (whole folder -- see below, this *is* its
       relocation, content consolidation still separately deferred), and
@@ -1718,7 +1718,7 @@ verification gates didn't catch.
       `#132`. Left as bare filename mentions in prose (not literal
       broken links, matches this repo's own established citation
       convention): the many casual "see NOW-PAGE.md" / "see
-      Landing-page-notes.2.0.md" references inside `documentation/*.md`
+      landing-page-v3-notes.2.0.md" references inside `documentation/*.md`
       themselves. `FILE-MANIFEST.md` rewritten to match both the new
       paths and the corrected Landing-page-notes/conversation-log
       understanding. Full gate green: TSV builds clean, `mkdocs build
@@ -1839,7 +1839,7 @@ section to empty out.*
 <summary>#122</summary>
 
 - [x] **#122** Consolidate documentation for v3 vs. all of Cabinet --
-      `Landing-page-notes.2.0.md`/`conversation-landing-page-v3.md` (v3-
+      `landing-page-v3-notes.2.0.md`/`conversation-landing-page-v3.md` (v3-
       prototype-specific) and `three-world-launch-phases-ToDo.md`/`-Notes.md`
       (whole-Cabinet/Bookshelf/FFFX) already overlap in places (this file's
       own intro note admits it was two documents smashed together once
@@ -1849,7 +1849,7 @@ section to empty out.*
       location split happened there (v3-specific docs grouped into
       `documentation/landing-v3-notes/`, whole-Cabinet docs directly in
       `documentation/`), and the overlap question was directly
-      investigated, not assumed -- `Landing-page-notes.2.0.md` and
+      investigated, not assumed -- `landing-page-v3-notes.2.0.md` and
       `conversation-landing-page-v3.md` were read in full and found NOT
       redundant (reference/changelog vs. narrative process log; see
       `FILE-MANIFEST.md`'s entry for both). "A real pass on what belongs
@@ -2056,7 +2056,7 @@ section to empty out.*
       `build-static.mjs` -- doesn't show the `docs/` promotion step at
       all, since it predates `landing-v3/promote.mjs` (added 2026-08-30,
       see this file's own `#132`-adjacent history and
-      `documentation/landing-v3-notes/Landing-page-notes.2.0.md`). Update
+      `documentation/landing-v3-notes/landing-page-v3-notes.2.0.md`). Update
       should add a
       Stage 6 (or fold into Stage 5): `promote.mjs` reading
       `landing-v3/index.html` + `landing-v3/shared/*`, rewriting the

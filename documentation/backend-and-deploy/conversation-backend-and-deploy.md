@@ -6,7 +6,7 @@ technical reference plus a conversation-log companion
 (`now/NOW-PAGE.md` + `now/conversation-now-page.md`,
 `cabinet-editor/CABINET-EDITOR.md` +
 `cabinet-editor/conversation-cabinet-editor.md`,
-`landing-v3-notes/Landing-page-notes.2.0.md` +
+`landing-v3-notes/landing-page-v3-notes.2.0.md` +
 `landing-v3-notes/conversation-landing-page-v3.md`; `sitemap/` has only
 `conversation-sitemap.md` so far — see that file's own note on the
 missing technical-reference half). Backend, deploy, and site-wide
@@ -352,7 +352,7 @@ ever becomes available, it belongs prepended to this section, not
 invented.
 
 No code, commands, or diffs here -- those are in git history and in
-`Landing-page-notes.2.0.md`'s changelog / `FILE-MANIFEST.md`. This is
+`landing-page-v3-notes.2.0.md`'s changelog / `FILE-MANIFEST.md`. This is
 inputs and reasoning only.
 
 ## The trigger: "a lot of legacy files ... scattered across the folders"
@@ -509,7 +509,7 @@ exposed a real shortcut taken earlier in the conversation:
 > **What is the content, intent and overlap between landing page notes
 > 2.0 and conversation landing page v3?**
 
-`Landing-page-notes.2.0.md` and `conversation-landing-page-v3.md` had
+`landing-page-v3-notes.2.0.md` and `conversation-landing-page-v3.md` had
 earlier been described, in passing, as having "some overlap... flagged
 for a future documentation-consolidation pass" -- a conclusion drawn
 from skimming tables of contents, not from reading either file's actual
@@ -726,7 +726,7 @@ measure against:
 > per se, but workarounds, essential steps, commonly overlooked thing**
 
 The resulting audit found the landing page's own documentation
-(`Landing-page-notes.2.0.md` + `conversation-landing-page-v3.md`)
+(`landing-page-v3-notes.2.0.md` + `conversation-landing-page-v3.md`)
 already met that bar in full, while `/now` and the Cabinet TSV editor
 had solid technical/changelog docs but no narrative tier, and
 `README.md`'s own changelog had gone stale relative to what the
@@ -735,7 +735,7 @@ subsystem docs already recorded.
 ## "am I maintaining two changelogs"
 
 A direct factual check before accepting the audit's framing: were
-`README.md` and `Landing-page-notes.2.0.md` genuinely two changelogs for
+`README.md` and `landing-page-v3-notes.2.0.md` genuinely two changelogs for
 the same thing? Answered by pointing at `README.md`'s own v3.0 entry,
 which already states the relationship explicitly — a coarse, repo-wide
 index with one entry per major milestone, pointing at each subsystem's

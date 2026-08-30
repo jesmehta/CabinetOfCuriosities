@@ -22,7 +22,7 @@ other.
 
 For the blow-by-blow chronological story (what was tried, what broke,
 what the user said) rather than a per-field reference, see
-`Landing-page-notes.2.0.md` in this same folder -- searchable by version
+`landing-page-v3-notes.2.0.md` in this same folder -- searchable by version
 number (e.g. "v3.6.20"), which every entry below also carries.
 
 `v3Config.dragon` and `v3Config.title`/`legend`/`canvas` fields are **not**
@@ -362,7 +362,7 @@ Precomputed vector flow field (currents) for particle advection -- see
 `cabinet-v3-flowfield.js`. v3.6.16: two composited layers, a smooth
 "lazy" base current (curl noise) plus a coast vector derived from the
 SAME heightmap island rendering uses, no separate island geometry. See
-`Landing-page-notes.2.0.md`'s "Flow field" entry for the original design
+`landing-page-v3-notes.2.0.md`'s "Flow field" entry for the original design
 conversation.
 
 ### cellSize

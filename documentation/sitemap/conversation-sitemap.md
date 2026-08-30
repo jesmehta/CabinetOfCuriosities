@@ -2,7 +2,7 @@
 
 Companion to [`SITEMAP.md`](SITEMAP.md) (mechanism, files, update
 workflow) in the same relationship `conversation-landing-page-v3.md` has
-to `Landing-page-notes.2.0.md` — that's the reference, this is the
+to `landing-page-v3-notes.2.0.md` — that's the reference, this is the
 reasoning behind it.
 
 **Honesty note on scope**: this covers `#126` (generating the Content
@@ -15,7 +15,7 @@ see `conversation-backend-and-deploy.md`'s own scope note for the same
 caveat applied to a sibling topic.
 
 No code, commands, or diffs here — those are in git history and in
-`Landing-page-notes.2.0.md`'s changelog / `FILE-MANIFEST.md`.
+`landing-page-v3-notes.2.0.md`'s changelog / `FILE-MANIFEST.md`.
 
 ## "how valid is it to have the content inventory ... now that both exist?"
 

@@ -1,7 +1,7 @@
 # Landing v3 — colour & font scheme candidates
 
 Five competing directions for the "real pass on fonts, colours, sizes" item
-(see `Landing-page-notes.2.0.md` #10, held open since v3.6.5's first-guess
+(see `landing-page-v3-notes.2.0.md` #10, held open since v3.6.5's first-guess
 palette). Each is a self-contained token set — not meant to share DNA with
 the others, since the point of this round is to pick one, not blend them.
 Old `--cab-*` / `--v3-*` tokens do not constrain this pass; this version is

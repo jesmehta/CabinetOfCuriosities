@@ -24,7 +24,7 @@
 //    distance-to-nearest-island query needed. Never time-varying --
 //    islands don't move, only the current drifts.
 //
-// See documentation/Landing-page-notes.2.0.md's "Flow field" entries for the fuller
+// See documentation/landing-page-v3-notes.2.0.md's "Flow field" entries for the fuller
 // design conversation this implements.
 
 import { mulberry32, seedFromString, buildPermutation, fbm2D } from "./cabinet-v3-islandshape.js";

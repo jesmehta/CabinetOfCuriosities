@@ -258,7 +258,7 @@ A concurrent session reorganized `documentation/` into one folder per
 feature the same day this dashboard was built (see
 `conversation-backend-and-deploy.md`'s Part 4) — four of this page's
 hardcoded doc links (`CABINET-EDITOR.md`, `NOW-PAGE.md`,
-`Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`) broke as
+`landing-page-v3-notes.2.0.md`, `conversation-landing-page-v3.md`) broke as
 a result and were fixed to their new paths. Six new doc rows were added
 for files that turned up in that same reorg
 (`DOCUMENTATION-GUIDE.md`, `conversation-backend-and-deploy.md`,

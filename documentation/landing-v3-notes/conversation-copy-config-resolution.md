@@ -38,7 +38,7 @@ stops being a meaningful distinction, not a permanent fork.
 
 No code, commands, or diffs here -- those are in the actual git history,
 in `apply-config.mjs`/`cabinet-v3-data.js` themselves, and in
-`Landing-page-notes.2.0.md`'s `v3.7.69` changelog entry. This is inputs
+`landing-page-v3-notes.2.0.md`'s `v3.7.69` changelog entry. This is inputs
 and reasoning only, in the actual words used.
 
 ## Opening the investigation
@@ -321,7 +321,7 @@ work to main now?" -- answered "Yes, commit now (Recommended)."
 The very next message was a documentation request in its own right:
 "documentation as stipulated in the guidelines - this one is especially
 deep on our back and forth" -- leading to the `v3.7.69` changelog entry in
-`Landing-page-notes.2.0.md` and the `#32` closure in the ToDo file.
+`landing-page-v3-notes.2.0.md` and the `#32` closure in the ToDo file.
 Followed by a direct question about where the conversation itself (not
 just its outcome) had been recorded, and then the request that produced
 this file: a literal log of the back-and-forth, in a new file if the

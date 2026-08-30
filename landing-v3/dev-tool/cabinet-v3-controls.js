@@ -473,7 +473,7 @@ function buildControlPanel() {
 
   // -- Theme (v3.6.14, expanded v3.6.15) -- seven parallel colour/type
   // treatments, meant to be compared against each other rather than one
-  // replacing the other (see documentation/Landing-page-notes.2.0.md punch-list item 10
+  // replacing the other (see documentation/landing-page-v3-notes.2.0.md punch-list item 10
   // and documentation/landing-v3-notes/v3-scheme-candidates.md for the reasoning behind each one). Pure
   // CSS switch via a data-theme attribute on <body> (cabinet-v3-style.css),
   // same pattern as Label style below -- except this ALSO nudges the Wave

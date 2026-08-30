@@ -56,7 +56,7 @@
 
 This is a narrative record of the design conversation behind the
 v3.6.4 -> v3.6.6 visual-polish work, kept separate from
-`Landing-page-notes.2.0.md` on purpose: that file documents *what the
+`landing-page-v3-notes.2.0.md` on purpose: that file documents *what the
 code does and why*, written to stand alone as a technical reference.
 This file preserves the *dialogue* -- what was asked, in what words,
 what got tried and rejected, what preferences got stated along the
@@ -67,7 +67,7 @@ reading this cold, treat it as "here's the context a collaborator
 would have had if they'd been in the room."
 
 No code, commands, or diffs here -- those are all in the actual git
-history and in `Landing-page-notes.2.0.md`'s changelog. This is inputs
+history and in `landing-page-v3-notes.2.0.md`'s changelog. This is inputs
 and reasoning only.
 
 ## The original punch list
@@ -442,7 +442,7 @@ Near the end of this phase, asked to "go through the other
 documentation files - in cabinet as well as other worlds - and see if
 there's anything missed by this list," a research pass across
 `LANDING-PAGE-NOTES.md` (the top-level, production-site notes file --
-distinct from `Landing-page-notes.2.0.md`), `README.md`,
+distinct from `landing-page-v3-notes.2.0.md`), `README.md`,
 `DESIGN-SYSTEM.md`, `WORLD-SYSTEMS.md`, and the sibling
 `TheBookshelfOfCuriosities` repo surfaced several genuine gaps not
 already tracked: known production-page follow-ups (card/label overlap
@@ -453,7 +453,7 @@ that FabAcademy/Fabricademy sites should never become Cabinet islands
 (directly relevant to a compass-rose/About-Me idea raised earlier in
 the session), and a stale copy of `WORLD-SYSTEMS.md` sitting in the
 Bookshelf sibling repo that should be brought up to date. All of these
-were folded into the to-do list in `Landing-page-notes.2.0.md` rather
+were folded into the to-do list in `landing-page-v3-notes.2.0.md` rather
 than left only in this log.
 
 ## Packing controls + preset switcher, with the cost analysis asked for up front (v3.6.8)
@@ -525,7 +525,7 @@ slider afterward. A separate `showWaveRings` boolean sidesteps that --
 the array itself is never touched by a preset switch, only whether it
 gets drawn.
 
-While reading `Landing-page-notes.2.0.md`'s changelog to write this
+While reading `landing-page-v3-notes.2.0.md`'s changelog to write this
 pass's own entry, a documentation gap turned up: several `v3.6.7`-dated
 comments already existed in the code (the wave-ring generator panel, an
 edge-padding fix, `flatColourMode`'s CSS) with no matching changelog
@@ -1659,7 +1659,7 @@ dropdown, so I dont have to click 2 times to get to it."
 One request was deliberately NOT built: "Add todo: Compass rose rotation
 and diagonals rotate with it, anticlockwise, randomly or on
 approach/hover for 1 revolution." Logged as punch-list item 26 in
-`Landing-page-notes.2.0.md` rather than implemented on the spot -- the
+`landing-page-v3-notes.2.0.md` rather than implemented on the spot -- the
 user's own phrasing ("add todo") was the signal to record intent, not
 build it immediately.
 
@@ -2791,11 +2791,11 @@ intact this time.
 
 ## This handoff
 
-This file and the two-section to-do list in `Landing-page-notes.2.0.md`
+This file and the two-section to-do list in `landing-page-v3-notes.2.0.md`
 exist because the user is picking this work up from a different
 machine, without this conversation available to provide context. The
 technical *state* (what's built, what's configured, what's tagged) is
-fully captured in the code and in `Landing-page-notes.2.0.md`'s
+fully captured in the code and in `landing-page-v3-notes.2.0.md`'s
 changelog, as always. This file is the part that changelog entries
 don't carry on their own: the actual back-and-forth, the direction
 changes, the process lessons (the boats sunk-cost loop, the "rethink
@@ -2929,7 +2929,7 @@ The follow-through after building surfaced two more real gaps, both
 caught by direct questions rather than found unprompted. Asked whether
 the change was documented in the changelog and logged in the ToDo's
 watch-out sections, the honest answer was: the ToDo's watch-out section
-existed, but `Landing-page-notes.2.0.md`'s actively-maintained,
+existed, but `landing-page-v3-notes.2.0.md`'s actively-maintained,
 version-numbered changelog (up to `v3.7.67` at the time) had been
 skipped entirely -- fixed with a `v3.7.68` entry matching its existing
 format. Asked more generally whether documentation had been "maintained

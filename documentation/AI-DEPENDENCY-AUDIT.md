@@ -24,7 +24,7 @@ original findings, and what's changed since.
 
 Read `README.md`, `WORLD-SYSTEMS.md`, `.github/workflows/deploy.yml`,
 every `tools/*.js`/`*.py` script, `landing-v3/build-static.mjs`, and the
-relevant sections of `Landing-page-notes.2.0.md` and
+relevant sections of `landing-page-v3-notes.2.0.md` and
 `three-world-launch-phases-ToDo.md`, then sorted every piece of the
 pipeline into one of four buckets:
 
@@ -55,7 +55,7 @@ file, plus the `landing-v3/shared/` modules it depends on, into `docs/`
 sequence: copy `index.html`, copy the changed shared `.js`/`.css` files,
 and by hand rewrite three dev-relative asset paths
 (`shared/cabinet-v3-style.css` → `assets/css/cabinet-v3-style.css`, and
-two others) into their production form. `Landing-page-notes.2.0.md`'s
+two others) into their production form. `landing-page-v3-notes.2.0.md`'s
 `v3.7.67` entry documents a real bug that shipped from doing this
 naively — a `cp` that carried the dev-relative paths straight into
 `docs/`, where they resolved to nothing. `three-world-launch-phases-ToDo.md`

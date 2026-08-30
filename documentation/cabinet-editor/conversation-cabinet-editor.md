@@ -3,7 +3,7 @@
 Companion to [`CABINET-EDITOR.md`](CABINET-EDITOR.md) (architecture, routes,
 schema, changelog, verification) in the same relationship
 [`conversation-landing-page-v3.md`](../landing-v3-notes/conversation-landing-page-v3.md) has to
-`Landing-page-notes.2.0.md`: that file is reference (what the system is and
+`landing-page-v3-notes.2.0.md`: that file is reference (what the system is and
 how it works), this one is the reasoning behind it (what was asked, what got
 tried and rejected, why a decision landed where it did).
 

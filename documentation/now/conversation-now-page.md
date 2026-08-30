@@ -3,7 +3,7 @@
 Companion to [`NOW-PAGE.md`](NOW-PAGE.md) (data model, pipeline,
 architecture, verification) in the same relationship
 [`conversation-landing-page-v3.md`](../landing-v3-notes/conversation-landing-page-v3.md) has
-to `Landing-page-notes.2.0.md` — that file is reference, this one is why
+to `landing-page-v3-notes.2.0.md` — that file is reference, this one is why
 it happened.
 
 **Provenance, stated plainly**: this replaces an earlier draft of this

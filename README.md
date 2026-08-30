@@ -30,7 +30,7 @@ repo/world) rather than duplicating their content.
 - **As of v3.0 (2026-08-23), `docs/index.html` is a static build produced
   from `landing-v3/`** (the "archipelago-tool" rebuild — data-driven
   treemap/circle-packing layout, not the hand-authored SVG below) — see
-  `documentation/landing-v3-notes/Landing-page-notes.2.0.md` for that system's own full
+  `documentation/landing-v3-notes/landing-page-v3-notes.2.0.md` for that system's own full
   documentation, and `documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`
   for how/why it got promoted. Everything in this section and in
   `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md`
@@ -94,7 +94,7 @@ repo/world) rather than duplicating their content.
   `conversation-now-page.md`, and `now-page-helpers/`, the superseded
   pre-code spec); `cabinet-editor/` (`CABINET-EDITOR.md`,
   `conversation-cabinet-editor.md`); `landing-v3-notes/`
-  (`Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`, open
+  (`landing-page-v3-notes.2.0.md`, `conversation-landing-page-v3.md`, open
   colour-scheme proposals, `cabinet-v3-config-reference.md` (consolidated
   per-field reasoning for every dev-panel-tunable config value), and
   `conversation-copy-config-resolution.md` (`#32`'s own conversation-log,
@@ -213,7 +213,7 @@ representation — moved into `v3Config.colors`/`v3Config.fonts`, applied
 at load via a new shared `applyThemeStyle()` so production picks them up
 too, not just the dev tool; the dev panel gained per-theme font-picker
 dropdowns alongside its existing colour swatches. See
-`documentation/landing-v3-notes/Landing-page-notes.2.0.md`'s `v3.7.69`
+`documentation/landing-v3-notes/landing-page-v3-notes.2.0.md`'s `v3.7.69`
 entry for the full mechanism and two real bugs caught in testing before
 either reached the real file, `cabinet-v3-config-reference.md` for what
 every tunable field actually does, and
@@ -252,7 +252,7 @@ absorbing them.
 admin dashboard linking every other local tool and script — see
 "Structure" above. `landing-v3/promote.mjs`: automates the previously-
 manual `docs/` promotion step (copy + dev-relative asset-path rewrite +
-headless-Chromium verify), closing a real gap `Landing-page-notes.2.0.md`
+headless-Chromium verify), closing a real gap `landing-page-v3-notes.2.0.md`
 documents — a shipped bug from doing this step by hand. Kept separate
 from `build-static.mjs`, which is also run standalone while iterating.
 
@@ -270,7 +270,7 @@ original plan after direct feedback during design: no `aria-hidden`/
 `aria-labelledby` de-duplication wiring (screen readers aren't the
 current priority for this highly visual map), WIP entries included
 without exception. See
-`documentation/landing-v3-notes/Landing-page-notes.2.0.md`'s `v3.7.68`
+`documentation/landing-v3-notes/landing-page-v3-notes.2.0.md`'s `v3.7.68`
 entry for the full mechanism and rejected alternatives,
 `conversation-landing-page-v3.md` for the design discussion that cut
 the scope down from the initial proposal.
@@ -417,7 +417,7 @@ from-scratch rebuild (weighted-treemap section layout, circle-packed
 islands, per-section coastline tracing, live theme system, hover
 previews) rather than a revision of the v2 SVG below. Full iteration
 history (v3.0 through this promotion) lives in
-`documentation/landing-v3-notes/Landing-page-notes.2.0.md`'s changelog and
+`documentation/landing-v3-notes/landing-page-v3-notes.2.0.md`'s changelog and
 `documentation/landing-v3-notes/conversation-landing-page-v3.md`'s narrative account — not
 duplicated here (the two serve different purposes: reference/changelog
 vs. process log, not two accounts of the same thing). What's relevant at

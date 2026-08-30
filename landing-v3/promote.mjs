@@ -22,7 +22,7 @@
 //      handful of dev-build-relative asset paths to their production
 //      equivalents (PATH_REWRITES below). This is the exact class of bug
 //      that shipped for real once before (documentation/
-//      Landing-page-notes.2.0.md's v3.7.67 entry): naively `cp`-ing
+//      landing-page-v3-notes.2.0.md's v3.7.67 entry): naively `cp`-ing
 //      landing-v3/index.html carries its own-folder-relative paths
 //      (`shared/cabinet-v3-style.css`, `../docs/assets/css/cabinet-tokens.css`)
 //      straight into docs/, where they resolve to the wrong place.

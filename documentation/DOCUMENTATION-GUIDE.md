@@ -31,7 +31,7 @@ pointing to the next:
    pending items and gotchas folded into the same doc's own prose
    (a "Non-goals" section, a "watch out" callout) rather than split
    into a separate file per concern. `NOW-PAGE.md`, `CABINET-EDITOR.md`,
-   `SITEMAP.md`, `Landing-page-notes.2.0.md`,
+   `SITEMAP.md`, `landing-page-v3-notes.2.0.md`,
    `backend-and-deploy/cloudflare-web-analytics-setup.md`,
    `backend-and-deploy/BACKEND-AND-DEPLOY.md`. Repo-wide todo tracking
    lives in one place,

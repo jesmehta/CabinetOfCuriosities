@@ -7,7 +7,7 @@ for the map landing page. Original planning input for this feature lives in
 `NOW-PAGE-FILE-LIST.md`, `NOW-PAGE-VSCODE-PROMPT.md`) — written before any
 code existed, as a spec for whichever tool implemented it. This doc
 records what was *actually built* and where it deviated from that spec
-and why, the same relationship `Landing-page-notes.2.0.md` (this same
+and why, the same relationship `landing-page-v3-notes.2.0.md` (this same
 folder) has to `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`.
 
 ## Purpose

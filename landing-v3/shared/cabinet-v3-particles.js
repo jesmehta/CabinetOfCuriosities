@@ -11,7 +11,7 @@
 // flow field, and recycle back to a fresh off-canvas point whenever they
 // wander back outside that same padded ring -- one mechanism handles
 // both "enter" and "exit," since it's the same rect test either way. See
-// documentation/Landing-page-notes.2.0.md's "Flow field" entries for the design
+// documentation/landing-page-v3-notes.2.0.md's "Flow field" entries for the design
 // conversation.
 
 // v3.6.23 -- demo/comparison build for the "one giant trash drift"

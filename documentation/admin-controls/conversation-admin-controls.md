@@ -2,7 +2,7 @@
 
 Companion to [`ADMIN-CONTROLS.md`](ADMIN-CONTROLS.md) (mechanism, routes,
 files, update workflow) in the same relationship
-`conversation-landing-page-v3.md` has to `Landing-page-notes.2.0.md` —
+`conversation-landing-page-v3.md` has to `landing-page-v3-notes.2.0.md` —
 that's the reference, this is the reasoning behind it.
 
 Recorded from a live transcript — direct quotes are actually verbatim,
@@ -63,7 +63,7 @@ stylesheet `href`s, one script `src`) — not a vague "some paths change"
 but the specific before/after strings, confirmed against the real
 files.
 
-`three-world-launch-phases-ToDo.md` and `Landing-page-notes.2.0.md` were
+`three-world-launch-phases-ToDo.md` and `landing-page-v3-notes.2.0.md` were
 then read for the history behind that gap, and both confirmed it
 directly: no promotion script had ever existed, promotion was hand-done
 every time, and a real bug had already shipped once from doing it
@@ -219,7 +219,7 @@ Once the reorg was confirmed committed and pushed:
 > new files that may have turned up.**
 
 Four of the dashboard's hardcoded links had broken (`CABINET-EDITOR.md`,
-`NOW-PAGE.md`, `Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`,
+`NOW-PAGE.md`, `landing-page-v3-notes.2.0.md`, `conversation-landing-page-v3.md`,
 each moved into a new feature folder) — found by reading `FILE-MANIFEST.md`'s
 own freshly-updated table rather than guessing at new paths, and cross-checked
 every proposed path against `git ls-files` before using it. Six new doc

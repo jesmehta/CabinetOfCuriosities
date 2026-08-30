@@ -55,7 +55,7 @@
 // Mulberry32 -- small, fast, deterministic PRNG. Seeded per section
 // (not Math.random()) so scatter positions are stable across reloads --
 // consistent with "recomputed only when entries/sections change," not
-// every page view (see Landing-page-notes.2.0.md).
+// every page view (see landing-page-v3-notes.2.0.md).
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
@@ -264,7 +264,7 @@ export function generateScatterPoints(count, rect, rng, minSeparation, existingP
 // subsequent sections' separation checks see the final, centered
 // positions -- but a shift large enough to violate separation against a
 // section processed *earlier* isn't re-validated. See
-// Landing-page-notes.2.0.md for whether this showed up in practice.
+// landing-page-v3-notes.2.0.md for whether this showed up in practice.
 export function centerPointsInRect(points, rect, basisPoints = points) {
   if (points.length === 0) return points;
   const basis = basisPoints.length > 0 ? basisPoints : points;

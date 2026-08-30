@@ -1,7 +1,7 @@
 /* v3 layout prototype styling. Reuses cabinet-tokens.css (the real
    parchment/ink palette) for continuity while the LAYOUT is what's under
    review here -- deliberately not restyling color/type from scratch too,
-   see Landing-page-notes.2.0.md's "why reuse tokens" note. */
+   see landing-page-v3-notes.2.0.md's "why reuse tokens" note. */
 
 /* v3.6.5 -- local colour tokens for sea-depth and beach/vegetation
    banding (see drawIslandsPath() in cabinet-v3-layout.js). Deliberately
@@ -112,7 +112,7 @@ body.v3-proto {
 
 /* v3.6.14-v3.6.15 -- originally seven parallel colour/type treatments,
    explicitly meant to be compared against each other rather than one
-   replacing the other (see Landing-page-notes.2.0.md's punch-list item 10
+   replacing the other (see landing-page-v3-notes.2.0.md's punch-list item 10
    and documentation/landing-v3-notes/v3-scheme-candidates.md for the full reasoning behind each one) --
    switched live via a `data-theme` attribute on <body> (dev panel:
    Visuals > Theme, cabinet-v3-controls.js), same pattern as
@@ -1372,7 +1372,7 @@ body.v3-proto[data-theme="satellite"] .v3-topo-structural {
    re-render, so they can be compared directly against the real map.
    "halo" (the original hard 3px stroke) stays the default only because
    it shipped first, not because it's the chosen look -- see
-   Landing-page-notes.2.0.md punch-list item 13a. */
+   landing-page-v3-notes.2.0.md punch-list item 13a. */
 body:not([data-label-style]) .v3-island-label,
 body[data-label-style="halo"] .v3-island-label {
   paint-order: stroke;
