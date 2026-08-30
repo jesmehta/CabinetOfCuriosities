@@ -19,11 +19,25 @@ const ENTRY_LOCATION_OPTIONS = ["subdomain", "mkdocs", "external", "assembly", "
 const NUMERIC_FIELDS = new Set(["order", "weight", "extraCount", "cx", "cy", "rx", "ry"]);
 const WIDE_FIELDS = new Set(["subtitle", "notes", "tags", "href", "relatedLinks"]);
 
+// Starting column widths (px) -- purely a first-render default; dragging a
+// column's resize handle overrides it for the rest of the session (not
+// persisted across reloads, this is a view preference, not saved state).
+const DEFAULT_COL_WIDTH = {
+  id: 120, section: 130, title: 170, subtitle: 220, href: 200, order: 82,
+  weight: 90, status: 80, kind: 130, tags: 160, location: 110, notes: 220,
+  extraCount: 80, mapForm: 110, islandId: 110, cx: 60, cy: 60, rx: 60, ry: 60,
+  thumbnail: 140, relatedLinks: 200, anchor: 64,
+};
+
 let state = { sections: [], entries: [], sectionProblems: [], entryProblems: [], columns: { sections: [], entries: [] }, reserved: { sections: [], entries: [] } };
 let searchSections = "";
 let searchEntries = "";
 const expandedSections = new Set();
 const expandedEntries = new Set();
+const colWidths = { sections: {}, entries: {} };
+// col: null means "file order" (the order ▲▼ actually operate on); dir is
+// 1 (ascending) or -1 (descending). See cycleSort()/applySort() below.
+const sortState = { sections: { col: null, dir: 1 }, entries: { col: null, dir: 1 } };
 
 /* ---------- server calls ---------- */
 
@@ -98,6 +112,118 @@ function problemsByIndex(problems) {
   return map;
 }
 
+// `order` renders right after `id` (rather than wherever it happens to
+// sit in the TSV's own column order) so it's visually next to the ▲▼
+// buttons that actually move it -- doesn't touch the underlying schema/
+// file column order, purely a display-order choice.
+function displayCols(kind) {
+  const cols = coreCols(kind).slice();
+  const i = cols.indexOf("order");
+  if (i > 1) { cols.splice(i, 1); cols.splice(1, 0, "order"); }
+  return cols;
+}
+
+function cycleSort(s, col) {
+  if (s.col !== col) { s.col = col; s.dir = 1; return; }
+  if (s.dir === 1) { s.dir = -1; return; }
+  s.col = null; s.dir = 1;
+}
+
+function compareRows(a, b, col) {
+  const av = (a.row[col] ?? "").toString();
+  const bv = (b.row[col] ?? "").toString();
+  const aBlank = av.trim() === "", bBlank = bv.trim() === "";
+  if (aBlank && bBlank) return 0;
+  if (aBlank) return 1; // blanks sort last regardless of direction
+  if (bBlank) return -1;
+  if (NUMERIC_FIELDS.has(col)) return Number(av) - Number(bv);
+  return av.localeCompare(bv, undefined, { sensitivity: "base", numeric: true });
+}
+
+function applySort(visible, kind) {
+  const s = sortState[kind];
+  if (!s.col) return visible; // file order -- what the ▲▼ buttons operate on
+  return visible.slice().sort((a, b) => compareRows(a, b, s.col) * s.dir);
+}
+
+function renderColgroup(kind, cols) {
+  let html = `<colgroup><col class="narrow">`;
+  cols.forEach(c => {
+    const w = colWidths[kind][c] || DEFAULT_COL_WIDTH[c] || 140;
+    html += `<col style="width:${w}px">`;
+  });
+  html += `</colgroup>`;
+  return html;
+}
+
+function renderHeaderRow(kind, cols) {
+  const s = sortState[kind];
+  let html = `<tr><th></th>`;
+  cols.forEach(c => {
+    const active = s.col === c;
+    const arrow = active ? (s.dir === 1 ? " ▲" : " ▼") : "";
+    html += `<th data-col="${c}" class="${active ? "sorted" : ""}" title="Click to sort">${esc(c)}${arrow}<span class="col-resize-handle" data-col="${c}"></span></th>`;
+  });
+  html += `</tr>`;
+  return html;
+}
+
+// Wires header-click-to-sort and drag-to-resize for one table. `onRender`
+// is the render function to call after a sort change (resize doesn't
+// need a re-render -- it mutates the <col> width directly for smoothness
+// while dragging).
+function wireTableHeader(container, kind, cols, onRender) {
+  const table = container.querySelector("table");
+  const colEls = Array.from(table.querySelectorAll(":scope > colgroup > col"));
+
+  table.querySelectorAll("thead th[data-col]").forEach(th => {
+    th.addEventListener("click", e => {
+      if (e.target.classList.contains("col-resize-handle")) return;
+      cycleSort(sortState[kind], th.dataset.col);
+      onRender();
+    });
+  });
+
+  table.querySelectorAll(".col-resize-handle").forEach(handle => {
+    handle.addEventListener("mousedown", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const col = handle.dataset.col;
+      const colEl = colEls[cols.indexOf(col) + 1]; // +1 skips the leading rowctl <col>
+      const startX = e.clientX;
+      const startWidth = colEl.offsetWidth;
+      handle.classList.add("active");
+      function onMove(ev) {
+        const width = Math.max(50, startWidth + (ev.clientX - startX));
+        colEl.style.width = width + "px";
+        colWidths[kind][col] = width;
+      }
+      function onUp() {
+        handle.classList.remove("active");
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
+  });
+}
+
+// A row's textareas (subtitle/notes/tags/href/relatedLinks) each had their
+// own independent CSS resize handle, so dragging one taller left its row
+// siblings at their old, now-mismatched height. Syncing every textarea in
+// a row to whichever one is tallest -- on any of their resizes -- keeps
+// the row looking like one row instead of a ransom note.
+function wireRowTextareaSync(tr) {
+  const areas = Array.from(tr.querySelectorAll("textarea"));
+  if (areas.length < 2) return;
+  const ro = new ResizeObserver(() => {
+    const maxH = Math.max(...areas.map(a => a.offsetHeight));
+    areas.forEach(a => { if (Math.abs(a.offsetHeight - maxH) > 1) a.style.height = maxH + "px"; });
+  });
+  areas.forEach(a => ro.observe(a));
+}
+
 /* ---------- sections ---------- */
 
 const SECTION_SELECT_MAP = { status: STATUS_OPTIONS, location: SECTION_LOCATION_OPTIONS };
@@ -106,20 +232,18 @@ function renderSections() {
   const container = document.getElementById("table-sections");
   const q = searchSections.trim().toLowerCase();
   const rows = state.sections;
-  const visible = rows.filter(({ row }) => !q || [row.id, row.title, row.tags, row.kind].join(" ").toLowerCase().includes(q));
+  let visible = rows.filter(({ row }) => !q || [row.id, row.title, row.tags, row.kind].join(" ").toLowerCase().includes(q));
   document.getElementById("count-sections").textContent = `${rows.length} section${rows.length !== 1 ? "s" : ""}`;
 
   if (!rows.length) { container.innerHTML = `<div class="empty">No sections yet. Add one to get started.</div>`; return; }
 
+  visible = applySort(visible, "sections");
+  const sorted = sortState.sections.col !== null;
   const problems = problemsByIndex(state.sectionProblems);
-  const cols = coreCols("sections");
+  const cols = displayCols("sections");
   const reserved = state.reserved.sections;
 
-  let html = `<table><colgroup><col class="narrow">`;
-  cols.forEach(() => html += `<col>`);
-  html += `</colgroup><thead><tr><th></th>`;
-  cols.forEach(c => html += `<th>${c}</th>`);
-  html += `</tr></thead><tbody>`;
+  let html = `<table>${renderColgroup("sections", cols)}<thead>${renderHeaderRow("sections", cols)}</thead><tbody>`;
 
   visible.forEach(({ index, row }) => {
     const rowProblems = problems.get(index) || [];
@@ -130,8 +254,8 @@ function renderSections() {
     html += `<tr class="core-row ${rowProblems.length ? "invalid" : ""}" data-idx="${index}" ${title ? `title="${esc(title)}"` : ""}>`;
     html += `<td class="rowctl">
       <button class="row-toggle" data-act="toggle">${expanded ? "▾" : "▸"}</button>
-      <button class="icon" data-act="up" title="Move up">▲</button>
-      <button class="icon" data-act="down" title="Move down">▼</button>
+      <button class="icon" data-act="up" title="${sorted ? "Clear sort to reorder" : "Move up"}" ${sorted ? "disabled" : ""}>▲</button>
+      <button class="icon" data-act="down" title="${sorted ? "Clear sort to reorder" : "Move down"}" ${sorted ? "disabled" : ""}>▼</button>
       <button class="icon" data-act="del" title="Delete row">✕</button>
     </td>`;
     cols.forEach(col => {
@@ -152,8 +276,11 @@ function renderSections() {
   html += `</tbody></table>`;
   container.innerHTML = html;
 
+  wireTableHeader(container, "sections", cols, renderSections);
+
   container.querySelectorAll("tr.core-row").forEach(tr => {
     const index = Number(tr.dataset.idx);
+    wireRowTextareaSync(tr);
     tr.querySelectorAll("[data-field]").forEach(el => {
       el.addEventListener("change", () => runMutation(() => apiCall("PUT", `/api/sections/${index}`, { [el.dataset.field]: el.value })));
     });
@@ -184,20 +311,18 @@ function renderEntries() {
   const q = searchEntries.trim().toLowerCase();
   const rows = state.entries;
   const sectionIds = state.sections.map(s => s.row.id);
-  const visible = rows.filter(({ row }) => !q || [row.id, row.title, row.section, row.tags, row.kind].join(" ").toLowerCase().includes(q));
+  let visible = rows.filter(({ row }) => !q || [row.id, row.title, row.section, row.tags, row.kind].join(" ").toLowerCase().includes(q));
   document.getElementById("count-entries").textContent = `${rows.length} entr${rows.length !== 1 ? "ies" : "y"}`;
 
   if (!rows.length) { container.innerHTML = `<div class="empty">No entries yet. Add one to get started.</div>`; return; }
 
+  visible = applySort(visible, "entries");
+  const sorted = sortState.entries.col !== null;
   const problems = problemsByIndex(state.entryProblems);
-  const cols = coreCols("entries");
+  const cols = displayCols("entries");
   const reserved = state.reserved.entries;
 
-  let html = `<table><colgroup><col class="narrow">`;
-  cols.forEach(() => html += `<col>`);
-  html += `</colgroup><thead><tr><th></th>`;
-  cols.forEach(c => html += `<th>${c}</th>`);
-  html += `</tr></thead><tbody>`;
+  let html = `<table>${renderColgroup("entries", cols)}<thead>${renderHeaderRow("entries", cols)}</thead><tbody>`;
 
   visible.forEach(({ index, row }) => {
     const rowProblems = problems.get(index) || [];
@@ -208,8 +333,8 @@ function renderEntries() {
     html += `<tr class="core-row ${rowProblems.length ? "invalid" : ""}" data-idx="${index}" ${title ? `title="${esc(title)}"` : ""}>`;
     html += `<td class="rowctl">
       <button class="row-toggle" data-act="toggle">${expanded ? "▾" : "▸"}</button>
-      <button class="icon" data-act="up" title="Move up within section">▲</button>
-      <button class="icon" data-act="down" title="Move down within section">▼</button>
+      <button class="icon" data-act="up" title="${sorted ? "Clear sort to reorder" : "Move up within section"}" ${sorted ? "disabled" : ""}>▲</button>
+      <button class="icon" data-act="down" title="${sorted ? "Clear sort to reorder" : "Move down within section"}" ${sorted ? "disabled" : ""}>▼</button>
       <button class="icon" data-act="del" title="Delete row">✕</button>
     </td>`;
     cols.forEach(col => {
@@ -236,8 +361,11 @@ function renderEntries() {
   html += `</tbody></table>`;
   container.innerHTML = html;
 
+  wireTableHeader(container, "entries", cols, renderEntries);
+
   container.querySelectorAll("tr.core-row").forEach(tr => {
     const index = Number(tr.dataset.idx);
+    wireRowTextareaSync(tr);
     tr.querySelectorAll("[data-field]").forEach(el => {
       el.addEventListener("change", () => runMutation(() => apiCall("PUT", `/api/entries/${index}`, { [el.dataset.field]: el.value })));
     });
@@ -257,6 +385,7 @@ function renderEntries() {
   // they're outside the core-row loop above
   container.querySelectorAll("tr.reserved-row").forEach(tr => {
     const index = Number(tr.dataset.idx);
+    wireRowTextareaSync(tr);
     tr.querySelectorAll("[data-field]").forEach(el => {
       el.addEventListener("change", () => runMutation(() => apiCall("PUT", `/api/entries/${index}`, { [el.dataset.field]: el.value })));
     });

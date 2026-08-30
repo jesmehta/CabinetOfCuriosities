@@ -84,14 +84,22 @@ button.icon:disabled{ opacity:0.35; cursor:default; }
 }
 
 .table-wrap{ overflow-x:auto; border:1px solid var(--ink); border-radius:6px; background:var(--card); box-shadow:var(--shadow);}
-table{ border-collapse:collapse; width:100%; min-width:760px; }
+table{ border-collapse:collapse; width:100%; min-width:760px; table-layout:fixed; }
 thead th{
   text-align:left; font-family:var(--serif); font-weight:600; font-size:11.5px;
   text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft);
-  background:var(--paper-alt); padding:8px 10px; border-bottom:2px solid var(--ink);
-  white-space:nowrap; position:sticky; top:0;
+  background:var(--paper-alt); padding:8px 14px 8px 10px; border-bottom:2px solid var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; position:sticky; top:0;
 }
-tbody td{ padding:5px 8px; border-bottom:1px solid var(--hairline); vertical-align:top; }
+thead th[data-col]{ cursor:pointer; user-select:none; position:relative; }
+thead th[data-col]:hover{ color:var(--ink); background:var(--accent-soft); }
+thead th.sorted{ color:var(--ink); background:var(--accent-soft); }
+.col-resize-handle{
+  position:absolute; top:0; right:0; width:7px; height:100%; cursor:col-resize;
+  z-index:2;
+}
+.col-resize-handle:hover, .col-resize-handle.active{ background:var(--accent); opacity:0.45; }
+tbody td{ padding:5px 8px; border-bottom:1px solid var(--hairline); vertical-align:top; overflow:hidden; }
 tbody tr.core-row:hover{ background:var(--accent-soft); }
 tbody tr.invalid{ background:var(--danger-soft); }
 tbody tr.invalid:hover{ background:#F1D6C8; }
@@ -107,7 +115,7 @@ td input:hover, td select:hover, td textarea:hover{ border-color:var(--hairline)
 td input:focus, td select:focus, td textarea:focus{ border-color:var(--accent); outline:none; background:var(--card); }
 td select.bad, td input.bad{ border-color:var(--danger); background:#FBEDE7; }
 td input[disabled], td.readonly-cell{ color:var(--ink-soft); font-style:italic; }
-col.narrow{width:64px;}
+col.narrow{width:100px;}
 
 .rowctl{ display:flex; gap:3px; white-space:nowrap; }
 

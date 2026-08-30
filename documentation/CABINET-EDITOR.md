@@ -149,6 +149,29 @@ fields) and true per-keystroke autosave (would rewrite the whole TSV file
 on every character typed). Matches how a spreadsheet already feels: leave
 the cell, it's saved.
 
+**Columns are sortable and resizable** (v1.3, added once real use with
+the full 15-column entries schema made the plain file-order grid hard to
+scan). Clicking a header cycles ascending → descending → back to file
+order (`sortState`, per tab); a column's drag handle resizes it (`<col>`
+width, `table-layout: fixed`, tracked in `colWidths` — a view preference,
+not persisted across a reload). Sorting only ever changes what's
+*displayed* — the ▲▼ move buttons still operate on real file-adjacency,
+so they're disabled (with a tooltip explaining why) whenever a sort other
+than file order is active, rather than silently moving a row somewhere
+that doesn't match what the sort just showed. `order` renders immediately
+after `id` (`displayCols()`), not wherever it sits in the TSV's own
+column order, specifically so it's visually next to the ▲▼ buttons that
+actually change it — a display-order-only choice, the underlying schema/
+file column order is untouched.
+
+**A row's textareas stay the same height as each other.** Each wide
+field (subtitle/notes/tags/href/relatedLinks) has its own CSS
+`resize: vertical` handle, but dragging one taller used to leave its row
+siblings at their old height, looking broken rather than like one row.
+`wireRowTextareaSync()` uses a `ResizeObserver` per row: whenever any
+textarea in that row resizes, every textarea in the row is set to
+whichever one is currently tallest.
+
 ### Live vs. reserved vs. deleted fields
 
 Checked against three sources, not just one: `landing-v3/layout-engine/
@@ -300,6 +323,32 @@ Hand-editing the TSVs directly still works exactly as before — both paths
 write the same files, no separate state to keep in sync.
 
 ## Changelog
+
+### v1.3 — sortable/resizable columns, id/order adjacency, row-height sync (2026-08-30)
+
+Direct usability feedback from actually using the Entries tab with all 15
+columns: file-order-only browsing made it hard to find rows by
+section/order/weight/status; long text (href/tags/notes) was unreadable
+in a fixed-width cell; dragging one textarea taller left its row
+siblings mismatched; `order` sat far enough from the ▲▼ buttons (which
+are what actually change it) to not read as connected.
+
+Changed, `cabinet-editor-ui/editor.js`+`editor.css` only (no server/schema
+change): click-to-sort table headers (asc/desc/file-order cycle, per
+tab); drag-to-resize column headers (`table-layout: fixed` + tracked
+`<col>` widths); `order` moved to render immediately after `id`
+regardless of its position in the TSV's own column order (display-only,
+`displayCols()`); `ResizeObserver`-based row textarea height sync
+(`wireRowTextareaSync()`). See "Columns are sortable and resizable" and
+"A row's textareas stay the same height" above for the mechanism.
+
+Verified: Playwright pass against the running UI — header order shows
+`id, order, section, title, ...`; sorting by `weight` produced correctly
+ascending then descending sequences and disabled the ▲▼ buttons while
+sorted (re-enabled after clearing); dragging the `id` column's resize
+handle changed its tracked width; manually resizing one row's `notes`
+textarea brought its sibling `tags` textarea to the same height; zero
+console errors throughout.
 
 ### v1.2 — restored `location`/`relatedLinks` after checking WORLD-SYSTEMS.md (2026-08-29/30)
 
