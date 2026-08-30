@@ -31,7 +31,7 @@ repo/world) rather than duplicating their content.
   from `landing-v3/`** (the "archipelago-tool" rebuild — data-driven
   treemap/circle-packing layout, not the hand-authored SVG below) — see
   `documentation/landing-v3-notes/Landing-page-notes.2.0.md` for that system's own full
-  documentation, and `documentation/three-world-launch-phases-ToDo.md`
+  documentation, and `documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`
   for how/why it got promoted. Everything in this section and in
   `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md`
   describes the *previous* (v2) system, kept as-is because it's genuinely
@@ -94,15 +94,18 @@ repo/world) rather than duplicating their content.
   `conversation-now-page.md`, and `now-page-helpers/`, the superseded
   pre-code spec); `cabinet-editor/` (`CABINET-EDITOR.md`,
   `conversation-cabinet-editor.md`); `landing-v3-notes/`
-  (`Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`, the
-  to-do tracker, supporting rationale, multi-repo-assembly concept note,
-  and open colour-scheme proposals — all of the v3 map system's
-  documentation together); `sitemap/` (`conversation-sitemap.md`, no
-  dedicated technical doc yet — see that file's own note). Single-file
-  topics stay flat at `documentation/` root:
-  `conversation-backend-and-deploy.md` (Cloudflare, the file/folder
-  reorg, launch milestones — anything backend/site-wide with no other
-  home), `cloudflare-web-analytics-setup.md`, `FILE-MANIFEST.md` (the
+  (`Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`, and
+  open colour-scheme proposals — the v3 map system's own
+  documentation); `sitemap/` (`conversation-sitemap.md`, no dedicated
+  technical doc yet — see that file's own note); `backend-and-deploy/`
+  (`BACKEND-AND-DEPLOY.md` — the file/folder reorg and launch-milestone
+  scheme, absorbed rather than split out — plus the larger standalone
+  `cloudflare-web-analytics-setup.md` and
+  `cabinet-multi-repo-assembly-concept-note-short.md`, the
+  `three-world-launch-phases-ToDo.md`/`-Notes.md` tracker, and
+  `conversation-backend-and-deploy.md`, the shared conversation-log for
+  anything backend/site-wide with no other home). Single-file topics
+  stay flat at `documentation/` root: `FILE-MANIFEST.md` (the
   exhaustive per-file role listing), `DOCUMENTATION-GUIDE.md`, and
   `CONTENT-INVENTORY.md` (auto-generated, stays wherever
   `tools/generate_sitemap.py` writes it). Everything here *could* live
@@ -113,7 +116,7 @@ repo/world) rather than duplicating their content.
   dependencies. `theme.custom_dir: overrides` (2026-08-29) points at
   `overrides/main.html`, which extends MkDocs Material's `base.html` to
   inject the Cloudflare Web Analytics beacon into every generated page —
-  see `documentation/cloudflare-web-analytics-setup.md`.
+  see `documentation/backend-and-deploy/cloudflare-web-analytics-setup.md`.
 - `.github/workflows/deploy.yml` — the deploy pipeline (see below).
 
 ## Running locally
@@ -189,6 +192,21 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### `backend-and-deploy/` folder; `BACKEND-AND-DEPLOY.md` technical doc (2026-08-30)
+
+New `documentation/backend-and-deploy/` folder groups every
+backend/deploy/site-wide doc together: `conversation-backend-and-deploy.md`,
+`cloudflare-web-analytics-setup.md`,
+`cabinet-multi-repo-assembly-concept-note-short.md`, and the
+`three-world-launch-phases-ToDo.md`/`-Notes.md` tracker (moved out of
+`landing-v3-notes/`, where they'd landed as collateral from an earlier
+batched move — they're repo-wide, not v3-specific). New
+`BACKEND-AND-DEPLOY.md`: the technical reference the reorg and
+launch-milestone work never had, absorbing what was scattered across
+`FILE-MANIFEST.md`, the to-do tracker, and this changelog; links out to
+the two larger docs (Cloudflare, multi-repo assembly) rather than
+absorbing them.
+
 ### `backend-home.js` dashboard; `promote.mjs` automates docs/ promotion (2026-08-30)
 
 `tools/backend-home.js` (`run-backend-home.bat`, port 5959): a local
@@ -229,7 +247,7 @@ live, functional, not yet feature-complete, links not yet publicly
 shared. `launched` — a future marker, applied once Phase 0-2 are done
 or largely done AND links are actually being distributed publicly, a
 real-world event rather than a checklist percentage. See
-`documentation/three-world-launch-phases-ToDo.md`'s
+`documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`'s
 `#59` entry.
 
 ### Content Inventory auto-generated instead of hand-maintained (#126, 2026-08-30)
@@ -268,7 +286,7 @@ schema-correction story.
 
 ### Cloudflare Web Analytics — MkDocs + landing page beacon (2026-08-29)
 
-Added tracking for Cabinet, per `documentation/cloudflare-web-analytics-setup.md`.
+Added tracking for Cabinet, per `documentation/backend-and-deploy/cloudflare-web-analytics-setup.md`.
 Two injection points, both one-place-covers-everything rather than
 per-page: `mkdocs.yml` gained `theme.custom_dir: overrides`, and the new
 `overrides/main.html` extends Material's `base.html` `extrahead` block
@@ -305,7 +323,7 @@ left as silent commits. `FILE-MANIFEST.md` (new) is the resulting
 exhaustive per-file map. Reorganized again 2026-08-30 into one folder
 per feature (`now/`, `cabinet-editor/`, `landing-v3-notes/`, `sitemap/`)
 — see `DOCUMENTATION-GUIDE.md`. See
-`documentation/three-world-launch-phases-ToDo.md`'s
+`documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`'s
 `#129`-`#134` entries and `conversation-backend-and-deploy.md`'s Part 2
 for the full reasoning and the bugs caught along the way.
 

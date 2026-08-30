@@ -32,9 +32,15 @@ pointing to the next:
    (a "Non-goals" section, a "watch out" callout) rather than split
    into a separate file per concern. `NOW-PAGE.md`, `CABINET-EDITOR.md`,
    `SITEMAP.md`, `Landing-page-notes.2.0.md`,
-   `cloudflare-web-analytics-setup.md`. Repo-wide todo tracking lives
-   in one place, `three-world-launch-phases-ToDo.md`,
-   not duplicated per subsystem.
+   `backend-and-deploy/cloudflare-web-analytics-setup.md`,
+   `backend-and-deploy/BACKEND-AND-DEPLOY.md`. Repo-wide todo tracking
+   lives in one place,
+   `backend-and-deploy/three-world-launch-phases-ToDo.md`, not
+   duplicated per subsystem. A topic doesn't need its own tier-2 doc if
+   it's small enough to absorb into a broader one covering the same
+   folder (the reorg and launch-milestone items live inside
+   `BACKEND-AND-DEPLOY.md` rather than getting one file each) — reserve
+   a dedicated doc for topics substantial enough to stand alone.
 3. **Conversation-log** — *why*: what was asked, tried, rejected,
    corrected, in the actual words. Reference model:
    [`conversation-landing-page-v3.md`](landing-v3-notes/conversation-landing-page-v3.md)
@@ -44,17 +50,25 @@ pointing to the next:
 
 **A standalone feature or page** (own tool, own URL) gets its own
 folder under `documentation/`, pairing tiers 2 and 3 — `now/`,
-`cabinet-editor/`, `landing-v3-notes/`, `sitemap/`. New map-decision
-content appends to `conversation-landing-page-v3.md` directly rather
-than spawning a new file — that doc is already the established
-umbrella for the whole v3 map subsystem.
+`cabinet-editor/`, `landing-v3-notes/`, `sitemap/`,
+`backend-and-deploy/`. New map-decision content appends to
+`conversation-landing-page-v3.md` directly rather than spawning a new
+file — that doc is already the established umbrella for the whole v3
+map subsystem.
 
 **Backend, deploy, and site-wide work with no single page or tool**
 (Cloudflare, the file/folder reorg, launch milestones, multi-repo
-assembly, deployment pipeline changes) has one shared home:
+assembly, deployment pipeline changes) lives in `backend-and-deploy/`.
+For the conversation-log tier, one shared file:
 `conversation-backend-and-deploy.md`. Standing rule: **if it doesn't
 have a place to live, it lives in that one doc**, appended as a new
-`# Part N`, never split into a new file.
+`# Part N`, never split into a new file. For the technical-reference
+tier, a topic gets its own file only if it's substantial enough to
+stand alone (`cloudflare-web-analytics-setup.md`,
+`cabinet-multi-repo-assembly-concept-note-short.md`); smaller topics
+absorb into `BACKEND-AND-DEPLOY.md` instead of spawning a one-topic
+file. Same folder-scoping principle as every other feature, just with
+more than one technical doc inside it because the scope is broader.
 
 ## Writing a conversation-log doc
 

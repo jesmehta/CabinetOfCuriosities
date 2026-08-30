@@ -42,14 +42,8 @@ rather than getting a single-file folder of its own.
 | File | Role |
 |---|---|
 | `DOCUMENTATION-GUIDE.md` | The full documentation standard: the four things every piece of work needs on record (concept/need, decisions/intent, changelog, todo/watch-out-for), the three tiers that satisfy them, and the folder-per-feature convention this whole section follows. Read this before adding any new doc file here. |
-| `conversation-backend-and-deploy.md` | Shared conversation-log for backend/deploy/site-wide infrastructure work that doesn't map onto one page or tool — no dedicated folder, per the standing rule "if it doesn't have a place to live, it lives in this doc." Four parts so far: Cloudflare Web Analytics rollout, the file/folder reorganization (`#129`-`#134`), launch-milestone/priority tracking (`#58`/`#59`), and the documentation standard's own build-out (Part 4 — this file's own conversation, directly sourced rather than assembled afterward). New infra topics become a new `# Part N` here, not a new file. |
-| `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `three-world-launch-phases-ToDo.md` #135/#136. Its own conversation-log lives in `conversation-backend-and-deploy.md` (Part 1), not a same-named sibling file — see that doc's own note on why. |
-| `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |
 | `FILE-MANIFEST.md` | This file. |
-| `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md` (#126). Stays at `documentation/` root rather than moving into `sitemap/` alongside its conversation-log — the script's output path is currently hardcoded; moving it is a code change, not a doc reorg, and hasn't been done. |
-| `three-world-launch-phases-ToDo.md` | Master to-do tracker across Cabinet/Bookshelf/fffx launch phases — numbered items, checkboxes, resolution notes. Repo-wide scope, not landing-page-specific — stays at root rather than in a feature folder. |
-| `three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
-| `cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` at deploy time. Actively referenced from `deploy.yml`'s own comments. Site-wide architecture, not v3-map-specific. |
+| `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md` (#126). Stays at `documentation/` root rather than moving into `backend-and-deploy/` — the script's output path is currently hardcoded; moving it is a code change, not a doc reorg, and hasn't been done. |
 
 ### `now/` — the `/now` page
 
@@ -81,11 +75,23 @@ rather than getting a single-file folder of its own.
 | `SITEMAP.md` | Technical reference for `tools/generate_sitemap.py`'s two jobs (cross-world `docs/sitemap.md`, Cabinet-only `documentation/CONTENT-INVENTORY.md`), its regex-based nav scanner and why it avoids a YAML dependency, what its Flags section catches, and its own noted limitation (`CONTENT-INVENTORY.md`'s output path is hardcoded, not configurable). Closes the gap `conversation-sitemap.md` had flagged. |
 | `conversation-sitemap.md` | Conversation-log for `#126` (generating the Content Inventory instead of hand-maintaining it) and the reasoning behind `SITEMAP.md`'s design. |
 
+### `backend-and-deploy/` — infrastructure with no single feature home
+
+| File | Role |
+|---|---|
+| `BACKEND-AND-DEPLOY.md` | Technical reference for the file/folder reorg (as-built repo structure, `#129`-`#134`) and the launch-milestone tag scheme (`#58`/`#59`) — the two topics `conversation-backend-and-deploy.md` covers that previously had no consolidated technical doc, their record having been scattered across this file, the to-do tracker, and `README.md`'s changelog. Links out to the other docs in this folder rather than duplicating them. |
+| `conversation-backend-and-deploy.md` | Shared conversation-log for backend/deploy/site-wide infrastructure work that doesn't map onto one page or tool, per the standing rule "if it doesn't have a place to live, it lives in this doc." Four parts: Cloudflare Web Analytics rollout, the file/folder reorganization, launch-milestone/priority tracking, and the documentation standard's own build-out. New infra topics become a new `# Part N` here, not a new file. |
+| `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `three-world-launch-phases-ToDo.md` #135/#136. Its own conversation-log lives in `conversation-backend-and-deploy.md` (Part 1), not a same-named sibling file — see that doc's own note on why. |
+| `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |
+| `three-world-launch-phases-ToDo.md` | Master to-do tracker across Cabinet/Bookshelf/fffx launch phases — numbered items, checkboxes, resolution notes. Repo-wide scope, not landing-page-specific. |
+| `three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
+| `cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` (or `public/<name>/` directly for two of the six, see `BACKEND-AND-DEPLOY.md`) at deploy time. Actively referenced from `deploy.yml`'s own comments. |
+
 ## `overrides/` — MkDocs Material theme override
 
 | File | Role |
 |---|---|
-| `main.html` | Extends Material's `base.html`, injects the Cloudflare Web Analytics beacon into the `extrahead` block so every MkDocs-generated page inherits it from one place — see `documentation/cloudflare-web-analytics-setup.md`. Added 2026-08-29. |
+| `main.html` | Extends Material's `base.html`, injects the Cloudflare Web Analytics beacon into the `extrahead` block so every MkDocs-generated page inherits it from one place — see `documentation/backend-and-deploy/cloudflare-web-analytics-setup.md`. Added 2026-08-29. |
 
 ## `content/` — canonical data sources (hand-edited)
 
@@ -146,7 +152,7 @@ rather than getting a single-file folder of its own.
 ## `landing-v3/` — the v3 map's dev/build system
 
 Regrouped 2026-08-29 by actual role (see
-`documentation/three-world-launch-phases-ToDo.md` `#132`
+`documentation/backend-and-deploy/three-world-launch-phases-ToDo.md` `#132`
 for the full import-graph reasoning behind the grouping); its own four
 documentation files moved into `documentation/landing-v3-notes/` the same
 day (see above) — this folder is code/build only now.
@@ -201,7 +207,7 @@ tags at all) — these pages are genuinely deployed
 Colophon page, so they're viewer-facing by the same standard as the
 current site, direct request. Pure addition, no visual/behavioural
 change, scripted rather than hand-edited (28 files) — see
-`documentation/cloudflare-web-analytics-setup.md`.
+`documentation/backend-and-deploy/cloudflare-web-analytics-setup.md`.
 
 | Path | Role |
 |---|---|

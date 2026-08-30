@@ -41,7 +41,7 @@ jobs:
     # --- Multi-repo assembly (Phase 1, hand-written per project -- #43) ---
     # To add another repo: copy this Checkout step + the Assemble/Validate
     # steps below it, repoint repository/path/destination. Full how-to:
-    # documentation/landing-v3-notes/cabinet-multi-repo-assembly-concept-note-short.md
+    # documentation/backend-and-deploy/cabinet-multi-repo-assembly-concept-note-short.md
     # ("Quick reference" under section 11). ToDos: #43 this pattern,
     # #44 link it publicly, #46 verify live.
     - name: Checkout Working with AI

@@ -6,7 +6,7 @@ generation per rebuild, rather than deleting them.
 - `index.html` — the archive's own landing page, linking out to `v1/`,
   `v2/`, `algorithm-bench/`, and `v3-history/` below. Not yet linked from
   the live site itself (Phase 0 item #18 in
-  `documentation/three-world-launch-phases-ToDo.md`) — that wiring depends on
+  `documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`) — that wiring depends on
   how `landing-v3` gets promoted into production (Phase 1 item #40), so it's
   deliberately deferred rather than guessed at here.
 - `v1/` — the original, fully-MkDocs-built site (built 2026-08-23 from the

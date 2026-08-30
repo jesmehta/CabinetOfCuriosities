@@ -30,4 +30,4 @@ review/*
 # itself already ships baked into the live pages (overrides/main.html,
 # landing-v3/index.template.html), so this file adds nothing but
 # duplication if committed. 2026-08-29.
-documentation/cloudflare-js-snippet.md
+documentation/backend-and-deploy/cloudflare-js-snippet.md

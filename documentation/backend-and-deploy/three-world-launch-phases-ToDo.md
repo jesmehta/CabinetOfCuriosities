@@ -1916,8 +1916,8 @@ section to empty out.*
 
 - [ ] **#135** Roll out Cloudflare Web Analytics to Bookshelf and FFFX --
       Cabinet's own beacon is done, 2026-08-29 (see
-      `documentation/cloudflare-web-analytics-setup.md` and
-      `cloudflare-js-snippet.md` for the token/snippet): `mkdocs.yml`
+      `cloudflare-web-analytics-setup.md` and
+      `cloudflare-js-snippet.md` (same directory) for the token/snippet): `mkdocs.yml`
       gained `theme.custom_dir: overrides`, a new `overrides/main.html`
       extends `base.html`'s `extrahead` block so every MkDocs-generated
       page gets the beacon in one place (not hand-added per Markdown

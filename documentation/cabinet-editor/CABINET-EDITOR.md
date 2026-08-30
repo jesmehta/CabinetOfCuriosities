@@ -5,7 +5,7 @@ this mirrors closely — a local-only Node HTTP admin server for editing
 `content/cabinet-sections.tsv` and `content/cabinet-entries.tsv` through a
 browser UI instead of hand-editing either file. Written to satisfy the
 "Build TSV editors for Cabinet, Bookshelf, FFFX" item in Phase 2 of
-`documentation/three-world-launch-phases-ToDo.md`, whose
+`documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`, whose
 requirements (`three-world-launch-phases-Notes.md`'s "TSV editor
 requirements") are: add/edit/delete sections and entries; validate required
 fields; manage order, weight, status, tags, and links; catch duplicate IDs
