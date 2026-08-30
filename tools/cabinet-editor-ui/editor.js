@@ -35,6 +35,10 @@ let searchEntries = "";
 const expandedSections = new Set();
 const expandedEntries = new Set();
 const colWidths = { sections: {}, entries: {} };
+// Whether "Expand text" is toggled on for a tab -- a persistent display
+// mode (survives re-renders after edits), not a one-off action, since
+// every mutation fully rebuilds the table's DOM from scratch.
+const textExpanded = { sections: false, entries: false };
 // col: null means "file order" (the order ▲▼ actually operate on); dir is
 // 1 (ascending) or -1 (descending). See cycleSort()/applySort() below.
 const sortState = { sections: { col: null, dir: 1 }, entries: { col: null, dir: 1 } };
@@ -224,6 +228,27 @@ function wireRowTextareaSync(tr) {
   areas.forEach(a => ro.observe(a));
 }
 
+// "Expand text": grow every textarea to fit its own content (short
+// content naturally ends up staying near the compact default -- rows
+// that don't need the extra height just don't get any), then let
+// wireRowTextareaSync()'s already-attached observer bring each row's
+// shorter siblings up to match. "Compact": drop back to the CSS default
+// by clearing the inline height override entirely.
+function applyExpandState(container, kind) {
+  const areas = container.querySelectorAll("textarea");
+  if (textExpanded[kind]) {
+    areas.forEach(a => { a.style.height = "auto"; a.style.height = a.scrollHeight + "px"; });
+  } else {
+    areas.forEach(a => { a.style.height = ""; });
+  }
+}
+
+function updateExpandButton(kind) {
+  const btn = document.getElementById(`expand-${kind}`);
+  btn.textContent = textExpanded[kind] ? "⇱ Compact text" : "⇕ Expand text";
+  btn.classList.toggle("toggled", textExpanded[kind]);
+}
+
 /* ---------- sections ---------- */
 
 const SECTION_SELECT_MAP = { status: STATUS_OPTIONS, location: SECTION_LOCATION_OPTIONS };
@@ -295,6 +320,9 @@ function renderSections() {
       if (ok) runMutation(() => apiCall("DELETE", `/api/sections/${index}`));
     });
   });
+
+  applyExpandState(container, "sections");
+  updateExpandButton("sections");
 }
 
 document.getElementById("add-section").addEventListener("click", () => {
@@ -390,6 +418,9 @@ function renderEntries() {
       el.addEventListener("change", () => runMutation(() => apiCall("PUT", `/api/entries/${index}`, { [el.dataset.field]: el.value })));
     });
   });
+
+  applyExpandState(container, "entries");
+  updateExpandButton("entries");
 }
 
 document.getElementById("add-entry").addEventListener("click", () => {
@@ -410,6 +441,9 @@ document.querySelectorAll("nav.tabs button").forEach(btn => {
 });
 document.getElementById("search-sections").addEventListener("input", e => { searchSections = e.target.value; renderSections(); });
 document.getElementById("search-entries").addEventListener("input", e => { searchEntries = e.target.value; renderEntries(); });
+
+document.getElementById("expand-sections").addEventListener("click", () => { textExpanded.sections = !textExpanded.sections; renderSections(); });
+document.getElementById("expand-entries").addEventListener("click", () => { textExpanded.entries = !textExpanded.entries; renderEntries(); });
 
 /* ---------- confirm dialog ---------- */
 

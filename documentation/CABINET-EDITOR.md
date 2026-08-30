@@ -172,6 +172,22 @@ siblings at their old height, looking broken rather than like one row.
 textarea in that row resizes, every textarea in the row is set to
 whichever one is currently tallest.
 
+**"⇕ Expand text" / "⇱ Compact text"** (v1.4), one toggle button per tab:
+expand grows every textarea to fit its own content
+(`el.style.height = el.scrollHeight + "px"`, after first resetting to
+`"auto"` so shrinking content is measured correctly, not stuck at a
+stale larger height); compact clears the inline height override back to
+the CSS default. No per-row judgment call about which rows "need" it —
+short content naturally computes a `scrollHeight` near the compact
+default already, so only rows that actually have long text end up
+visibly taller. `wireRowTextareaSync()`'s already-attached observers
+pick up the resulting per-textarea height changes and bring each row's
+shorter siblings up to match, same as a manual drag would. `textExpanded`
+is a persistent per-tab flag (not a one-off action) — every mutation
+fully rebuilds the table's DOM, so `applyExpandState()` re-runs at the
+end of every render to keep the mode from silently reverting after a
+save.
+
 ### Live vs. reserved vs. deleted fields
 
 Checked against three sources, not just one: `landing-v3/layout-engine/
@@ -323,6 +339,30 @@ Hand-editing the TSVs directly still works exactly as before — both paths
 write the same files, no separate state to keep in sync.
 
 ## Changelog
+
+### v1.4 — "Expand text" / "Compact text" toggle (2026-08-30)
+
+Direct follow-up to v1.3's row-height sync: syncing a row's textareas to
+match each other only helps once something has already been dragged
+taller — there was still no fast way to see every row's full text at
+once, or to get back to a compact scan-everything view afterward.
+
+Changed, `cabinet-editor-ui/` only: one button per tab (`#expand-sections`,
+`#expand-entries`) toggles `textExpanded[kind]`; `applyExpandState()`
+grows every textarea to its own content height when on, clears the
+inline override when off; `updateExpandButton()` keeps the button's
+label/`.toggled` styling in sync. Both functions run at the end of every
+render, so the mode persists across edits rather than resetting on the
+next `/api/state` refresh. See "⇕ Expand text / ⇱ Compact text" above.
+
+Verified: Playwright pass — before expand, all `notes` textareas at the
+28px compact default; after, heights varied per row's actual content
+(28-98px) with short/blank rows correctly staying compact; sibling `tags`
+textareas matched `notes`' height per row exactly; an edit-triggered
+re-render kept the expanded heights intact; compacting again reset all
+back to 28px; button label/state toggled correctly both directions; zero
+console errors. Confirmed via `git status` that the test edit used to
+trigger a re-render round-tripped back to the original file content.
 
 ### v1.3 — sortable/resizable columns, id/order adjacency, row-height sync (2026-08-30)
 

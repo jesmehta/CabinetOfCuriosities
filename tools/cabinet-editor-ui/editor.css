@@ -70,6 +70,8 @@ button.btn.primary{ background:var(--accent); color:var(--card); border-color:va
 button.btn.primary:hover{ filter:brightness(1.08); }
 button.btn.danger{ border-color:var(--danger); color:var(--danger); }
 button.btn.danger:hover{ background:var(--danger); color:var(--card); }
+button.btn.toggled{ background:var(--accent); color:var(--card); border-color:var(--accent); }
+button.btn.toggled:hover{ filter:brightness(1.08); }
 button.btn:disabled{ opacity:0.5; cursor:default; }
 button.icon{
   background:none; border:1px solid var(--hairline); border-radius:4px; width:26px; height:26px;
