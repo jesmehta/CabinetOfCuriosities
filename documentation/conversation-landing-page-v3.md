@@ -49,6 +49,10 @@
 - [Screenshots: catching up a stale archive, not just this round's work](#screenshots-catching-up-a-stale-archive-not-just-this-rounds-work)
 - ["Theme x hover": three mechanisms compared before writing any code, then a real Part A](#theme-x-hover-three-mechanisms-compared-before-writing-any-code-then-a-real-part-a)
 - [This handoff](#this-handoff)
+- [Semantic headings for the map: four options weighed, then five corrections that cut the scope (#70)](#semantic-headings-for-the-map-four-options-weighed-then-five-corrections-that-cut-the-scope-70)
+  - [Four options, weighed before writing code](#four-options-weighed-before-writing-code)
+  - [Five corrections that cut the real scope](#five-corrections-that-cut-the-real-scope)
+  - [What shipped, and the documentation follow-through](#what-shipped-and-the-documentation-follow-through)
 
 This is a narrative record of the design conversation behind the
 v3.6.4 -> v3.6.6 visual-polish work, kept separate from
@@ -2798,3 +2802,144 @@ changes, the process lessons (the boats sunk-cost loop, the "rethink
 our roles" workflow shift, the commit-convention correction), and the
 reasoning behind decisions that could otherwise look arbitrary out of
 context.
+
+## Semantic headings for the map: four options weighed, then five corrections that cut the scope (#70)
+
+This thread started the way `#70` had been sitting in the to-do list
+since 2026-08-24: a quick check had already established that section
+and island labels are SVG `<text>`, not real headings, but nothing had
+decided what to do about it. The ask was explicit about wanting options
+before code: "Offer suggestions on what can be done. Tell me the pros
+adn cons, the caveats, the cost complexity, and any other implications
+to me the maintainer or the viewers, readers, or the system in general."
+No code was written in this first pass -- the repo and the ToDo entry
+were read, then the actual render pipeline (`cabinet-v3-layout.js`'s
+`buildSectionMetas()`/label-rendering code, `docs/index.html`'s existing
+real `<h1>`) to ground the options in what was actually there rather
+than a generic accessibility checklist.
+
+### Four options, weighed before writing code
+
+Four were laid out, each with its own cost and a caveat: (A) `role=
+"heading"`/`aria-level` added directly to the existing SVG `<text>`
+elements -- two attributes, no layout risk, but ARIA on SVG isn't
+confirmed to carry the same weight for crawlers a real HTML tag does;
+(B) a parallel, visually-hidden HTML layer of real `h2`/`h3` elements,
+generated from the same section/entry data already feeding the SVG
+text, with `aria-hidden` on the SVG labels and `aria-labelledby`
+pointing at the hidden headings so a screen reader wouldn't announce
+each title twice; (C) live HTML overlay headings positioned at the
+SVG's own computed coordinates, avoiding duplication entirely but
+coupling two coordinate systems on a page whose treemap and
+circle-packing already reflow live; (D) a separate, visible
+table-of-contents block elsewhere on the page. C was flagged as the one
+to avoid given the confirmed live-reflow architecture; the recommendation
+was A now (cheap, no risk) and B as the real fix, with D left as its own
+possible feature rather than folded into this decision.
+
+The next question back was short and direct: "Is it worth doing A then
+B, or should we go straight to B?" The answer reversed the earlier
+recommendation on inspection rather than defending it: once B's
+`aria-hidden`/`aria-labelledby` pairing is in place, `role="heading"` on
+an element that's now `aria-hidden` does nothing -- A would be built and
+then immediately stripped back out. Straight to B.
+
+Asked next for more detail on B's cons and cost, a second, closer pass
+through the actual code (checking `render()`'s call sites, confirming
+there's deliberately no resize listener, that `islands-tool.html`'s
+Reroll button does call `render()` again, and where filler circles get
+synthesized) produced five concrete concerns: content duplication and
+drift risk if a future contributor reshaped the section/entry data
+without knowing the hidden-heading generator existed; `aria-hidden` +
+`aria-labelledby` being fiddly and screen-reader support for SVG
+accessibility being uneven across browsers; the shadow container needing
+its own explicit clear-and-rebuild so `islands-tool.html`'s Reroll
+couldn't pile up duplicates; an editorial decision about excluding
+filler islands and about whether WIP-status entries (11 of the 37, with
+no page yet) should get real headings at all; and no way to locally
+verify whether any of this actually moves search ranking.
+
+### Five corrections that cut the real scope
+
+Every one of those five got pushed back on, point by point, in the same
+message -- and each correction actually landed, shrinking what got
+built:
+
+1. "I am assuming the shadow generator picks things form the TSV and
+   the rest of the workflow anyway, what happend in one happens in the
+   other - why would a future contributor forgetting it exists matter?"
+   Right: if the generator reads the exact same in-memory data
+   `render()` already builds, content can't drift. The residual risk
+   was narrowed to something much smaller and more ordinary -- a future
+   reshape of the render pipeline's own data *shape* (not the TSV)
+   needing the generator updated too -- worth a one-line count assertion
+   as a tripwire, not a reason to hesitate.
+2. "What is aria anyway? ... Since this is a highly visual site, I am
+   not very high on a screenreader using audience right now, although
+   in principle yes, accessibility should be maintained." This separated
+   two goals that had been bundled together: real `h2`/`h3` tags serve
+   both screen readers and crawlers/SEO, but the `aria-hidden`/
+   `aria-labelledby` de-duplication wiring only serves screen readers,
+   and only by suppressing a double announcement. Given the stated
+   priority, that wiring became optional polish, not required scope --
+   cutting out the fiddliest, hardest-to-verify part of the original
+   plan.
+3. On the idempotency concern: "unsure of whats why but youre saying
+   the code needs to take care of it. So why cant it?" It can -- clearing
+   the shadow container at the top of `render()`, mirroring
+   `#v3-stage`'s own existing `stage.innerHTML = ""`, was never a
+   structural problem, just a line of code that needed writing rather
+   than a caveat worth dwelling on.
+4. "Duh, yes, filler islands dont have assocuated text or entries, by
+   definition. Why would you strat off the island units anyway, wouldnt
+   you use the entries as a reference to build off?" Also right, and
+   simpler than the original framing: filler circles are synthesized
+   separately, in `buildSeedsForSection()`, and never enter
+   `sectionMeta.entries` at all -- building the outline from the entry
+   list directly means there's nothing to filter, not a filtering task
+   to get right. On WIP entries, the same message settled the question
+   outright: process anything with a text name and a TSV row regardless
+   of status, since WIP entries currently exist to populate the map
+   rather than as feature previews, and their number will only shrink
+   going forward.
+5. "SEO is unverifiable. Ok. We'll work on verifying if possible later.
+   Best practices are good to have." Accepted as-is -- no local feedback
+   loop for that half of the goal, best practice is the right bar for
+   now, revisit through Search Console once the site's had time to be
+   recrawled.
+
+### What shipped, and the documentation follow-through
+
+What got built after this exchange was leaner than the original B: no
+`aria-hidden`/`aria-labelledby` wiring, a `renderSemanticOutline()`
+built straight from `sectionMetas`/entries (never touching rendered
+circles), and WIP entries included without exception. Implementing it
+surfaced one more piece of real architecture that the conversation
+hadn't touched yet -- the production page isn't rendered live in the
+visitor's browser at all; `build-static.mjs` captures a headless-browser
+snapshot of `build-render.html`'s `render()` output and bakes it into
+`index.template.html`, hand-promoted to `docs/index.html` with an
+asset-path rewrite. The new heading container needed wiring into that
+same capture/promotion path, and the compass section turned out to have
+four real entries of its own (About Me, Now, Colophon, Site map) rather
+than being pure decoration, so it went into the heading outline like any
+other section.
+
+The follow-through after building surfaced two more real gaps, both
+caught by direct questions rather than found unprompted. Asked whether
+the change was documented in the changelog and logged in the ToDo's
+watch-out sections, the honest answer was: the ToDo's watch-out section
+existed, but `Landing-page-notes.2.0.md`'s actively-maintained,
+version-numbered changelog (up to `v3.7.67` at the time) had been
+skipped entirely -- fixed with a `v3.7.68` entry matching its existing
+format. Asked more generally whether documentation had been "maintained
+otherwise," with a direct follow-up to check it against git log,
+comparing this change against the closest real precedent in history (the
+`v3.7.67` Site-map compass commit, and a separate commit that existed
+solely to fix one stale `FILE-MANIFEST.md` line) surfaced three
+`FILE-MANIFEST.md` rows -- `build-static.mjs`, `cabinet-v3-layout.js`,
+`build-render.html` -- that still only described the old SVG-only
+capture behavior. All three were corrected. The work was then split into
+three commits on request -- source/build, production promotion,
+documentation -- matching the granularity that review of a change like
+this actually wants, rather than one commit covering all of it.
