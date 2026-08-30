@@ -93,7 +93,12 @@ Two tables, mirroring `FILE-MANIFEST.md`'s own split of
 - **System-wide** — docs that sit flat at `documentation/` root, not
   scoped to one feature (`README.md`, `WORLD-SYSTEMS.md`,
   `FILE-MANIFEST.md`, `DOCUMENTATION-GUIDE.md`,
-  `conversation-backend-and-deploy.md`, `cloudflare-web-analytics-setup.md`).
+  `conversation-backend-and-deploy.md`, `cloudflare-web-analytics-setup.md`,
+  `three-world-launch-phases-ToDo.md`, `three-world-launch-phases-Notes.md`,
+  `cabinet-multi-repo-assembly-concept-note-short.md` — the last three
+  moved here from `landing-v3-notes/` on 2026-08-30, repo-wide scope
+  having been misfiled as v3-specific collateral from an earlier batched
+  move).
 - **Features** — grouped by subsystem, each group opening with a
   divider row naming its source files/tool (v3 map, Cabinet TSV editor,
   `/now` page, Sitemap & Content Inventory). `CONTENT-INVENTORY.md` is
