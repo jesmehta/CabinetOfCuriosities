@@ -140,7 +140,7 @@ script ran.
 Not yet done: Bookshelf (`TheBookshelfOfCuriosities`) and FFFX
 (`form-follows-fx`) each need the same two-part treatment in their own
 repos with their own Cloudflare Web Analytics tokens — tracked as
-`documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`
+`documentation/three-world-launch-phases-ToDo.md`
 **#135**. The externally-assembled repos (Working with AI, Prompt
 Generator, Oblique Strategies, Swatch Fields, Tracery Bots — see that
 same file's `deploy.yml` multi-repo-assembly pattern, #43/#71/#128) each

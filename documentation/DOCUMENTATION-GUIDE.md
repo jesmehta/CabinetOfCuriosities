@@ -33,7 +33,7 @@ pointing to the next:
    into a separate file per concern. `NOW-PAGE.md`, `CABINET-EDITOR.md`,
    `SITEMAP.md`, `Landing-page-notes.2.0.md`,
    `cloudflare-web-analytics-setup.md`. Repo-wide todo tracking lives
-   in one place, `landing-v3-notes/three-world-launch-phases-ToDo.md`,
+   in one place, `three-world-launch-phases-ToDo.md`,
    not duplicated per subsystem.
 3. **Conversation-log** — *why*: what was asked, tried, rejected,
    corrected, in the actual words. Reference model:

@@ -30,7 +30,7 @@ unchanged.
 **Companion technical-reference docs**: `cloudflare-web-analytics-setup.md`
 covers Cloudflare specifically. The reorg and launch-milestone work
 doesn't have one consolidated technical doc yet — its record is spread
-across `FILE-MANIFEST.md`, `landing-v3-notes/three-world-launch-phases-ToDo.md`
+across `FILE-MANIFEST.md`, `three-world-launch-phases-ToDo.md`
 (`#129`-`#134`, `#58`/`#59`), and `README.md`'s own changelog. Worth
 consolidating into one tier-2 doc at some point; not done as part of
 this merge.
@@ -202,7 +202,7 @@ still carries the source-of-truth copy, so the next real regeneration
 won't lose it.
 
 The to-do items for the deferred Bookshelf/fffx/external-repo rollout
-(`#135`/`#136` in `landing-v3-notes/three-world-launch-phases-ToDo.md`)
+(`#135`/`#136` in `three-world-launch-phases-ToDo.md`)
 followed that file's own numbering convention rather than inventing a
 new one — the existing sequence was scanned first to find the highest
 number in use (`#134`) before appending.
@@ -319,7 +319,7 @@ files carry the beacon. Bookshelf, fffx, and the external repos
 assembled into Cabinet at deploy time (Working with AI, Prompt
 Generator, Swatch Fields, Tracery Bots, and future additions) are still
 open, tracked as `#135`/`#136` in
-`landing-v3-notes/three-world-launch-phases-ToDo.md`. The plaintext
+`three-world-launch-phases-ToDo.md`. The plaintext
 `cloudflare-js-snippet.md` notes file stays on disk, gitignored, no
 longer the canonical record of anything — that's
 `cloudflare-web-analytics-setup.md` now, with this file alongside it
@@ -334,7 +334,7 @@ for the *why*.
 ## Scope and an honesty note
 
 This covers the Cabinet file/folder reorganization
-(`#129`-`#134` in `landing-v3-notes/three-world-launch-phases-ToDo.md`),
+(`#129`-`#134` in `three-world-launch-phases-ToDo.md`),
 2026-08-29 through 2026-08-30, recorded from a live transcript — direct
 quotes are actually verbatim, not reconstructed. (The Content
 Inventory/sitemap generation work from the same overall stretch, `#126`,

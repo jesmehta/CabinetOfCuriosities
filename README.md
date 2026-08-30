@@ -31,7 +31,7 @@ repo/world) rather than duplicating their content.
   from `landing-v3/`** (the "archipelago-tool" rebuild — data-driven
   treemap/circle-packing layout, not the hand-authored SVG below) — see
   `documentation/landing-v3-notes/Landing-page-notes.2.0.md` for that system's own full
-  documentation, and `documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`
+  documentation, and `documentation/three-world-launch-phases-ToDo.md`
   for how/why it got promoted. Everything in this section and in
   `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`/`DESIGN-SYSTEM.md`
   describes the *previous* (v2) system, kept as-is because it's genuinely
@@ -229,7 +229,7 @@ live, functional, not yet feature-complete, links not yet publicly
 shared. `launched` — a future marker, applied once Phase 0-2 are done
 or largely done AND links are actually being distributed publicly, a
 real-world event rather than a checklist percentage. See
-`documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`'s
+`documentation/three-world-launch-phases-ToDo.md`'s
 `#59` entry.
 
 ### Content Inventory auto-generated instead of hand-maintained (#126, 2026-08-30)
@@ -282,7 +282,7 @@ Playwright rebuild for a one-line addition. Verified with a local
 `mkdocs build`: beacon present in every built page, zero build errors.
 Bookshelf/fffx and the externally-assembled repos (Working with AI,
 Prompt Generator, Swatch Fields, Tracery Bots, etc.) still need their
-own rollout — tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md`
+own rollout — tracked as `three-world-launch-phases-ToDo.md`
 items #135/#136. **Same-day follow-up**: `archived-landing-pages/`
 (frozen v1/v2/v2-history/v3-history/algorithm-bench snapshots) initially
 missed, despite being genuinely deployed and Colophon-linked — added to
@@ -305,7 +305,7 @@ left as silent commits. `FILE-MANIFEST.md` (new) is the resulting
 exhaustive per-file map. Reorganized again 2026-08-30 into one folder
 per feature (`now/`, `cabinet-editor/`, `landing-v3-notes/`, `sitemap/`)
 — see `DOCUMENTATION-GUIDE.md`. See
-`documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`'s
+`documentation/three-world-launch-phases-ToDo.md`'s
 `#129`-`#134` entries and `conversation-backend-and-deploy.md`'s Part 2
 for the full reasoning and the bugs caught along the way.
 

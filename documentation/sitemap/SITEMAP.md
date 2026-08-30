@@ -19,7 +19,7 @@ happen to share a run:
    referencing this repo's own `content/cabinet-{sections,entries}.tsv`
    against `mkdocs.yml`'s own nav tree, entirely from local files, no
    network involved. Replaces what used to be a hand-maintained table in
-   `landing-v3-notes/three-world-launch-phases-ToDo.md` (`#126`) — see
+   `three-world-launch-phases-ToDo.md` (`#126`) — see
    `conversation-sitemap.md` for why that table stopped being worth
    maintaining by hand.
 
@@ -216,7 +216,7 @@ Extended the script with a second, unrelated-at-the-network-level job:
 `INVENTORY_OUTPUT_PATH`/`MKDOCS_YML_PATH`/`CABINET_SECTIONS_TSV`/
 `CABINET_ENTRIES_TSV` constants. Replaces the hand-maintained Content
 Inventory table that used to live in
-`landing-v3-notes/three-world-launch-phases-ToDo.md` (`#126`) — see
+`three-world-launch-phases-ToDo.md` (`#126`) — see
 `conversation-sitemap.md` for the full reasoning, including why the
 table's `TSV`/`Map` columns were kept (not just its `mkdocs`-nav
 column) despite the sitemap already covering similar ground.

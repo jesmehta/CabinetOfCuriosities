@@ -1536,14 +1536,14 @@ combination produces a bad shape that a weight floor doesn't fix.
 
 ## To-do
 
-Moved to `documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`
+Moved to `documentation/three-world-launch-phases-ToDo.md`
 (2026-08-23, relocated from `landing-v3/` on 2026-08-29) -- it had grown
 past what the punch-list format here could hold. That file's "Phase 0"
 is this doc's old punch list (v3-prototype visual-polish/feature items);
 Phases 1-3 cover the Cabinet/Bookshelf/FFFX launch sequence, with the
 supporting rationale (deployment mechanism, branch-transition reasoning,
 TSV editor spec) split out again into
-`documentation/landing-v3-notes/three-world-launch-phases-Notes.md`.
+`documentation/three-world-launch-phases-Notes.md`.
 See `conversation-landing-page-v3.md` (same directory as this file) for
 the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.

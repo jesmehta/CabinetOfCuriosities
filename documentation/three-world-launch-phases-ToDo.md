@@ -1763,6 +1763,13 @@ section to empty out.*
       redundant (reference/changelog vs. narrative process log; see
       `FILE-MANIFEST.md`'s entry for both). "A real pass on what belongs
       where" is exactly what that review was.
+      **Correction, 2026-08-30**: the location split described above
+      wasn't actually clean -- this file, `-Notes.md`, and
+      `cabinet-multi-repo-assembly-concept-note-short.md` (whole-Cabinet,
+      not v3-specific) got swept into `documentation/landing-v3-notes/`
+      as collateral from the same batched `git mv`, not placed there on
+      purpose. Caught on direct question and moved to `documentation/`
+      root, where this note originally (and correctly) said they'd be.
 
 </details>
 
