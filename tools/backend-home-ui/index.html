@@ -157,26 +157,6 @@
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/DOCUMENTATION-GUIDE.md" target="_blank" rel="noopener">DOCUMENTATION-GUIDE.md</a></td>
           <td>The documentation standard itself -- the three-tier (technical doc / conversation log / todo) structure every feature below follows. Read before adding a new doc file anywhere in this repo.</td>
         </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/conversation-backend-and-deploy.md" target="_blank" rel="noopener">conversation-backend-and-deploy.md</a></td>
-          <td>Conversation log for infra/backend work that doesn't map onto one feature -- Cloudflare rollout, the <code>documentation/</code> reorg itself, launch-milestone tracking. New infra topics become a new Part N here, not a new file.</td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cloudflare-web-analytics-setup.md" target="_blank" rel="noopener">cloudflare-web-analytics-setup.md</a></td>
-          <td>How the analytics beacon is wired into every page, across all three sites.</td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/three-world-launch-phases-ToDo.md" target="_blank" rel="noopener">three-world-launch-phases-ToDo.md</a></td>
-          <td>Master to-do tracker across Cabinet/Bookshelf/fffx launch phases -- numbered items, checkboxes, resolution notes.</td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/three-world-launch-phases-Notes.md" target="_blank" rel="noopener">three-world-launch-phases-Notes.md</a></td>
-          <td>Supporting rationale for the to-do tracker (deployment mechanism, branch-transition reasoning, TSV-editor spec) -- a different view of the same initiative, not a duplicate.</td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cabinet-multi-repo-assembly-concept-note-short.md" target="_blank" rel="noopener">cabinet-multi-repo-assembly-concept-note-short.md</a></td>
-          <td>How independent repos (Working with AI, Prompt Generator, etc.) get mounted into <code>public/teaching/&lt;name&gt;/</code> at deploy time. Referenced from <code>deploy.yml</code>'s own comments.</td>
-        </tr>
       </tbody>
     </table>
 
@@ -198,7 +178,29 @@
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/tree/main/documentation/landing-v3-notes" target="_blank" rel="noopener">landing-v3-notes/</a></td>
-          <td>The rest of the folder: open colour-scheme proposals (<code>v3-scheme-candidates.md</code>). The to-do tracker, supporting rationale, and multi-repo-assembly concept note moved to <code>documentation/</code> root (System-wide table above) -- repo-wide scope, not v3-specific.</td>
+          <td>The rest of the folder: open colour-scheme proposals (<code>v3-scheme-candidates.md</code>). The to-do tracker, supporting rationale, and multi-repo-assembly concept note moved to <code>backend-and-deploy/</code> (below) -- repo-wide scope, not v3-specific.</td>
+        </tr>
+
+        <tr class="group-row"><td colspan="2">Backend &amp; deploy <span>-- .github/workflows/deploy.yml, overrides/, this dashboard's Build &amp; publish pipeline above</span></td></tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/backend-and-deploy/BACKEND-AND-DEPLOY.md" target="_blank" rel="noopener">BACKEND-AND-DEPLOY.md</a></td>
+          <td>Technical reference for the file/folder reorg (as-built structure) and the launch-milestone tag scheme -- absorbs what used to be scattered across FILE-MANIFEST.md, the to-do tracker, and README's changelog; links out to the two docs below rather than duplicating them.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/backend-and-deploy/conversation-backend-and-deploy.md" target="_blank" rel="noopener">conversation-backend-and-deploy.md</a></td>
+          <td>Conversation log for infra/backend work that doesn't map onto one feature -- Cloudflare rollout, the <code>documentation/</code> reorg itself, launch-milestone tracking. New infra topics become a new Part N here, not a new file.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/backend-and-deploy/cloudflare-web-analytics-setup.md" target="_blank" rel="noopener">cloudflare-web-analytics-setup.md</a></td>
+          <td>How the analytics beacon is wired into every page, across all three sites.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/backend-and-deploy/cabinet-multi-repo-assembly-concept-note-short.md" target="_blank" rel="noopener">cabinet-multi-repo-assembly-concept-note-short.md</a></td>
+          <td>How independent repos (Working with AI, Prompt Generator, etc.) get mounted into <code>public/teaching/&lt;name&gt;/</code> or <code>public/&lt;name&gt;/</code> at deploy time. Referenced from <code>deploy.yml</code>'s own comments.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/tree/main/documentation/backend-and-deploy" target="_blank" rel="noopener">backend-and-deploy/</a></td>
+          <td>The rest of the folder: the master to-do tracker (<code>three-world-launch-phases-ToDo.md</code>) and its supporting rationale (<code>three-world-launch-phases-Notes.md</code>).</td>
         </tr>
 
         <tr class="group-row"><td colspan="2">Cabinet TSV editor <span>-- content/cabinet-*.tsv, this dashboard's Cabinet TSV editor card above</span></td></tr>

@@ -92,20 +92,21 @@ Two tables, mirroring `FILE-MANIFEST.md`'s own split of
 
 - **System-wide** — docs that sit flat at `documentation/` root, not
   scoped to one feature (`README.md`, `WORLD-SYSTEMS.md`,
-  `FILE-MANIFEST.md`, `DOCUMENTATION-GUIDE.md`,
-  `conversation-backend-and-deploy.md`, `cloudflare-web-analytics-setup.md`,
-  `three-world-launch-phases-ToDo.md`, `three-world-launch-phases-Notes.md`,
-  `cabinet-multi-repo-assembly-concept-note-short.md` — the last three
-  moved here from `landing-v3-notes/` on 2026-08-30, repo-wide scope
-  having been misfiled as v3-specific collateral from an earlier batched
-  move).
+  `FILE-MANIFEST.md`, `DOCUMENTATION-GUIDE.md`).
 - **Features** — grouped by subsystem, each group opening with a
-  divider row naming its source files/tool (v3 map, Cabinet TSV editor,
-  `/now` page, Sitemap & Content Inventory). `CONTENT-INVENTORY.md` is
-  grouped here under Sitemap by *function* even though it physically
-  stays at `documentation/` root (`generate_sitemap.py`'s output path is
-  hardcoded — see `SITEMAP.md`) — the description says so explicitly
-  rather than leaving the placement to look like an error.
+  divider row naming its source files/tool (v3 map, Backend & deploy,
+  Cabinet TSV editor, `/now` page, Sitemap & Content Inventory).
+  `CONTENT-INVENTORY.md` is grouped here under Sitemap by *function*
+  even though it physically stays at `documentation/` root
+  (`generate_sitemap.py`'s output path is hardcoded — see `SITEMAP.md`)
+  — the description says so explicitly rather than leaving the
+  placement to look like an error. The Backend & deploy group (added
+  2026-08-30, replacing a short-lived System-wide listing of the same
+  five files) is the largest — one folder holding two independent
+  technical docs (Cloudflare, multi-repo assembly) plus a new
+  consolidated one (`BACKEND-AND-DEPLOY.md`) for what didn't have a
+  home of its own, matching the actual `documentation/backend-and-deploy/`
+  structure rather than treating it as system-wide.
 
 Both tables are ordered broadest-scope-first, most-specific-last within
 their own group. Group-row divider styling went through two rounds of
