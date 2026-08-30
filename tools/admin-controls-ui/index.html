@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Cabinet -- Backend Home</title>
+<title>Cabinet -- Admin Controls</title>
 <link rel="stylesheet" href="home.css" />
 </head>
 <body>
 
 <header>
   <div>
-    <h1>Cabinet &mdash; Backend Home</h1>
+    <h1>Cabinet &mdash; Admin Controls</h1>
     <div class="sub">Local admin dashboard. Everything here is localhost-only, no auth -- nothing on this page is meant to be reachable off this machine.</div>
   </div>
   <div class="compass">127.0.0.1:5959</div>
@@ -236,6 +236,16 @@
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/CONTENT-INVENTORY.md" target="_blank" rel="noopener">CONTENT-INVENTORY.md</a></td>
           <td>Auto-generated output -- cross-checks TSV content against <code>mkdocs.yml</code>'s nav. Physically stays at <code>documentation/</code> root (script's output path is hardcoded), grouped here by function instead.</td>
         </tr>
+
+        <tr class="group-row"><td colspan="2">Admin controls <span>-- tools/admin-controls.js, this page itself</span></td></tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/admin-controls/ADMIN-CONTROLS.md" target="_blank" rel="noopener">ADMIN-CONTROLS.md</a></td>
+          <td>Design decisions and as-built record for this dashboard.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/admin-controls/conversation-admin-controls.md" target="_blank" rel="noopener">conversation-admin-controls.md</a></td>
+          <td>Conversation-log companion to ADMIN-CONTROLS.md.</td>
+        </tr>
       </tbody>
     </table>
   </section>
@@ -247,7 +257,7 @@
       <li><strong>Build and Promote are deliberately two separate scripts.</strong> Build alone (<code>landing-v3/build-static.mjs</code>) never writes to <code>docs/</code> -- it's also used on its own while iterating, without wanting every run to touch the live site. Promote is the explicit "ship this" step.</li>
       <li><strong>External repos assembled at deploy time are not pinned to a commit.</strong> <code>.github/workflows/deploy.yml</code> pulls Working with AI / Prompt Generator / Oblique Strategies / SSD Creative Coding / Swatch Fields / Tracery Bots' current default branch at build time. Pushing to one of those repos alone does <strong>not</strong> update the live site -- push a commit here too (anything, even a doc tweak), or re-run the latest "Deploy MkDocs to GitHub Pages" Action run.</li>
       <li><strong>Always commit TSVs and their generated output together.</strong> None of the build scripts (or this page) commit anything for you.</li>
-      <li><strong>Port map:</strong> Now editor <code>5757</code> &middot; Cabinet editor <code>5858</code> &middot; this page <code>5959</code>. Override with <code>NOW_EDITOR_PORT</code> / <code>CABINET_EDITOR_PORT</code> / <code>CABINET_HOME_PORT</code> if one's taken.</li>
+      <li><strong>Port map:</strong> Now editor <code>5757</code> &middot; Cabinet editor <code>5858</code> &middot; this page <code>5959</code>. Override with <code>NOW_EDITOR_PORT</code> / <code>CABINET_EDITOR_PORT</code> / <code>CABINET_ADMIN_PORT</code> if one's taken.</li>
       <li><strong>generate_sitemap.py needs network access</strong> (fetches raw TSVs from GitHub for all three worlds) -- if it fails, check connectivity before assuming a code problem.</li>
     </ul>
   </section>

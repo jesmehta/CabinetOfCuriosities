@@ -51,7 +51,10 @@ pointing to the next:
 **A standalone feature or page** (own tool, own URL) gets its own
 folder under `documentation/`, pairing tiers 2 and 3 — `now/`,
 `cabinet-editor/`, `landing-v3-notes/`, `sitemap/`,
-`backend-and-deploy/`. New map-decision content appends to
+`backend-and-deploy/`, `admin-controls/` (the `tools/admin-controls.js`
+dashboard — named separately from `backend-and-deploy/` on purpose, so
+"the admin dashboard tool" and "backend/deploy work in general" don't
+read as the same thing). New map-decision content appends to
 `conversation-landing-page-v3.md` directly rather than spawning a new
 file — that doc is already the established umbrella for the whole v3
 map subsystem.

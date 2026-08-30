@@ -1,4 +1,4 @@
-// Cabinet -- local "backend home" dashboard: one page linking together every
+// Cabinet -- local "admin controls" dashboard: one page linking together every
 // local-only admin tool this repo has (Cabinet/Now TSV editors, the v3
 // islands-tool live preview), plus buttons for every build/publish script
 // that doesn't already have one of its own (build-static.mjs, promote.mjs,
@@ -22,8 +22,8 @@ const { execFileSync, spawn } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const LANDING_V3_DIR = path.join(ROOT, "landing-v3");
-const UI_ROOT = path.join(__dirname, "backend-home-ui");
-const PORT = Number(process.env.CABINET_HOME_PORT) || 5959;
+const UI_ROOT = path.join(__dirname, "admin-controls-ui");
+const PORT = Number(process.env.CABINET_ADMIN_PORT) || 5959;
 
 const NOW_EDITOR_PORT = Number(process.env.NOW_EDITOR_PORT) || 5757;
 const CABINET_EDITOR_PORT = Number(process.env.CABINET_EDITOR_PORT) || 5858;
@@ -233,6 +233,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Cabinet backend home running at http://127.0.0.1:${PORT}/admin/`);
+  console.log(`Cabinet admin controls running at http://127.0.0.1:${PORT}/admin/`);
   console.log(`(localhost only, Ctrl+C to stop)`);
 });

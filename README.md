@@ -70,8 +70,8 @@ repo/world) rather than duplicating their content.
   `run-now-editor.bat`) — a local-only admin server/browser UI for editing
   `now.tsv` entries and `now-data.js` sections without hand-editing either
   file. Never deployed; see `NOW-PAGE.md`'s "Local admin server".
-- `tools/backend-home.js` (+ `tools/backend-home-ui/`, launched via
-  `run-backend-home.bat`, added 2026-08-30) — a local admin dashboard
+- `tools/admin-controls.js` (+ `tools/admin-controls-ui/`, launched via
+  `run-admin-controls.bat`, added 2026-08-30) — a local admin dashboard
   linking every other local tool: start/status for the Cabinet/Now
   editor servers, buttons for build/publish scripts that previously had
   no UI trigger (`build-static.mjs`, `landing-v3/promote.mjs`,
@@ -104,7 +104,11 @@ repo/world) rather than duplicating their content.
   `cabinet-multi-repo-assembly-concept-note-short.md`, the
   `three-world-launch-phases-ToDo.md`/`-Notes.md` tracker, and
   `conversation-backend-and-deploy.md`, the shared conversation-log for
-  anything backend/site-wide with no other home). Single-file topics
+  anything backend/site-wide with no other home); `admin-controls/`
+  (`ADMIN-CONTROLS.md`, `conversation-admin-controls.md` — the
+  `tools/admin-controls.js` dashboard above; named separately from
+  `backend-and-deploy/` to avoid confusion between "the admin dashboard
+  tool" and "backend/deploy work in general"). Single-file topics
   stay flat at `documentation/` root: `FILE-MANIFEST.md` (the
   exhaustive per-file role listing), `DOCUMENTATION-GUIDE.md`, and
   `CONTENT-INVENTORY.md` (auto-generated, stays wherever
@@ -192,6 +196,17 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### `backend-home.js` renamed to `admin-controls.js` (2026-08-30)
+
+Too easily confused with the new `documentation/backend-and-deploy/`
+folder above, added the same day. Renamed throughout: the script, its
+UI folder, the launcher `.bat`, the `CABINET_ADMIN_PORT` override env
+var (was `CABINET_HOME_PORT`), and its doc folder
+(`documentation/admin-controls/`, `ADMIN-CONTROLS.md`,
+`conversation-admin-controls.md`). Port (`5959`) and the `/admin/` URL
+path are unchanged. See `ADMIN-CONTROLS.md`'s own `v1.4` changelog
+entry for the full list.
+
 ### `backend-and-deploy/` folder; `BACKEND-AND-DEPLOY.md` technical doc (2026-08-30)
 
 New `documentation/backend-and-deploy/` folder groups every
@@ -207,9 +222,9 @@ launch-milestone work never had, absorbing what was scattered across
 the two larger docs (Cloudflare, multi-repo assembly) rather than
 absorbing them.
 
-### `backend-home.js` dashboard; `promote.mjs` automates docs/ promotion (2026-08-30)
+### `admin-controls.js` dashboard; `promote.mjs` automates docs/ promotion (2026-08-30)
 
-`tools/backend-home.js` (`run-backend-home.bat`, port 5959): a local
+`tools/admin-controls.js` (`run-admin-controls.bat`, port 5959): a local
 admin dashboard linking every other local tool and script — see
 "Structure" above. `landing-v3/promote.mjs`: automates the previously-
 manual `docs/` promotion step (copy + dev-relative asset-path rewrite +

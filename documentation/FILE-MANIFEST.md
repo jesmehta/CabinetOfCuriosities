@@ -29,7 +29,7 @@ three, so it can't move here alone without desyncing the other two repos.
 | `run Mkdocs serve.bat` | Double-click launcher for `mkdocs serve`. |
 | `run-now-editor.bat` | Double-click launcher for `tools/now-editor.js` (the Now-page local admin server). |
 | `run-cabinet-editor.bat` | Double-click launcher for `tools/cabinet-editor.js` (the Cabinet sections/entries local admin server). |
-| `run-backend-home.bat` | Double-click launcher for `tools/backend-home.js` (added 2026-08-30) — a local admin dashboard: start/status for the Cabinet/Now editor servers, buttons for every build/publish script that had no UI trigger (`build-static.mjs`, `promote.mjs`, `generate_sitemap.py`, a `mkdocs build --strict` sanity check), a documentation-file index, and a gotchas section. Port 5959, same zero-dependency/localhost-only/no-auth conventions as the other two editors. |
+| `run-admin-controls.bat` | Double-click launcher for `tools/admin-controls.js` (added 2026-08-30) — a local admin dashboard: start/status for the Cabinet/Now editor servers, buttons for every build/publish script that had no UI trigger (`build-static.mjs`, `promote.mjs`, `generate_sitemap.py`, a `mkdocs build --strict` sanity check), a documentation-file index, and a gotchas section. Port 5959, same zero-dependency/localhost-only/no-auth conventions as the other two editors. |
 
 ## `documentation/` — project documentation, not root-required
 
@@ -87,6 +87,18 @@ rather than getting a single-file folder of its own.
 | `three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
 | `cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` (or `public/<name>/` directly for two of the six, see `BACKEND-AND-DEPLOY.md`) at deploy time. Actively referenced from `deploy.yml`'s own comments. |
 
+### `admin-controls/` — the `tools/admin-controls.js` local dashboard
+
+Named separately from `backend-and-deploy/` to avoid confusing "the
+admin dashboard tool" with "backend/deploy work in general" — this
+folder is scoped to the dashboard itself, same as `now/` or
+`cabinet-editor/` is scoped to its own tool.
+
+| File | Role |
+|---|---|
+| `ADMIN-CONTROLS.md` | Design decisions and as-built record for `tools/admin-controls.js` (mirrors `NOW-PAGE.md`'s/`CABINET-EDITOR.md`'s "local admin server" sections) — architecture, routes, files, update workflow, changelog. |
+| `conversation-admin-controls.md` | Conversation-log companion — same relationship to `ADMIN-CONTROLS.md` as `conversation-cabinet-editor.md` has to `CABINET-EDITOR.md`. |
+
 ## `overrides/` — MkDocs Material theme override
 
 | File | Role |
@@ -115,8 +127,8 @@ rather than getting a single-file folder of its own.
 | `cabinet-tsv.js` | Shared TSV parse/serialize/validate logic for `content/cabinet-*.tsv`, used by both `build-cabinet-content.js` and `cabinet-editor.js` — same "one shared module" reasoning as `now-tsv.js`. Strict plain splitter (not CSV-quote-aware like `now-tsv.js`), matching Cabinet's TSVs' own convention. Added 2026-08-29, see `CABINET-EDITOR.md`. |
 | `cabinet-editor.js` | Local-only zero-dependency Node HTTP admin server (`/admin/`, port 5858) for editing `cabinet-sections.tsv`/`cabinet-entries.tsv` through a browser UI, plus a Rebuild button that shells out to `build-cabinet-content.js`. Added 2026-08-29. |
 | `cabinet-editor-ui/index.html`, `editor.css`, `editor.js` | The admin server's browser UI — grid editor with a collapsed "reserved/layout" panel per row for TSV columns the live v3 renderer doesn't currently read (see `CABINET-EDITOR.md`). Replaces the earlier one-file `cabinet-data-editor.html` sketch (deleted). |
-| `backend-home.js` | Local-only zero-dependency Node HTTP admin dashboard (`port 5959`, added 2026-08-30) — one page linking every other local tool: start/status for the Cabinet/Now editor servers, buttons for build/publish scripts that previously had no UI trigger (`build-static.mjs`, `promote.mjs`, `generate_sitemap.py`, a `mkdocs build --strict` sanity check to an OS-temp dir), a documentation-file index, and a gotchas section (auto-generated files, the external-repos-aren't-pinned deploy gotcha, the port map). Served from the repo root so relative asset paths resolve. |
-| `backend-home-ui/index.html`, `home.css`, `home.js` | The dashboard's browser UI. |
+| `admin-controls.js` | Local-only zero-dependency Node HTTP admin dashboard (`port 5959`, added 2026-08-30) — one page linking every other local tool: start/status for the Cabinet/Now editor servers, buttons for build/publish scripts that previously had no UI trigger (`build-static.mjs`, `promote.mjs`, `generate_sitemap.py`, a `mkdocs build --strict` sanity check to an OS-temp dir), a documentation-file index, and a gotchas section (auto-generated files, the external-repos-aren't-pinned deploy gotcha, the port map). Served from the repo root so relative asset paths resolve. |
+| `admin-controls-ui/index.html`, `home.css`, `home.js` | The dashboard's browser UI. |
 
 ## `docs/` — the live MkDocs site + standalone static pages
 

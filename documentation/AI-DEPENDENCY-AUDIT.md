@@ -91,7 +91,7 @@ and commands from memory (or asking an AI session to run them).
   `build-static.mjs` (not folded into it) since `build-static.mjs` is
   also run standalone while iterating on the map, without every run
   needing to touch the live site.
-- **`tools/backend-home.js`** (`run-backend-home.bat`, port `5959`) — a
+- **`tools/admin-controls.js`** (`run-admin-controls.bat`, port `5959`) — a
   local dashboard closing the "no single place to run any of this" gap:
   start/status buttons for the Cabinet and Now editor servers, a link
   into `islands-tool.html`, and run-buttons for every previously-unbuttoned
@@ -108,13 +108,13 @@ and commands from memory (or asking an AI session to run them).
 Both scripts were run for real against the live repo while being built
 — not just read over — including a clean re-run of `promote.mjs`
 against an already-correct `docs/` (confirmed byte-identical, reported
-"unchanged" for every file) and a full exercise of `backend-home.js`'s
+"unchanged" for every file) and a full exercise of `admin-controls.js`'s
 routes: spawning `cabinet-editor.js` and confirming it came up, running
 `generate_sitemap.py` through the dashboard (live network fetch,
 confirmed real output), and the `mkdocs build --strict` check (confirmed
 its temp output dir gets cleaned up after).
 
-Documented in `README.md`'s "`backend-home.js` dashboard; `promote.mjs`
+Documented in `README.md`'s "`admin-controls.js` dashboard; `promote.mjs`
 automates docs/ promotion (2026-08-30)" changelog entry and the
 corresponding `tools/`-table rows in `FILE-MANIFEST.md` (added by a
 concurrent session already, not this doc — see "Working in parallel"
@@ -140,7 +140,7 @@ below).
   friction than before), but nothing watches those two repos and
   prompts a re-run; running it is still a remembered habit, not an
   enforced one.
-- **`backend-home.js` has no tier-2 technical-reference doc of its
+- **`admin-controls.js` has no tier-2 technical-reference doc of its
   own yet.** `README.md`'s changelog entry and `FILE-MANIFEST.md`'s
   table rows exist, but per `DOCUMENTATION-GUIDE.md`'s own placement
   rule ("a standalone feature or page... gets its own folder... pairing

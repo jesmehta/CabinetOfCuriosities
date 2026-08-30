@@ -1,17 +1,17 @@
-# Backend Home — Mechanism & Reference
+# Admin Controls — Mechanism & Reference
 
-Companion to [`conversation-backend-home.md`](conversation-backend-home.md)
+Companion to [`conversation-admin-controls.md`](conversation-admin-controls.md)
 for the design reasoning and back-and-forth behind the decisions below —
 that file is *why*, this one is *what/how*, in the same relationship
 `SITEMAP.md` has to `conversation-sitemap.md`. Mirrors
 `CABINET-EDITOR.md`'s and `NOW-PAGE.md`'s "local admin server" sections
-closely, since `tools/backend-home.js` is the same shape of thing — a
+closely, since `tools/admin-controls.js` is the same shape of thing — a
 third local-only Node HTTP admin server, added once the other two
 already existed.
 
 ## Purpose
 
-`tools/backend-home.js` (`run-backend-home.bat`, port `5959`) is a
+`tools/admin-controls.js` (`run-admin-controls.bat`, port `5959`) is a
 single dashboard page linking together every other local-only tool this
 repo has, plus a button for every build/publish script that had no UI
 trigger at all. It exists because of a real, named gap: see
@@ -29,15 +29,15 @@ Rendered live at `http://127.0.0.1:5959/admin/` once running.
 Same three-file split as `cabinet-editor-ui/`/`now-editor-ui/`:
 
 ```text
-tools/backend-home.js             -- the server
-tools/backend-home-ui/index.html  -- the dashboard markup
-tools/backend-home-ui/home.css    -- styling (same parchment/ink tokens as the other two editors)
-tools/backend-home-ui/home.js     -- status polling, server-start, run-button wiring
-run-backend-home.bat              -- double-click launcher
+tools/admin-controls.js             -- the server
+tools/admin-controls-ui/index.html  -- the dashboard markup
+tools/admin-controls-ui/home.css    -- styling (same parchment/ink tokens as the other two editors)
+tools/admin-controls-ui/home.js     -- status polling, server-start, run-button wiring
+run-admin-controls.bat              -- double-click launcher
 ```
 
 Zero dependencies, binds `127.0.0.1` only, no auth — same conventions as
-`cabinet-editor.js`/`now-editor.js`. Port `5959` (env `CABINET_HOME_PORT`
+`cabinet-editor.js`/`now-editor.js`. Port `5959` (env `CABINET_ADMIN_PORT`
 to override), chosen simply as the next number after the existing
 `5757`/`5858` pair, not load-bearing in any other way.
 
@@ -95,9 +95,9 @@ Two tables, mirroring `FILE-MANIFEST.md`'s own split of
   `FILE-MANIFEST.md`, `DOCUMENTATION-GUIDE.md`).
 - **Features** — grouped by subsystem, each group opening with a
   divider row naming its source files/tool (v3 map, Backend & deploy,
-  Cabinet TSV editor, `/now` page, Sitemap & Content Inventory).
-  `CONTENT-INVENTORY.md` is grouped here under Sitemap by *function*
-  even though it physically stays at `documentation/` root
+  Cabinet TSV editor, `/now` page, Sitemap & Content Inventory, Admin
+  controls). `CONTENT-INVENTORY.md` is grouped here under Sitemap by
+  *function* even though it physically stays at `documentation/` root
   (`generate_sitemap.py`'s output path is hardcoded — see `SITEMAP.md`)
   — the description says so explicitly rather than leaving the
   placement to look like an error. The Backend & deploy group (added
@@ -106,14 +106,18 @@ Two tables, mirroring `FILE-MANIFEST.md`'s own split of
   technical docs (Cloudflare, multi-repo assembly) plus a new
   consolidated one (`BACKEND-AND-DEPLOY.md`) for what didn't have a
   home of its own, matching the actual `documentation/backend-and-deploy/`
-  structure rather than treating it as system-wide.
+  structure rather than treating it as system-wide. The Admin controls
+  group (added 2026-08-30, same day this tool and its docs were renamed
+  from "backend home"/"Backend Home" — too easily confused with the
+  Backend & deploy group above) links this page to its own docs, which
+  it hadn't done before.
 
 Both tables are ordered broadest-scope-first, most-specific-last within
 their own group. Group-row divider styling went through two rounds of
 direct visual feedback: font size and row indent first, then a further-
 darkened background once the first pass still read as too subtle
 against the page (`--accent-soft` → a hand-picked `#B9CDD0`) — see
-`conversation-backend-home.md` for both exchanges.
+`conversation-admin-controls.md` for both exchanges.
 
 One external, non-repo link lives in the v3 map group: the maintainer's
 own hand-made "Data → Map → Page" diagram (built via Claude web, before
@@ -179,25 +183,25 @@ of any kind, same as its two sibling editors.
   `AI-DEPENDENCY-AUDIT.md`, goes stale when Bookshelf's or fffx's own
   content changes, not just this repo's — this dashboard makes it easy
   to run, it does not remind you when a run is actually needed.
-- **Port `5959` is fixed unless overridden** (`CABINET_HOME_PORT`) — no
+- **Port `5959` is fixed unless overridden** (`CABINET_ADMIN_PORT`) — no
   auto-detection of a free port if something else already owns it.
 
 ## Files
 
 ```text
-tools/backend-home.js             -- local admin server (see "Architecture"/"Routes" above)
-tools/backend-home-ui/index.html  -- dashboard markup
-tools/backend-home-ui/home.css    -- styling
-tools/backend-home-ui/home.js     -- status polling, server-start, run-button wiring
-run-backend-home.bat              -- double-click launcher for tools/backend-home.js
+tools/admin-controls.js             -- local admin server (see "Architecture"/"Routes" above)
+tools/admin-controls-ui/index.html  -- dashboard markup
+tools/admin-controls-ui/home.css    -- styling
+tools/admin-controls-ui/home.js     -- status polling, server-start, run-button wiring
+run-admin-controls.bat              -- double-click launcher for tools/admin-controls.js
 ```
 
 ## Update workflow
 
-1. `node tools/backend-home.js` (or double-click `run-backend-home.bat`
+1. `node tools/admin-controls.js` (or double-click `run-admin-controls.bat`
    from the repo root). Prints a URL — open
    `http://127.0.0.1:5959/admin/` (port configurable via
-   `CABINET_HOME_PORT`). `Ctrl+C` stops it.
+   `CABINET_ADMIN_PORT`). `Ctrl+C` stops it.
 2. Editor-server cards show live status and a Start button if a server
    isn't already running.
 3. Each pipeline step has its own Run button and shows the underlying
@@ -207,6 +211,24 @@ run-backend-home.bat              -- double-click launcher for tools/backend-hom
    tool in this repo.
 
 ## Changelog
+
+### v1.4 — renamed from "backend home" to "admin controls" (2026-08-30)
+
+`tools/backend-home.js` → `tools/admin-controls.js`,
+`tools/backend-home-ui/` → `tools/admin-controls-ui/`,
+`run-backend-home.bat` → `run-admin-controls.bat`, the port override
+env var `CABINET_HOME_PORT` → `CABINET_ADMIN_PORT`, and this doc folder
+`documentation/backend-home/` → `documentation/admin-controls/`
+(`BACKEND-HOME.md` → `ADMIN-CONTROLS.md`,
+`conversation-backend-home.md` → `conversation-admin-controls.md`).
+Direct request: too easily confused with the unrelated
+`documentation/backend-and-deploy/` folder (backend/deploy
+infrastructure work in general) added the same day. Port stayed `5959`;
+the `/admin/` URL path (independent of the folder name) is unchanged.
+Every cross-reference repo-wide fixed alongside the rename, including
+adding this dashboard's own doc links (it hadn't listed its own docs
+before) and a `FILE-MANIFEST.md` row for this folder (it had never had
+one).
 
 ### v1.3 — group-row background darkened further (2026-08-30)
 
@@ -247,7 +269,7 @@ committed, rather than guessing at in-flight paths.
 
 ### v1.0 — initial build (2026-08-30)
 
-`tools/backend-home.js`, `tools/backend-home-ui/` created. Direct
+`tools/admin-controls.js`, `tools/admin-controls-ui/` created. Direct
 follow-on from an audit of the repo's automation gaps (see
 `AI-DEPENDENCY-AUDIT.md`): editor-server start/status, run-buttons for
 every previously-unbuttoned script including the newly-written

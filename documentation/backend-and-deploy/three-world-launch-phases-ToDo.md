@@ -1971,7 +1971,7 @@ section to empty out.*
       is exactly that: manual, dashed. The diagram's own Mermaid source is
       recoverable from the artifact's page HTML if bringing it in as a
       real `.mmd`/embedded-in-Markdown diagram rather than a screenshot.
-      Once in-repo, update its link in `tools/backend-home-ui/index.html`
+      Once in-repo, update its link in `tools/admin-controls-ui/index.html`
       (currently points at the claude.ai artifact directly, tagged
       "diagram, Claude artifact") to point at the local copy instead.
 

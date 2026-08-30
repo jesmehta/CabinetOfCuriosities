@@ -1,4 +1,4 @@
-// Cabinet backend home -- status polling, server-start, and script-run
+// Cabinet admin controls -- status polling, server-start, and script-run
 // wiring. No framework, matches cabinet-editor-ui/now-editor-ui's own
 // plain-JS convention.
 

@@ -1,6 +1,6 @@
-# Conversation log: Backend Home
+# Conversation log: Admin Controls
 
-Companion to [`BACKEND-HOME.md`](BACKEND-HOME.md) (mechanism, routes,
+Companion to [`ADMIN-CONTROLS.md`](ADMIN-CONTROLS.md) (mechanism, routes,
 files, update workflow) in the same relationship
 `conversation-landing-page-v3.md` has to `Landing-page-notes.2.0.md` —
 that's the reference, this is the reasoning behind it.
@@ -8,7 +8,7 @@ that's the reference, this is the reasoning behind it.
 Recorded from a live transcript — direct quotes are actually verbatim,
 not reconstructed, same standard as this repo's other conversation-log
 docs. No code, commands, or diffs here — those are in git history and in
-`BACKEND-HOME.md`'s own changelog.
+`ADMIN-CONTROLS.md`'s own changelog.
 
 ## "tell me what parts need to be 'done by hand' vs what is automated"
 
@@ -119,7 +119,7 @@ hiding a real failure under a URL-based filter. A clean re-run against
 an already-correctly-promoted `docs/` afterward reported every file
 `unchanged` — confirmed byte-identical, not just "didn't crash."
 
-## The backend-home page itself, asked for in the same message
+## The admin-controls page itself, asked for in the same message
 
 The same turn that settled Build vs. Promote also asked for this
 dashboard directly, as a numbered wishlist:
@@ -134,7 +134,7 @@ dashboard directly, as a numbered wishlist:
 > alongside their relevant scripts, etc - any other untehered backend
 > functions, guides, warnings**
 
-Every item in that list maps directly onto a section of `BACKEND-HOME.md`'s
+Every item in that list maps directly onto a section of `ADMIN-CONTROLS.md`'s
 "Routes"/"The documentation table" — the doc-rendering choice ("browsing
 ... or just linking") was taken as permission to pick the simpler of the
 two options, given every other tool in this repo is zero-dependency and
@@ -153,8 +153,8 @@ A short, direct question once the dashboard was running:
 
 > **where is this admin file live ?**
 
-Answered with the literal file tree (`tools/backend-home.js`,
-`tools/backend-home-ui/`, `run-backend-home.bat`, `landing-v3/promote.mjs`),
+Answered with the literal file tree (`tools/admin-controls.js`,
+`tools/admin-controls-ui/`, `run-admin-controls.bat`, `landing-v3/promote.mjs`),
 not a description — the kind of question where the exact paths are the
 whole answer.
 
@@ -193,7 +193,7 @@ other session's changes).
 > **great, split commit as needed**
 
 Two commits: `promote.mjs` + its `package.json` entry + the updated
-`docs/index.html` banner in one, the whole `backend-home.js` dashboard
+`docs/index.html` banner in one, the whole `admin-controls.js` dashboard
 in the other — split by what each change was actually *for*, not by
 file count. Checking the working tree immediately before staging turned
 up that the concurrent `documentation/` reorg had, in the meantime,
@@ -299,11 +299,11 @@ actually calls for something more specific:
 > reorganise the documentation for the Admon page, since as a stnadalone
 > feature, it deserves it's own**
 
-This file and `BACKEND-HOME.md` are the direct result — the same
+This file and `ADMIN-CONTROLS.md` are the direct result — the same
 `now/`, `cabinet-editor/`, `sitemap/` treatment every other standalone
 tool in this repo already has, applied to the one that had been missing
 it. As of this writing: `README.md`'s changelog entry and
-`FILE-MANIFEST.md`'s table rows for `backend-home.js` still point at
+`FILE-MANIFEST.md`'s table rows for `admin-controls.js` still point at
 prose describing it inline rather than at this folder — wiring that
 cross-reference in is a follow-up, not done here, for the same
 concurrent-editing reason `AI-DEPENDENCY-AUDIT.md` wasn't cross-referenced
