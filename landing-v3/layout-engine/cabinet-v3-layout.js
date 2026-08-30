@@ -117,6 +117,89 @@ function buildSectionMetas() {
     .sort((a, b) => a.order - b.order);
 }
 
+// #70 -- real h2/h3 heading outline for the map's sections/entries, so
+// the page has an actual document structure (crawlers, reader-mode,
+// screen-reader heading navigation) alongside the visual map. The
+// section/island labels ARE the map's visible text, but they're SVG
+// <text> (.v3-section-label/.v3-island-label, built further down) --
+// fine for painting, invisible to anything that reads heading tags.
+// This is a parallel, visually-hidden HTML layer (cabinet-v3-style.css's
+// .sr-only -- NOT display:none, which would also drop it from the
+// accessibility tree and defeat the point), not a replacement for the
+// SVG text.
+//
+// Built straight from sectionMetas -- buildSectionMetas()'s own output,
+// the SAME list render() uses for the map itself, already filtered to
+// real content (status !== false) and sorted by `order`. Filler islands
+// (kind: "filler", synthesized later in buildSeedsForSection(), never
+// part of sectionMeta.entries) can't leak in here; there's nothing to
+// filter for that.
+//
+// WATCH OUT, future edits: this reads sectionMeta.{id,title,href,entries}
+// and each entry's {id,title,href} -- exactly the fields
+// buildSectionMetas()/buildSeedsForSection() already read (see their own
+// comments above/nearby). If a future change reshapes what those objects
+// carry -- e.g. resolving the wild-wild-web / Twine-WebTech-Tracery-Bots
+// duplication noted in the launch-phases ToDo's #70 entry, or changing
+// what entry.href means -- update this function's field reads to match.
+// There's no visual symptom if this drifts out of sync (it's hidden
+// content), unlike everything else in render() -- the heading-count
+// check at the end is a cheap tripwire for exactly that failure mode,
+// not a full guarantee. Grep for renderSemanticOutline if you're
+// changing sectionMeta/entry shape elsewhere.
+//
+// Deliberately NOT wired with aria-hidden (on the SVG labels) or
+// aria-labelledby (pointing here) -- that pairing is what stops a screen
+// reader from announcing each title twice (once as the link's own SVG
+// text, once as this heading), but was deferred 2026-08-30 (see the
+// #70 ToDo entry) since screen-reader users aren't the current priority
+// for this highly visual map. Net effect until that's added: a double
+// announcement per title for whoever does use one -- a minor redundancy,
+// not a broken experience. Add the aria wiring if/when that changes.
+function outlineHeading(tag, id, title, href) {
+  const heading = document.createElement(tag);
+  heading.id = id;
+  if (href) {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = title;
+    heading.appendChild(link);
+  } else {
+    heading.textContent = title;
+  }
+  return heading;
+}
+
+function renderSemanticOutline(sectionMetas) {
+  const container = document.querySelector("#v3-semantic-outline");
+  // Not every page loading this module has the container (e.g. a future
+  // consumer that doesn't need it) -- defensive, not a sign of a bug.
+  if (!container) return;
+  container.innerHTML = "";
+
+  let entryCount = 0;
+  sectionMetas.forEach(sectionMeta => {
+    container.appendChild(
+      outlineHeading("h2", `outline-section-${sectionMeta.id}`, sectionMeta.title, sectionMeta.href)
+    );
+    sectionMeta.entries.forEach(entry => {
+      entryCount++;
+      container.appendChild(
+        outlineHeading("h3", `outline-entry-${entry.id}`, entry.title, entry.href)
+      );
+    });
+  });
+
+  const headingCount = container.querySelectorAll("h2, h3").length;
+  const expectedCount = sectionMetas.length + entryCount;
+  if (headingCount !== expectedCount) {
+    console.warn(
+      `renderSemanticOutline(): built ${headingCount} headings, expected ${expectedCount} -- ` +
+      "sectionMeta/entry shape may have changed without this function being updated (see its own comment)."
+    );
+  }
+}
+
 // A section's weight for *area-allocation* purposes only (treemap
 // sizing) -- clamped up to v3Config.canvas.minSectionWeight (v3.4).
 // Real entry weights, circle sizing, and sectionMeta.weight itself are
@@ -3056,6 +3139,7 @@ export function render() {
   setupMedievalEffectsHoverClip(stage);
 
   const sectionMetas = buildSectionMetas();
+  renderSemanticOutline(sectionMetas);
   const { width: targetWidth, height: targetHeight } = resolveCanvasDimensions(sectionMetas, v3Config.canvas);
   const { regions, canvasWidth, canvasHeight } = buildRegions(sectionMetas, targetWidth, targetHeight);
 

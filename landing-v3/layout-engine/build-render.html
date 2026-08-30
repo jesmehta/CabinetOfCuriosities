@@ -31,6 +31,11 @@
   <main class="v3-stage-wrap">
     <svg id="v3-stage" class="v3-stage" xmlns="http://www.w3.org/2000/svg"></svg>
   </main>
+  <!-- #70 -- real h2/h3 heading outline, populated by cabinet-v3-layout.js's
+       renderSemanticOutline(); build-static.mjs captures this element's
+       outerHTML the same way it captures #v3-stage's, into index.template.html's
+       V3_SEMANTIC_OUTLINE placeholder. -->
+  <div id="v3-semantic-outline" class="sr-only"></div>
   <script type="module" src="cabinet-v3-layout.js"></script>
   <!-- v3.7.47 -- exposes getIslandLayoutState() on window so
        build-static.mjs's page.evaluate() can pull grown/canvasBounds

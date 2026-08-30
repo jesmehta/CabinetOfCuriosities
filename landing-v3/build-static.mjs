@@ -67,6 +67,7 @@ const PORT = 8843;
 const server = await startServer(repoRoot, PORT);
 
 let svgMarkup;
+let outlineMarkup;
 let animData;
 try {
   const browser = await chromium.launch();
@@ -94,6 +95,12 @@ try {
     }
 
     svgMarkup = await page.$eval("#v3-stage", el => el.outerHTML);
+    // #70 -- the real h2/h3 heading outline, built by cabinet-v3-layout.js's
+    // renderSemanticOutline() into its own container (never inside #v3-stage,
+    // since that's an <svg> and real heading elements don't belong nested in
+    // one) -- captured the same way as svgMarkup above, into its own
+    // placeholder below.
+    outlineMarkup = await page.$eval("#v3-semantic-outline", el => el.outerHTML);
 
     // v3.7.47 -- pull just grown (circle-packing output: id/x/y/radius
     // per island, nothing else -- see cabinet-v3-production-animate.js's
@@ -120,9 +127,13 @@ const outputPath = path.join(landingV3Dir, "index.html");
 
 let template = await readFile(templatePath, "utf8");
 const svgPlaceholder = "<!-- V3_ISLANDS_SVG -->";
+const outlinePlaceholder = "<!-- V3_SEMANTIC_OUTLINE -->";
 const animPlaceholder = "<!-- V3_ANIM_DATA -->";
 if (!template.includes(svgPlaceholder)) {
   throw new Error(`index.template.html is missing the ${svgPlaceholder} placeholder`);
+}
+if (!template.includes(outlinePlaceholder)) {
+  throw new Error(`index.template.html is missing the ${outlinePlaceholder} placeholder`);
 }
 if (!template.includes(animPlaceholder)) {
   throw new Error(`index.template.html is missing the ${animPlaceholder} placeholder`);
@@ -140,8 +151,9 @@ const banner = [
 
 const animJson = JSON.stringify(animData);
 template = template.replace(svgPlaceholder, svgMarkup);
+template = template.replace(outlinePlaceholder, outlineMarkup);
 template = template.replace(animPlaceholder, `<script type="application/json" id="v3-anim-data">${animJson}</script>`);
 const output = banner + template;
 await writeFile(outputPath, output, "utf8");
 
-console.log(`wrote index.html (${svgMarkup.length} chars of SVG markup, ${animJson.length} chars of anim data)`);
+console.log(`wrote index.html (${svgMarkup.length} chars of SVG markup, ${outlineMarkup.length} chars of outline markup, ${animJson.length} chars of anim data)`);
