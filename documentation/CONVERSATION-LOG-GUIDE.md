@@ -72,12 +72,14 @@ Two cases, decided 2026-08-30 once enough real subsystems existed to
 see the actual shape needed:
 
 **A standalone feature or page** (its own tool, its own URL, something
-a user could point at and say "that thing") gets its own pair:
-`documentation/conversation-<subsystem>.md`, alongside its own tier-2
-reference doc — `NOW-PAGE.md`/`conversation-now-page.md`,
-`CABINET-EDITOR.md`/`conversation-cabinet-editor.md`,
-`Landing-page-notes.2.0.md`/`conversation-landing-page-v3.md`,
-`CONTENT-INVENTORY.md`/`conversation-sitemap.md`. New map-decision
+a user could point at and say "that thing") gets its own folder under
+`documentation/`, pairing a tier-2 reference doc with its
+conversation-log companion — `now/NOW-PAGE.md` +
+`now/conversation-now-page.md`, `cabinet-editor/CABINET-EDITOR.md` +
+`cabinet-editor/conversation-cabinet-editor.md`,
+`landing-v3-notes/Landing-page-notes.2.0.md` +
+`landing-v3-notes/conversation-landing-page-v3.md`,
+`sitemap/SITEMAP.md` + `sitemap/conversation-sitemap.md`. New map-decision
 content (anything touching `landing-v3/`'s own code) appends to
 `conversation-landing-page-v3.md` directly — that file is already the
 established umbrella for the whole v3 map subsystem across many
@@ -123,9 +125,9 @@ Standalone features/pages:
   alongside).
 - `conversation-now-page.md` — done, rewritten from the real source
   thread (same replacement, not addition).
-- `conversation-sitemap.md` — done, written live. Its tier-2 reference
-  doc doesn't fully exist yet as one file — see that file's own "gap
-  worth naming plainly" note.
+- `conversation-sitemap.md` — done, written live. `SITEMAP.md` (its
+  tier-2 reference doc) followed shortly after, closing the gap this
+  entry used to flag.
 
 Backend/site-wide infrastructure (`conversation-backend-and-deploy.md`):
 
