@@ -16,21 +16,41 @@ docs/colophon.md -- mkdocs builds it into the live /sitemap/ page linked
 from the compass rose's W point (see content/cabinet-entries.tsv's
 compass-w row).
 
+Also writes documentation/CONTENT-INVENTORY.md -- Cabinet-only (not
+cross-world; Bookshelf/fffx status is what /sitemap/ above is for),
+cross-referencing this repo's own content/cabinet-{sections,entries}.tsv
+against mkdocs.yml's own nav tree, replacing what used to be a
+hand-maintained table in three-world-launch-phases-ToDo.md (#126). Flags
+are mechanical (a TSV row with no matching nav entry, a nav entry with
+no matching TSV row, two TSV rows claiming the same href) and WILL
+include known-intentional cases (deliberate cross-listings, assembled
+map-only entries with no nav entry by design) -- read as a checklist to
+skim, not a list of bugs; no attempt is made here to suppress known
+exceptions.
+
 Usage:
     python3 tools/generate_sitemap.py
 
-Requires: only the standard library (urllib, csv). No pip installs needed.
+Requires: only the standard library (urllib, csv, re). No pip installs
+needed -- mkdocs.yml's nav is read with a small regex-based line scanner
+rather than a YAML parser, since its own shape (a flat list of "- Label :
+target" leaves under one top-level `nav:` key) doesn't need one.
 """
 
 import csv
 import html
 import io
 import os
+import re
 import urllib.request
 from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_PATH = os.path.join(ROOT, "docs", "sitemap.md")
+INVENTORY_OUTPUT_PATH = os.path.join(ROOT, "documentation", "CONTENT-INVENTORY.md")
+MKDOCS_YML_PATH = os.path.join(ROOT, "mkdocs.yml")
+CABINET_SECTIONS_TSV = os.path.join(ROOT, "content", "cabinet-sections.tsv")
+CABINET_ENTRIES_TSV = os.path.join(ROOT, "content", "cabinet-entries.tsv")
 
 RAW = "https://raw.githubusercontent.com/{repo}/{branch}/{path}"
 
@@ -193,6 +213,189 @@ def render_markdown(all_worlds_data):
     return "\n".join(out)
 
 
+# ---------------------------------------------------------------------------
+# Content inventory: Cabinet-only, local files, no network -- cross-checks
+# content/cabinet-{sections,entries}.tsv against mkdocs.yml's nav tree.
+# ---------------------------------------------------------------------------
+
+def read_local_tsv(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return list(csv.DictReader(f, delimiter="\t"))
+
+
+NAV_LEAF_RE = re.compile(r"^\s*-\s+(.+?)\s*:\s*(\S+)\s*$")
+NAV_GROUP_RE = re.compile(r"^\s*-\s+(.+?)\s*:\s*$")
+
+
+def parse_mkdocs_nav(mkdocs_path):
+    """Flat list of (label, target) leaves anywhere under the top-level
+    `nav:` key. Ignores nesting/hierarchy entirely -- this script only
+    needs "does this target have a matching TSV row", not the nav's
+    visual tree shape. Skips commented-out lines (`#`) and group headers
+    (a label ending in `:` with no target on the same line)."""
+    with open(mkdocs_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    leaves = []
+    in_nav = False
+    for raw_line in lines:
+        line = raw_line.rstrip("\n")
+        stripped = line.strip()
+        if not in_nav:
+            if line.startswith("nav:"):
+                in_nav = True
+            continue
+        if not stripped:
+            continue
+        if line[0] not in (" ", "\t", "-"):
+            # back to column 0 on a real key -- nav block is over
+            break
+        if stripped.startswith("#"):
+            continue
+        m = NAV_LEAF_RE.match(line)
+        if m:
+            leaves.append((m.group(1).strip(), m.group(2).strip()))
+    return leaves
+
+
+def path_key(raw):
+    """Canonical comparison key for a TSV href or a nav target, so
+    `about.md` (nav) and `about/` (TSV) land on the same key. Absolute
+    URLs compare literally (minus a trailing slash); relative paths drop
+    a `.md` suffix / trailing `/index`, then compare case-insensitively."""
+    s = (raw or "").strip()
+    if not s:
+        return None
+    if s.startswith("http://") or s.startswith("https://"):
+        return s.rstrip("/")
+    s = s.strip("/")
+    if s.endswith(".md"):
+        s = s[:-3]
+    if s.endswith("/index"):
+        s = s[: -len("/index")]
+    return s.lower() or None
+
+
+def build_content_inventory():
+    sections = read_local_tsv(CABINET_SECTIONS_TSV)
+    entries = read_local_tsv(CABINET_ENTRIES_TSV)
+    nav_leaves = parse_mkdocs_nav(MKDOCS_YML_PATH)
+
+    nav_by_key = {}
+    for label, target in nav_leaves:
+        key = path_key(target)
+        if key:
+            nav_by_key.setdefault(key, []).append((label, target))
+
+    href_owners = {}  # path_key -> [(kind, id), ...], for duplicate detection
+
+    def row_nav_match(href):
+        key = path_key(href)
+        if key is None:
+            return None, key
+        hit = nav_by_key.get(key)
+        return (hit[0][0] if hit else None), key
+
+    out = []
+    out.append("# Cabinet Content Inventory")
+    out.append("")
+    out.append(
+        f"_Auto-generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} "
+        f"by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, "
+        f"`content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do "
+        f"not hand-edit, re-run the script to refresh._"
+    )
+    out.append("")
+    out.append(
+        "Cabinet-only. Bookshelf/fffx and other assembled content's live "
+        "status is what [/sitemap/](../docs/sitemap.md) is for -- not "
+        "duplicated here. `Map` is simply each row's own `status` column "
+        "(`true`/`wip`/`false`), read directly, not separately computed."
+    )
+    out.append("")
+    out.append(
+        "Flags below are mechanical string-matching, not judgement calls -- "
+        "deliberate cross-listings (e.g. Swatch Fields) and map-only entries "
+        "with no nav entry by design (e.g. assembled Teaching entries) will "
+        "show up here too. Skim and dismiss the ones that are fine rather "
+        "than treating every flag as a bug."
+    )
+    out.append("")
+
+    out.append("## Sections")
+    out.append("")
+    out.append("| id | title | TSV href | Map (status) | mkdocs nav |")
+    out.append("|---|---|---|---|---|")
+    for s in sections:
+        nav_label, key = row_nav_match(s.get("href"))
+        if key:
+            href_owners.setdefault(key, []).append(("section", s["id"]))
+        nav_cell = f"Y ({nav_label})" if nav_label else ("N" if s.get("href") else "--")
+        out.append(
+            f"| `{s['id']}` | {s.get('title', '')} | `{s.get('href', '') or '--'}` "
+            f"| {s.get('status', '')} | {nav_cell} |"
+        )
+    out.append("")
+
+    out.append("## Entries")
+    out.append("")
+    out.append("| id | section | title | TSV href | Map (status) | mkdocs nav |")
+    out.append("|---|---|---|---|---|---|")
+    for e in entries:
+        nav_label, key = row_nav_match(e.get("href"))
+        if key:
+            href_owners.setdefault(key, []).append(("entry", e["id"]))
+        nav_cell = f"Y ({nav_label})" if nav_label else ("N" if e.get("href") else "--")
+        out.append(
+            f"| `{e['id']}` | {e.get('section', '')} | {e.get('title', '')} "
+            f"| `{e.get('href', '') or '--'}` | {e.get('status', '')} | {nav_cell} |"
+        )
+    out.append("")
+
+    # ---- Flags ----
+    flags = []
+
+    all_tsv_keys = set()
+    for kind, rows in (("section", sections), ("entry", entries)):
+        for row in rows:
+            key = path_key(row.get("href"))
+            if key:
+                all_tsv_keys.add(key)
+
+    for key, owners in href_owners.items():
+        if len(owners) > 1:
+            owner_desc = ", ".join(f"{k} `{i}`" for k, i in owners)
+            flags.append(f"**Duplicate href** (`{key}`): {owner_desc}")
+
+    for key, leaves in nav_by_key.items():
+        if key in all_tsv_keys:
+            continue
+        for label, target in leaves:
+            flags.append(f"**Nav entry with no TSV row**: \"{label}\" (`{target}`)")
+
+    for kind, rows in (("section", sections), ("entry", entries)):
+        for row in rows:
+            href = row.get("href")
+            if not href:
+                continue
+            key = path_key(href)
+            if key and key not in nav_by_key:
+                flags.append(
+                    f"**TSV row with no nav entry**: {kind} `{row['id']}` (`{href}`)"
+                )
+
+    out.append("## Flags")
+    out.append("")
+    if flags:
+        for flag in flags:
+            out.append(f"- {flag}")
+    else:
+        out.append("_None._")
+    out.append("")
+
+    return "\n".join(out)
+
+
 def main():
     all_worlds_data = {}
     for world in WORLDS:
@@ -203,6 +406,11 @@ def main():
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(content)
     print(f"Wrote {os.path.relpath(OUTPUT_PATH, ROOT)}")
+
+    inventory = build_content_inventory()
+    with open(INVENTORY_OUTPUT_PATH, "w", encoding="utf-8") as f:
+        f.write(inventory)
+    print(f"Wrote {os.path.relpath(INVENTORY_OUTPUT_PATH, ROOT)}")
 
 
 if __name__ == "__main__":

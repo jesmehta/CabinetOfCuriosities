@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-08-29 06:45 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-08-30 03:26 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -78,7 +78,7 @@ _(no entries yet)_
 - 🟢 [About Me](https://cabinetofcuriosities.in/about/)
 - 🟢 [Now](https://cabinetofcuriosities.in/now/)
 - 🟢 [Colophon](https://cabinetofcuriosities.in/colophon/)
-- 🟡 Site map _(no page yet)_
+- 🟢 [Site map](https://cabinetofcuriosities.in/sitemap/)
 
 ## fffx (Form follows f(x))
 Live site: https://fffx.cabinetofcuriosities.in/
