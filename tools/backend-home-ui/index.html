@@ -136,7 +136,7 @@
 
   <section class="block">
     <h2>Documentation</h2>
-    <p class="block-sub">Rendered by GitHub (or claude.ai for the one diagram), not this page. Ordered broadest-scope first, specific features/tools last. <strong>Paths below are pre-reorg</strong> -- <code>documentation/</code> is mid-restructure in another session; will update once that's committed (see Gotchas).</p>
+    <p class="block-sub">Rendered by GitHub (or claude.ai for the one diagram), not this page. Ordered broadest-scope first, specific features/tools last. Paths reflect the 2026-08-30 <code>documentation/</code> reorg into one folder per feature (technical doc + conversation-log companion, per <code>DOCUMENTATION-GUIDE.md</code>).</p>
     <table class="doctable">
       <tbody>
         <tr>
@@ -149,27 +149,51 @@
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/FILE-MANIFEST.md" target="_blank" rel="noopener">FILE-MANIFEST.md</a></td>
-          <td>Exhaustive per-file role listing for the whole repo.</td>
+          <td>Exhaustive per-file role listing for the whole repo, organized by subsystem.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/DOCUMENTATION-GUIDE.md" target="_blank" rel="noopener">DOCUMENTATION-GUIDE.md</a></td>
+          <td>The documentation standard itself -- the three-tier (technical doc / conversation log / todo) structure every feature folder below follows. Read before adding a new doc file anywhere in this repo.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/conversation-backend-and-deploy.md" target="_blank" rel="noopener">conversation-backend-and-deploy.md</a></td>
+          <td>Conversation log for infra/backend work that doesn't map onto one feature -- Cloudflare rollout, the <code>documentation/</code> reorg itself, launch-milestone tracking. New infra topics become a new Part N here, not a new file.</td>
         </tr>
         <tr>
           <td><a href="https://claude.ai/code/artifact/b69fceba-1590-4897-8c13-75a61bcf7f46" target="_blank" rel="noopener">Data &rarr; Map &rarr; Page<span class="tag">Claude artifact</span></a></td>
           <td>Hand-made visual map of the landing-v3 build pipeline (TSVs &rarr; build-cabinet-content.js &rarr; cabinet-v3-layout.js &rarr; islands-tool.html / build-static.mjs &rarr; index.html). Made before <code>promote.mjs</code> existed, so it stops at "index.html, frozen snapshot" -- doesn't show the docs/ promotion step (tracked as ToDo #138). Still the clearest orientation to everything upstream of that.</td>
         </tr>
         <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/Landing-page-notes.2.0.md" target="_blank" rel="noopener">Landing-page-notes.2.0.md</a></td>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/landing-v3-notes/Landing-page-notes.2.0.md" target="_blank" rel="noopener">Landing-page-notes.2.0.md</a></td>
           <td>Full reference/changelog for the v3 map system (build-static.mjs, promotion, layout engine).</td>
         </tr>
         <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/conversation-landing-page-v3.md" target="_blank" rel="noopener">conversation-landing-page-v3.md</a></td>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/landing-v3-notes/conversation-landing-page-v3.md" target="_blank" rel="noopener">conversation-landing-page-v3.md</a></td>
           <td>Narrative process log for the v3 rebuild -- not a duplicate of the notes above.</td>
         </tr>
         <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/CABINET-EDITOR.md" target="_blank" rel="noopener">CABINET-EDITOR.md</a></td>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cabinet-editor/CABINET-EDITOR.md" target="_blank" rel="noopener">CABINET-EDITOR.md</a></td>
           <td>Design decisions for the Cabinet TSV editor above.</td>
         </tr>
         <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/NOW-PAGE.md" target="_blank" rel="noopener">NOW-PAGE.md</a></td>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cabinet-editor/conversation-cabinet-editor.md" target="_blank" rel="noopener">conversation-cabinet-editor.md</a></td>
+          <td>Conversation-log companion to CABINET-EDITOR.md.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/now/NOW-PAGE.md" target="_blank" rel="noopener">NOW-PAGE.md</a></td>
           <td>Design decisions for the <code>/now</code> page and its editor.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/now/conversation-now-page.md" target="_blank" rel="noopener">conversation-now-page.md</a></td>
+          <td>Conversation-log companion to NOW-PAGE.md.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/sitemap/SITEMAP.md" target="_blank" rel="noopener">SITEMAP.md</a></td>
+          <td>Technical reference for <code>generate_sitemap.py</code> -- its regex-based nav scanner, what it catches, and CONTENT-INVENTORY.md's hardcoded-output-path limitation.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/sitemap/conversation-sitemap.md" target="_blank" rel="noopener">conversation-sitemap.md</a></td>
+          <td>Conversation-log companion to SITEMAP.md.</td>
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/CONTENT-INVENTORY.md" target="_blank" rel="noopener">CONTENT-INVENTORY.md</a></td>
@@ -181,7 +205,7 @@
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/tree/main/documentation/landing-v3-notes" target="_blank" rel="noopener">landing-v3-notes/</a></td>
-          <td>v3's own to-do tracker, rationale, and open proposals (folder).</td>
+          <td>The to-do tracker, supporting rationale, multi-repo-assembly concept note, and open colour-scheme proposals -- everything else about the v3 map system, including the two rows above (folder).</td>
         </tr>
       </tbody>
     </table>
