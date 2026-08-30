@@ -13,9 +13,10 @@ missing technical-reference half). Backend, deploy, and site-wide
 infrastructure work doesn't map onto one page or tool the same way —
 it touches the whole repo. Rather than spin up a new file per topic,
 the rule is: **if it doesn't have its own place to live, it lives
-here.** This file currently covers two threads (Cloudflare Web
-Analytics, the file/folder reorganization) plus the launch-milestone
-tracking that came out of the same working stretch as the reorg; future
+here.** This file currently covers Cloudflare Web Analytics, the
+file/folder reorganization, launch-milestone tracking, and the
+documentation standard's own build-out (Part 4 — this file's own
+conversation, the most directly-sourced entry here); future
 backend/infrastructure work (multi-repo assembly generalization, the
 deployment manifesto, etc.) gets appended here too, not split into
 another new file.
@@ -64,6 +65,17 @@ this merge.
 - [Setting immediate priorities](#setting-immediate-priorities)
 - [#58 vs #59, and a milestone scheme that wasn't what I proposed](#58-vs-59-and-a-milestone-scheme-that-wasnt-what-i-proposed)
 - [This handoff](#this-handoff)
+
+**Part 4 — Building the documentation standard itself**
+- [The four-part standard, stated as the opening ask](#the-four-part-standard-stated-as-the-opening-ask)
+- ["am I maintaining two changelogs"](#am-i-maintaining-two-changelogs)
+- [The pivot: real conversations already existed elsewhere](#the-pivot-real-conversations-already-existed-elsewhere)
+- ["are all of these missing docu?"](#are-all-of-these-missing-docu)
+- [Categorizing what came back: features vs. codebase-wide work](#categorizing-what-came-back-features-vs-codebase-wide-work)
+- [Reorganizing the files, and three smaller asks bundled together](#reorganizing-the-files-and-three-smaller-asks-bundled-together)
+- [Auditing the sitemap doc, and a real correction loop](#auditing-the-sitemap-doc-and-a-real-correction-loop)
+- [Elevating the guide itself](#elevating-the-guide-itself)
+- [This handoff, Part 4](#this-handoff-part-4)
 
 ---
 
@@ -688,3 +700,197 @@ still needs a real decision between its two proposed directions before
 any code gets written, not a default guess. (The Content Inventory
 thread from this same overall stretch, `#126`, has its own handoff note
 in `conversation-sitemap.md`.)
+
+---
+
+# Part 4 — Building the documentation standard itself
+
+Different provenance from the three parts above: this one is the
+assisting session's own conversation, not a separately-sourced thread
+folded in afterward. Every quote below is genuinely verbatim from that
+exact conversation — the strongest-sourced entry in this file, not a
+transcript reconstructed or summarized secondhand.
+
+## The four-part standard, stated as the opening ask
+
+The thread opened with a full audit request, git history compared
+against every documentation file, closing with the actual standard to
+measure against:
+
+> **initial concept or initial need that triggered the work - a bug, a
+> feature need, a concept or an exploration trial ... for this initial
+> bit, the decisions and the intent behind those decisions as it was
+> executed, iterated, and debugged needs to be captured ... a changelog
+> - brief technical notes of the iterations and updates ... todo list -
+> pending issues listed for later work ... watch-out-for - not issues
+> per se, but workarounds, essential steps, commonly overlooked thing**
+
+The resulting audit found the landing page's own documentation
+(`Landing-page-notes.2.0.md` + `conversation-landing-page-v3.md`)
+already met that bar in full, while `/now` and the Cabinet TSV editor
+had solid technical/changelog docs but no narrative tier, and
+`README.md`'s own changelog had gone stale relative to what the
+subsystem docs already recorded.
+
+## "am I maintaining two changelogs"
+
+A direct factual check before accepting the audit's framing: were
+`README.md` and `Landing-page-notes.2.0.md` genuinely two changelogs for
+the same thing? Answered by pointing at `README.md`'s own v3.0 entry,
+which already states the relationship explicitly — a coarse, repo-wide
+index with one entry per major milestone, pointing at each subsystem's
+own fine-grained changelog, not a duplicate. The real problem wasn't
+the two-tier structure; it was that the index tier had stopped getting
+new entries.
+
+## The pivot: real conversations already existed elsewhere
+
+Mid-reconstruction of the `/now` and TSV-editor conversation logs from
+their changelogs alone (the only source available at the time), a
+screenshot of several other open Claude Code windows changed the whole
+approach:
+
+> **i have a lot of those conversations in other windows - see image.
+> You cna do a framework, initial document, etc and give me a prompt to
+> give to those threads.**
+
+Reconstructing from a changelog's own prose can only ever produce a
+paraphrase of what's already recorded there — it can't add anything a
+live transcript actually holds (real quotes, real dead ends, real
+corrections in the moment). The two changelog-derived drafts already
+written stayed as a fallback baseline; the real fix was a framework doc
+(`CONVERSATION-LOG-GUIDE.md`, later broadened — see below) plus
+per-thread prompts pointing each live conversation at its own file.
+
+## "are all of these missing docu?"
+
+The first pass at those prompts matched every visible thread title to a
+target file on sight, without checking whether each one actually
+represented undocumented work. Corrected immediately:
+
+> **are all of these missing docu ? Are all of these even features ? I
+> gave you the full list of what conversations I have, not necessarily
+> that all need documentation**
+
+Re-auditing against evidence actually gathered earlier in the session
+(not the thread titles) found only two confirmed hard gaps (`/now`, the
+Cabinet TSV editor); three topics (`#70` heading outline, the reorg,
+multi-repo assembly) already had real reasoning embedded in their
+technical docs, a materially lower-severity situation than "no
+documentation at all"; and two threads (Cloudflare, fffx-sync) were
+genuinely unknown without more information rather than guessable from a
+title. Getting caught overreaching here is the direct precedent for the
+"act as an auditor" instruction stated explicitly later in this same
+session (see below) — the corrective had already happened once before
+it was named as a standing requirement.
+
+## Categorizing what came back: features vs. codebase-wide work
+
+Once several prompts had actually run, the real conversation logs that
+came back needed sorting, not just filing:
+
+> **Now and TSV editor are standalone features or indivisual pages.
+> Sitemap can also be considered as one. The Map labels, file
+> reorganisation, cloudflare etc are all work on the primary
+> codebase/main website. Give me a plan to merge or keep these docus
+> based on this.**
+
+The follow-up question (merge Cloudflare and the reorg into one file,
+or keep them separate and cross-linked) got a direct answer that became
+this file's own standing rule:
+
+> **All post-merge-to-main backend updates to be detailed in one set of
+> documentation, just like the v3 lander docus the main page, or the
+> now, tsv editor, sitemap pages have their own docus. If it doesnt have
+> a place to live, it lives in this docu set.**
+
+That's the literal origin of this file's own scope note above — Parts
+1-3 (Cloudflare, the reorg, launch milestones) merged into one file
+under that instruction, and Part 4 (this one) lives here for the same
+reason: the documentation-system work itself doesn't have a single page
+or tool to call home either.
+
+## Reorganizing the files, and three smaller asks bundled together
+
+Once the placement question was settled, three concrete requests
+arrived in one message:
+
+> **give me the prompt for the sitemap conversation to add the
+> technical docus - formatting the conversation - bold format my actual
+> words - can you organise the documentation files into folders if they
+> are related to specific features - eg the conversation, readme and
+> changelog for X, if they are different files, should be in a folder.
+> If they are one file, then I guess it's ok**
+
+The folder rule ("different files for the same feature → a folder;
+one file → stays flat") is what produced `now/`, `cabinet-editor/`, and
+folded the two landing-page docs into the existing `landing-v3-notes/`
+— a real repo-wide reorganization (`git mv` for tracked files, careful
+grep-and-fix of every cross-reference afterward, not just the moved
+files themselves) rather than a documentation-only exercise. The
+bold-quote rule arrived as a fourth, separate instruction mid-turn,
+added to the guide directly:
+
+> **put the bold quote formatting intot he log guide rules as well**
+
+Applied retroactively via a script rather than by hand, since Markdown
+bold can't legally cross a blank-line paragraph break inside a
+blockquote — treating each quoted paragraph as its own bold span, not
+each line.
+
+## Auditing the sitemap doc, and a real correction loop
+
+The sitemap thread's response to the technical-doc prompt
+(`SITEMAP.md`) got checked against the actual `tools/generate_sitemap.py`
+source rather than accepted on its own account — the concrete
+application of "act as an auditor, not a praiseful intern," stated
+explicitly earlier in this same session as a standing instruction for
+validating documentation. Two claims about `parse_mkdocs_nav()` didn't
+hold up: `NAV_GROUP_RE` was described as actively matching group
+headers when it's dead code (only `NAV_LEAF_RE` is ever called), and
+the scanner was described as failing "visibly, not silently" when the
+opposite is true for the failure mode that actually matters (a single
+malformed leaf line silently vanishes from the leaf list; only a full
+structural dedent is visible). Flagged back rather than fixed directly
+— the thread that built it was better positioned to re-verify against
+a live test than a read of the source alone. Both were confirmed and
+corrected, then split into two separate commits on request, one finding
+per commit, done by resetting the single combined commit and
+reconstructing each fix's diff in isolation rather than trying to
+`git add -p` a already-entangled combined change.
+
+## Elevating the guide itself
+
+The framework doc had only ever stated the conversation-log (tier 3)
+rules — the four-part standard this entire session was built around had
+never actually been written into the repo, only tracked in the
+assisting session's own memory:
+
+> **Update the Conversation Log Guide to be the Documentation guide,
+> outlining the entire Documentation principles set instead of just the
+> Conversation. It need not be long, let it be concise, but should
+> capture the documentation requirements at all levels.**
+
+Rewritten and renamed to `DOCUMENTATION-GUIDE.md`: the four-part
+requirement stated first, then the three tiers that satisfy it, the
+existing placement/formatting/parallel-session rules folded in
+unchanged, and one new principle drawn directly from the `SITEMAP.md`
+episode above — verify a doc's claims against the real code before
+writing them down, don't reason from an earlier description of it,
+including this repo's own docs.
+
+## This handoff, Part 4
+
+> **i'll point to it for all future development so teh standard is
+> maintained.**
+
+`DOCUMENTATION-GUIDE.md` is the standing reference going forward.
+Confirmed gaps closed this session: `/now`, the Cabinet TSV editor, and
+the sitemap/Content Inventory each now have a real conversation-log
+alongside their technical reference. Still open: multi-repo assembly
+(a live thread exists, prompt written, not yet run) and fffx-sync
+(scope still unconfirmed — it may not even be about this repo). The
+reorg and launch-milestone technical record (Part 2/3 above) still
+doesn't have one consolidated tier-2 doc, same gap noted when this file
+was first assembled, not resolved as a side effect of anything in this
+Part either.
