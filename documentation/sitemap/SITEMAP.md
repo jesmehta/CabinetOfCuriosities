@@ -170,12 +170,33 @@ above), so reading it is the actual review step, not optional.
   six live HTTP requests (two TSVs x three worlds); no offline mode for
   that half. The Content Inventory half has no such limitation, since it
   reads everything locally.
-- **The nav scanner has no test coverage of its own** beyond exercising
-  it against this repo's real `mkdocs.yml` — see "The nav scanner, and
-  why regex instead of YAML" above for the shape it assumes and how it
-  fails (visibly, not silently) if that shape changes.
+- **The nav scanner fails silently on a malformed leaf line**, not
+  visibly — corrected here 2026-08-30, an earlier version of this doc
+  claimed the opposite without checking. `parse_mkdocs_nav()`'s loop has
+  no `else` branch when `NAV_LEAF_RE` fails to match a line inside the
+  `nav:` block: the line is just skipped, with nothing appended and no
+  warning printed, indistinguishable from an intentional group header.
+  The only thing that visibly stops the scan is the block dedenting back
+  to column 0 (a real top-level YAML key ending `nav:` entirely) — a
+  single bad *line* inside an otherwise well-formed block (e.g. a bare
+  `- page.md` with no `Label :` prefix) would simply vanish from the
+  leaf list, silently under-reporting nav coverage in
+  `CONTENT-INVENTORY.md`'s Flags section rather than erroring. No test
+  coverage exists for this scanner beyond exercising it against this
+  repo's own real `mkdocs.yml`, which has never hit this case.
 
 ## Changelog
+
+### v1.3 — a second claim corrected after the same review (2026-08-30)
+
+No code changes. `v1.2`'s fix addressed `NAV_GROUP_RE`; this doc's first
+draft also claimed the scanner "fails visibly, not silently" if
+`mkdocs.yml`'s nav shape changes. Wrong for the failure mode that
+matters most, confirmed by reading `parse_mkdocs_nav()`'s loop directly:
+a single malformed leaf line inside an otherwise well-formed `nav:`
+block is silently dropped, not flagged — only a full structural dedent
+(the block ending entirely) is visible. See "Non-goals / known
+limitations" above for the corrected description.
 
 ### v1.2 — one claim corrected after a direct code review (2026-08-30)
 
