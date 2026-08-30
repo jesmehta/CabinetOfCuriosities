@@ -43,6 +43,7 @@ rather than getting a single-file folder of its own.
 |---|---|
 | `DOCUMENTATION-GUIDE.md` | The full documentation standard: the four things every piece of work needs on record (concept/need, decisions/intent, changelog, todo/watch-out-for), the three tiers that satisfy them, and the folder-per-feature convention this whole section follows. Read this before adding any new doc file here. |
 | `FILE-MANIFEST.md` | This file. |
+| `AI-DEPENDENCY-AUDIT.md` | Cross-cutting analysis, not scoped to one subsystem: what parts of Cabinet's workflow the maintainer could keep running by hand if AI assistance were ever unavailable, and what would stall without it. No companion conversation-log file (reasoning is inline). Was missing from this manifest entirely until 2026-08-30 — caught while auditing the dashboard's own doc links, not part of its original creation. |
 | `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md` (#126). Stays at `documentation/` root rather than moving into `backend-and-deploy/` — the script's output path is currently hardcoded; moving it is a code change, not a doc reorg, and hasn't been done. |
 
 ### `now/` — the `/now` page
