@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.69 -- Copy config reworked end-to-end: full state export + colours/fonts moved into JS, closing #32](#v3769----copy-config-reworked-end-to-end-full-state-export--coloursfonts-moved-into-js-closing-32)
   - [v3.7.68 -- real h2/h3 heading outline for the map's sections/entries, closing #70](#v3768----real-h2h3-heading-outline-for-the-maps-sectionsentries-closing-70)
   - [v3.7.67 -- Site map compass point wired, closing #73](#v3767----site-map-compass-point-wired-closing-73)
   - [v3.7.66 -- Swatch Fields and Tracery Bots assembled onto the custom domain, no more raw github.io links](#v3766----swatch-fields-and-tracery-bots-assembled-onto-the-custom-domain-no-more-raw-githubio-links)
@@ -1549,6 +1550,135 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.69 -- Copy config reworked end-to-end: full state export + colours/fonts moved into JS, closing #32
+
+`#32` started as a narrow question, 2026-08-30: "What does copy config do
+now, with multiple themes and specific applications? Does it need to be
+reworked, or the place where the config is supposed to be pasted in the
+file?" -- three directions were on the table (better instructions on the
+existing button; a minimal expansion of what it captures; or a bigger
+auto-loaded override file), explicitly not to be guessed at without
+discussing scope first.
+
+**Investigating the actual gap.** Checking what "Copy config" really did
+(`JSON.stringify(v3Config.island)` only) against what the dev panel
+actually lets you live-edit turned up a much bigger gap than a missing
+field or two: `flow`/`particles`/`geo`/`themePreview` (toggles, spawn
+behaviour, the theme-preview-on-hover blend/margin parameters) and
+`pack.centerBias` were all live-tunable with zero export path at all --
+edit-and-lose-on-reload, no exception. Theme colours were worse: not
+even *represented* in `v3Config`, existing only as hardcoded hex in
+`cabinet-v3-style.css`'s per-theme blocks, mirrored into a JS object
+(`themeTokenState`) only transiently, inside the dev tool, never written
+back anywhere. Direct framing once this was laid out: "so the copy
+config isnt even carrying most of the parameters that the control panel
+is modifying live?" -- confirmed, yes.
+
+**Scoping the fix against a stated constraint.** Before building anything,
+a real constraint was named directly: an ongoing AI-dependency audit --
+"I cannot rely on you forever on fixing things up where I can't reach" --
+so the design needed to favour what's simple enough to hand-maintain over
+what's merely convenient. That reframed the island/flow/particles/geo/
+themePreview half as the easy, near-free case (already one JS object,
+just needed "Copy config" to serialize more of it) and colours/fonts as
+the genuinely separate design question: CSS-only today, no JS
+representation to round-trip at all. Initial recommendation was to leave
+colours/fonts as a manual hand-edit rather than build machinery for
+something tuned once and rarely revisited -- corrected by the user's own
+read of near-term plans: "palette tuning and font comparison will happen
+soon," reversing the calculus toward moving them into `v3Config` too,
+alongside a **fixed dropdown** of already-loaded fonts rather than
+open-ended Google Fonts loading (kept deliberately small).
+
+**A design detour, walked back once tested.** The original plan for
+applying pasted JSON back into `cabinet-v3-data.js` was a precise
+per-key regex substitution (touch only a key's own value, leave every
+comment alone) -- proposed specifically because the file's rich inline
+history (a running changelog of *why* each value is what it is,
+version-tagged throughout `island`/`flow`/`particles`) would be destroyed
+by a naive whole-block paste-replace, the ORIGINAL mechanism this same
+file's own `v3.6.3` comment promised but which had quietly stopped being
+true years of tuning ago. The user pushed for more: "why not salvage
+[the comments] anyway... get them out of the way" into a proper
+consolidated doc, arguing a copy-not-move approach removes all risk (the
+originals stay put) and makes this worth doing NOW rather than deferred.
+Correct -- reading through `flow`/`particles`/`geo` in full showed the
+comments split into two real categories (pure "why this value, on this
+date" changelog vs. timeless mechanism documentation, e.g.
+`coastTangentDriftAmpX`'s note that its bounded sin/cos drift exists
+because a linear version was a real, previously-shipped bug), which
+would have made an automated migration genuinely risky to get right
+blind. Landed on: copy everything into a new consolidated reference doc
+(`cabinet-v3-config-reference.md`), leave the source file's own comments
+completely untouched, and keep the SAFER per-key substitution mechanism
+regardless -- the doc solves readability, the script solves round-trip
+safety, and neither depends on the other.
+
+**Two real bugs, both caught before they reached the real file.** Every
+non-trivial piece of `apply-config.mjs` was tested against a throwaway
+scratch copy first, diffed line-by-line, and re-imported as a live ES
+module to confirm validity -- twice this actually caught something:
+
+1. The first regex (`(,?)\s*$`) could cross a newline: `\s` matches `\n`
+   too, and a greedy whitespace run backtracking toward a line-anchored
+   `$` can land on a LATER line's own `$` instead of the current one's.
+   For a section's LAST key (nothing but a lone closing brace on the next
+   line), this fused that brace onto the value's own line --
+   `pack.centerBias`/`themePreview.blurPx` both corrupted this way in
+   testing. Fixed by restricting every whitespace match in the
+   line-scoped regex to `[ \t]` (never `\s`), so it can never cross a
+   line boundary at all, structurally.
+2. `COLOR_TOKENS` (`cabinet-v3-controls.js`) actually has 9 entries, not
+   8 -- `--v3-label-outline` was missed reading it the first time (a
+   `head_limit`-truncated search cut the array off one line early). This
+   wasn't just an incomplete doc: it briefly left
+   `cabinet-v3-style.css`'s `medieval-map` block with
+   `--v3-label-outline: var(--v3-sea-shallow)` referencing a token that
+   had *just* been deleted from that same block by an earlier edit in
+   this same pass -- silently resolving to the wrong (base-fallback)
+   colour instead of medieval-map's real `#ddbd82`. Caught by
+   re-extracting all 9 tokens x 4 themes via a real headless-browser
+   computed-style read (the same technique `readThemeTokens()` already
+   used) and diffing against the pre-migration values -- not assumed
+   correct from writing the code once. A third, smaller instance of the
+   same "assumed a format that wasn't actually true" class of bug: fonts
+   were first written as compact one-line-per-theme objects (unlike
+   colours' one-token-per-line), which broke the same line-scoped regex
+   for a different reason (no newline at all to bound a value on a line
+   holding three keys) -- fixed by reformatting the data to match the
+   one-key-per-line convention everywhere else, plus a permanent
+   `apply-config.mjs` safety net that now refuses (rather than silently
+   corrupts) if a matched value looks like it swallowed a sibling key.
+
+**What shipped.** "Copy config" serializes `pack`/`island`/`flow`/
+`particles`/`geo`/`themePreview`/`colors`/`fonts` -- everything the panel
+can live-edit except `dragon` (no live controls at all, logged separately
+as `#139`). `apply-config.mjs` (new, `landing-v3/`) applies a pasted copy
+back per-key, recursing into `colors`/`fonts`' nested per-theme shape,
+warning (never silently skipping) on typos, unknown sections, or
+ambiguous multi-key lines. Theme colours/fonts moved into
+`v3Config.colors`/`v3Config.fonts`, applied at load via a new shared
+`applyThemeStyle()` (`cabinet-v3-data.js`) that both the dev tool AND
+production's own `cabinet-v3-layout.js` call -- previously colours
+reached production for free from static CSS alone; now they need this
+one shared call, added at the same top-level init site `render()` itself
+runs from. Dev panel gained a font-picker dropdown per role per theme
+(heading/section label/island label), same subsection as the existing
+colour swatches. Verified end to end in a real headless browser, not
+just by reading the diff: all 4 themes' 9 colour tokens and font choices
+re-checked against pre-refactor values (exact match), theme switching via
+the real dropdown, the font pickers' live effect on rendered `font-family`,
+and Copy Config's actual clipboard/console output all confirmed working
+with zero console errors; screenshots of two themes (medieval-map,
+medieRiso) confirm both palettes still render correctly. Also added
+during the investigation: ToDo `#139`/`#140` (dragon/boat dev-panel
+management -- surfaced by checking what actually has live controls today
+and finding dragon has none).
+
+Production (`docs/`) is a separately-promoted static snapshot -- none of
+this reaches the live site until `build-static.mjs`/`promote.mjs` are
+run deliberately.
 
 ### v3.7.68 -- real h2/h3 heading outline for the map's sections/entries, closing #70
 

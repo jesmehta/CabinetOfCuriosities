@@ -71,11 +71,13 @@ by priority, set directly by the user after a full documentation review.
 Doesn't replace the phase structure; items keep their original numbers
 and phase placement, this is just the current ordering of attention.
 
-1. **`#32`** (Rework "Copy config") -- top priority. Direct reasoning: it's
-   currently a bottleneck to smooth updates of the site's look and feel,
-   and the mechanism itself is "not a stable state" right now. Still
-   needs the (a)-minimal-vs-(b)-bigger decision described in the item
-   itself before building anything.
+1. ~~**`#32`**~~ (Rework "Copy config") -- top priority. Direct reasoning:
+   it's currently a bottleneck to smooth updates of the site's look and
+   feel, and the mechanism itself is "not a stable state" right now.
+   **Done, 2026-08-30, commit `555587b`** -- see the item itself for the
+   shipped approach (full state export/import via `apply-config.mjs`,
+   colours/fonts moved into `v3Config`) and `Landing-page-notes.2.0.md`'s
+   v3.7.69 entry for the full narrative.
 2. **The deployment manifesto** -- `#58` (confirm failed builds don't
    replace the last successful live deployment) + `#80` (expand Cabinet
    assembly beyond Working with AI: Student Work, Rock Collection,
@@ -838,7 +840,10 @@ own numbering note near the top) -- a move, not a re-add.
 
 </details>
 
-- [ ] **#32** Rework "Copy config" -- direct question, 2026-08-23: "What does
+<details>
+<summary>#32</summary>
+
+- [x] **#32** Rework "Copy config" -- direct question, 2026-08-23: "What does
       copy config do now, with multiple themes and specific
       applications? Does it need to be reworked, or the place where the
       config is supposed to be pasted in the file? Pressing copy config
@@ -867,7 +872,31 @@ own numbering note near the top) -- a move, not a re-add.
       so nothing needs hand-pasting into source at all. Needs a decision
       before implementing, not a guess.
 
-<details>
+      **Done, 2026-08-30, commit `555587b`.** Neither (a) nor (b) as
+      originally framed -- discussion surfaced that the panel actually
+      live-edits SIX untracked pools of state, not one or two missing
+      fields, and that colours had no JS representation to round-trip at
+      all. Landed on: "Copy config" now serializes everything live-
+      tunable (`pack`/`island`/`flow`/`particles`/`geo`/`themePreview`/
+      `colors`/`fonts`); a new `apply-config.mjs` applies a pasted copy
+      back per-key (not a whole-block paste -- the original v3.6.3
+      "comment-free block" premise had quietly stopped being true across
+      years of tuning, and a blind replace would have deleted real
+      history); theme colours/fonts moved out of `cabinet-v3-style.css`
+      into `v3Config.colors`/`v3Config.fonts`, applied at load via a new
+      shared `applyThemeStyle()` so production picks them up too, not
+      just the dev tool. Every field's reasoning also consolidated into
+      `documentation/landing-v3-notes/cabinet-v3-config-reference.md` --
+      copied, not moved, nothing deleted from source. Two real bugs
+      caught by testing against scratch copies before either touched the
+      real file (a regex crossing a newline boundary; a missed 9th
+      `COLOR_TOKENS` entry that would have shipped a silently-wrong
+      fallback colour) -- full narrative in `Landing-page-notes.2.0.md`'s
+      v3.7.69 entry, not duplicated here. Also surfaced `#139`/`#140`
+      (dragon/boat have no live dev-panel management at all) as a direct
+      byproduct of checking what the panel actually controls today.
+
+</details>
 <summary>#62</summary>
 
 - [x] **#62** Rework `archived-landing-pages/index.html` (the archive landing
