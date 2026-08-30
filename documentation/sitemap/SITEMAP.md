@@ -67,19 +67,30 @@ which `path_key` each TSV row claims, to catch duplicates.
 
 ### The nav scanner, and why regex instead of YAML
 
-`mkdocs.yml`'s `nav:` block is a flat, consistently-shaped list —
-every real entry reads `- Label : target`, group headers read `- Label
-:` with no target on the line. `NAV_LEAF_RE`/`NAV_GROUP_RE` match those
-two shapes directly with a plain line scanner (find the `nav:` line,
-read until the block dedents back to column 0, skip `#`-commented
-lines). Chosen over a real YAML parser (PyYAML) specifically to avoid
-adding a `pip install` requirement — the script's own docstring has
-promised "no pip installs needed, standard library only" since it was
-first written for the sitemap half, and a YAML dependency would have
-quietly broken that promise for a piece of functionality that doesn't
-actually need YAML's full generality. Fragile only if `mkdocs.yml`'s
-nav ever stops being a flat label/target list — an obvious, visible
-break if it happens, not a silent one.
+`mkdocs.yml`'s `nav:` block is a flat, consistently-shaped list — every
+real entry reads `- Label : target`. `NAV_LEAF_RE` matches that shape
+directly with a plain line scanner (find the `nav:` line, read until the
+block dedents back to column 0, skip `#`-commented lines, keep any line
+`NAV_LEAF_RE` matches). Chosen over a real YAML parser (PyYAML)
+specifically to avoid adding a `pip install` requirement — the script's
+own docstring has promised "no pip installs needed, standard library
+only" since it was first written for the sitemap half, and a YAML
+dependency would have quietly broken that promise for a piece of
+functionality that doesn't actually need YAML's full generality.
+
+**`NAV_GROUP_RE` is dead code**, corrected here 2026-08-30 after a
+direct review against the actual file rather than trusting an earlier
+description of it: it's defined (matches a group header, `- Label :`
+with no target) but never referenced anywhere — `parse_mkdocs_nav()`
+only ever calls `NAV_LEAF_RE.match()`. Group headers get skipped anyway,
+but only as an accidental side effect of also failing to match
+`NAV_LEAF_RE` (which requires a non-empty target after the colon) — the
+same fallthrough that silently drops a genuinely malformed line (see
+"Non-goals / known limitations" below), not a distinct, intentional
+check. `NAV_GROUP_RE` should either be wired in (to tell "this is a
+group header, skip on purpose" apart from "this line didn't parse,
+which might be a bug") or removed; left as-is for now, flagged rather
+than silently carried forward as if it did something.
 
 ## What it catches
 
@@ -165,6 +176,16 @@ above), so reading it is the actual review step, not optional.
   fails (visibly, not silently) if that shape changes.
 
 ## Changelog
+
+### v1.2 — one claim corrected after a direct code review (2026-08-30)
+
+No code changes. This doc's first draft claimed `NAV_GROUP_RE` was used
+alongside `NAV_LEAF_RE` to match nav leaves and group headers as two
+distinct shapes — caught by a review that asked for the code to be
+re-checked rather than trusted as given. It isn't: only `NAV_LEAF_RE` is
+ever called; `NAV_GROUP_RE` is dead code, defined and never referenced.
+See "The nav scanner, and why regex instead of YAML" above for the
+corrected description.
 
 ### v1.1 — Content Inventory generation added (2026-08-30)
 
