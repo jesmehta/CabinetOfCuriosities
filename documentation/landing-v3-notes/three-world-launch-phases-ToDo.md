@@ -1952,13 +1952,14 @@ section to empty out.*
       `build-static.mjs` -- doesn't show the `docs/` promotion step at
       all, since it predates `landing-v3/promote.mjs` (added 2026-08-30,
       see this file's own `#132`-adjacent history and
-      `documentation/Landing-page-notes.2.0.md`). Update should add a
+      `documentation/landing-v3-notes/Landing-page-notes.2.0.md`). Update
+      should add a
       Stage 6 (or fold into Stage 5): `promote.mjs` reading
       `landing-v3/index.html` + `landing-v3/shared/*`, rewriting the
       known dev-relative asset paths, writing `docs/index.html` +
       `docs/assets/{css,js}/`, then a headless-Chromium verify pass --
       matching the real flow documented in `documentation/
-      CABINET-EDITOR.md`-adjacent tooling notes and the diagram's own
+      cabinet-editor/CABINET-EDITOR.md`-adjacent tooling notes and the diagram's own
       existing "manual step" (dashed-arrow) convention, since promotion
       is exactly that: manual, dashed. The diagram's own Mermaid source is
       recoverable from the artifact's page HTML if bringing it in as a
