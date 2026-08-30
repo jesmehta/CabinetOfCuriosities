@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.68 -- real h2/h3 heading outline for the map's sections/entries, closing #70](#v3768----real-h2h3-heading-outline-for-the-maps-sectionsentries-closing-70)
   - [v3.7.67 -- Site map compass point wired, closing #73](#v3767----site-map-compass-point-wired-closing-73)
   - [v3.7.66 -- Swatch Fields and Tracery Bots assembled onto the custom domain, no more raw github.io links](#v3766----swatch-fields-and-tracery-bots-assembled-onto-the-custom-domain-no-more-raw-githubio-links)
   - [v3.7.65 -- branch hygiene: a stray cross-machine session's work mirrored to main, reverted on v3, co-author trailers stripped](#v3765----branch-hygiene-a-stray-cross-machine-sessions-work-mirrored-to-main-reverted-on-v3-co-author-trailers-stripped)
@@ -1548,6 +1549,60 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.68 -- real h2/h3 heading outline for the map's sections/entries, closing #70
+
+`#70` asked for a real look at whether section/island labels should be
+semantic HTML rather than SVG `<text>`, for SEO and screen-reader
+heading navigation. Discussed in conversation first (see this file's own
+"Canvas + legend" entry and the ToDo's `#70` item for the fuller
+back-and-forth): the SVG `<text>` labels stay exactly as they are --
+they're the map's whole visual mechanism, and re-doing them as live HTML
+overlaid at the SVG's own computed coordinates would couple two
+coordinate systems on a page whose treemap/circle-packing already
+reflows live, an ongoing maintenance cost for no real gain over the
+alternative below. `role="heading"`/`aria-level` directly on the SVG
+`<text>` was considered too -- cheap, but ARIA on SVG isn't confirmed to
+carry the same weight for crawlers a real tag does, and it would've been
+throwaway work once real headings existed anyway.
+
+Landed on a parallel, visually-hidden HTML layer instead:
+`cabinet-v3-layout.js`'s new `renderSemanticOutline()`, called from
+`render()` right after `buildSectionMetas()`, builds one real `h2` per
+section and one `h3` per TSV entry (WIP entries included, since they
+already have a title and a map location) straight from the same
+`sectionMetas`/`entries` data the SVG map itself reads -- into
+`#v3-semantic-outline`, hidden via a new `.sr-only` clip rule in
+`cabinet-v3-style.css`, not `display:none` (which would also drop it
+from the accessibility tree). Filler islands never enter the picture --
+they're synthesized later, in `buildSeedsForSection()`, never part of
+`sectionMeta.entries`. The container is added to every page that loads
+the layout engine directly (`build-render.html`, `islands-tool.html`)
+and to `index.template.html` via a new `V3_SEMANTIC_OUTLINE` placeholder
+that `build-static.mjs` fills the same way it already fills
+`V3_ISLANDS_SVG`.
+
+Deliberately deferred: `aria-hidden` on the SVG labels +
+`aria-labelledby` pointing at these headings, which would stop a screen
+reader announcing each title twice -- direct call, screen readers aren't
+the current priority for this highly visual map, and that pairing is the
+fiddly, hard-to-verify part (SVG accessibility mapping is inconsistent
+across browser/AT combinations). Also deferred: verifying any actual SEO
+effect -- no local feedback loop for that, best practice only, revisit
+via Search Console once the site's had time to be recrawled.
+
+Verified with Playwright against the promoted `docs/index.html`: 1 `h1`,
+8 `h2` (7 sections + compass), 37 `h3` (matches every `cabinet-entries.tsv`
+row), the outline container clips to 1x1px, zero console errors, no
+layout overflow. Idempotency checked directly in `islands-tool.html`:
+two Rerolls in a row still produce 45 headings, not 90 -- the container
+is cleared at the top of every `render()` call, same pattern
+`#v3-stage`'s own `stage.innerHTML = ""` already uses. `docs/index.html`
+and `docs/assets/css/cabinet-v3-style.css` hand-promoted the same
+manual way as always (no promotion script exists yet -- see the
+`v3.7.67` entry above for the last time that same gap caused a real
+bug); diffed line-by-line against the pre-change files first to confirm
+only the intended content changed.
 
 ### v3.7.67 -- Site map compass point wired, closing #73
 
