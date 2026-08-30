@@ -24,7 +24,7 @@
 // did -- only the INITIAL shape adapts to viewport now, not every
 // subsequent resize.
 
-import { v3Config, EXTRA_WEIGHT } from "../shared/cabinet-v3-data.js";
+import { v3Config, EXTRA_WEIGHT, applyThemeStyle } from "../shared/cabinet-v3-data.js";
 import { sections, entries } from "../../docs/assets/js/cabinet-generated-content.js";
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
@@ -3329,4 +3329,13 @@ export function resetReroll() {
   rerollNonce = 0;
 }
 
+// #32 rework, 2026-08-30 -- theme colours/fonts used to be CSS-only, so
+// every page (including production, which has no controls.js) got them
+// for free from the stylesheet alone. Now that they live in
+// v3Config.colors/v3Config.fonts, this is the one place that reaches
+// every page (cabinet-v3-controls.js, dev-tool-only, calls this again on
+// Theme-dropdown change/live colour or font edits) -- without it,
+// production would render with only the base body.v3-proto fallback
+// values, not medieval-map's actual palette.
+applyThemeStyle(document.body.dataset.theme);
 render();

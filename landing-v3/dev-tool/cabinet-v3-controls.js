@@ -26,7 +26,7 @@
 // for why this is no more expensive than what every other slider here
 // already costs per tick.
 
-import { v3Config } from "../shared/cabinet-v3-data.js";
+import { v3Config, applyThemeStyle } from "../shared/cabinet-v3-data.js";
 import { retraceIslands, retraceThemePreviews, render, rerollPacking, resetReroll, startCurrentAnimation, refreshParticleCount } from "../layout-engine/cabinet-v3-layout.js";
 
 // Each entry drives one Island-shape slider. `get`/`set` default to
@@ -121,37 +121,12 @@ const COLOR_TOKENS = [
   // worse than not having a row for it.
 ];
 
-// Canvas 2D's fillStyle setter/getter round-trips ANY valid CSS colour
-// (an rgb() string, a var() chain already resolved by getComputedStyle,
-// a named colour) into a normalised "#rrggbb" string -- the exact format
-// <input type="color"> requires, without hand-parsing rgb() strings.
-let colorProbeCtx = null;
-function cssColorToHex(cssColor) {
-  if (!colorProbeCtx) colorProbeCtx = document.createElement("canvas").getContext("2d");
-  colorProbeCtx.fillStyle = "#000000";
-  colorProbeCtx.fillStyle = cssColor;
-  return colorProbeCtx.fillStyle;
-}
-
-// Reads a theme's OWN authored token values, independent of whichever
-// theme is actually live right now -- flips document.body.dataset.theme
-// to `themeName`, reads getComputedStyle (which resolves any var()
-// chain, e.g. the default theme's --v3-halo-ink: var(--cab-land-hover)),
-// then flips it back, all synchronously so nothing repaints in between.
-// Deliberately reads computed style rather than parsing stylesheet rule
-// text -- the latter would return the literal string "var(--cab-land-
-// hover)" for tokens that reference another token, not a usable colour.
-function readThemeTokens(themeName) {
-  const original = document.body.dataset.theme;
-  if (themeName) document.body.dataset.theme = themeName;
-  else delete document.body.dataset.theme;
-  const cs = getComputedStyle(document.body);
-  const values = {};
-  COLOR_TOKENS.forEach(t => { values[t.key] = cssColorToHex(cs.getPropertyValue(t.key).trim()); });
-  if (original) document.body.dataset.theme = original;
-  else delete document.body.dataset.theme;
-  return values;
-}
+// #32 rework, 2026-08-30 -- readThemeTokens()/cssColorToHex()/
+// colorProbeCtx removed here: they existed only to seed themeTokenState
+// from live CSS at panel-build time (a computed-style probe, since a
+// var() chain like the old --v3-halo-ink: var(--cab-land-hover) needed
+// resolving into a usable hex). Colours live natively as hex strings in
+// v3Config.colors now, so there's nothing left to probe or convert.
 
 // Builds one <label class="v3-controls-row"> slider row inside
 // `container`, wired to `get`/`set`. `onChange` runs after every input
@@ -585,36 +560,33 @@ function buildControlPanel() {
   themeRow.appendChild(themeSelect);
   visualsSection.appendChild(themeRow);
 
-  // -- Theme colours (v3.6.30) -- every theme's own 8 tokens, editable
-  // independently of which one is currently live. themeTokenState is the
-  // live working set, seeded from each theme's real CSS (readThemeTokens())
-  // at panel-build time, BEFORE any inline override exists yet -- reading
-  // any later than that would risk one theme's already-applied inline
-  // colours bleeding into another theme's "original" reading, since
-  // readThemeTokens() only flips the data-theme ATTRIBUTE, not whatever's
-  // sitting in body.style. themeTokenDefaults is a one-time snapshot of
-  // the same, kept untouched, for Reset colours.
-  const themeTokenState = {};
-  THEME_OPTIONS.forEach(([value]) => { themeTokenState[value] = readThemeTokens(value); });
-  const themeTokenDefaults = {};
-  Object.keys(themeTokenState).forEach(k => { themeTokenDefaults[k] = { ...themeTokenState[k] }; });
+  // -- Theme colours (v3.6.30; #32 rework 2026-08-30) -- every theme's own
+  // 9 tokens (COLOR_TOKENS above), editable independently of which one is
+  // currently live.
+  // v3Config.colors IS the live working set now (previously a separate
+  // themeTokenState mirror, seeded from CSS via readThemeTokens() --
+  // colours live natively in JS now, so editing this object directly
+  // means "Copy config" picks up live edits with no separate sync step).
+  // colorDefaults/fontDefaults are one-time deep-copied snapshots, kept
+  // untouched, for Reset colours & fonts.
+  const colorDefaults = {};
+  Object.keys(v3Config.colors).forEach(k => { colorDefaults[k] = { ...v3Config.colors[k] }; });
+  const fontDefaults = {};
+  Object.keys(v3Config.fonts).forEach(k => { fontDefaults[k] = { ...v3Config.fonts[k] }; });
 
-  // Pushes themeTokenState[themeName] onto <body> as inline custom
-  // properties -- inline style outranks both the base body.v3-proto
-  // block and any body.v3-proto[data-theme="X"] block, so this is what
-  // actually makes an edit visible, and what makes switching Theme (see
-  // themeSelect's change handler above) pick up whatever's been edited
-  // for the newly active theme instead of reverting to its un-edited CSS.
+  // Applies themeName's live v3Config.colors/v3Config.fonts values --
+  // thin wrapper so every call site here reads the same way it used to
+  // (by theme name), even though the actual work (setting inline custom
+  // properties on <body>, which is what outranks the base body.v3-proto
+  // block and any body.v3-proto[data-theme="X"] block) now lives in
+  // applyThemeStyle() (cabinet-v3-data.js), shared with production --
+  // see that function's own comment.
   function applyThemeTokens(themeName) {
-    // v3.7.19 -- "" (the no-attribute default) was dropped from
-    // THEME_OPTIONS, so it's no longer a valid themeTokenState key to
-    // fall back to -- fall back to the first remaining option instead.
-    const values = themeTokenState[themeName] || themeTokenState[THEME_OPTIONS[0][0]];
-    COLOR_TOKENS.forEach(t => document.body.style.setProperty(t.key, values[t.key]));
+    applyThemeStyle(themeName);
   }
 
   // Theme-preview-on-hover prototype -- pushes v3Config.themePreview's
-  // TARGET theme's live colours (themeTokenState, not a hardcoded
+  // TARGET theme's live colours (v3Config.colors, not a hardcoded
   // snapshot) onto the --v3-preview-* custom properties
   // cabinet-v3-style.css's .v3-island-theme-preview/
   // .v3-section-theme-preview read. Same "inline style outranks the
@@ -626,7 +598,7 @@ function buildControlPanel() {
   // extended past the flat land wash to real per-band fidelity
   // (sand/veg/peak), so this now maps every token those bands read.
   function applyThemePreviewTokens() {
-    const values = themeTokenState[v3Config.themePreview.previewTheme] || themeTokenState[THEME_OPTIONS[0][0]];
+    const values = v3Config.colors[v3Config.themePreview.previewTheme] || v3Config.colors[THEME_OPTIONS[0][0]];
     document.body.style.setProperty("--v3-preview-ink", values["--v3-ink"]);
     // v3.7.40 -- was --v3-preview-land, mapped to --v3-sea-shallow -- the
     // SAME token seaBandThresholds' own bands (--v3-preview-sea, below)
@@ -653,7 +625,27 @@ function buildControlPanel() {
   // field per token, kept in sync both ways -- the text field is what
   // makes "copy paste colour code from one to another" literal: select
   // it, copy, paste into another theme's field for the same token.
-  const colorsSubsection = makeSubsection(visualsSection, "Theme colours (all themes)", false);
+  // #32 rework, 2026-08-30 -- per-theme font pickers, added alongside the
+  // existing colour swatches (same theme group, same reasoning: compare/
+  // tune one theme's whole look without scrolling past the other three).
+  // Fixed dropdown, not free-text font loading -- direct decision,
+  // 2026-08-30: pick from what islands-tool.html's own Google Fonts link
+  // already loads for the 4 live themes (Cinzel, IM Fell English, EB
+  // Garamond, Cormorant, Caveat, Space Mono), not an open "type any
+  // Google Font name" text field. "" always means "no override, use the
+  // site default" -- see v3Config.fonts' own comment in cabinet-v3-data.js.
+  const FONT_OPTIONS = [
+    ["", "Default (site font)"],
+    ["Cinzel", "Cinzel"],
+    ["IM Fell English", "IM Fell English"],
+    ["EB Garamond", "EB Garamond"],
+    ["Cormorant", "Cormorant"],
+    ["Caveat", "Caveat"],
+    ["Space Mono", "Space Mono"]
+  ];
+  const FONT_ROLES = [["heading", "Heading font"], ["sectionLabel", "Section label font"], ["islandLabel", "Island label font"]];
+
+  const colorsSubsection = makeSubsection(visualsSection, "Theme colours & fonts (all themes)", false);
   const colorRowWidgets = [];
   THEME_OPTIONS.forEach(([themeValue, themeLabel]) => {
     const themeGroup = makeSubsection(colorsSubsection, themeLabel || "(none -- current default)", false);
@@ -667,16 +659,16 @@ function buildControlPanel() {
 
       const swatch = document.createElement("input");
       swatch.type = "color";
-      swatch.value = themeTokenState[themeValue][token.key];
+      swatch.value = v3Config.colors[themeValue][token.key];
 
       const hexField = document.createElement("input");
       hexField.type = "text";
-      hexField.value = themeTokenState[themeValue][token.key];
+      hexField.value = v3Config.colors[themeValue][token.key];
       hexField.spellcheck = false;
       hexField.maxLength = 7;
 
       const commit = hex => {
-        themeTokenState[themeValue][token.key] = hex;
+        v3Config.colors[themeValue][token.key] = hex;
         if ((document.body.dataset.theme || "") === themeValue) applyThemeTokens(themeValue);
         // Theme-preview-on-hover prototype: keep the hover preview in
         // sync with live edits to whichever theme it's currently
@@ -705,16 +697,48 @@ function buildControlPanel() {
 
       colorRowWidgets.push({
         refresh: () => {
-          const v = themeTokenState[themeValue][token.key];
+          const v = v3Config.colors[themeValue][token.key];
           swatch.value = v;
           hexField.value = v;
         }
       });
     });
+
+    FONT_ROLES.forEach(([role, label]) => {
+      const row = document.createElement("label");
+      row.className = "v3-controls-row";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "v3-controls-name";
+      nameSpan.textContent = label;
+
+      const select = document.createElement("select");
+      select.style.gridArea = "input";
+      select.style.width = "100%";
+      FONT_OPTIONS.forEach(([value, optLabel]) => {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = optLabel;
+        select.appendChild(opt);
+      });
+      select.value = v3Config.fonts[themeValue][role];
+
+      select.addEventListener("change", () => {
+        v3Config.fonts[themeValue][role] = select.value;
+        if ((document.body.dataset.theme || "") === themeValue) applyThemeTokens(themeValue);
+      });
+
+      row.appendChild(nameSpan);
+      row.appendChild(select);
+      themeGroup.appendChild(row);
+
+      colorRowWidgets.push({ refresh: () => { select.value = v3Config.fonts[themeValue][role]; } });
+    });
   });
 
-  addButton(colorsSubsection, "Reset colours", () => {
-    Object.keys(themeTokenDefaults).forEach(k => { themeTokenState[k] = { ...themeTokenDefaults[k] }; });
+  addButton(colorsSubsection, "Reset colours & fonts", () => {
+    Object.keys(colorDefaults).forEach(k => { v3Config.colors[k] = { ...colorDefaults[k] }; });
+    Object.keys(fontDefaults).forEach(k => { v3Config.fonts[k] = { ...fontDefaults[k] }; });
     colorRowWidgets.forEach(w => w.refresh());
     applyThemeTokens(document.body.dataset.theme || "");
     applyThemePreviewTokens();
@@ -1416,9 +1440,7 @@ function buildControlPanel() {
 
   // =====================================================================
   // FOOTER -- Reset ALL (every section above, one render() at the end
-  // rather than three separate re-renders) + Copy config (unchanged from
-  // v3.6: dumps the full v3Config.island, arrays and all, including
-  // everything this pass added).
+  // rather than three separate re-renders) + Copy config.
   // =====================================================================
   const buttonRow = document.createElement("div");
   buttonRow.className = "v3-controls-buttons";
@@ -1430,9 +1452,22 @@ function buildControlPanel() {
     render();
   });
 
+  // #32 rework, 2026-08-30 -- was `v3Config.island` only, dumped as a
+  // whole-block paste target. Now every section this panel can actually
+  // live-edit (`pack` too, for centerBias, even though most of its own
+  // fields are hand-edited-only -- harmless, those just round-trip
+  // unchanged): apply-config.mjs (landing-v3/) applies this back into
+  // cabinet-v3-data.js per-key, leaving every comment untouched, so this
+  // object doesn't need to stay a clean paste-replace target the way the
+  // old island-only version did. See documentation/landing-v3-notes/
+  // cabinet-v3-config-reference.md for what each field does.
+  const CONFIG_SECTIONS = ["pack", "island", "flow", "particles", "geo", "themePreview", "colors", "fonts"];
+
   const copyBtn = addButton(buttonRow, "Copy config", () => {
-    const json = JSON.stringify(v3Config.island, null, 2);
-    console.log("v3Config.island (current tuning):\n" + json);
+    const snapshot = {};
+    CONFIG_SECTIONS.forEach(key => { snapshot[key] = v3Config[key]; });
+    const json = JSON.stringify(snapshot, null, 2);
+    console.log("v3Config tuning (paste into pasted-config.json, then `node apply-config.mjs` from landing-v3/):\n" + json);
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(json).then(
         () => { copyBtn.textContent = "Copied!"; setTimeout(() => { copyBtn.textContent = "Copy config"; }, 1200); },

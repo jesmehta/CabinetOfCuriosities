@@ -31,3 +31,9 @@ review/*
 # landing-v3/index.template.html), so this file adds nothing but
 # duplication if committed. 2026-08-29.
 documentation/backend-and-deploy/cloudflare-js-snippet.md
+
+# Scratch paste target for apply-config.mjs (#32 rework, 2026-08-30) --
+# the dev panel's "Copy config" output gets pasted here by hand, then
+# applied into cabinet-v3-data.js and discarded; never meant to be
+# committed itself.
+landing-v3/pasted-config.json

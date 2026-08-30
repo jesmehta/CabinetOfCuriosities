@@ -39,7 +39,12 @@
   <p class="v3-footnote">Same live content and config as <code>index.html</code> -- this page
     just keeps the tuning panel permanently. Reload any time content or sections change: layout
     and coastlines recompute from scratch on every load, nothing here is cached across edits.
-    "Copy config" writes straight back into <code>cabinet-v3-data.js</code>. See
+    "Copy config" copies pack/island/flow/particles/geo/themePreview tuning as JSON --
+    paste it into <code>landing-v3/pasted-config.json</code>, then run
+    <code>node apply-config.mjs</code> from <code>landing-v3/</code> to apply it back into
+    <code>cabinet-v3-data.js</code> (per-key, comments untouched -- see that script's own
+    header comment). Field-by-field reasoning for every value:
+    <code>documentation/landing-v3-notes/cabinet-v3-config-reference.md</code>. See
     <code>documentation/Landing-page-notes.2.0.md</code> for the full "Three pages" design conversation.</p>
 
   <script type="module" src="../layout-engine/cabinet-v3-layout.js"></script>

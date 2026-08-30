@@ -30,6 +30,14 @@
 // resolved once, at content-build time, by tools/build-cabinet-content.js.
 export const EXTRA_WEIGHT = 1;
 
+// 2026-08-30 -- every inline comment below (island/flow/particles/geo/
+// themePreview) is also consolidated, per-field, into one flowing
+// reference doc: documentation/landing-v3-notes/cabinet-v3-config-
+// reference.md. That file is a COPY for easier reading, not the source
+// of truth -- nothing was deleted or moved out of here to create it.
+// Edit values and comments here as always; update that doc separately if
+// the reasoning materially changes.
+
 export const v3Config = {
   // Descriptive metadata -- not currently read by any code (the actual
   // page title/tagline live as real HTML in index.template.html/
@@ -138,15 +146,18 @@ export const v3Config = {
   // squares is what replaces the plain <circle> a growCircles() output
   // would otherwise render as.
   //
-  // v3.6.3: kept deliberately comment-free INSIDE the block below, in
-  // the same key order islands-tool.html's panel produces -- so the
-  // whole block can be replaced by pasting its "Copy config" output
-  // directly over everything between the { and }, no hand-editing
-  // around comments required. Field-by-field notes (what each value
-  // does, why it's set the way it is) live in the ISLAND CONFIG FIELD
-  // NOTES comment at the end of this file instead -- same order as
-  // below, so "what does the 6th value do" is just "read the 6th note".
-  // A pasted value may come back as a decimal (e.g. 0.011764705882352941
+  // v3.6.3 -- originally kept comment-free inside the block below so the
+  // whole thing could be paste-replaced from "Copy config" output. That
+  // stopped being true well before v3.7's tuning passes added the inline
+  // per-value history now sitting throughout this block (real reasoning,
+  // not noise -- see #32's 2026-08-30 rework). apply-config.mjs
+  // (landing-v3/) replaces this block per-key instead of as a whole-block
+  // paste now, specifically so those comments never need to be cleared
+  // out again. Field-by-field notes (what each value does, why it's set
+  // the way it is) live in the ISLAND CONFIG FIELD NOTES comment at the
+  // end of this file, and consolidated across every tunable section in
+  // documentation/landing-v3-notes/cabinet-v3-config-reference.md. A
+  // pasted value may come back as a decimal (e.g. 0.011764705882352941
   // instead of 1 / 85) -- numerically identical, JS doesn't care which
   // form a number literal is written in, nothing to fix.
   island: {
@@ -687,9 +698,9 @@ export const v3Config = {
 
   // Theme-preview-on-hover prototype ("theme x hover" to-do item) --
   // parameters of the CROSS-theme transition itself, deliberately kept
-  // separate from either theme's own colour tokens (those stay owned by
-  // the existing per-theme colour editor/themeTokenState in
-  // cabinet-v3-controls.js -- this feature reads them live, doesn't
+  // separate from either theme's own colour tokens (those live in
+  // v3Config.colors below -- this feature reads them live via
+  // applyThemePreviewTokens() in cabinet-v3-controls.js, doesn't
   // duplicate them). previewTheme names which THEME_OPTIONS key hovering
   // reveals, regardless of whichever theme is currently the page's base
   // -- direct spec was a fixed Medieval-resting / Topology-reveal
@@ -716,8 +727,148 @@ export const v3Config = {
     // this project was specific to a GROUP of individually-transformed
     // children, not this shape).
     blurPx: 8
+  },
+
+  // #32 rework, 2026-08-30 -- theme colour tokens, moved here from being
+  // CSS-only (cabinet-v3-style.css's body.v3-proto[data-theme="X"]
+  // blocks previously carried these hex values directly). Applied at
+  // load, on every page (production included, not just the dev tool --
+  // see applyThemeStyle() below), as inline custom properties on
+  // <body>, which is why the CSS blocks no longer need to declare them:
+  // an inline style always outranks an attribute-selector rule. Extracted
+  // via the same computed-style read the dev panel's old
+  // readThemeTokens()/themeTokenState used to do at panel-build time
+  // (cabinet-v3-controls.js), so these are each theme's real,
+  // already-live values, not re-guessed -- verified against a live
+  // render of every theme before this landed. One entry per COLOR_TOKENS
+  // key (cabinet-v3-controls.js) -- keep both in sync if a token is ever
+  // added/removed.
+  colors: {
+    satellite: {
+      "--v3-sea-deep": "#1c5f8a",
+      "--v3-sea-shallow": "#43d6d6",
+      "--v3-veg": "#4caf3f",
+      "--v3-sand": "#f2c94c",
+      "--v3-peak": "#ffffff",
+      "--v3-ink": "#0d2436",
+      "--v3-ring-ink": "#0d2436",
+      "--v3-halo-ink": "#faf3dc",
+      "--v3-label-outline": "#f4ead0"
+    },
+    "medieval-map": {
+      "--v3-sea-deep": "#f4ebdd",
+      "--v3-sea-shallow": "#ddbd82",
+      "--v3-veg": "#fbf0ee",
+      "--v3-sand": "#7d3a24",
+      "--v3-peak": "#ffffff",
+      "--v3-ink": "#1c1712",
+      "--v3-ring-ink": "#1c1712",
+      "--v3-halo-ink": "#faf3dc",
+      "--v3-label-outline": "#ddbd82"
+    },
+    cyanotype: {
+      "--v3-sea-deep": "#0c3a5a",
+      "--v3-sea-shallow": "#4d6c7e",
+      "--v3-veg": "#b8beb9",
+      "--v3-sand": "#8c9ca1",
+      "--v3-peak": "#ffffff",
+      "--v3-ink": "#003153",
+      "--v3-ring-ink": "#003153",
+      "--v3-halo-ink": "#faf3dc",
+      "--v3-label-outline": "#f4ead0"
+    },
+    medieRiso: {
+      "--v3-sea-deep": "#14588a",
+      "--v3-sea-shallow": "#7ec8e3",
+      "--v3-veg": "#4f7942",
+      "--v3-sand": "#f0dfa8",
+      "--v3-peak": "#ffffff",
+      "--v3-ink": "#16324a",
+      "--v3-ring-ink": "#f21d92",
+      "--v3-halo-ink": "#1bf2b5",
+      "--v3-label-outline": "#e031eb"
+    }
+  },
+
+  // #32 rework, 2026-08-30 -- per-theme font choices, moved here from
+  // being hardcoded per-theme CSS rules (e.g. `[data-theme="medieval-
+  // map"] .v3-header h1 { font-family: "Cinzel", ... }`). "" means "no
+  // override -- use the site's own default (var(--cab-font-heading) /
+  // var(--cab-font-body), Georgia/serif)", same as satellite (Topology)
+  // never having had a font override at all. Applied the same way as
+  // colors above (inline custom properties on <body>:
+  // --v3-font-heading/--v3-font-section-label/--v3-font-island-label,
+  // read via var() with the site default as fallback in
+  // cabinet-v3-style.css, so "" needs no special-casing -- an empty
+  // string is simply never set, leaving the CSS fallback to apply).
+  // Deliberately does NOT cover letter-spacing/font-weight flourishes
+  // (medieval-map/medieRiso's h1 letter-spacing, cyanotype's h1
+  // font-weight) -- those stay theme-scoped in CSS as before, a known
+  // gap: picking e.g. Cinzel as a DIFFERENT theme's heading font via the
+  // dev panel won't also pick up medieval-map's letter-spacing bonus.
+  // Only 6 fonts are real options here (Cinzel, IM Fell English, EB
+  // Garamond, Cormorant, Caveat, Space Mono) -- islands-tool.html's own
+  // Google Fonts link additionally loads Fraunces/Space Grotesk/Archivo
+  // Black, leftover from a since-merged "bathymetric" theme (see
+  // cabinet-v3-style.css's own comment on the satellite block) and
+  // referenced by no current rule -- harmless dead weight, not fixed
+  // here, same category as #24's unreferenced icon-scroll sprite.
+  fonts: {
+    // #32 rework -- one key per line throughout, same as colors above
+    // (not the more compact single-line-per-theme form this block was
+    // first written in) -- apply-config.mjs's line-anchored regex needs a
+    // real newline to bound each value; without one, a lazy match with
+    // nothing else to stop at swallows the rest of the line, corrupting
+    // whichever sibling keys followed. Caught by testing the nested case
+    // against a scratch copy before this ran anywhere near the real file.
+    satellite: {
+      heading: "",
+      sectionLabel: "",
+      islandLabel: ""
+    },
+    "medieval-map": {
+      heading: "Cinzel",
+      sectionLabel: "IM Fell English",
+      islandLabel: "EB Garamond"
+    },
+    cyanotype: {
+      heading: "Cormorant",
+      sectionLabel: "Caveat",
+      islandLabel: ""
+    },
+    medieRiso: {
+      heading: "Cinzel",
+      sectionLabel: "Space Mono",
+      islandLabel: "Space Mono"
+    }
   }
 };
+
+// Pushes v3Config.colors[theme] and v3Config.fonts[theme] onto <body> as
+// inline custom properties -- inline style outranks both the base
+// body.v3-proto block and any body.v3-proto[data-theme="X"] block in
+// cabinet-v3-style.css, so this is what actually makes a theme's colours/
+// fonts visible. Called once at load by cabinet-v3-layout.js's top-level
+// init (production AND the dev tool both import that module, so both get
+// this automatically), and again by cabinet-v3-controls.js whenever the
+// Theme dropdown changes or a colour/font field is live-edited. Falls
+// back to "medieval-map" for an unrecognised theme name (matches
+// index.template.html's own hardcoded default) rather than silently
+// applying nothing.
+export function applyThemeStyle(theme) {
+  const key = v3Config.colors[theme] ? theme : "medieval-map";
+  const colors = v3Config.colors[key];
+  Object.keys(colors).forEach(token => document.body.style.setProperty(token, colors[token]));
+
+  const fonts = v3Config.fonts[key];
+  const FONT_PROPS = { heading: "--v3-font-heading", sectionLabel: "--v3-font-section-label", islandLabel: "--v3-font-island-label" };
+  Object.keys(FONT_PROPS).forEach(role => {
+    const prop = FONT_PROPS[role];
+    const value = fonts[role];
+    if (value) document.body.style.setProperty(prop, `"${value}"`);
+    else document.body.style.removeProperty(prop);
+  });
+}
 
 // ---------------------------------------------------------------------
 // ISLAND CONFIG FIELD NOTES -- one entry per key in v3Config.island

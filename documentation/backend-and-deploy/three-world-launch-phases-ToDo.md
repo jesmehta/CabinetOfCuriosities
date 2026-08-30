@@ -741,6 +741,28 @@ own numbering note near the top) -- a move, not a re-add.
       decision on which direction (generated spirograph vs a distinct
       hand/traced graphic) before implementation, similar shape of open
       question to #30's theme-specific boat artwork.
+- [ ] **#139** Dragon management -- `v3Config.dragon` (target width, size
+      range, speed, turn rate, bob, dive/resurface timing, fill colours)
+      has NO live dev-panel controls at all, unlike `flow`/`particles`/
+      `geo`/`themePreview` -- it's hand-edited directly in
+      `cabinet-v3-data.js` only. Surfaced 2026-08-30 during the `#32`
+      copy-config investigation (see that item's own note on why `dragon`
+      is correctly excluded from copy-config's scope, precisely because
+      nothing here is live-tunable yet). Direct request, 2026-08-30: add
+      dev-panel management for this, same shape as the existing
+      flow/particle sections. Not yet scoped in detail (which fields get
+      sliders, whether dive/resurface timing needs its own subsection).
+- [ ] **#140** Boat management -- direct request, 2026-08-30, logged
+      alongside `#139`. Not yet scoped: boats (`v3Config.particles`)
+      already have partial live tuning (count, max count, coastal spawn
+      fraction, spawn-direction mode, personality mode -- see
+      `cabinet-v3-controls.js`), so this may mean expanding that existing
+      panel's coverage (e.g. size range, stuck-check thresholds aren't
+      exposed either) rather than building from zero like `#139` -- needs
+      a real scoping pass, not assumed done just because some particle
+      controls already exist. Related but distinct from `#30`'s
+      theme-specific boat ARTWORK (a swap, not a management-panel
+      question).
 
 <details>
 <summary>#64</summary>
