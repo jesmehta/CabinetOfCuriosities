@@ -70,6 +70,13 @@ repo/world) rather than duplicating their content.
   `run-now-editor.bat`) — a local-only admin server/browser UI for editing
   `now.tsv` entries and `now-data.js` sections without hand-editing either
   file. Never deployed; see `NOW-PAGE.md`'s "Local admin server".
+- `tools/backend-home.js` (+ `tools/backend-home-ui/`, launched via
+  `run-backend-home.bat`, added 2026-08-30) — a local admin dashboard
+  linking every other local tool: start/status for the Cabinet/Now
+  editor servers, buttons for build/publish scripts that previously had
+  no UI trigger (`build-static.mjs`, `landing-v3/promote.mjs`,
+  `generate_sitemap.py`, an `mkdocs build --strict` check), a
+  documentation-file index, and a gotchas section. Never deployed.
 - `archived-landing-pages/v2/source/` — the one-time island-shape
   generator (`generate-cabinet-map.js`) and its seed config
   (`cabinet-map-source.json`) for the v2 map, kept for reproducibility.
@@ -181,6 +188,16 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### `backend-home.js` dashboard; `promote.mjs` automates docs/ promotion (2026-08-30)
+
+`tools/backend-home.js` (`run-backend-home.bat`, port 5959): a local
+admin dashboard linking every other local tool and script — see
+"Structure" above. `landing-v3/promote.mjs`: automates the previously-
+manual `docs/` promotion step (copy + dev-relative asset-path rewrite +
+headless-Chromium verify), closing a real gap `Landing-page-notes.2.0.md`
+documents — a shipped bug from doing this step by hand. Kept separate
+from `build-static.mjs`, which is also run standalone while iterating.
 
 ### Cloudflare Web Analytics — MkDocs + landing page beacon (2026-08-29)
 
