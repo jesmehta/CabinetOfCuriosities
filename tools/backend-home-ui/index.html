@@ -136,7 +136,9 @@
 
   <section class="block">
     <h2>Documentation</h2>
-    <p class="block-sub">Rendered by GitHub (or claude.ai for the one diagram), not this page. Ordered broadest-scope first, specific features/tools last. Paths reflect the 2026-08-30 <code>documentation/</code> reorg into one folder per feature (technical doc + conversation-log companion, per <code>DOCUMENTATION-GUIDE.md</code>).</p>
+    <p class="block-sub">Rendered by GitHub (or claude.ai for the one diagram), not this page. Split the same way <code>FILE-MANIFEST.md</code> itself splits <code>documentation/</code>: system-wide docs flat at its root, feature docs one folder each (technical doc + conversation-log companion, per <code>DOCUMENTATION-GUIDE.md</code>).</p>
+
+    <h3 class="subhead">System-wide</h3>
     <table class="doctable">
       <tbody>
         <tr>
@@ -153,12 +155,23 @@
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/DOCUMENTATION-GUIDE.md" target="_blank" rel="noopener">DOCUMENTATION-GUIDE.md</a></td>
-          <td>The documentation standard itself -- the three-tier (technical doc / conversation log / todo) structure every feature folder below follows. Read before adding a new doc file anywhere in this repo.</td>
+          <td>The documentation standard itself -- the three-tier (technical doc / conversation log / todo) structure every feature below follows. Read before adding a new doc file anywhere in this repo.</td>
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/conversation-backend-and-deploy.md" target="_blank" rel="noopener">conversation-backend-and-deploy.md</a></td>
           <td>Conversation log for infra/backend work that doesn't map onto one feature -- Cloudflare rollout, the <code>documentation/</code> reorg itself, launch-milestone tracking. New infra topics become a new Part N here, not a new file.</td>
         </tr>
+        <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cloudflare-web-analytics-setup.md" target="_blank" rel="noopener">cloudflare-web-analytics-setup.md</a></td>
+          <td>How the analytics beacon is wired into every page, across all three sites.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subhead">Features</h3>
+    <table class="doctable">
+      <tbody>
+        <tr class="group-row"><td colspan="2">v3 map <span>-- landing-v3/, this dashboard's Build &amp; publish pipeline above</span></td></tr>
         <tr>
           <td><a href="https://claude.ai/code/artifact/b69fceba-1590-4897-8c13-75a61bcf7f46" target="_blank" rel="noopener">Data &rarr; Map &rarr; Page<span class="tag">Claude artifact</span></a></td>
           <td>Hand-made visual map of the landing-v3 build pipeline (TSVs &rarr; build-cabinet-content.js &rarr; cabinet-v3-layout.js &rarr; islands-tool.html / build-static.mjs &rarr; index.html). Made before <code>promote.mjs</code> existed, so it stops at "index.html, frozen snapshot" -- doesn't show the docs/ promotion step (tracked as ToDo #138). Still the clearest orientation to everything upstream of that.</td>
@@ -172,6 +185,12 @@
           <td>Narrative process log for the v3 rebuild -- not a duplicate of the notes above.</td>
         </tr>
         <tr>
+          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/tree/main/documentation/landing-v3-notes" target="_blank" rel="noopener">landing-v3-notes/</a></td>
+          <td>The rest of the folder: the to-do tracker, supporting rationale, multi-repo-assembly concept note, open colour-scheme proposals (folder).</td>
+        </tr>
+
+        <tr class="group-row"><td colspan="2">Cabinet TSV editor <span>-- content/cabinet-*.tsv, this dashboard's Cabinet TSV editor card above</span></td></tr>
+        <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cabinet-editor/CABINET-EDITOR.md" target="_blank" rel="noopener">CABINET-EDITOR.md</a></td>
           <td>Design decisions for the Cabinet TSV editor above.</td>
         </tr>
@@ -179,6 +198,8 @@
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cabinet-editor/conversation-cabinet-editor.md" target="_blank" rel="noopener">conversation-cabinet-editor.md</a></td>
           <td>Conversation-log companion to CABINET-EDITOR.md.</td>
         </tr>
+
+        <tr class="group-row"><td colspan="2">/now page <span>-- content/now.tsv, this dashboard's Now TSV editor card above</span></td></tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/now/NOW-PAGE.md" target="_blank" rel="noopener">NOW-PAGE.md</a></td>
           <td>Design decisions for the <code>/now</code> page and its editor.</td>
@@ -187,6 +208,8 @@
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/now/conversation-now-page.md" target="_blank" rel="noopener">conversation-now-page.md</a></td>
           <td>Conversation-log companion to NOW-PAGE.md.</td>
         </tr>
+
+        <tr class="group-row"><td colspan="2">Sitemap &amp; Content Inventory <span>-- tools/generate_sitemap.py, this dashboard's Refresh sitemap step above</span></td></tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/sitemap/SITEMAP.md" target="_blank" rel="noopener">SITEMAP.md</a></td>
           <td>Technical reference for <code>generate_sitemap.py</code> -- its regex-based nav scanner, what it catches, and CONTENT-INVENTORY.md's hardcoded-output-path limitation.</td>
@@ -197,15 +220,7 @@
         </tr>
         <tr>
           <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/CONTENT-INVENTORY.md" target="_blank" rel="noopener">CONTENT-INVENTORY.md</a></td>
-          <td>Auto-generated by Refresh sitemap -- cross-checks TSV content against <code>mkdocs.yml</code>'s nav.</td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/blob/main/documentation/cloudflare-web-analytics-setup.md" target="_blank" rel="noopener">cloudflare-web-analytics-setup.md</a></td>
-          <td>How the analytics beacon is wired into every page.</td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/jesmehta/CabinetOfCuriosities/tree/main/documentation/landing-v3-notes" target="_blank" rel="noopener">landing-v3-notes/</a></td>
-          <td>The to-do tracker, supporting rationale, multi-repo-assembly concept note, and open colour-scheme proposals -- everything else about the v3 map system, including the two rows above (folder).</td>
+          <td>Auto-generated output -- cross-checks TSV content against <code>mkdocs.yml</code>'s nav. Physically stays at <code>documentation/</code> root (script's output path is hardcoded), grouped here by function instead.</td>
         </tr>
       </tbody>
     </table>

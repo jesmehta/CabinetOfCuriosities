@@ -85,11 +85,17 @@ main{ padding:26px 32px 90px; max-width:980px; }
 .output.ok{ background:var(--card); border-color:var(--success); color:var(--success); }
 .output.error{ background:var(--danger-soft); border-color:var(--danger); color:var(--danger); }
 
-/* documentation table */
-.doctable{ width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--hairline); border-radius:8px; overflow:hidden; }
+/* documentation tables */
+.subhead{
+  font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--ink-soft); margin:22px 0 8px; font-weight:700;
+}
+.subhead:first-of-type{ margin-top:0; }
+.doctable{ width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--hairline); border-radius:8px; overflow:hidden; margin-bottom:6px; }
+.doctable + .subhead{ margin-top:26px; }
 .doctable td{ padding:10px 16px; border-top:1px solid var(--hairline); vertical-align:baseline; }
 .doctable tr:first-child td{ border-top:none; }
-.doctable tr:nth-child(even){ background:var(--paper-alt); }
+.doctable tbody tr:not(.group-row):nth-child(even){ background:var(--paper-alt); }
 .doctable td:first-child{ width:1%; white-space:nowrap; }
 .doctable a{ font-family:var(--serif); font-weight:700; font-size:13.5px; color:var(--accent); text-decoration:none; }
 .doctable a:hover{ text-decoration:underline; }
@@ -99,6 +105,12 @@ main{ padding:26px 32px 90px; max-width:980px; }
   color:var(--wip); border:1px solid var(--wip); border-radius:999px; padding:1px 7px;
   margin-left:7px; white-space:nowrap; vertical-align:middle;
 }
+.doctable tr.group-row td{
+  background:var(--accent-soft); font-family:var(--serif); font-weight:700; font-size:12.5px;
+  color:var(--accent); padding:8px 16px; white-space:normal;
+}
+.doctable tr.group-row span{ font-family:var(--mono); font-weight:400; font-size:10.5px; color:var(--ink-soft); margin-left:8px; }
+.doctable tr.group-row:first-child td{ border-top:none; }
 
 /* gotchas */
 .gotchas{ margin:0; padding-left:20px; display:flex; flex-direction:column; gap:10px; }
