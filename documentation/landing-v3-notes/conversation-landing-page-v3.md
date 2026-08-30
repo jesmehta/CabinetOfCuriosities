@@ -75,12 +75,12 @@ and reasoning only.
 The visual-polish phase opened with a single message laying out the
 whole scope at once:
 
-> things to do: better colours for land and sea; offset waves like
+> **things to do: better colours for land and sea; offset waves like
 > previous version; mini-features (seaserpent, boats sailing in smooth
 > flows not randomly moving, wave-like pattern on the waters); stretch
 > goal: a flowfield effect that pushes currents across the map, and the
 > wave patterns and ships flow along that as particles... Discuss this
-> with me further.
+> with me further.**
 
 Followed immediately by per-item direction on all of it at once:
 
@@ -726,12 +726,12 @@ up on its own, unprompted by any specific bug or request -- just picked
 up as the next open thread. Asked for a technical proposal before any
 code, direction given fully worked out already:
 
-> I am ok with precomputed fields, and the islands are either no-go
+> **I am ok with precomputed fields, and the islands are either no-go
 > areas, or there is a strong vector along the island edge that
 > transports particles from one edge to the other until the main
 > current takes them away (which sounds comutationally bad atleast for
 > the initiation, it may be ok as a precompute) or actively repulsing so
-> thats an easier composite vector field to compute.
+> thats an easier composite vector field to compute.**
 
 Plus: particles start as small ellipses, spawn/despawn or reset off-
 canvas (explicitly framed as "whichever's easier," not a hard
@@ -776,9 +776,9 @@ Once the debug toggles were working, screenshots got taken (Playwright,
 saved to `dev-screenshots/`) to describe what the field looked like
 before asking whether to proceed further. Response, verbatim:
 
-> I am the human in the loop, it is faster for me to see the updated
+> **I am the human in the loop, it is faster for me to see the updated
 > page and say yes no ok than you to do the screenshot workflow, so use
-> me.
+> me.**
 
 Alongside a second, more mechanical correction: a working Playwright
 install had been set up and torn down multiple times across this
@@ -869,8 +869,8 @@ triggered a section's real navigation link; positions checked too late,
 after several animation frames had already carried the boat onward).
 Response once reported:
 
-> you could have just asked me, I've been playin with it for the past 15
-> mins
+> **you could have just asked me, I've been playin with it for the past 15
+> mins**
 
 The user had been live-testing the exact feature, in their own browser,
 in parallel, the entire time. Extends the existing "use me" lesson (see
@@ -929,8 +929,8 @@ their full range on request -- "raise the max on both to 1000" -- which
 is what actually surfaced the deeper issue underneath all the spawn-
 distribution tuning:
 
-> Because all the particles are following the same current and speed, it
-> looks like a giant trash drift rather an individual boats.
+> **Because all the particles are following the same current and speed, it
+> looks like a giant trash drift rather an individual boats.**
 
 At the shipped default (130) this isn't obvious enough to matter -- "I
 can live with this" -- but it's a real, correctly-diagnosed structural
@@ -2676,7 +2676,7 @@ evidence either way.
 
 **#21 was the real one.** The third item wasn't a small miss:
 
-> "21 - theme swap - doesnt work fully - the transition over 450 ms is
+> **"21 - theme swap - doesnt work fully - the transition over 450 ms is
 > ok, but it shows topology as a flat version, and the hover still shows
 > the correct topology colours, when hover should show the original
 > cloudy glow when within topology. The In-topology hover behaviour is
@@ -2685,7 +2685,7 @@ evidence either way.
 > place, but if youre scrolled to the top of the page, then the H1 frame
 > is different sizes in both themes, and so the page moves up and down
 > by 10ish px everytime its swapped because it's attached to the upper
-> frame."
+> frame."**
 
 Four distinct things in one message, and they split cleanly by cause.
 The page-jump was genuinely small -- Cinzel (Medieval's H1 font) and the
@@ -2728,10 +2728,10 @@ the swap as colour-only, double the static payload, or a partial
 client-side re-render -- never got as far as a decision. Direct
 correction arrived first:
 
-> "21 - The Hover ALREADY HAS all of TOPOLOGY built in!! You just have
+> **"21 - The Hover ALREADY HAS all of TOPOLOGY built in!! You just have
 > to do the hover equivalent of the entire canvas and fix it! I dont
 > see why you keep wanting a new big bang every time an asteroid has to
-> change orbit."
+> change orbit."**
 
 It was right, and checking confirmed it immediately: the theme x hover
 feature, built and shipped weeks earlier (v3.7.32-v3.7.44), already
@@ -2761,10 +2761,10 @@ The v3.7.50 fix looked right in isolation -- clean round-trip, real
 bands, real shadows, verified with Playwright before shipping. It broke
 on the very next real look, with a screenshot attached:
 
-> "neightbourig islands, esp non-entry ones, and the sectional
+> **"neightbourig islands, esp non-entry ones, and the sectional
 > boundaries, are being occluded. Dont render individual islands. Maybe
 > have a full topology also built alongside the per island and per
-> section builds."
+> section builds."**
 
 The screenshot showed exactly what the sentence described: a small
 filler island between Vera Molnar and Circle Packing Library reduced to

@@ -2,7 +2,7 @@
 
 Companion to [`CABINET-EDITOR.md`](CABINET-EDITOR.md) (architecture, routes,
 schema, changelog, verification) in the same relationship
-[`conversation-landing-page-v3.md`](conversation-landing-page-v3.md) has to
+[`conversation-landing-page-v3.md`](../landing-v3-notes/conversation-landing-page-v3.md) has to
 `Landing-page-notes.2.0.md`: that file is reference (what the system is and
 how it works), this one is the reasoning behind it (what was asked, what got
 tried and rejected, why a decision landed where it did).
@@ -24,7 +24,7 @@ for the parts that are really just technical record.
 The opening message laid out the whole shape of the ask at once, closely
 modeled on an existing precedent rather than invented fresh:
 
-> Have a look at the cabinet repos docuemtation about building TSV editor
+> **Have a look at the cabinet repos docuemtation about building TSV editor
 > interfaces. Use the following as a guide as well: Editor server script →
 > tools/cabinet-editor.js (or similar name) — a local-only Node HTTP admin
 > server, same as now-editor.js, never shipped to docs/. Editor UI
@@ -39,7 +39,7 @@ modeled on an existing precedent rather than invented fresh:
 > tools/cabinet-editor-ui/cabinet-data-editor.html is the current initial
 > version of this. Tell me what all needs to be added? I am not fully
 > wedded to the interface as shown in the html file, open to discussion and
-> changes. Discuss and comment next steps.
+> changes. Discuss and comment next steps.**
 
 That last line mattered: the existing `cabinet-data-editor.html` was a rough
 sketch, not a spec to defer to. Rather than guess at the open questions it
@@ -70,20 +70,20 @@ out of the way of the fields that actually do something. That answer is what
 Before any of the actual build started, a scope note reframed what "done"
 should mean for this pass:
 
-> Scope note - ideally i'd like it if copies of the same editor or the same
+> **Scope note - ideally i'd like it if copies of the same editor or the same
 > editor as a local tool could work straight off the bat for fffx and
 > bookshelf, or at least, a copy of it could be added to those repos, and
 > all 3 copies either update simultaneously as necessary, or diverge as
-> necessary.
+> necessary.**
 
 Rather than design one shared cross-repo engine up front — three schemas,
 none of them fully known yet, one of them (fffx) believed to have no build
 pipeline at all — the direction was to build Cabinet's own copy first and let
 the others follow once the pattern had actually been used:
 
-> Start off on the Cabinet version, we'l worry about the rest later, and
+> **Start off on the Cabinet version, we'l worry about the rest later, and
 > base them off this one. IF they diverge, ok, if they can be made to
-> cohere, also ok.
+> cohere, also ok.**
 
 That's the reasoning `CABINET-EDITOR.md`'s "Scope of this pass" section
 states as settled fact — it wasn't a default, it was a specific call to defer
@@ -104,8 +104,8 @@ not after.
 A follow-up instruction, sent mid-review rather than up front, changed what
 "safe to delete" meant for the rest of the list:
 
-> also compare if any of the to be deleted attributes have analogues in
-> fffx or bookshelf tsvs
+> **also compare if any of the to be deleted attributes have analogues in
+> fffx or bookshelf tsvs**
 
 That distinction — "unused in Cabinet" versus "not part of what the whole
 Cabinet/Bookshelf/fffx ecosystem shares" — is a materially different
@@ -115,8 +115,8 @@ turned up the real mistake: fffx was believed, going in, to have no
 `content/`/build pipeline at all — wrong, it existed, just hadn't been pulled
 locally yet. Told directly, once noticed:
 
-> fffx had stuff, but it was on origin, hadnt been pulled. Have a look
-> again.
+> **fffx had stuff, but it was on origin, hadnt been pulled. Have a look
+> again.**
 
 Pulling and reading fffx's real `fffx-entries.tsv`/`build-fffx-content.js`
 alongside Bookshelf's own schema surfaced the actual problem: `location` and
@@ -133,9 +133,9 @@ Before anything got restored, one more consideration was raised — the design
 doc calling something "Cabinet-exclusive" isn't automatically the last word
 either:
 
-> even if world-systems.md calls something cabinet exclusive, cabinet
+> **even if world-systems.md calls something cabinet exclusive, cabinet
 > itself may have evolved out of it, and the documentation may need
-> updating. I'll run a separate pass over all 3 simultaneously later.
+> updating. I'll run a separate pass over all 3 simultaneously later.**
 
 That's a real qualifier on the lesson, not just a restatement of it: the
 design doc outranks "grep the current renderer" as a source of truth for
@@ -176,13 +176,13 @@ using the Entries tab at its full 15-column width, not from a pre-planned
 feature list. The first round arrived as one dense list covering several
 related problems at once:
 
-> entries tab : - need to sort by each column head, esp section, order,
+> **entries tab : - need to sort by each column head, esp section, order,
 > weight, status, but most of them would be useful - resizable columns -
 > long text is unreadable - current resizeable heights of textboxes is
 > individual text boxes - other text boxes in the same row still dont
 > extend even when they need to - order and the updown arrows should be
 > closer to each other since the arrows affect order - so order needs to be
-> before or after id
+> before or after id**
 
 Read as a single request rather than six separate ones, since the items were
 genuinely connected — a browsable grid needs sorting, resizing, readable
@@ -196,8 +196,8 @@ Row-height sync solved "a taller textarea leaves its siblings mismatched,"
 but only after something had already been dragged taller by hand. A direct
 follow-up asked for a faster way to see everything at once:
 
-> an expand-collapse button to expand or compactify all the rows that need
-> extra height for their text fields?
+> **an expand-collapse button to expand or compactify all the rows that need
+> extra height for their text fields?**
 
 Answered with one toggle per tab, applying the same underlying height logic
 across every row at once instead of one drag at a time (v1.4).
@@ -205,10 +205,10 @@ across every row at once instead of one drag at a time (v1.4).
 The last round was a precise bug report, not a vague "something looks off,"
 and it read that way from the first sentence:
 
-> weight and order columns - because they are right aligned not left since
+> **weight and order columns - because they are right aligned not left since
 > numbers - get hidden on column resize - the numbers should start from the
 > visible right edge and if needed get hidden by the left edge, unlike the
-> text fields
+> text fields**
 
 That precision mattered: it named the exact expected behaviour (numbers
 should clip from the *left* on narrowing, keeping the rightmost/least-
