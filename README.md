@@ -199,6 +199,73 @@ headless-Chromium verify), closing a real gap `Landing-page-notes.2.0.md`
 documents — a shipped bug from doing this step by hand. Kept separate
 from `build-static.mjs`, which is also run standalone while iterating.
 
+### Real `h2`/`h3` heading outline for the map's sections/entries (#70, 2026-08-30)
+
+Section/island labels on the v3 map are SVG `<text>`, not real HTML
+headings — invisible to screen-reader heading navigation and, per best
+practice (unverified locally — no feedback loop for actual search
+impact), weaker for SEO than a real tag. Rather than restructure the
+visual labels themselves, added a parallel, visually-hidden HTML layer
+(`renderSemanticOutline()` in `cabinet-v3-layout.js`, one real `h2` per
+section and `h3` per entry, built from the same data the SVG map
+already reads) alongside them. Deliberately scoped down from the
+original plan after direct feedback during design: no `aria-hidden`/
+`aria-labelledby` de-duplication wiring (screen readers aren't the
+current priority for this highly visual map), WIP entries included
+without exception. See
+`documentation/landing-v3-notes/Landing-page-notes.2.0.md`'s `v3.7.68`
+entry for the full mechanism and rejected alternatives,
+`conversation-landing-page-v3.md` for the design discussion that cut
+the scope down from the initial proposal.
+
+### Launch milestone scheme: `launch-beta` tag (#59, 2026-08-30)
+
+Two-stage naming resolved for what "launched" actually means: the site
+has been live at `cabinetofcuriosities.in` since the v3 merge, but
+essentials (About page, colophon writing) were still open, so calling
+that "launched" would overclaim. `launch-beta` (annotated git tag,
+created 2026-08-30, pointing at the actual 2026-08-23 merge commit) —
+live, functional, not yet feature-complete, links not yet publicly
+shared. `launched` — a future marker, applied once Phase 0-2 are done
+or largely done AND links are actually being distributed publicly, a
+real-world event rather than a checklist percentage. See
+`documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`'s
+`#59` entry.
+
+### Content Inventory auto-generated instead of hand-maintained (#126, 2026-08-30)
+
+`tools/generate_sitemap.py` extended with a second, local-only job:
+cross-referencing `content/cabinet-*.tsv` against `mkdocs.yml`'s own nav
+tree, writing `documentation/CONTENT-INVENTORY.md`. Replaces the old
+hand-maintained Content Inventory table in the ToDo tracker, which had
+already gone stale twice by the time it was replaced. First run
+immediately caught two genuine duplicate hrefs and fixed a real
+staleness bug in `docs/sitemap.md` itself. See
+`documentation/sitemap/SITEMAP.md` for the mechanism (and two claims
+about it later corrected after a direct code review — see that file's
+own `v1.2`/`v1.3` changelog entries), `conversation-sitemap.md` for the
+design reasoning.
+
+### Cabinet TSV editor — local admin server (2026-08-29 to 2026-08-30)
+
+`tools/cabinet-editor.js` (`run-cabinet-editor.bat`, port 5858) added:
+same architecture as `tools/now-editor.js` — a shared TSV parse/
+serialize/validate module (`tools/cabinet-tsv.js`) feeding both
+`build-cabinet-content.js` and a local admin server/browser UI for
+`content/cabinet-sections.tsv`/`cabinet-entries.tsv`, replacing an
+earlier throwaway HTML sketch. Not a clean pass throughout: v1.1 trimmed
+several unread v2-era schema columns, then v1.2 had to partially reverse
+that after checking `WORLD-SYSTEMS.md` directly rather than trusting a
+grep of the current renderer alone — `location`/`relatedLinks` turned
+out to be standard fields the whole Cabinet/Bookshelf/fffx ecosystem
+shares, not dead Cabinet-only columns. v1.3-v1.5 added sortable/
+resizable columns, a text expand/compact toggle, and fixed real UI bugs
+(numeric-column clipping, a resize drag misfiring as a sort) found
+through actual use. See `documentation/cabinet-editor/CABINET-EDITOR.md`
+for full design decisions and the complete changelog,
+`conversation-cabinet-editor.md` for the design reasoning and the
+schema-correction story.
+
 ### Cloudflare Web Analytics — MkDocs + landing page beacon (2026-08-29)
 
 Added tracking for Cabinet, per `documentation/cloudflare-web-analytics-setup.md`.
@@ -221,6 +288,26 @@ items #135/#136. **Same-day follow-up**: `archived-landing-pages/`
 missed, despite being genuinely deployed and Colophon-linked — added to
 all 28 HTML files there too, scripted, pure addition with no
 visual/behavioural change.
+
+### Cabinet file/folder reorganization + documentation-folder move (2026-08-29)
+
+Five-phase reorg (`#129`-`#134`), planned and approved before any file
+moved ("Dont execute" was the explicit instruction for the first pass):
+confirmed-dead v1/v2 code removed from `docs/assets/`, legacy files
+relocated into the archive tree, `landing-v3/`'s own internals regrouped
+by actual role (traced via real `import`/`<script src>` graphs, which
+caught two real load-bearing bugs a doc-mention grep would have missed),
+loose untracked files cleared. Same day, a follow-up pass gathered every
+root-level project doc — plus `landing-v3/`'s own four documentation
+files — into `documentation/` (`landing-v3-notes/` for the latter),
+tracked as real numbered items with before/after mappings rather than
+left as silent commits. `FILE-MANIFEST.md` (new) is the resulting
+exhaustive per-file map. Reorganized again 2026-08-30 into one folder
+per feature (`now/`, `cabinet-editor/`, `landing-v3-notes/`, `sitemap/`)
+— see `DOCUMENTATION-GUIDE.md`. See
+`documentation/landing-v3-notes/three-world-launch-phases-ToDo.md`'s
+`#129`-`#134` entries and `conversation-backend-and-deploy.md`'s Part 2
+for the full reasoning and the bugs caught along the way.
 
 ### `/now` v2.0 — moved from standalone now.html to a generated now.md (2026-08-29)
 
