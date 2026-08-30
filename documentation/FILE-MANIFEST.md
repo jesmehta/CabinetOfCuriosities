@@ -34,13 +34,13 @@ three, so it can't move here alone without desyncing the other two repos.
 
 Reorganized 2026-08-30 into one folder per feature/subsystem that has
 more than one doc file — a technical-reference doc plus a
-conversation-log companion, per `CONVERSATION-LOG-GUIDE.md`'s standard.
+conversation-log companion, per `DOCUMENTATION-GUIDE.md`'s standard.
 A subsystem with only one doc file stays flat at `documentation/` root
 rather than getting a single-file folder of its own.
 
 | File | Role |
 |---|---|
-| `CONVERSATION-LOG-GUIDE.md` | The three-tier documentation standard (concept → technical reference/changelog → conversation-log) and the folder-per-feature convention this whole section follows. Read this before adding any new doc file here. |
+| `DOCUMENTATION-GUIDE.md` | The full documentation standard: the four things every piece of work needs on record (concept/need, decisions/intent, changelog, todo/watch-out-for), the three tiers that satisfy them, and the folder-per-feature convention this whole section follows. Read this before adding any new doc file here. |
 | `conversation-backend-and-deploy.md` | Shared conversation-log for backend/deploy/site-wide infrastructure work that doesn't map onto one page or tool — no dedicated folder, per the standing rule "if it doesn't have a place to live, it lives in this doc." Three parts so far: Cloudflare Web Analytics rollout, the file/folder reorganization (`#129`-`#134`), launch-milestone/priority tracking (`#58`/`#59`). New infra topics become a new `# Part N` here, not a new file. |
 | `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md` #135/#136. Its own conversation-log lives in `conversation-backend-and-deploy.md` (Part 1), not a same-named sibling file — see that doc's own note on why. |
 | `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |

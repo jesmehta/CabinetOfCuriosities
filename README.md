@@ -83,7 +83,7 @@ repo/world) rather than duplicating their content.
   `cabinet-v1-before-map` in git.
 - `documentation/` — non-root-required project documentation, organized
   one folder per feature where a feature has more than one doc file
-  (2026-08-30, see `CONVERSATION-LOG-GUIDE.md`): `now/` (`NOW-PAGE.md`,
+  (2026-08-30, see `DOCUMENTATION-GUIDE.md`): `now/` (`NOW-PAGE.md`,
   `conversation-now-page.md`, and `now-page-helpers/`, the superseded
   pre-code spec); `cabinet-editor/` (`CABINET-EDITOR.md`,
   `conversation-cabinet-editor.md`); `landing-v3-notes/`
@@ -96,7 +96,7 @@ repo/world) rather than duplicating their content.
   `conversation-backend-and-deploy.md` (Cloudflare, the file/folder
   reorg, launch milestones — anything backend/site-wide with no other
   home), `cloudflare-web-analytics-setup.md`, `FILE-MANIFEST.md` (the
-  exhaustive per-file role listing), `CONVERSATION-LOG-GUIDE.md`, and
+  exhaustive per-file role listing), `DOCUMENTATION-GUIDE.md`, and
   `CONTENT-INVENTORY.md` (auto-generated, stays wherever
   `tools/generate_sitemap.py` writes it). Everything here *could* live
   at root but doesn't need to, unlike `README.md`/`WORLD-SYSTEMS.md` — see
