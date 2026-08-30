@@ -1208,6 +1208,10 @@ marked as such.*
       Wild wild web into a real island while those three still also live
       under `interfaces-data-texts` would make the duplication visible
       on the map itself, not just in the docs sidebar.
+
+<details>
+<summary>#70</summary>
+
 - [x] **#70** Check whether section/island labels are real headings (`h2` etc.)
       or SVG `<text>`, and what that implies for SEO/search, page
       structure and responsiveness -- **quick check, 2026-08-24**: they're
@@ -1293,6 +1297,8 @@ marked as such.*
       `landing-v3/index.template.html` or
       `landing-v3/shared/cabinet-v3-style.css` edit, same as before this
       change.
+
+</details>
 
 <details>
 <summary>#71</summary>
@@ -1458,6 +1464,9 @@ tools/build-now-content.js`, `mkdocs build`, then from `landing-v3/`:
 and a screenshot diff against the prior item's baseline. Do not start
 the next item on a red gate.
 
+<details>
+<summary>#129</summary>
+
 - [x] **#129** Reorg 1/5 -- safety net. Tag current state
       (`git tag pre-file-reorg`) as a one-command rollback point before
       any move. Confirm `mkdocs` is installed locally (`pip install -r
@@ -1472,6 +1481,12 @@ the next item on a red gate.
       relative links in `colophon.md`/`teaching.md`/`fffx/PackingShapes.md`),
       none of it new, none of it an error. Verification gate is now
       real, not aspirational.
+
+</details>
+
+<details>
+<summary>#130</summary>
+
 - [x] **#130** Reorg 2/5 -- remove confirmed-dead v1/v2 code sitting in
       `docs/assets/`, unreferenced by anything live and already
       byte-identical to copies preserved at
@@ -1489,6 +1504,12 @@ the next item on a red gate.
       nothing live ever loaded these files), zero console/request
       errors on a fresh headless render. `docs/index.html` did not need
       re-promotion since its own input didn't change.
+
+</details>
+
+<details>
+<summary>#131</summary>
+
 - [x] **#131** Reorg 3/5 -- relocate legacy root files into the archive
       tree, updating every doc that cross-references their old path
       (`README.md`, `WORLD-SYSTEMS.md`, `NOW-PAGE.md`, and each moved
@@ -1525,6 +1546,12 @@ the next item on a red gate.
       build --strict` exit 0, a follow-up repo-wide grep for any
       remaining non-archive/non-historical hit on the old paths came back
       empty.
+
+</details>
+
+<details>
+<summary>#132</summary>
+
 - [x] **#132** Reorg 4/5 -- regroup `landing-v3/`'s internals by actual
       role (traced via real `import`/`<script src>` graphs, not by file
       type), moved and verified one group at a time, A before B before
@@ -1576,6 +1603,12 @@ the next item on a red gate.
       established convention). Zero console/request errors on the real
       promoted `docs/index.html`, compass-rose screenshot confirms all
       four points still render identically to the `#131` baseline.
+
+</details>
+
+<details>
+<summary>#133</summary>
+
 - [x] **#133** Reorg 5/5 -- two loose ends, neither auto-actioned:
       `content/now.tsv.bak` (untracked stray backup, likely disposable --
       confirm not read by `tools/build-now-content.js` before deleting)
@@ -1587,10 +1620,15 @@ the next item on a red gate.
       still untracked, still there. `node tools/build-now-content.js` and
       `mkdocs build --strict` both clean after the deletion.
 
+</details>
+
 **Reorg closed, 2026-08-29.** All five items (`#129`-`#133`) done and
 pushed to `main`. `pre-file-reorg` (tag, `06a3813`) remains as a
 rollback point if anything surfaces later that this pass's
 verification gates didn't catch.
+
+<details>
+<summary>#134</summary>
 
 - [x] **#134** Follow-up reorg, same day: gather root-level project
       documentation into `documentation/`, and fix a real inconsistency
@@ -1650,6 +1688,8 @@ by direct request. Renaming `landing-v3/` itself was also discussed and
 raised no functional blocker (nothing executable hardcodes the name --
 only ~9 docs reference it in prose) but was not requested; not tracked here
 unless it is.
+
+</details>
 
 ---
 
@@ -1794,6 +1834,12 @@ section to empty out.*
       on its own: no manual layout work needed, screenshot showed all 4
       Fab islands rendered correctly on the first build. `mkdocs build`
       clean, Playwright confirms zero console errors.
+
+</details>
+
+<details>
+<summary>#124</summary>
+
 - [x] **#124** Screenshot review workflow -- **done, 2026-08-24**: direct
       feedback that review screenshots were "after"-only (no before) and
       sat in the session scratchpad instead of somewhere easy to reach.
