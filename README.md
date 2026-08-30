@@ -94,9 +94,12 @@ repo/world) rather than duplicating their content.
   `conversation-now-page.md`, and `now-page-helpers/`, the superseded
   pre-code spec); `cabinet-editor/` (`CABINET-EDITOR.md`,
   `conversation-cabinet-editor.md`); `landing-v3-notes/`
-  (`Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`, and
-  open colour-scheme proposals — the v3 map system's own
-  documentation); `sitemap/` (`conversation-sitemap.md`, no dedicated
+  (`Landing-page-notes.2.0.md`, `conversation-landing-page-v3.md`, open
+  colour-scheme proposals, `cabinet-v3-config-reference.md` (consolidated
+  per-field reasoning for every dev-panel-tunable config value), and
+  `conversation-copy-config-resolution.md` (`#32`'s own conversation-log,
+  deliberately separate from the visual-polish one) — the v3 map
+  system's own documentation); `sitemap/` (`conversation-sitemap.md`, no dedicated
   technical doc yet — see that file's own note); `backend-and-deploy/`
   (`BACKEND-AND-DEPLOY.md` — the file/folder reorg and launch-milestone
   scheme, absorbed rather than split out — plus the larger standalone
@@ -195,6 +198,27 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### Copy config reworked: full state export/import, colours/fonts moved into JS (#32, 2026-08-30)
+
+The v3 dev panel's "Copy config" button used to export only
+`v3Config.island`, leaving six other live-tunable state pools
+(`flow`/`particles`/`geo`/`themePreview`/`pack.centerBias`/theme colours)
+with no way back into source at all. Now exports everything the panel
+can live-edit, applied back via a new `apply-config.mjs`
+(`landing-v3/`) that edits `cabinet-v3-data.js` per-key rather than as a
+whole-block paste, preserving the file's own extensive inline reasoning
+comments. Theme colours and fonts — previously CSS-only, with zero JS
+representation — moved into `v3Config.colors`/`v3Config.fonts`, applied
+at load via a new shared `applyThemeStyle()` so production picks them up
+too, not just the dev tool; the dev panel gained per-theme font-picker
+dropdowns alongside its existing colour swatches. See
+`documentation/landing-v3-notes/Landing-page-notes.2.0.md`'s `v3.7.69`
+entry for the full mechanism and two real bugs caught in testing before
+either reached the real file, `cabinet-v3-config-reference.md` for what
+every tunable field actually does, and
+`conversation-copy-config-resolution.md` for the design conversation
+behind the scoping decisions.
 
 ### `backend-home.js` renamed to `admin-controls.js` (2026-08-30)
 
