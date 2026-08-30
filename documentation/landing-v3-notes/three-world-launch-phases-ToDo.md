@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Immediate priorities (2026-08-30)](#immediate-priorities-2026-08-30)
+- [Launch milestones](#launch-milestones)
 - [Phase 0 -- v3-prototype punch list](#phase-0----v3-prototype-punch-list)
   - [Punch list (sea serpent through colophon)](#punch-list-sea-serpent-through-colophon)
   - [Found via documentation survey (v3.6.6 doc audit)](#found-via-documentation-survey-v366-doc-audit)
@@ -101,6 +102,23 @@ Backburner, deliberately not urgent -- direct instruction, 2026-08-30:
   opportunistically alongside other work rather than blocked on.
 - **`#37`/`#39`** (map label overflow, desktop/mobile QA) -- backburner
   for now.
+
+## Launch milestones
+
+Two-stage scheme, decided 2026-08-30 (resolving `#59`): the site has
+been live at `cabinetofcuriosities.in` since the `landing-v3-prototype`
+merge, but that's not the same thing as "launched" -- the about page,
+colophon's real writing, and a few other essentials are still open.
+
+- **`launch-beta`** (annotated git tag, created 2026-08-30, pointing at
+  `7f3a638` -- the actual 2026-08-23 merge-to-main commit): v3 is live
+  and functional, not yet feature-complete, links not yet publicly
+  shared.
+- **`launched`** (not yet applied): once BOTH Phase 0-2 are done or
+  largely done AND the user actually starts publicly distributing the
+  site's links. Deliberately gated on a real-world action, not a
+  checklist percentage -- don't auto-apply this off item counts alone,
+  confirm with the user first.
 
 ---
 
@@ -1090,8 +1108,38 @@ marked as such.*
 </details>
 
 - [ ] **#58** Confirm failed builds do not replace the last successful live
-      deployment
-- [ ] **#59** Merge/tag/deploy the launch version
+      deployment -- **structurally sound, not yet empirically confirmed,
+      2026-08-30**: `deploy.yml`'s `deploy` job has `needs: build`, so a
+      failed `build` job means `deploy` never runs at all and GitHub
+      Pages keeps serving whatever the last successful `deploy` job
+      published -- same "all-or-nothing by construction" reasoning
+      already used for `#43`/`#71`/`#128`. Not the same as this item's
+      own "confirm" though -- no `gh` CLI in this environment to check
+      real run history, and deliberately breaking a build on production
+      just to test an already-sound structure isn't worth the risk.
+      Needs the user's own GitHub Actions tab to actually close (any
+      past failed run, confirm the site didn't change), or
+      `gh`/API access if that ever becomes available here.
+
+<details>
+<summary>#59</summary>
+
+- [x] **#59** Merge/tag/deploy the launch version -- **resolved as a naming
+      question, 2026-08-30, direct clarification**: "we are already
+      launched in some ways... the merge to main would count as launch...
+      [but] the about page is left and a few other essential backend and
+      front end stuff is left." Two-stage milestone scheme adopted:
+      `launch-beta` (annotated tag, created 2026-08-30 at `7f3a638`, the
+      actual 2026-08-23 merge-to-main commit -- v3 live at
+      cabinetofcuriosities.in, not yet feature-complete, links not yet
+      publicly shared) and a future `launched` marker, applied once BOTH
+      Phase 0-2 are done/largely done AND the user actually starts
+      publicly distributing the site's links -- a real-world event, not
+      just a checklist state, so it can't be auto-triggered off item
+      counts. This item itself (merge+deploy) has been done since `#48`;
+      what was actually missing was the tag/label for it, now created.
+
+</details>
 
 ### Content audit, 2026-08-24
 
