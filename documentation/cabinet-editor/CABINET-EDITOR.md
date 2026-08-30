@@ -1,6 +1,6 @@
 # Cabinet Data Editor — Design Decisions & As-Built Notes
 
-Companion to [`NOW-PAGE.md`](NOW-PAGE.md)'s "Local admin server" section, which
+Companion to [`NOW-PAGE.md`](../now/NOW-PAGE.md)'s "Local admin server" section, which
 this mirrors closely — a local-only Node HTTP admin server for editing
 `content/cabinet-sections.tsv` and `content/cabinet-entries.tsv` through a
 browser UI instead of hand-editing either file. Written to satisfy the

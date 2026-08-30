@@ -1,6 +1,6 @@
 # Cabinet `/now` Page — Design Decisions & As-Built Notes
 
-Companion to [`README.md`](../README.md) (repo-level guide), in the same
+Companion to [`README.md`](../../README.md) (repo-level guide), in the same
 family as `archived-landing-pages/v2/DESIGN-SYSTEM.md`/`LANDING-PAGE-NOTES.md`
 for the map landing page. Original planning input for this feature lives in
 [`now-page-helpers/`](now-page-helpers/) (`NOW-PAGE-DOCUMENTATION.md`,

@@ -87,7 +87,7 @@ and phase placement, this is just the current ordering of attention.
    initiative needs to actually hold once more repos depend on it.
 3. **`#81`** (Build TSV editors for Cabinet, Bookshelf, FFFX) -- ongoing.
    Cabinet's own editor is already substantially built (see
-   `documentation/CABINET-EDITOR.md`, v1.0-v1.5); direct note,
+   `documentation/cabinet-editor/CABINET-EDITOR.md`, v1.0-v1.5); direct note,
    2026-08-30: "will be easier to port for the other two" once Cabinet's
    own is settled.
 4. ~~**`#70`**~~ (section/island labels: SVG `<text>` vs. semantic HTML,
@@ -516,7 +516,7 @@ overall site.
       itself, not just unread by the renderer -- deleted from
       `ENTRIES_COLS`, `build-cabinet-content.js`, and the real
       `content/cabinet-entries.tsv` data during the Cabinet TSV editor
-      work (`#81`, `documentation/CABINET-EDITOR.md` v1.1-v1.2). Direct
+      work (`#81`, `documentation/cabinet-editor/CABINET-EDITOR.md` v1.1-v1.2). Direct
       framing, 2026-08-30, worth preserving since it's easy to
       conflate the two: **"The callout card layout and leaderTo lines
       are defunct. The concept of having a finer level of entries on the
@@ -1944,6 +1944,28 @@ section to empty out.*
       implementation is dead for good) -- logged separately so the live
       idea doesn't stay tangled up with the dead mechanism. No design yet
       -- needs one before anything else.
+- [ ] **#138** Update the "Data -> Map -> Page" diagram (hand-made by the
+      maintainer via Claude web,
+      `https://claude.ai/code/artifact/b69fceba-1590-4897-8c13-75a61bcf7f46`)
+      and bring a copy into this repo instead of it only living on
+      claude.ai. It currently ends at "index.html, frozen snapshot" via
+      `build-static.mjs` -- doesn't show the `docs/` promotion step at
+      all, since it predates `landing-v3/promote.mjs` (added 2026-08-30,
+      see this file's own `#132`-adjacent history and
+      `documentation/Landing-page-notes.2.0.md`). Update should add a
+      Stage 6 (or fold into Stage 5): `promote.mjs` reading
+      `landing-v3/index.html` + `landing-v3/shared/*`, rewriting the
+      known dev-relative asset paths, writing `docs/index.html` +
+      `docs/assets/{css,js}/`, then a headless-Chromium verify pass --
+      matching the real flow documented in `documentation/
+      CABINET-EDITOR.md`-adjacent tooling notes and the diagram's own
+      existing "manual step" (dashed-arrow) convention, since promotion
+      is exactly that: manual, dashed. The diagram's own Mermaid source is
+      recoverable from the artifact's page HTML if bringing it in as a
+      real `.mmd`/embedded-in-Markdown diagram rather than a screenshot.
+      Once in-repo, update its link in `tools/backend-home-ui/index.html`
+      (currently points at the claude.ai artifact directly, tagged
+      "diagram, Claude artifact") to point at the local copy instead.
 
 ---
 

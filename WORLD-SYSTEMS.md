@@ -145,7 +145,7 @@ grid-width field. **(2026-08-30: trimmed from a larger `visual`
 bundle — `placement, x, y, order, size, cardType, leaderTo` — which
 was a v2-era layout scheme with zero current renderer or Bookshelf/fffx
 analogue; deleted from the schema and the real `content/cabinet-entries.tsv`
-data. See Cabinet's own `documentation/CABINET-EDITOR.md`, v1.1–v1.2, for
+data. See Cabinet's own `documentation/cabinet-editor/CABINET-EDITOR.md`, v1.1–v1.2, for
 the full field-by-field audit. Needs backporting to Bookshelf's and
 fffx's copies of this file per this doc's own sync convention above.)**
 Neither Bookshelf nor fffx needs Cabinet's placement vocabulary, and

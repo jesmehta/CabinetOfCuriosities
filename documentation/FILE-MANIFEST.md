@@ -32,21 +32,53 @@ three, so it can't move here alone without desyncing the other two repos.
 
 ## `documentation/` — project documentation, not root-required
 
+Reorganized 2026-08-30 into one folder per feature/subsystem that has
+more than one doc file — a technical-reference doc plus a
+conversation-log companion, per `CONVERSATION-LOG-GUIDE.md`'s standard.
+A subsystem with only one doc file stays flat at `documentation/` root
+rather than getting a single-file folder of its own.
+
+| File | Role |
+|---|---|
+| `CONVERSATION-LOG-GUIDE.md` | The three-tier documentation standard (concept → technical reference/changelog → conversation-log) and the folder-per-feature convention this whole section follows. Read this before adding any new doc file here. |
+| `conversation-backend-and-deploy.md` | Shared conversation-log for backend/deploy/site-wide infrastructure work that doesn't map onto one page or tool — no dedicated folder, per the standing rule "if it doesn't have a place to live, it lives in this doc." Three parts so far: Cloudflare Web Analytics rollout, the file/folder reorganization (`#129`-`#134`), launch-milestone/priority tracking (`#58`/`#59`). New infra topics become a new `# Part N` here, not a new file. |
+| `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md` #135/#136. Its own conversation-log lives in `conversation-backend-and-deploy.md` (Part 1), not a same-named sibling file — see that doc's own note on why. |
+| `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |
+| `FILE-MANIFEST.md` | This file. |
+| `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `landing-v3-notes/three-world-launch-phases-ToDo.md` (#126). Stays at `documentation/` root rather than moving into `sitemap/` alongside its conversation-log — the script's output path is currently hardcoded; moving it is a code change, not a doc reorg, and hasn't been done. |
+
+### `now/` — the `/now` page
+
 | File | Role |
 |---|---|
 | `NOW-PAGE.md` | Design decisions and as-built record for the `/now` page. Has its own per-file "Files" section scoped to that subsystem. |
-| `CABINET-EDITOR.md` | Design decisions and as-built record for the Cabinet sections/entries local admin server (mirrors `NOW-PAGE.md`'s "Local admin server" section for the `now-editor.js` pattern). Covers the live-vs-reserved-vs-deleted TSV column split (and its `WORLD-SYSTEMS.md` correction), the grid UI's sort/resize/expand-text controls, and notes Bookshelf/fffx copies as future work. v1.0–v1.5 changelog. |
-| `cloudflare-web-analytics-setup.md` | Setup/verification guide for Cloudflare Web Analytics across the Cabinet/Bookshelf/fffx sites — where the beacon goes, constraints (no cookies/fingerprinting, defer-load, don't break the site if analytics fails), how to verify, plus the as-built record. Already implemented for Cabinet, 2026-08-29: `overrides/main.html` (MkDocs Material theme override, wired via `mkdocs.yml`'s `theme.custom_dir: overrides`, inherited by every generated page) and `landing-v3/index.template.html`/`docs/index.html` (custom landing page). Bookshelf/fffx/external-repo rollout tracked as `landing-v3-notes/three-world-launch-phases-ToDo.md` #135/#136. |
-| `cloudflare-js-snippet.md` | Raw copy of the Cloudflare-supplied beacon snippet (with the real token) — gitignored, plaintext working notes only; the token itself ships baked into the pages listed above, so this file isn't the canonical record. |
-| `Landing-page-notes.2.0.md` | Exhaustive versioned dev log (v3.0–v3.7.67) for the `landing-v3/` map rebuild — design decisions, verification, changelog. Large (374KB). Technical reference: what the system is and how it works. |
-| `conversation-landing-page-v3.md` | Chronological process log of the same v3 development period — actual back-and-forth, corrected mistakes, direct quotes, meta-decisions about how to work. **Not a duplicate** of `Landing-page-notes.2.0.md` despite covering the same period: that file is reference/changelog (what shipped), this one is narrative (how it happened and why). The file's own "documentation survey" section states the policy directly — findings get folded into the reference doc's to-do list, not left duplicated here. Large (2,800 lines); size is a real cost, but not redundancy. |
-| `FILE-MANIFEST.md` | This file. |
-| `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `landing-v3-notes/three-world-launch-phases-ToDo.md` (#126). |
+| `conversation-now-page.md` | Conversation-log companion — what was asked, tried, and corrected while building `/now`, in the same relationship to `NOW-PAGE.md` that `conversation-landing-page-v3.md` has to `Landing-page-notes.2.0.md`. |
 | `now-page-helpers/NOW-PAGE-DOCUMENTATION.md`, `NOW-PAGE-FILE-LIST.md`, `NOW-PAGE-VSCODE-PROMPT.md` | Original pre-code planning spec for the `/now` page, written before any code existed. Superseded by `NOW-PAGE.md`'s as-built record (which documents every deviation) — kept for the record, not actively maintained. Revisit in a future documentation-consolidation round, by direct request, not this pass. |
-| `landing-v3-notes/three-world-launch-phases-ToDo.md` | Master to-do tracker across Cabinet/Bookshelf/fffx launch phases — numbered items, checkboxes, resolution notes. Moved from `landing-v3/` 2026-08-29. |
-| `landing-v3-notes/three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
-| `landing-v3-notes/cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` at deploy time. Actively referenced from `deploy.yml`'s own comments. |
-| `landing-v3-notes/v3-scheme-candidates.md` | Five competing colour/font token-set proposals for one still-open decision, referenced from `Landing-page-notes.2.0.md`'s own to-do item #10 — a scratch/proposal doc, not a competing reference. |
+
+### `cabinet-editor/` — the Cabinet TSV editor
+
+| File | Role |
+|---|---|
+| `CABINET-EDITOR.md` | Design decisions and as-built record for the Cabinet sections/entries local admin server (mirrors `NOW-PAGE.md`'s "Local admin server" section for the `now-editor.js` pattern). Covers the live-vs-reserved-vs-deleted TSV column split (and its `WORLD-SYSTEMS.md` correction), the grid UI's sort/resize/expand-text controls, and notes Bookshelf/fffx copies as future work. v1.0–v1.5 changelog. |
+| `conversation-cabinet-editor.md` | Conversation-log companion — same relationship to `CABINET-EDITOR.md` as `conversation-now-page.md` has to `NOW-PAGE.md`. |
+
+### `landing-v3-notes/` — the v3 map system, all of it together
+
+| File | Role |
+|---|---|
+| `Landing-page-notes.2.0.md` | Exhaustive versioned dev log (v3.0–v3.7.68) for the `landing-v3/` map rebuild — design decisions, verification, changelog. Large (374KB+). Technical reference: what the system is and how it works. |
+| `conversation-landing-page-v3.md` | Chronological process log of the same v3 development period — actual back-and-forth, corrected mistakes, direct quotes, meta-decisions about how to work. **Not a duplicate** of `Landing-page-notes.2.0.md` despite covering the same period: that file is reference/changelog (what shipped), this one is narrative (how it happened and why). The file's own "documentation survey" section states the policy directly — findings get folded into the reference doc's to-do list, not left duplicated here. Large (2,900+ lines, including the `#70` heading-outline addendum); size is a real cost, but not redundancy. |
+| `three-world-launch-phases-ToDo.md` | Master to-do tracker across Cabinet/Bookshelf/fffx launch phases — numbered items, checkboxes, resolution notes. |
+| `three-world-launch-phases-Notes.md` | Supporting rationale (deployment mechanism, branch-transition reasoning, TSV-editor spec), deliberately split out of the ToDo file so rationale doesn't clutter the punch-list format — not redundant with it, a different view of the same initiative. |
+| `cabinet-multi-repo-assembly-concept-note-short.md` | Focused how-to for one specific mechanism: mounting independent repos (Working with AI, Prompt Generator, etc.) into `public/teaching/<name>/` at deploy time. Actively referenced from `deploy.yml`'s own comments. |
+| `v3-scheme-candidates.md` | Five competing colour/font token-set proposals for one still-open decision, referenced from `Landing-page-notes.2.0.md`'s own to-do item #10 — a scratch/proposal doc, not a competing reference. |
+
+### `sitemap/` — the Content Inventory / sitemap generation
+
+| File | Role |
+|---|---|
+| `SITEMAP.md` | Technical reference for `tools/generate_sitemap.py`'s two jobs (cross-world `docs/sitemap.md`, Cabinet-only `documentation/CONTENT-INVENTORY.md`), its regex-based nav scanner and why it avoids a YAML dependency, what its Flags section catches, and its own noted limitation (`CONTENT-INVENTORY.md`'s output path is hardcoded, not configurable). Closes the gap `conversation-sitemap.md` had flagged. |
+| `conversation-sitemap.md` | Conversation-log for `#126` (generating the Content Inventory instead of hand-maintaining it) and the reasoning behind `SITEMAP.md`'s design. |
 
 ## `overrides/` — MkDocs Material theme override
 
