@@ -108,7 +108,7 @@ tbody tr.invalid:hover{ background:#F1D6C8; }
 tbody tr.reserved-row td{ background:var(--reserved-bg); border-bottom:1px solid var(--hairline); }
 
 td input[type=text], td select, td textarea{
-  font-family:var(--mono); font-size:12.5px; width:100%; min-width:80px;
+  font-family:var(--mono); font-size:12.5px; width:100%; min-width:0;
   background:transparent; border:1px solid transparent; border-radius:3px;
   padding:4px 5px; color:var(--ink);
 }

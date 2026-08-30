@@ -102,7 +102,17 @@ function selectHTML(value, options, field, disabled) {
 function inputHTML(value, field, { numeric, wide, disabled, className } = {}) {
   const cls = className ? ` class="${className}"` : "";
   if (wide) return `<textarea data-field="${field}" rows="1"${disabled ? " disabled" : ""}${cls}>${esc(value)}</textarea>`;
-  return `<input type="text" data-field="${field}" value="${esc(value)}"${numeric ? ' style="text-align:right;"' : ""}${disabled ? " disabled" : ""}${cls}>`;
+  // direction:rtl alongside text-align:right, not text-align alone -- an
+  // unfocused <input>'s default scroll position shows its logical start,
+  // which for plain text-align:right is still the left edge, so a value
+  // too long for a narrowed column clipped its *right* (most significant
+  // end for a right-aligned number) instead of its left. Digits are a
+  // bidi "weak" type, so they still render left-to-right internally under
+  // direction:rtl (order/weight show as "42", never "24") -- only the
+  // container's overflow/scroll-anchor direction flips, which is exactly
+  // what pins the right edge in view and clips the left when too narrow.
+  const style = numeric ? ' style="text-align:right;direction:rtl;"' : "";
+  return `<input type="text" data-field="${field}" value="${esc(value)}"${style}${disabled ? " disabled" : ""}${cls}>`;
 }
 
 function fieldControl(value, col, selectMap, disabled) {
@@ -206,11 +216,22 @@ function wireTableHeader(container, kind, cols, onRender) {
         handle.classList.remove("active");
         document.removeEventListener("mousemove", onMove);
         document.removeEventListener("mouseup", onUp);
+        // A drag's mouseup almost never lands back on the 7px handle it
+        // started on -- the browser then fires a native click targeted at
+        // the nearest common ancestor of the mousedown/mouseup targets,
+        // which is the <th> itself, indistinguishable from a real
+        // click-to-sort unless suppressed here.
+        table.addEventListener("click", suppressNextClick, { capture: true, once: true });
       }
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
   });
+}
+
+function suppressNextClick(e) {
+  e.stopPropagation();
+  e.preventDefault();
 }
 
 // A row's textareas (subtitle/notes/tags/href/relatedLinks) each had their

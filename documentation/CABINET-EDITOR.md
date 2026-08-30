@@ -164,6 +164,41 @@ column order, specifically so it's visually next to the ▲▼ buttons that
 actually change it — a display-order-only choice, the underlying schema/
 file column order is untouched.
 
+**A resize drag can't accidentally trigger a sort** (v1.5, found while
+testing the fix below, not the original ask). A drag's `mouseup` almost
+never lands back on the 7px-wide handle it started on — the browser
+still fires a native `click`, targeted at the nearest common ancestor of
+the `mousedown`/`mouseup` targets, which is the `<th>` itself,
+indistinguishable from an actual click-to-sort unless suppressed.
+`wireTableHeader()`'s resize handler now installs a capturing,
+`{ once: true }` click-swallower on the table right when the drag ends,
+so that one synthetic click never reaches the header's own sort listener.
+
+**Right-aligned numeric fields (`order`/`weight`/etc.) clip from the
+left, not the right, when their column is narrowed** (v1.5). A plain
+`text-align:right` only controls where the text sits *inside* an input's
+box — an unfocused overflowing input still defaults to showing its
+content from the start (the left edge), so narrowing the column clipped
+away the number's most-significant (leftmost) digits while showing the
+least-significant ones, backwards from what a right-aligned number should
+do. Fixed with the standard trick for this: `direction:rtl` alongside
+`text-align:right` — digits are a bidi "weak" type, so `order`/`weight`
+still display left-to-right internally ("42", never "24"), but the
+input's overflow/scroll-anchor point flips to the right edge, so a
+too-narrow column now clips the leftmost digits and keeps the rightmost
+ones (and the number itself) in view. This only actually worked once a
+second bug was fixed alongside it: `td input/select/textarea` had a
+`min-width: 80px` left over from the pre-resizable-column era, which kept
+the input itself wider than its now-narrower `<td>` regardless of the
+column's real width — the `<td>`'s `overflow:hidden` was then clipping
+the *input's own oversized box* from its right edge, which silently
+defeated the `direction:rtl` fix entirely (the input's internal text was
+correctly right-anchored the whole time; the parent cell just never let
+the input shrink enough to reveal that). Removed the `min-width`
+outright — `table-layout: fixed` plus each resize handle's own 50px
+floor already provide adequate sizing, this rule was only ever fighting
+against a control (column resizing) that didn't exist yet when it was written.
+
 **A row's textareas stay the same height as each other.** Each wide
 field (subtitle/notes/tags/href/relatedLinks) has its own CSS
 `resize: vertical` handle, but dragging one taller used to leave its row
@@ -339,6 +374,56 @@ Hand-editing the TSVs directly still works exactly as before — both paths
 write the same files, no separate state to keep in sync.
 
 ## Changelog
+
+### v1.5 — numeric columns clipped from the wrong edge; resize-triggered sort (2026-08-30)
+
+Direct bug report: narrowing `order`/`weight` clipped the number's
+*most*-significant digits and kept the least-significant ones in view,
+the opposite of what a right-aligned number should do. Root-caused with
+an isolated standalone HTML test (three `<input>`s side by side —
+`text-align:right` alone, `text-align:right`+`direction:rtl`, and
+`direction:rtl` alone — confirmed the RTL trick works correctly for the
+plain-CSS case) before touching the app, since the app's own behavior
+didn't initially match that isolated result and needed to be reconciled.
+
+Two compounding causes: `text-align:right` alone only sets *where inside
+the box* text sits, not which edge stays visible on unfocused overflow —
+needed `direction:rtl` too (see "Right-aligned numeric fields" above). But
+even with that fix applied, the app still showed the wrong digits,
+traced to a second, independent bug: `td input/select/textarea`'s
+leftover `min-width: 80px` (from before columns were resizable) kept
+inputs wider than their resized `<td>`, so the cell's own
+`overflow:hidden` was clipping the *input's oversized box*, not the
+input's internal (correctly-anchored) text — confirmed by reading
+`offsetWidth` before and after a resize drag: it stayed at 80px
+regardless of the column's actual width until the `min-width` rule was
+removed. A third, unrelated bug was caught in the process of testing the
+first two: a resize drag's `mouseup` landing off the handle fires a
+native `click` on the `<th>`, which the header's own sort listener can't
+tell apart from a real click-to-sort — confirmed by checking the header's
+class before/after a plain resize (it read `sorted` with zero clicks
+intended). All three fixed together; see the two notes above for the
+mechanism of each.
+
+**Testing note, since two rounds of this went wrong before landing on a
+safe method**: a `.fill()`+blur on a real row's field is a real save (the
+`change` listener fires and PUTs to the server) — this actually happened
+once during this investigation and had to be reverted via
+`git checkout`. The safe way to render a value that doesn't exist in the
+real file, for visual/rendering checks only, is intercepting
+`**/api/state` and rewriting the mocked JSON response before it reaches
+the page — the real render code path runs on genuinely-long data with
+zero risk of persistence, since the mocked response is never derived from
+or written back to any real file.
+
+Verified: isolated `rtl-test.html` (plain CSS, no app code) confirmed the
+direction:rtl mechanism itself; a mocked-`/api/state` Playwright pass
+against the real running server confirmed the actual render path shows
+`789` (trailing digits) instead of `123456` (leading digits) once both
+fixes landed; confirmed a plain resize drag no longer sets a header's
+`sorted` class while a real header click still does; confirmed via `git
+status` that no test in this pass left the real `content/*.tsv` files
+touched.
 
 ### v1.4 — "Expand text" / "Compact text" toggle (2026-08-30)
 
