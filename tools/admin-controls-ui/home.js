@@ -28,12 +28,25 @@ function wireStartButtons() {
     btn.addEventListener("click", async () => {
       const which = btn.dataset.start;
       btn.disabled = true;
+      btn.title = "";
       btn.textContent = "Starting...";
+      let res;
       try {
-        await fetch(`/api/start/${which}`, { method: "POST" });
+        res = await fetch(`/api/start/${which}`, { method: "POST" });
       } catch {
-        btn.textContent = "Start failed";
+        // fetch itself threw -- no response at all. Most likely this page
+        // isn't being served by tools/admin-controls.js (e.g. opened
+        // through a static file server / Live Server instead), so
+        // relative /api/ calls have nothing real behind them.
         btn.disabled = false;
+        btn.textContent = "Start failed -- retry";
+        btn.title = "Couldn't reach /api/start -- is this page open via node tools/admin-controls.js (run-admin-controls.bat), not a static file server?";
+        return;
+      }
+      if (!res.ok) {
+        btn.disabled = false;
+        btn.textContent = "Start failed -- retry";
+        btn.title = `Server responded ${res.status} -- same likely cause as above: this page needs to be served by tools/admin-controls.js itself.`;
         return;
       }
       // Give the child process a moment to bind its port, then re-check
@@ -44,7 +57,13 @@ function wireStartButtons() {
         attempts++;
         await refreshStatus();
         const stillLabeled = btn.textContent === "Starting...";
-        if (!stillLabeled || attempts > 15) clearInterval(poll);
+        if (!stillLabeled) { clearInterval(poll); return; }
+        if (attempts > 15) {
+          clearInterval(poll);
+          btn.disabled = false;
+          btn.textContent = "Start failed -- retry";
+          btn.title = "Spawned but never came up listening within 6s -- check the terminal running admin-controls.js for an error from the child process.";
+        }
       }, 400);
     });
   });
