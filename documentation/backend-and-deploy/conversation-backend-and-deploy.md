@@ -106,6 +106,7 @@ this merge.
 - [Resumed in Claude Code: settling Compass, confirming the rest](#part6-resumed-in-claude-code)
 - [Executed: the physical move](#part6-executed)
 - [Follow-up, same day: `index.md` renames and the reserved-section stubs](#part6-followup-index)
+- [Clarifying question: shared sections across folders](#part6-shared-sections)
 - [This handoff, Part 6](#this-handoff-part-6)
 
 ---
@@ -1555,26 +1556,6 @@ live URLs until this is pushed and redeployed; only
 `mkdocs build --strict` (clean) → manual resolved-HTML checks on a root
 page, a depth-1 page, and `makings.md`'s own link.
 
-## This handoff, Part 6
-
-> **absorb the documentation into your own - either delete this file
-> itself of keep it as a v1 based on actual conversation and then the
-> updates from ths conversation as additional changes etc - basically,
-> I do want the fact that I went to Atlas to discuss this noted, but we
-> did also make changes to the decisions from that conversation**
-
-Resolved by absorption rather than a kept-alongside "v1": the standalone
-`conversation-docs-content-folder-layout.md` is deleted, its full content
-folded into this Part unchanged (down to its own verbatim quotes), with
-the Atlas provenance stated up front and this session's own resumption —
-including the one actual decision it changed (Compass) — recorded as its
-own subsection rather than blended into the Atlas material. The physical
-move itself (see "Executed" above) followed in the same session, once
-asked for directly, with one further same-day follow-up (below): the
-section landing pages moved to `index.md` inside their own folders, and
-the six reserved section folders got created after all, each with a
-one-line stub.
-
 <a id="part6-followup-index"></a>
 
 ## Follow-up, same day: `index.md` renames and the reserved-section stubs
@@ -1627,3 +1608,75 @@ Six section folders from the Atlas plan (`physComp/`, `writings/`,
 exist with stub landing pages, not created as empty scaffolding but as
 real (if minimal) pages — built out further, and wired into nav/TSV,
 once actual content for each exists.
+
+<a id="part6-shared-sections"></a>
+
+## Clarifying question: shared sections across folders
+
+Pushback on the underscore reasoning above, before moving to a new
+question:
+
+> **the underscore means whatever I decide it means - and in both
+> cases, it indicates a separation in the organization for the content
+> - _system vs content folders, _lander vs content mds
+> However, the double-nested is a valid point. Ok.**
+
+Conceded directly: the earlier framing ("`_makings.md` would
+contradict the established convention") was too narrow — reading one
+specific instance of the rule ("system vs. content") as if it were the
+whole rule, rather than recognizing both applications (`_assets` at
+the top of `docs/`, a hypothetical `_makings.md` one level down) as the
+same broader personal convention: structural/organizing files marked
+apart from actual content items. The double-nested URL is what
+actually settles the naming question either way, not a convention
+clash.
+
+Then the real question:
+
+> **However, what happens if on the frontend, I organize things
+> differently and the 3dp/index.md and makings/index.md lie on the
+> same section ?**
+
+Checked against the actual code rather than answered from memory:
+`cabinet-v3-layout.js` reads a **section**'s own link from
+`sectionMeta.href` (one per section — currently `makings/` for
+Machines & Makings) completely separately from each **entry**'s own
+`href` (`c.href`, read independently per entry/circle within that
+section). This is already exactly today's situation, not a
+hypothetical: the "3D Printing" entry lives under the `machines-makings`
+section with `href: 3dp/3DP_2019/` — a different physical folder than
+`makings/` — with zero conflict. Confirmed: nothing breaks either way,
+because physical folder location and section/nav grouping were already
+built as independent axes (per the "decouple file location from nav
+labeling" principle above) — a section grouping two different folders'
+pages together, each keeping its own clean URL, is precisely what that
+principle was for.
+
+One distinction drawn out, since "same section" could mean either
+thing: *grouped presentation* (shared heading/island, still two
+separate pages) — what's described above, zero friction — versus
+*literally one URL* (one page's content absorbing the other's) — an
+editorial merge decision, not something folder structure enables or
+blocks either way.
+
+> **the former. it's ok. is the documentation updated ?**
+
+Confirmed as grouped presentation, no action needed — already works.
+This subsection is that documentation.
+
+## This handoff, Part 6
+
+`DOCUMENTATION-GUIDE.md`'s standard was followed even for this smaller,
+purely-conversational round: no code changed, but the underscore
+concession and the section/entry-href independence are both real
+decisions/facts worth having on record, not left to fade after the
+conversation moved on. The standalone
+`conversation-docs-content-folder-layout.md` file that opened this Part
+is deleted, its content absorbed unchanged; the Atlas plan's Compass
+discrepancy was resolved (Compass → its own folder); the physical
+content-page move executed, verified, and documented; the section
+landing pages renamed to `index.md` (tested empirically, not assumed)
+with the six reserved sections built out as stubs; and this closing
+round confirmed the underscore convention's broader intent and that
+grouping different folders under one frontend section was already
+supported, needing no code change at all.
