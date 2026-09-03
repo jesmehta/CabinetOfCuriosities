@@ -14,12 +14,12 @@ infrastructure work doesn't map onto one page or tool the same way —
 it touches the whole repo. Rather than spin up a new file per topic,
 the rule is: **if it doesn't have its own place to live, it lives
 here.** This file currently covers Cloudflare Web Analytics, the
-file/folder reorganization, launch-milestone tracking, and the
-documentation standard's own build-out (Part 4 — this file's own
-conversation, the most directly-sourced entry here); future
-backend/infrastructure work (multi-repo assembly generalization, the
-deployment manifesto, etc.) gets appended here too, not split into
-another new file.
+file/folder reorganization, launch-milestone tracking, the
+documentation standard's own build-out, and the `docs/` asset
+reorganization (Part 5 — this file's own conversation, the most
+directly-sourced entry here); future backend/infrastructure work
+(multi-repo assembly generalization, the deployment manifesto, etc.)
+gets appended here too, not split into another new file.
 
 **Provenance**: this file merges two conversation-logs that were each
 written separately, from real live conversations (verbatim quotes,
@@ -76,6 +76,18 @@ this merge.
 - [Auditing the sitemap doc, and a real correction loop](#auditing-the-sitemap-doc-and-a-real-correction-loop)
 - [Elevating the guide itself](#elevating-the-guide-itself)
 - [This handoff, Part 4](#this-handoff-part-4)
+
+**Part 5 — The `docs/` asset reorganization**
+- [The trigger: "Discuss with me how these should be organised before you do anything"](#the-trigger-docs-reorg)
+- [Reading docs/ before proposing anything](#reading-docs-before-proposing-anything)
+- [First proposal, and the URL-breaking catch](#first-proposal-and-the-url-breaking-catch)
+- [Two counter-schemes, and "is deploy.yml a system file?"](#two-counter-schemes-and-is-deployyml-a-system-file)
+- [Material vs. backend, and a future page-move taken into account without blocking on it](#material-vs-backend-and-a-future-page-move)
+- ["sure go ahead" — locking in _images and _downloads](#sure-go-ahead-locking-in-images-and-downloads)
+- [Execution: moves, ~20 files of path fixes, and a build failure that caught a missed one](#execution-moves-path-fixes-and-a-build-failure)
+- [A final sweep finds two real bugs the strict build couldn't catch](#a-final-sweep-finds-two-real-bugs)
+- [WORLD-SYSTEMS.md: a cross-repo question asked instead of decided alone](#world-systems-a-cross-repo-question)
+- [This handoff, Part 5](#this-handoff-part-5)
 
 ---
 
@@ -894,3 +906,292 @@ reorg and launch-milestone technical record (Part 2/3 above) still
 doesn't have one consolidated tier-2 doc, same gap noted when this file
 was first assembled, not resolved as a side effect of anything in this
 Part either.
+
+---
+
+# Part 5 — The `docs/` asset reorganization
+
+<a id="the-trigger-docs-reorg"></a>
+
+## The trigger: "Discuss with me how these should be organised before you do anything"
+
+Recorded from a live transcript, 2026-09-02 — direct quotes are actually
+verbatim, not reconstructed. Opened as a standalone request, unrelated
+to the earlier 2026-08-29/30 reorg (Part 2) beyond sharing the same
+general instinct:
+
+> **Have a look at the repo and documentation.
+> I would like to reorganise the files inside docs as well.
+> Currently it has a mix of the content files - mds and images - as
+> well as the system files - content tsvs, the assets folder with css
+> js and now page files, etc - and the base system files - stylesheets
+> for material for mkdocs, other js files, - and the deployment files
+> as well.
+> Discuss with me how these should be organised before you do
+> anything.**
+
+The "before you do anything" held for the entire first half of the
+thread — nothing moved until a second, explicit "go ahead" much later.
+
+<a id="reading-docs-before-proposing-anything"></a>
+
+## Reading `docs/` before proposing anything
+
+Before proposing any split, the actual contents got mapped: `docs/`'s
+top-level folders (`3dp/`, `assets/`, `fffx/`, `files/`, `images/`,
+`js/`, `makings/`, `stylesheets/`, `teaching/`), `mkdocs.yml`'s
+`nav`/`extra_css`/`extra_javascript`, and — critically —
+`FILE-MANIFEST.md`, which already documented the pre-reorg `docs/`
+layout file-by-file from the 2026-08-29/30 pass. That let the proposal
+start from "what does each file actually do" rather than guessing from
+names: `docs/index.html` turned out to be machine-promoted from
+`landing-v3/` (a banner says as much); `docs/assets/js/now-data.js` and
+`now-markdown.js` sat in the same folder as the generated
+`cabinet-generated-content.js` despite being hand-edited; and grepping
+for who actually linked `docs/files/deploy.yml.txt` found exactly one
+reference (`site_notes.md`, a downloadable illustration) — nothing live
+reads it, confirming it wasn't the real deploy config despite the name.
+
+<a id="first-proposal-and-the-url-breaking-catch"></a>
+
+## First proposal, and the URL-breaking catch
+
+The first pass grouped everything into four or five roles (content
+pages, content images, downloadable attachments, promoted/generated
+production assets, hand-edited config living next to generated output,
+MkDocs Material theme extras, deploy meta) and flagged one risk before
+proposing anything further: MkDocs derives a page's live URL from its
+path under `docs/`, and this site has real external inbound links
+(FabAcademy pages, the Colophon, the sitemap) — so reorganizing *content
+pages* into subfolders would break those URLs, while reorganizing
+images/CSS/JS is purely mechanical and safe. That distinction became the
+scope question put back to the user via `AskUserQuestion` rather than
+assumed: how far should the reorg go (assets/system only vs. also
+content pages), and how granular should the split be. Answered
+"Assets/system only" and "Coarse: content vs. system" — both marked
+Recommended, both picked as given.
+
+<a id="two-counter-schemes-and-is-deployyml-a-system-file"></a>
+
+## Two counter-schemes, and "is deploy.yml a system file?"
+
+The first concrete synthesis (`docs/content-assets/` + `docs/system/`)
+didn't stick — it came back with two counter-proposals instead of a
+yes/no:
+
+> **Ok, how about this, instead :
+>
+> - docs/assets/ - stays as is
+> - docs/assets/images - gets all the content images, including the
+>   ones inside assets/now
+> - docs/files - stays as is, system files
+> - docs/images - moves to assets
+> - docs/js - material stuff - docs/material-theme/js ordocs/site/js
+> - docs/stylesheets - docs/material-theme/stylesheets
+>
+> Please confirm deploy.yml - is it not a system file, not just a
+> downloadable?
+>
+> Another scheme is
+>
+> - docs/_images_content/\<all iamges\>
+> - docs/_site/assets\<all css js for the base website\>
+> - docs/_backend/assets\<all the css js etc for the backend, including
+>   now etc as needed\>
+> - docs/\<sections_folder\>/\<entry.md\>
+>
+> Basically if we cant multiple folder it, I am ok separating the 1st
+> level folders in docs by using an _folderName for system stuff and a
+> folderName for content sections folder.**
+
+A mid-turn interjection landed while the deploy.yml question was still
+being checked (a direct grep — exactly one reference, from
+`site_notes.md`) — a general instruction, not specific to this
+question, but relevant to how the rest of the thread proceeded:
+
+> **dont start anything though without confirmation**
+
+Answered directly: `deploy.yml.txt` is not a system file — nothing
+reads it live, only `site_notes.md` links it as an illustration, same
+category as the images. Two problems got flagged in the counter-schemes
+before adopting either: the first scheme still nested a content folder
+(`assets/images`) one level inside a folder that also held system
+`css`/`js`, just moving the mixing down a level rather than removing it;
+the second scheme's `docs/<sections_folder>/<entry.md>` reintroduced the
+exact content-page URL-breaking risk the scope question had just ruled
+out. The underscore convention itself, though, was adopted directly —
+it gave a real answer to "how do you tell content and system apart at a
+glance" that flat folder names hadn't: `_assets/` (folding in the
+previously-separate `js/` and `stylesheets/`), `images/` for content,
+and `files/` recategorized as content and renamed `downloads/` (not yet
+underscore-prefixed at this point — that came one exchange later).
+
+<a id="material-vs-backend-and-a-future-page-move"></a>
+
+## Material vs. backend, and a future page-move taken into account without blocking on it
+
+Two follow-up points, raised together and both substantive:
+
+> **sure, 2 points
+>
+> - while I am ok with both material theme assets and island assets -
+>   css or js - in one folder, does it make sense to have 2 separate
+>   folders for them ? _assets_backend vs _assets_material, OR
+>   _assets/backend_css | backend_js, material_css, material_js - let
+>   me know - this is from a file finding, maintaining, etc perspective
+> - eventually I do want to move the content md pages into section
+>   folders, because there will be too many of them, so while we may
+>   not execute that at the moment, it should be taken into account, it
+>   will come up soon. colophon.md, now.md will be inside a
+>   compass/\*.md or something.
+>   Discuss ?**
+
+The split recommendation was to nest by subsystem under one `_assets/`
+marker (`_assets/material/{css,js}` + `_assets/backend/{css,js}`, using
+"backend" as a placeholder name) rather than either alternative offered:
+not type-first (`_assets/material_css/`, `_assets/material_js/`, which
+splits each subsystem's own CSS and JS across sibling folders), and not
+two separate top-level `_`-folders (which would put two "don't-read-
+this" markers at the top of `docs/` instead of one, undercutting the
+point of the convention). The reasoning leaned on the two subsystems'
+actually-different lifecycles — `material/` hand-edited directly and
+rarely touched, `backend/` mostly machine-written by three separate
+pipelines (`promote.mjs`, `build-cabinet-content.js`, the now-editor) —
+and on the existing `documentation/` convention of one folder per
+subsystem.
+
+On the future page-move: rather than either blocking the current work on
+it or ignoring it, the answer explained *why* it doesn't conflict —
+MkDocs rewrites relative links (image `src`, page `href`) at build time
+based on each page's own source location under `docs/`, not the final
+URL, so when a page like `about.md` eventually becomes
+`compass/about.md`, its existing `images/avatar-photo.jpg` reference
+just needs one added `../` — the asset folder itself never needs to
+move or rename again because of that later change. That mechanism was
+verified for real once the reorg actually ran (see below), not just
+asserted.
+
+<a id="sure-go-ahead-locking-in-images-and-downloads"></a>
+
+## "sure go ahead" — locking in `_images` and `_downloads`
+
+> **sure go ahead, and we can call it material and backend, and we
+> should also have an \_ for the images folder, so it's \_images**
+
+This extended the underscore rule one step further than where it had
+landed — not just "system vs. content" (my read up to that point) but
+"is this a browsable page, or a supporting file" (the user's actual
+rule) — which meant `docs/files/` fit the same pattern too, despite
+being content: renamed to `_downloads/` for consistency, stated as a
+judgment call rather than asked as a separate question, since it
+followed directly from the rule just confirmed.
+
+<a id="execution-moves-path-fixes-and-a-build-failure"></a>
+
+## Execution: moves, ~20 files of path fixes, and a build failure that caught a missed one
+
+Execution itself was mechanical once the shape was settled: `git mv` for
+every image/CSS/JS/download (preserving history — confirmed via `git
+status` showing clean `R` renames, not delete+add pairs), then
+`mkdocs.yml`, `content/now.tsv`'s `image` column
+(`/assets/now/...` → `/_images/now/...`, discovered to be
+site-root-absolute, not `docs/`-relative, while checking how the `/now`
+page actually renders images), five content pages' relative links,
+`.gitignore`'s ten individually-listed FabLoom entries, and every
+build script/tool with the old paths hardcoded — found by grepping each
+one directly rather than assuming the obvious candidates were the only
+ones: `build-cabinet-content.js`, `build-now-content.js`,
+`now-editor.js` (plus its upload endpoint and static-serve comments),
+`now-data-editor.js`, `cabinet-editor.js` and its UI's status text,
+`admin-controls.js` and its UI's step descriptions/gotchas list,
+`landing-v3/promote.mjs` (both its destination directories and its
+literal path-rewrite table), and `landing-v3/index.template.html`.
+
+Re-running the actual build pipeline (rather than trusting the file
+moves alone) caught a real miss immediately: `node build-static.mjs`
+failed with a 404 console error from the headless-Chromium render.
+Tracing it found `landing-v3/layout-engine/build-render.html` had its
+own separate hardcoded `href="../../docs/assets/css/cabinet-tokens.css"`
+— a fourth copy of that same path, in a file none of the earlier
+targeted greps had covered because it wasn't `promote.mjs`,
+`index.template.html`, or `cabinet-v3-layout.js`, the three places the
+path was already known to live. Fixed, rebuilt clean, then `promote.mjs`
+ran end to end (headless Chromium, zero console/request errors) and
+`mkdocs build --strict` passed (exit 0) with only pre-existing,
+unrelated INFO-level nav warnings.
+
+<a id="a-final-sweep-finds-two-real-bugs"></a>
+
+## A final sweep finds two real bugs the strict build couldn't catch
+
+Rather than stop at "the strict build passed," one more exhaustive
+repo-wide grep swept every file type for the old path fragments still
+remaining, outside `node_modules/`, `site/`, and the frozen
+`archived-landing-pages/` tree. It surfaced two real functional bugs
+that every prior verification step had missed:
+
+- `docs/_assets/material/css/cabinet-material.css` still had
+  `@import url("../assets/css/cabinet-tokens.css")` — a self-reference
+  the file's own move had broken (it now needed two levels up, into the
+  sibling `backend/` folder, not one).
+- `tools/now-editor-ui/editor.js`, the now-editor's browser-side UI,
+  still had `import ... from "../assets/js/now-markdown.js"` — a live
+  ES-module import resolved by the browser against the page's own URL,
+  not caught by any Node-side check.
+
+Neither `mkdocs build --strict` nor `promote.mjs`'s own headless-
+Chromium verification (which only loads `docs/index.html`, not a
+MkDocs-rendered content page carrying `cabinet-material.css`) exercises
+a CSS `@import` or validates a bare JS import path — both were silent
+failure modes that would have shipped broken theme styling and a broken
+editor UI without ever failing a build. Both fixed, then the full
+pipeline re-verified once more (rebuild, re-promote, re-run both
+generators, strict build again) — plus a direct manual check that both a
+root page (`about.md`) and a nested one (`fffx/PackingShapes.md`,
+exercising the `../../` math a subfolder page actually needs) resolved
+every moved asset correctly in the rendered HTML output, not just that
+the build didn't error.
+
+<a id="world-systems-a-cross-repo-question"></a>
+
+## `WORLD-SYSTEMS.md`: a cross-repo question asked instead of decided alone
+
+One loose end surfaced by the same final sweep: `WORLD-SYSTEMS.md`
+documents `docs/assets/js/`, `docs/stylesheets/`, etc. as the
+*preferred convention for every world*, and its own header states it's
+hand-synced byte-identical across Cabinet, Bookshelf, and fffx. Cabinet
+no longer matches it. Rather than either silently leave the shared doc
+stale or unilaterally rewrite a cross-repo convention from inside one
+repo, the divergence got checked against reality first — Bookshelf's
+own `docs/` (available locally) still uses `assets/`/`stylesheets/`
+exactly as documented, confirming this wasn't just theoretical — and
+then put back as a direct question rather than assumed: leave the
+convention text alone and note the divergence, rewrite the convention
+now, or leave the whole file untouched entirely. Answered "leave it,
+note the divergence" — the recommended option. A short note was added
+under "Asset naming" flagging Cabinet's 2026-09-02 divergence as
+deliberate, not drift, so a future reader doesn't apply
+`WORLD-SYSTEMS.md`'s own "whichever was edited most recently is correct,
+backport it" rule and silently backport this scheme into Bookshelf/fffx
+without an actual decision to do so.
+
+<a id="this-handoff-part-5"></a>
+
+## This handoff, Part 5
+
+Documentation was updated alongside the code, not after it as an
+afterthought: `FILE-MANIFEST.md`'s `docs/` and `docs/_assets/` sections
+rewritten for the new layout, `README.md`'s Structure section and a new
+Changelog entry, `CABINET-EDITOR.md`/`ADMIN-CONTROLS.md`'s path
+references corrected, and `NOW-PAGE.md`'s "Data model"/"Files" sections
+updated plus a new v2.1 changelog entry. The request that produced this
+Part itself closed the loop on the four-part documentation standard
+(Part 4 above) for backend/infrastructure-scoped work specifically:
+
+> **add conversation and technicla details to the backend and deploy
+> documentation ?**
+
+Nothing in this session was committed — every change (the move, the
+~25 files of path fixes, and the documentation) sits uncommitted in the
+working tree, consistent with this repo's standing rule of only
+committing on explicit request.

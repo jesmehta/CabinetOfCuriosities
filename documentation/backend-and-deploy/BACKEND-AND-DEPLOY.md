@@ -57,6 +57,104 @@ internals regrouped by real `import`/`<script src>` graph tracing
 have missed); and finally, root-level project documentation gathered
 into `documentation/`.
 
+## `docs/` asset reorganization (2026-09-02)
+
+`docs/` mixed hand-authored content (pages, images) with system files
+(promoted/generated CSS+JS, MkDocs Material theme extras, downloadable
+attachments) across five flat top-level folders — `images/`, `assets/`,
+`js/`, `stylesheets/`, `files/` — with no naming signal for which was
+which. Reorganized around one convention: a leading underscore marks
+"supporting files, not a browsable page"; unprefixed folders hold actual
+`.md` content pages.
+
+```text
+docs/
+  index.html, CNAME                 -- unchanged (GitHub Pages/MkDocs conventions)
+  about.md, colophon.md, ...        -- content pages, unchanged locations
+  3dp/, fffx/, makings/, teaching/   -- content page folders, unchanged
+  _images/                          -- content images: avatar-photo.jpg, CirclePacking/,
+                                        DotMandala/, FabLoom/, now/{reading,travel,found}/
+  _downloads/                       -- downloadable page attachments (deploy.yml.txt,
+                                        requirements.txt, linked from site_notes.md) --
+                                        renamed from docs/files/, it's a content
+                                        attachment, not a system file, despite the name
+  _assets/
+    material/{css,js}               -- hand-edited MkDocs Material theme extras
+                                        (cabinet-material.css, extra.css, extra.js)
+    backend/{css,js}                -- mostly machine-written: the v3 map's promoted
+                                        CSS/JS, content/*.tsv-generated JS, /now config
+```
+
+`material/` vs. `backend/` is a subsystem split, not a type split — each
+has a different owner and lifecycle (`material/` is small and hand-edited
+directly; `backend/` is written by three separate pipelines:
+`landing-v3/promote.mjs`, `tools/build-cabinet-content.js`, and the
+now-editor), and each is nested subsystem-first (`material/{css,js}`,
+not `{css,js}/material`) so a subsystem's CSS and JS sit next to each
+other rather than split across type-first folders.
+
+**Content pages were deliberately not relocated** in this pass — MkDocs
+derives a page's live URL from its path under `docs/`, and this site has
+external inbound links (FabAcademy pages, Colophon, the sitemap), so
+moving pages into section folders (planned, eventually — e.g.
+`compass/about.md`) is left for a separate, later move. That later move
+doesn't undo anything here: MkDocs rewrites relative links (image `src`,
+page `href`) from each page's own source location at build time, so a
+moved page only needs an added `../` per nesting level in its own links —
+`_images/`/`_assets/` don't need to move again or change name.
+
+**What had to change to match** — beyond the folder move itself:
+`mkdocs.yml` (`extra_css`, `extra_javascript`, favicon path — the
+favicon reference was already broken/missing before this reorg, moved
+for naming consistency only, not fixed), the `image` column in
+`content/now.tsv` (site-root-absolute paths, `/assets/now/...` →
+`/_images/now/...`), five content pages' relative asset links,
+`.gitignore`'s per-file FabLoom entries, and every build script/tool
+with the old paths hardcoded: `tools/build-cabinet-content.js`,
+`tools/build-now-content.js`, `tools/now-editor.js` (+ its UI's
+placeholder text and browser-side `import`), `tools/now-data-editor.js`,
+`tools/cabinet-editor.js` (+ its UI's status text),
+`tools/admin-controls.js` (+ its UI's step descriptions and gotchas
+list), `landing-v3/promote.mjs` (destination dirs + its literal
+path-rewrite table), `landing-v3/index.template.html`,
+`landing-v3/layout-engine/build-render.html` and `cabinet-v3-layout.js`,
+and `landing-v3/dev-tool/islands-tool.html`.
+
+Two real bugs would have shipped silently if this had stopped at "move
+the files, fix the obvious references": a stale `@import` inside
+`cabinet-material.css` itself (pointing at the old sibling `assets/`
+path, now two levels away) and a stale browser-side `import` in the
+now-editor's UI script. Neither `mkdocs build --strict` nor
+`promote.mjs`'s headless-Chromium check (which only loads
+`docs/index.html`, not a MkDocs-rendered content page) catches a broken
+CSS `@import` or a broken JS `import` — both were only found by a final
+exhaustive repo-wide grep sweep for the old path fragments across every
+file type, after the "obvious" fixes were already done and verified.
+Full file-by-file mapping: `FILE-MANIFEST.md`'s `docs/` section.
+
+**Verification**: the actual build/promotion pipeline was re-run end to
+end rather than just eyeballing the moved files — `node
+build-static.mjs` → `node promote.mjs` (headless Chromium, zero
+console/request errors) → `node tools/build-cabinet-content.js` → `node
+tools/build-now-content.js` → `mkdocs build --strict` (exit 0, only
+pre-existing unrelated INFO-level nav warnings) — plus manual checks
+that both a root-level page (`about.md`) and a nested one
+(`fffx/PackingShapes.md`, exercising the `../` math) resolve their
+images, downloads, and `extra_css`/`extra_javascript` correctly in the
+rendered HTML.
+
+**Cross-repo note**: `WORLD-SYSTEMS.md` documents `docs/assets/`,
+`docs/stylesheets/` etc. as the *shared* convention across
+Cabinet/Bookshelf/fffx, hand-synced byte-identical across all three
+repos. Cabinet's `docs/` no longer follows it. Rather than rewrite that
+shared doc from just one repo's perspective (Bookshelf's own `docs/`
+still matches the old convention, verified directly against that repo),
+`WORLD-SYSTEMS.md` was left with the shared convention intact plus a
+short note flagging Cabinet's deliberate divergence — a decision, not
+drift, so a future pass shouldn't treat either version as "more recent,
+therefore correct" without actually revisiting whether Bookshelf/fffx
+should adopt the same scheme.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
@@ -117,6 +215,11 @@ Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
 
+### 2026-09-02 — `docs/` asset reorganization
+
+See "`docs/` asset reorganization" above. Conversation log: Part 5 of
+`conversation-backend-and-deploy.md`.
+
 ### 2026-08-30 — this doc created; `backend-and-deploy/` folder
 
 Consolidates what was previously scattered across `FILE-MANIFEST.md`,
@@ -157,3 +260,16 @@ See "Repo structure" above.
   not fixed here since it's outside this doc's own scope.
 - Bookshelf/fffx Cloudflare rollout still open — `#135`/`#136` in
   `three-world-launch-phases-ToDo.md`.
+- **Content pages still live flat under `docs/`** — the `_images`/
+  `_assets`/`_downloads` reorg deliberately didn't touch page locations
+  (URL-breaking risk). Grouping pages into section folders
+  (`compass/about.md` etc.) is planned but not scheduled; when it
+  happens, each moved page's relative asset links need an added `../`
+  per nesting level (mechanical, MkDocs resolves relative links from
+  the source file's own location — see "`docs/` asset reorganization"
+  above).
+- **`WORLD-SYSTEMS.md`'s "Asset naming" convention now describes
+  Bookshelf/fffx, not Cabinet** — noted inline in that file rather than
+  resolved. Revisit whether Bookshelf/fffx should adopt Cabinet's
+  underscore scheme, or whether this stays a permanent Cabinet-specific
+  exception.
