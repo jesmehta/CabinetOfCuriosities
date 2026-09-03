@@ -11,8 +11,8 @@ workflow, known gotchas).
 shares with its sibling Level 1 worlds, [The Bookshelf of
 Curiosities](https://github.com/jesmehta/TheBookshelfOfCuriosities) and
 [fffx](https://github.com/jesmehta/form-follows-fx). [`NOW-PAGE.md`](documentation/now/NOW-PAGE.md)
-documents the `/now` page (`docs/now.md`) — a separate feature from the
-map landing page, with its own data pipeline.
+documents the `/now` page (`docs/compass/now.md`) — a separate feature
+from the map landing page, with its own data pipeline.
 
 Cabinet is the umbrella landing page / web-world index: an illustrated
 archipelago map where each major section of Jesal's web presence is an
@@ -40,16 +40,22 @@ repo/world) rather than duplicating their content.
   the live page. (2026-08-29: both docs physically moved into
   `archived-landing-pages/v2/` alongside the system they describe,
   content unchanged.)
-- `docs/` splits into unprefixed folders for actual content pages (`3dp/`,
-  `fffx/`, `makings/`, `teaching/`, plus the root-level `.md` files) and
+- `docs/` splits into unprefixed folders for actual content pages
+  (`compass/`, `webtech/`, `makings/`, `teaching/`, `3dp/`, `fffx/`) and
   underscore-prefixed folders for supporting files that aren't pages
   themselves: `_images/` (content images), `_downloads/` (downloadable
   page attachments, e.g. `site_notes.md`'s `deploy.yml.txt` copy), and
   `_assets/` (CSS/JS), split into `_assets/material/` (hand-edited MkDocs
   Material theme extras) and `_assets/backend/` (mostly machine-written —
   the v3 map's promoted CSS/JS, TSV-generated content, `/now` config).
-  Reorganized 2026-09-02 — see `documentation/FILE-MANIFEST.md`'s `docs/`
-  section for the full file-by-file mapping.
+  Content-page grouping (`compass/`, `webtech/`) followed 2026-09-03, from
+  a plan built with visibility into future planned content — see
+  `documentation/backend-and-deploy/conversation-backend-and-deploy.md`
+  Part 6. Six more section folders (`physComp/`, `writings/`, `dataviz/`,
+  `visual-field-notes/`, `blog/`, `travels/`) are reserved names from that
+  plan, not yet created — made when real content exists, not as empty
+  scaffolding. See `documentation/FILE-MANIFEST.md`'s `docs/` section for
+  the full file-by-file mapping.
 - `docs/_assets/backend/css/cabinet-tokens.css` — single source of truth for the
   parchment/ink palette and type (`--cab-*`), shared between the v3 map
   page's own stylesheet and `docs/_assets/material/css/cabinet-material.css`
@@ -69,10 +75,10 @@ repo/world) rather than duplicating their content.
 - `tools/build-cabinet-content.js` — parses the two TSVs into
   `docs/_assets/backend/js/cabinet-generated-content.js`. Run with
   `node tools/build-cabinet-content.js` after editing either TSV.
-- `content/now.tsv`, `tools/build-now-content.js`, `docs/now.md`,
+- `content/now.tsv`, `tools/build-now-content.js`, `docs/compass/now.md`,
   `docs/_assets/backend/js/now-data.js`, `docs/_assets/backend/js/now-markdown.js`,
   `docs/_assets/backend/css/now.css` — the `/now` page, a real MkDocs Material page
-  (wired into `mkdocs.yml`'s nav, same as `docs/sitemap.md`) generated
+  (wired into `mkdocs.yml`'s nav, same as `docs/compass/sitemap.md`) generated
   directly from `content/now.tsv` + `now-data.js`. See `NOW-PAGE.md` for
   the full design decisions, including why this replaced an earlier
   standalone-HTML approach.
@@ -208,6 +214,60 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### `docs/` content-folder reorg: pages grouped into section folders (2026-09-03)
+
+Follow-on to the asset reorg below, this time moving the content
+*pages* themselves (deliberately out of scope for that pass, since it
+changes live URLs). The target layout came from a separate planning
+conversation with a different Claude instance ("Chirp", Atlas/
+project-assistant context) that has visibility into future planned
+content this repo's own sessions don't — settled first, before any file
+moved, specifically to avoid a repeat reorg once real content for the
+newer sections (`webtech`, `writings`, `dataviz`, `physComp`, `blog`,
+`travels`, `visual-field-notes`) starts landing. Full record:
+`documentation/backend-and-deploy/conversation-backend-and-deploy.md`
+Part 6.
+
+Moved: `about.md`/`colophon.md`/`now.md`/`sitemap.md`/`site_notes.md` →
+`compass/`; `mini_loom.md` → `makings/` (joining its existing siblings);
+`creative_code.md` → `webtech.md` (renamed, becomes the new umbrella
+index replacing the old "Wild wild web"/"Interfaces, Data & Texts" nav
+split — same content, previously pitched two ways); `dotMandalaTool.md`,
+`traceryBots.md`, `trippyGourmet.md`, `emergent_twine.md` → `webtech/`.
+Unchanged: `teaching.md`+`teaching/`, `makings.md`, `3dp/` (confirmed
+independent — outweighs `makings/`'s children in volume, its own
+tooling identity, not nested under it), `fffx/` (frozen, live,
+shrinking, not a target for new content).
+
+Every hardcoded reference to a moved page's path was updated together:
+`mkdocs.yml`'s nav (also merging the "Wild wild web"/"Interfaces, Data
+& Texts" headings into one "Webtech" heading, matching the file
+merge), `content/cabinet-sections.tsv` and `cabinet-entries.tsv`'s
+`href` columns (12 rows — these drive the live v3 map's own links, so
+this required re-running `build-cabinet-content.js` and re-promoting
+the map, not just an mkdocs rebuild), `makings.md`'s internal link to
+`mini_loom.md`, every moved page's own relative links to
+`_images`/`_assets`/`_downloads` (one added `../` per nesting level —
+confirmed this needed no other change, exactly as anticipated when the
+asset reorg's own changelog entry below was written), and
+`build-now-content.js`/`generate_sitemap.py`'s hardcoded output paths.
+Verified with the same pipeline as the asset reorg (rebuild, re-promote,
+regenerate, `mkdocs build --strict`) plus manual checks that a root
+page, a depth-1 page, and `makings.md`'s own link all resolved
+correctly in the rendered HTML.
+
+One real, unavoidable and undiminished cost, same as flagged before this
+ran: every moved page's live URL changed. Everything inside this
+repo/ecosystem was updated in the same pass; an external bookmark or a
+link shared elsewhere to the old URL will 404 after this deploys — not
+fixable from here, and no redirect stubs were added (not requested).
+
+Section id/title labeling in the TSVs (e.g. `interfaces-data-texts`
+still being called that, not renamed to `webtech`) was deliberately
+left alone — per Part 6's own stated principle, physical file location
+and TSV/nav labeling are separate concerns; only the `href` path values
+needed to match reality.
 
 ### `docs/` asset reorg: underscore convention for supporting files (2026-09-02)
 

@@ -5,9 +5,9 @@ Bulk-content folders (images, screenshots, frozen archive snapshots) are
 described as one entry each rather than file-by-file — see each area's own
 docs (linked below) for exhaustive detail where it exists. Companion to
 `README.md`'s "Structure" section (the practical guide); this is the
-exhaustive map. Generated 2026-08-29, updated 2026-09-02 (`docs/` asset
-reorg — see below) — not auto-built, update by hand alongside structural
-changes, same as every other doc here.
+exhaustive map. Generated 2026-08-29, updated 2026-09-03 (`docs/`
+content-folder reorg — see below) — not auto-built, update by hand
+alongside structural changes, same as every other doc here.
 
 ## Root-level files
 
@@ -44,7 +44,7 @@ rather than getting a single-file folder of its own.
 | `DOCUMENTATION-GUIDE.md` | The full documentation standard: the four things every piece of work needs on record (concept/need, decisions/intent, changelog, todo/watch-out-for), the three tiers that satisfy them, and the folder-per-feature convention this whole section follows. Read this before adding any new doc file here. |
 | `FILE-MANIFEST.md` | This file. |
 | `AI-DEPENDENCY-AUDIT.md` | Cross-cutting analysis, not scoped to one subsystem: what parts of Cabinet's workflow the maintainer could keep running by hand if AI assistance were ever unavailable, and what would stall without it. No companion conversation-log file (reasoning is inline). Was missing from this manifest entirely until 2026-08-30 — caught while auditing the dashboard's own doc links, not part of its original creation. |
-| `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md` (#126). Stays at `documentation/` root rather than moving into `backend-and-deploy/` — the script's output path is currently hardcoded; moving it is a code change, not a doc reorg, and hasn't been done. |
+| `CONTENT-INVENTORY.md` | Auto-generated, 2026-08-30, by `tools/generate_sitemap.py` — cross-references `content/cabinet-{sections,entries}.tsv` against `mkdocs.yml`'s own nav tree (Cabinet-only; Bookshelf/fffx status is `docs/compass/sitemap.md`'s job). Do not hand-edit; re-run the script to refresh. Replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md` (#126). Stays at `documentation/` root rather than moving into `backend-and-deploy/` — the script's output path is currently hardcoded; moving it is a code change, not a doc reorg, and hasn't been done. |
 
 ### `now/` — the `/now` page
 
@@ -75,7 +75,7 @@ rather than getting a single-file folder of its own.
 
 | File | Role |
 |---|---|
-| `SITEMAP.md` | Technical reference for `tools/generate_sitemap.py`'s two jobs (cross-world `docs/sitemap.md`, Cabinet-only `documentation/CONTENT-INVENTORY.md`), its regex-based nav scanner and why it avoids a YAML dependency, what its Flags section catches, and its own noted limitation (`CONTENT-INVENTORY.md`'s output path is hardcoded, not configurable). Closes the gap `conversation-sitemap.md` had flagged. |
+| `SITEMAP.md` | Technical reference for `tools/generate_sitemap.py`'s two jobs (cross-world `docs/compass/sitemap.md`, Cabinet-only `documentation/CONTENT-INVENTORY.md`), its regex-based nav scanner and why it avoids a YAML dependency, what its Flags section catches, and its own noted limitation (`CONTENT-INVENTORY.md`'s output path is hardcoded, not configurable). Closes the gap `conversation-sitemap.md` had flagged. |
 | `conversation-sitemap.md` | Conversation-log for `#126` (generating the Content Inventory instead of hand-maintaining it) and the reasoning behind `SITEMAP.md`'s design. |
 
 ### `backend-and-deploy/` — infrastructure with no single feature home
@@ -121,8 +121,8 @@ folder is scoped to the dashboard itself, same as `now/` or
 | File | Role |
 |---|---|
 | `build-cabinet-content.js` | Parses the two `cabinet-*.tsv` files into `docs/_assets/backend/js/cabinet-generated-content.js`. Refactored 2026-08-29 onto `cabinet-tsv.js`'s shared reader/validator (byte-identical output verified) — see `CABINET-EDITOR.md`. |
-| `build-now-content.js` | Parses `content/now.tsv` + `now-data.js` directly into `docs/now.md` — same "script writes Markdown into `docs/`" pattern as `generate_sitemap.py`. Pre-renders entry text through `now-markdown.js` first. (2026-08-29: previously wrote a `now-generated-content.js` JS blob for a client-rendered `docs/now.html`; that page and its generated-JS output are both gone now — see `NOW-PAGE.md`'s v2.0 entry.) |
-| `generate_sitemap.py` | Fetches sections/entries TSVs live from all three worlds' repos (Cabinet, fffx, Bookshelf) over GitHub raw, writes `docs/sitemap.md`. (2026-08-30: also writes `documentation/CONTENT-INVENTORY.md`, a Cabinet-only, local-file, no-network cross-check of `content/cabinet-*.tsv` against `mkdocs.yml`'s own nav tree — replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md`, #126.) |
+| `build-now-content.js` | Parses `content/now.tsv` + `now-data.js` directly into `docs/compass/now.md` — same "script writes Markdown into `docs/`" pattern as `generate_sitemap.py`. Pre-renders entry text through `now-markdown.js` first. (2026-08-29: previously wrote a `now-generated-content.js` JS blob for a client-rendered `docs/now.html`; that page and its generated-JS output are both gone now — see `NOW-PAGE.md`'s v2.0 entry.) |
+| `generate_sitemap.py` | Fetches sections/entries TSVs live from all three worlds' repos (Cabinet, fffx, Bookshelf) over GitHub raw, writes `docs/compass/sitemap.md`. (2026-08-30: also writes `documentation/CONTENT-INVENTORY.md`, a Cabinet-only, local-file, no-network cross-check of `content/cabinet-*.tsv` against `mkdocs.yml`'s own nav tree — replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md`, #126.) |
 | `now-tsv.js` | Shared TSV parse/serialize logic, used by both `build-now-content.js` and the admin editor — kept in one place so the two can't quietly diverge. |
 | `now-data-editor.js` | Programmatic reader/writer for `now-data.js`'s `sectionConfig`/`sectionOrder` (balanced-bracket-span replace, not full-file rewrite). Editor-only. |
 | `now-editor.js` | Local-only zero-dependency Node HTTP admin server (`/admin/`, port 5757) for editing `now.tsv` entries and `now-data.js` sections through a browser UI. |
@@ -135,35 +135,39 @@ folder is scoped to the dashboard itself, same as `now/` or
 
 ## `docs/` — the live MkDocs site + standalone static pages
 
-Reorganized 2026-09-02: top-level folders now follow a page-vs-asset
-convention — a leading underscore marks "supporting files, not a browsable
-page" (`_images/`, `_downloads/`, `_assets/`), while unprefixed folders
-hold actual `.md` content pages (`3dp/`, `fffx/`, `makings/`, `teaching/`).
-Content pages themselves were **not** relocated in this pass — moving a
-`.md` file changes its live URL (MkDocs derives the URL from the file's
-path under `docs/`), and this site has external inbound links, so that's
-deliberately left for a later, separate move (tracked as a to-do — content
-pages will eventually group into section folders, e.g. `compass/about.md`).
-Every asset move here is purely mechanical: MkDocs rewrites relative
-links (image `src`, page `href`) at build time based on the *source*
-file's location, so nothing about this reorg needs redoing when pages do
-eventually move — only an added `../` per nesting level in each moved
-page's own links.
+Two reorg passes, 2026-09-02 and 2026-09-03. The first (asset reorg)
+split top-level folders by a page-vs-asset convention — a leading
+underscore marks "supporting files, not a browsable page" (`_images/`,
+`_downloads/`, `_assets/`). The second (content-folder reorg) grouped
+content pages themselves into coarse, stable section folders —
+`compass/`, `webtech/`, plus the pre-existing `makings/`/`teaching/` —
+per a plan built with visibility into future planned content (see
+`conversation-backend-and-deploy.md` Part 6). `3dp/` and `fffx/` stay
+independent, not nested under anything. Six more section folders
+(`physComp/`, `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`,
+`travels/`) are reserved names from that same plan but not yet created
+— they get made when real content for them exists, not as empty
+scaffolding now.
+
+Both moves were purely mechanical for anything already covered by a
+prior pass: MkDocs rewrites relative links (image `src`, page `href`)
+at build time based on the *source* file's location, so the asset
+reorg needed no rework here — content pages moving into folders just
+needed one added `../` per nesting level in their own links, exactly
+as anticipated when the asset reorg's own doc entry was written.
 
 | Path | Role |
 |---|---|
 | `docs/index.html` | Standalone Level-1 landing page (the archipelago map). Auto-generated — promoted from `landing-v3/index.html`, do not hand-edit. |
-| `docs/now.md` | Real MkDocs page, wired into `mkdocs.yml`'s nav. Auto-generated by `tools/build-now-content.js` from `content/now.tsv` + `now-data.js` — do not hand-edit (see `NOW-PAGE.md`). |
-| `docs/sitemap.md` | Auto-generated cross-world site map (mkdocs page) — output of `tools/generate_sitemap.py`. |
-| `docs/about.md`, `colophon.md`, `site_notes.md` | Compass-rose / meta MkDocs pages. |
-| `docs/teaching.md`, `makings.md`, `creative_code.md`, `dotMandalaTool.md`, `emergent_twine.md`, `mini_loom.md`, `traceryBots.md`, `trippyGourmet.md` | Section-landing and standalone MkDocs content pages. |
-| `docs/3dp/*.md` | 3D-printing project write-ups (Mecha, Flexures, Polyhedra, 2019 year-in-printing). |
-| `docs/fffx/*.md` | fffx-related MkDocs pages not covered by the fffx subdomain itself (100 Gradients, Packing Shapes, Vera Molnar Retrospective, particle systems, fffx landing stub). |
-| `docs/teaching/*.md` | Per-cohort teaching write-ups (class-2023-24, class-2025-26). |
-| `docs/makings/*.md` | Making-process write-ups (drawing machines, lasercutting, origami/paper). |
-| `docs/CNAME` | Custom-domain file for GitHub Pages (`cabinetofcuriosities.in`). Stays at `docs/` root — GitHub Pages requirement, not part of the underscore convention. |
-| `docs/_images/` | Content images referenced from MkDocs pages: `avatar-photo.jpg`, `CirclePacking/`, `DotMandala/`, `FabLoom/` (linked from `about.md`/`fffx/PackingShapes.md`/`dotMandalaTool.md`/`mini_loom.md`), plus `now/{reading,travel,found}/` — uploaded `/now` images, populated by the now-editor's upload endpoint, referenced root-relative (`/​_images/now/...`) from `content/now.tsv`'s `image` column since `now.md` renders one directory deep (`/now/`). |
-| `docs/_downloads/` | Downloadable content attachments linked from `site_notes.md` (`deploy.yml.txt`, `requirements.txt`) — snapshots for illustration, not the live deploy config (that's `.github/workflows/deploy.yml` + root `requirements.txt`). Renamed from `docs/files/` — it's a page attachment, same category as `_images/`, not a system file, despite the name. |
+| `docs/compass/` | Compass-rose / meta pages: `about.md`, `colophon.md`, `now.md` (auto-generated by `tools/build-now-content.js` from `content/now.tsv` + `now-data.js` — do not hand-edit, see `NOW-PAGE.md`), `sitemap.md` (auto-generated by `tools/generate_sitemap.py`), `site_notes.md`. |
+| `docs/teaching.md` + `docs/teaching/*.md` | Teaching landing page + per-cohort write-ups (class-2023-24, class-2025-26). |
+| `docs/makings.md` + `docs/makings/*.md` | Machines & Makings landing page + making-process write-ups (drawing machines, lasercutting, origami/paper, `mini_loom.md`). |
+| `docs/3dp/*.md` | 3D-printing project write-ups (Mecha, Flexures, Polyhedra, 2019 year-in-printing) — independent, not nested under `makings/`; outweighs it in volume and is its own tooling identity. |
+| `docs/webtech.md` + `docs/webtech/*.md` | New umbrella (2026-09-03) replacing `creative_code.md` — absorbs the old "Wild wild web"/"Interfaces, Data & Texts" nav split, which was the same content pitched two ways: `dotMandalaTool.md`, `traceryBots.md`, `trippyGourmet.md` (not currently wired into nav — same as before the move), `emergent_twine.md`. |
+| `docs/fffx/*.md` | fffx-related MkDocs pages not covered by the fffx subdomain itself (100 Gradients, Packing Shapes, Vera Molnar Retrospective, particle systems, fffx landing stub) — frozen, live, naturally shrinking; not a target for new content. |
+| `docs/CNAME` | Custom-domain file for GitHub Pages (`cabinetofcuriosities.in`). Stays at `docs/` root — GitHub Pages requirement, not part of either reorg's convention. |
+| `docs/_images/` | Content images referenced from MkDocs pages: `avatar-photo.jpg`, `CirclePacking/`, `DotMandala/`, `FabLoom/` (linked from `compass/about.md`/`fffx/PackingShapes.md`/`webtech/dotMandalaTool.md`/`makings/mini_loom.md`), plus `now/{reading,travel,found}/` — uploaded `/now` images, populated by the now-editor's upload endpoint, referenced root-relative (`/​_images/now/...`) from `content/now.tsv`'s `image` column, immune to `now.md`'s own nesting depth. |
+| `docs/_downloads/` | Downloadable content attachments linked from `compass/site_notes.md` (`deploy.yml.txt`, `requirements.txt`) — snapshots for illustration, not the live deploy config (that's `.github/workflows/deploy.yml` + root `requirements.txt`). Renamed from `docs/files/` — it's a page attachment, same category as `_images/`, not a system file, despite the name. |
 
 ### `docs/_assets/` — CSS/JS shipped to production, split by subsystem
 
@@ -183,7 +187,7 @@ sit next to each other.
 | `backend/js/cabinet-generated-content.js` | Auto-generated from `content/cabinet-*.tsv` — do not hand-edit. |
 | `backend/js/cabinet-v3-data.js`, `cabinet-v3-dragon.js`, `cabinet-v3-flowfield.js`, `cabinet-v3-islandshape.js`, `cabinet-v3-particles.js`, `cabinet-v3-production-animate.js` | Promoted runtime copies of `landing-v3/shared/`'s same-named files — the boats/dragons animation actually shipped to browsers. |
 | `backend/js/now-data.js` | Hand-edited: `/now` section titles, mode, visibility, groupSize, imageLayout. |
-| `backend/js/now-markdown.js` | Shared tiny Markdown renderer — dynamically imported by `tools/build-now-content.js` to pre-render entry text into `docs/now.md`, and used by the admin editor's live preview. |
+| `backend/js/now-markdown.js` | Shared tiny Markdown renderer — dynamically imported by `tools/build-now-content.js` to pre-render entry text into `docs/compass/now.md`, and used by the admin editor's live preview. |
 | `material/css/cabinet-material.css`, `extra.css` | MkDocs Material theme extras (token mapping, misc overrides). |
 | `material/js/extra.js` | MkDocs Material extra JS. |
 

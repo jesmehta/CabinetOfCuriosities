@@ -10,7 +10,7 @@ file is *why*, this one is *what/how*, in the same relationship
 One script, `tools/generate_sitemap.py`, with two separate jobs that
 happen to share a run:
 
-1. **`docs/sitemap.md`** — a single, cross-world sitemap across Cabinet,
+1. **`docs/compass/sitemap.md`** — a single, cross-world sitemap across Cabinet,
    fffx, and Bookshelf, built by reading each repo's own TSV content
    files live over GitHub raw. This is the real `/sitemap/` page, linked
    from the compass rose's W point (`content/cabinet-entries.tsv`'s
@@ -24,7 +24,7 @@ happen to share a run:
    maintaining by hand.
 
 Both outputs are auto-generated Markdown, written directly into the
-tree the same way `tools/build-now-content.js` writes `docs/now.md` —
+tree the same way `tools/build-now-content.js` writes `docs/compass/now.md` —
 re-run the script, get fresh output, never hand-edit either file.
 
 ## Mechanism
@@ -119,7 +119,7 @@ the script try to encode judgment it structurally can't make (see
 ```text
 tools/generate_sitemap.py                 -- the script; both outputs below come from one run
 
-docs/sitemap.md                            -- AUTO-GENERATED, do not edit -- cross-world sitemap,
+docs/compass/sitemap.md                            -- AUTO-GENERATED, do not edit -- cross-world sitemap,
                                                real MkDocs page, wired into mkdocs.yml's nav, linked
                                                from the compass rose's W point
 documentation/CONTENT-INVENTORY.md         -- AUTO-GENERATED, do not edit -- Cabinet-only nav/TSV
@@ -143,7 +143,7 @@ the script).
 python tools/generate_sitemap.py
 ```
 
-Regenerates both `docs/sitemap.md` and `documentation/CONTENT-INVENTORY.md`
+Regenerates both `docs/compass/sitemap.md` and `documentation/CONTENT-INVENTORY.md`
 in one run — there's no way to build just one half. Commit whichever
 outputs actually changed. No admin UI, no local server, no watch mode —
 run it by hand whenever a TSV or `mkdocs.yml`'s nav changes and the
@@ -160,7 +160,7 @@ above), so reading it is the actual review step, not optional.
   oversight; see "What it catches" above.
 - **`INVENTORY_OUTPUT_PATH` is hardcoded**, not configurable — always
   `documentation/CONTENT-INVENTORY.md`, same as `OUTPUT_PATH` is always
-  `docs/sitemap.md`. No CLI flags, no config file. Fine for a
+  `docs/compass/sitemap.md`. No CLI flags, no config file. Fine for a
   single-repo, single-output-location tool as it exists today; would
   need revisiting if this script's Content Inventory half were ever
   reused by Bookshelf or fffx for their own nav/TSV cross-checks, since
@@ -227,7 +227,7 @@ the two `Swatch Fields` TSV rows sharing another — the second is an
 intentional cross-listing, not a bug, and was left as a Flags-list
 entry rather than suppressed, per this file's own "What it catches"
 section), and, as a side effect of simply being re-run, fixed a real
-staleness bug in `docs/sitemap.md` itself: the compass rose's own W
+staleness bug in `docs/compass/sitemap.md` itself: the compass rose's own W
 point had gone live pointing at `/sitemap/` a session earlier, but
 `sitemap.md` hadn't been regenerated since, so it was still describing
 itself as "no page yet."
@@ -237,7 +237,7 @@ itself as "no page yet."
 `tools/generate_sitemap.py` created: `WORLDS`, `fetch_tsv()`,
 `resolve_href()`, `normalize_status()`, `build_world()`,
 `render_markdown()` — fetches Cabinet/fffx/Bookshelf's own TSVs live
-over GitHub raw, writes `docs/sitemap.md`. Wired into
+over GitHub raw, writes `docs/compass/sitemap.md`. Wired into
 `content/cabinet-entries.tsv`'s `compass-w` row and the compass rose's
 W point (`#73`). No technical-reference doc was written for this
 initial version — see `conversation-sitemap.md`'s own "gap worth naming

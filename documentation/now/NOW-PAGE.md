@@ -12,7 +12,7 @@ folder) has to `archived-landing-pages/v2/LANDING-PAGE-NOTES.md`.
 
 ## Purpose
 
-`/now` (`docs/now.md`) is a periodically updated snapshot of what
+`/now` (`docs/compass/now.md`) is a periodically updated snapshot of what
 currently has Jesal's attention: reading, watching, music, projects,
 teaching, travel, curiosities, making/experimenting, and recent finds.
 
@@ -33,7 +33,7 @@ same pattern as `docs/index.html` — see v1.0-v1.1 below and `git log` for
 that era). v2.0 (see Changelog) moved to a real MkDocs Material page
 instead, once a second, stronger precedent existed for generating a real
 `.md` page rather than hand-building HTML: `tools/generate_sitemap.py` →
-`docs/sitemap.md`, which does exactly that — a script writes plain
+`docs/compass/sitemap.md`, which does exactly that — a script writes plain
 Markdown straight into `docs/`, MkDocs renders it as a normal page,
 nothing hand-authored. `/now` mirrors that pattern instead.
 
@@ -53,10 +53,12 @@ change requires an actual `mkdocs build`/`serve` pass rather than a
 static file refresh, since `now.md` is raw Markdown source, not
 renderable HTML by itself.
 
-`docs/now.md` is now the single, real `/now` page — `mkdocs.yml`'s nav
-entry ("Now : now.md") needed no change, since it already pointed there
-(the old "coming soon" stub just hadn't been replaced yet). There is no
-more separate `docs/now.html`.
+`docs/compass/now.md` is now the single, real `/now` page — at v2.0,
+`mkdocs.yml`'s nav entry ("Now : now.md") needed no change, since it
+already pointed there (the old "coming soon" stub just hadn't been
+replaced yet). There is no more separate `docs/now.html`. (The nav path
+did change later, v2.1 — see Changelog — when `/now` moved under
+`compass/` in the 2026-09-03 content-folder reorg.)
 
 ## Data model
 
@@ -143,7 +145,7 @@ the Changelog). The current pipeline:
 ```text
 content/now.tsv  +  docs/assets/js/now-data.js
       ↓  (node tools/build-now-content.js)
-docs/now.md      -- real MkDocs page, headings + raw HTML entry-list blocks
+docs/compass/now.md      -- real MkDocs page, headings + raw HTML entry-list blocks
 ```
 
 `build-now-content.js` dynamically `import()`s two ES modules at build
@@ -168,7 +170,7 @@ blank-line-sensitivity `md_in_html` would otherwise add).
 This still matches the *spirit* of the repo's real convention
 (`content/cabinet-*.tsv` → `tools/build-cabinet-content.js` →
 `docs/assets/js/cabinet-generated-content.js`, and now also
-`tools/generate_sitemap.py` → `docs/sitemap.md`) more closely than the
+`tools/generate_sitemap.py` → `docs/compass/sitemap.md`) more closely than the
 original spec's Python/JSON+fetch approach would have — a build script
 writing directly into `docs/` is exactly what `generate_sitemap.py`
 already does for `sitemap.md`.
@@ -185,7 +187,7 @@ node tools/build-now-content.js
 content/now.tsv                          -- source of truth, hand-edited
 tools/build-now-content.js                -- TSV+now-data.js -> now.md build script
 
-docs/now.md                               -- AUTO-GENERATED, do not edit -- the real /now page, wired into mkdocs.yml's nav
+docs/compass/now.md                               -- AUTO-GENERATED, do not edit -- the real /now page, wired into mkdocs.yml's nav
 docs/_assets/backend/js/now-data.js       -- hand-edited: section titles, mode, visible, groupSize, imageLayout
 docs/_assets/backend/js/now-markdown.js   -- shared tiny Markdown renderer (dynamically imported by build-now-content.js
                                               at build time, and by the editor's browser-side live preview)
@@ -561,6 +563,20 @@ presentation metadata, stored opacity values, archive UI.
 
 ## Changelog
 
+### v2.2 — content-folder reorg: `/now` moved under `compass/` (2026-09-03)
+
+Part of the repo-wide `docs/` content-folder physical layout (see
+`README.md`'s own changelog entry and
+`conversation-backend-and-deploy.md` Part 6 for the full picture), not
+a `/now`-specific change. `docs/now.md` → `docs/compass/now.md`:
+`tools/build-now-content.js`'s `outputPath` updated to match, plus
+`mkdocs.yml`'s nav entry, `content/cabinet-entries.tsv`'s `compass-e`
+href, and every doc/UI-text mention of the old path (`admin-controls-ui`,
+`now-editor-ui`, this file, `SITEMAP.md`). No change to the `image`
+column's site-root-relative path convention — those paths were already
+immune to the page's own nesting depth (see "Data model" above), so
+moving the page one level deeper changed nothing there.
+
 ### v2.1 — `docs/` asset reorg: `/now`'s files moved under `_images`/`_assets` (2026-09-02)
 
 Part of a repo-wide `docs/` reorganization (see `README.md`'s own
@@ -584,7 +600,7 @@ Reverses v1.0's original "standalone `docs/now.html`" decision. Motivated
 by a direct request to match `about.md`/`colophon.md`/`sitemap.md`
 structurally (sidebar nav, breadcrumbs, TOC, search — none of which a
 client-rendered standalone page could offer), not just visually — and by
-`tools/generate_sitemap.py` → `docs/sitemap.md` already being a working,
+`tools/generate_sitemap.py` → `docs/compass/sitemap.md` already being a working,
 committed precedent in this exact repo for "a script writes real
 Markdown straight into `docs/`, MkDocs renders it as a normal page." See
 "Why a generated now.md, not a standalone HTML page" above for the full
@@ -595,7 +611,7 @@ Changed:
 - `tools/build-now-content.js` rewritten: instead of serializing
   `nowEntries` to `docs/assets/js/now-generated-content.js` (an ES module
   for client-side rendering), it now dynamically imports `now-data.js`
-  and `now-markdown.js` at build time and writes `docs/now.md` directly —
+  and `now-markdown.js` at build time and writes `docs/compass/now.md` directly —
   a real Markdown heading per section (`attr_list`-styled,
   `## Title {: .now-section-title }`) followed by one raw HTML block per
   section for the entry list (image-layout structure isn't expressible
@@ -858,5 +874,5 @@ the v3 palette ever gets promoted into `cabinet-tokens.css` itself.
   rather than hand-combined prose.
 - Goodreads links for all seven `reading` entries verified via web search,
   not fabricated.
-- `mkdocs.yml` nav and `docs/now.md` deliberately left untouched at this
+- `mkdocs.yml` nav and `docs/compass/now.md` deliberately left untouched at this
   point (reversed in v2.0 — see "Why a generated now.md" above).
