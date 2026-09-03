@@ -50,7 +50,7 @@ content/cabinet-entries.tsv     -- source of truth, hand-edited or via the admin
       |
       |  tools/cabinet-tsv.js (shared: parse/serialize/validate)
       v
-tools/build-cabinet-content.js  -- CLI build: TSV -> docs/assets/js/cabinet-generated-content.js
+tools/build-cabinet-content.js  -- CLI build: TSV -> docs/_assets/backend/js/cabinet-generated-content.js
 tools/cabinet-editor.js         -- local admin server: TSV <-> browser UI, live validation, Rebuild button
 tools/cabinet-editor-ui/        -- the admin server's browser UI (index.html/editor.css/editor.js)
 ```
@@ -312,7 +312,7 @@ identically regardless of which grid it renders in.
 
 - `build-cabinet-content.js`'s refactor to the shared module produces
   byte-identical output against the real, committed `content/*.tsv` files
-  (`git diff` on `docs/assets/js/cabinet-generated-content.js` — none).
+  (`git diff` on `docs/_assets/backend/js/cabinet-generated-content.js` — none).
 - Live server exercised against the real content files (not fixtures):
   field update, section reorder (with renumbering), section-create,
   duplicate-entry-id creation correctly surfaced in `entryProblems`,
@@ -348,7 +348,7 @@ content/cabinet-sections.tsv     -- source of truth, hand-edited or via the admi
 content/cabinet-entries.tsv      -- source of truth, hand-edited or via the admin server
 
 tools/cabinet-tsv.js             -- shared TSV parse/serialize/validate (build script + editor)
-tools/build-cabinet-content.js   -- TSV -> docs/assets/js/cabinet-generated-content.js build script
+tools/build-cabinet-content.js   -- TSV -> docs/_assets/backend/js/cabinet-generated-content.js build script
 tools/cabinet-editor.js          -- local admin server (see "Architecture" above)
 tools/cabinet-editor-ui/         -- the admin server's browser UI (index.html/editor.css/editor.js)
 run-cabinet-editor.bat           -- double-click launcher for tools/cabinet-editor.js
@@ -362,7 +362,7 @@ run-cabinet-editor.bat           -- double-click launcher for tools/cabinet-edit
 2. Add/edit/reorder/delete sections and entries through the UI. Rows in
    red show a validation problem on hover (duplicate id, missing field,
    bad reference) — every write re-validates and re-renders immediately.
-3. Click "Rebuild" to regenerate `docs/assets/js/cabinet-generated-content.js`.
+3. Click "Rebuild" to regenerate `docs/_assets/backend/js/cabinet-generated-content.js`.
    Surfaces the build script's own error message directly in the status
    banner if something's still wrong.
 4. Preview requires a separate `landing-v3/build-static.mjs` pass (the

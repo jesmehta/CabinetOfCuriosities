@@ -81,7 +81,7 @@ date	section	value	image	notes	pinned
   `value` cell, title line then a blank line then the reaction:
   `[Title](url) — Author\n\n<reaction>`.
 - `image` — optional **site-root-relative** path (leading `/`, e.g.
-  `/assets/now/reading/somebook.jpg`). Blank is valid — most entries
+  `/_images/now/reading/somebook.jpg`). Blank is valid — most entries
   don't have one. Root-relative, not `docs/`-relative, because `now.md`
   renders at `site/now/` (MkDocs' directory-URL "pretty links", the site
   default) — one level deeper than a same-directory-relative path would
@@ -186,17 +186,19 @@ content/now.tsv                          -- source of truth, hand-edited
 tools/build-now-content.js                -- TSV+now-data.js -> now.md build script
 
 docs/now.md                               -- AUTO-GENERATED, do not edit -- the real /now page, wired into mkdocs.yml's nav
-docs/assets/js/now-data.js                -- hand-edited: section titles, mode, visible, groupSize, imageLayout
-docs/assets/js/now-markdown.js            -- shared tiny Markdown renderer (dynamically imported by build-now-content.js
+docs/_assets/backend/js/now-data.js       -- hand-edited: section titles, mode, visible, groupSize, imageLayout
+docs/_assets/backend/js/now-markdown.js   -- shared tiny Markdown renderer (dynamically imported by build-now-content.js
                                               at build time, and by the editor's browser-side live preview)
-docs/assets/css/now.css                   -- entry-list layout + fade hierarchy + colour accents, wired in via
+docs/_assets/backend/css/now.css          -- entry-list layout + fade hierarchy + colour accents, wired in via
                                               mkdocs.yml's extra_css (page chrome/typography itself comes from
                                               cabinet-material.css, same as every other MkDocs page)
-docs/assets/now/<section>/                -- uploaded images, one subfolder per section (e.g. reading/, travel/,
+docs/_images/now/<section>/               -- uploaded images, one subfolder per section (e.g. reading/, travel/,
                                               found/) -- populated by the admin server's upload endpoint, see
-                                              "Local admin server" below. Not to be confused with a root-level
-                                              assets/now/ (books/travels/other/) that predates the editor and
-                                              nothing currently references -- see the Changelog.
+                                              "Local admin server" below. Renamed from docs/assets/now/ in the
+                                              2026-09-02 docs/ asset reorg -- see README.md's Changelog. Not to
+                                              be confused with a root-level assets/now/ (books/travels/other/)
+                                              that predates the editor and nothing currently references -- see
+                                              the Changelog.
 
 tools/now-tsv.js                          -- shared TSV parse/serialize (build script + editor)
 tools/now-data-editor.js                  -- programmatic now-data.js read/write (editor only)
@@ -236,11 +238,11 @@ groupSize/imageLayout, i.e. `now-data.js`, not just `now.tsv`); upload an
 image via the entry form's file picker — reads the picked file client-side
 (`FileReader`, so it works with any file already on disk, doesn't need to
 be inside the repo first), uploads it to the server, which writes a *copy*
-to `docs/assets/now/<section>/<sanitized filename>` (lowercased,
+to `docs/_images/now/<section>/<sanitized filename>` (lowercased,
 special characters stripped, a `-1`/`-2` suffix appended on a name
 collision so nothing already there gets overwritten) and fills the
-entry's `image` field with a **root-relative** path (`/assets/now/...`,
-not `assets/now/...` — see "Data model" above for why) — the original
+entry's `image` field with a **root-relative** path (`/_images/now/...`,
+not `_images/now/...` — see "Data model" above for why) — the original
 file you picked is never moved or modified; a live Markdown preview of
 the `value` field, rendered with the exact same `now-markdown.js` the
 generator uses, so the preview can't drift from what actually ships; a
@@ -558,6 +560,23 @@ separate content types for prose vs. list vs. stream, per-row
 presentation metadata, stored opacity values, archive UI.
 
 ## Changelog
+
+### v2.1 — `docs/` asset reorg: `/now`'s files moved under `_images`/`_assets` (2026-09-02)
+
+Part of a repo-wide `docs/` reorganization (see `README.md`'s own
+changelog entry for the full picture), not a `/now`-specific change.
+`docs/assets/now/<section>/` → `docs/_images/now/<section>/` (and every
+TSV `image` cell, the upload endpoint, and the editor UI's path
+placeholder updated to match); `docs/assets/js/now-data.js` →
+`docs/_assets/backend/js/now-data.js`; `docs/assets/js/now-markdown.js`
+→ `docs/_assets/backend/js/now-markdown.js` (including the editor UI's
+own browser-side import of it); `docs/assets/css/now.css` →
+`docs/_assets/backend/css/now.css`. Every hardcoded reference across
+`build-now-content.js`, `now-editor.js`, `now-data-editor.js`, and the
+editor UI was updated together, then the full pipeline re-run
+(`build-now-content.js`, `mkdocs build --strict`) to verify nothing
+broke. "Data model" and "Files" above already describe the new paths as
+current state, not as a diff from this entry.
 
 ### v2.0 — moved from standalone now.html to a generated now.md (2026-08-29)
 

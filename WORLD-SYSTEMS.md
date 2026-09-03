@@ -196,6 +196,18 @@ docs/assets/thumbs/
 docs/stylesheets/        # Material-facing CSS only (tokens + material override)
 ```
 
+**Cabinet-specific divergence (2026-09-02):** Cabinet's own `docs/` no
+longer follows this layout — reorganized into `docs/_images/`,
+`docs/_downloads/`, and `docs/_assets/{material,backend}/` (underscore
+prefix marks "supporting files, not a page"; see `README.md`'s changelog
+entry for the full reasoning). This is a deliberate, Cabinet-only choice,
+not drift to blindly backport here — Bookshelf still follows the
+convention above as documented (verified against its own `docs/` layout
+at the time of this note). Revisit whether Bookshelf/fffx should adopt
+the same scheme, and update this shared file in all three repos together
+if so, rather than treating either version as simply "more recent and
+therefore correct."
+
 World-prefixed filenames, so it's unambiguous which world an asset
 belongs to even out of context:
 

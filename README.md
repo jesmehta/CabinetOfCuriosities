@@ -40,13 +40,23 @@ repo/world) rather than duplicating their content.
   the live page. (2026-08-29: both docs physically moved into
   `archived-landing-pages/v2/` alongside the system they describe,
   content unchanged.)
-- `docs/assets/css/cabinet-tokens.css` — single source of truth for the
+- `docs/` splits into unprefixed folders for actual content pages (`3dp/`,
+  `fffx/`, `makings/`, `teaching/`, plus the root-level `.md` files) and
+  underscore-prefixed folders for supporting files that aren't pages
+  themselves: `_images/` (content images), `_downloads/` (downloadable
+  page attachments, e.g. `site_notes.md`'s `deploy.yml.txt` copy), and
+  `_assets/` (CSS/JS), split into `_assets/material/` (hand-edited MkDocs
+  Material theme extras) and `_assets/backend/` (mostly machine-written —
+  the v3 map's promoted CSS/JS, TSV-generated content, `/now` config).
+  Reorganized 2026-09-02 — see `documentation/FILE-MANIFEST.md`'s `docs/`
+  section for the full file-by-file mapping.
+- `docs/_assets/backend/css/cabinet-tokens.css` — single source of truth for the
   parchment/ink palette and type (`--cab-*`), shared between the v3 map
-  page's own stylesheet and `docs/stylesheets/cabinet-material.css`
+  page's own stylesheet and `docs/_assets/material/css/cabinet-material.css`
   (maps the same tokens into Material's `--md-*` variables for every
   other page — this part is still live, unrelated to which map version
   serves `/`).
-- `docs/assets/js/cabinet-generated-content.js` — auto-generated from the
+- `docs/_assets/backend/js/cabinet-generated-content.js` — auto-generated from the
   TSVs, do not hand-edit — see Data pipeline below. (2026-08-29: the
   superseded v2 files that used to sit alongside it —
   `cabinet-data.js`/`cabinet-render.js`/`cabinet-interactions.js`/
@@ -57,11 +67,11 @@ repo/world) rather than duplicating their content.
   actual editable content source (islands and their entries, including
   visual placement columns). Edit these, not the generated JS.
 - `tools/build-cabinet-content.js` — parses the two TSVs into
-  `docs/assets/js/cabinet-generated-content.js`. Run with
+  `docs/_assets/backend/js/cabinet-generated-content.js`. Run with
   `node tools/build-cabinet-content.js` after editing either TSV.
 - `content/now.tsv`, `tools/build-now-content.js`, `docs/now.md`,
-  `docs/assets/js/now-data.js`, `docs/assets/js/now-markdown.js`,
-  `docs/assets/css/now.css` — the `/now` page, a real MkDocs Material page
+  `docs/_assets/backend/js/now-data.js`, `docs/_assets/backend/js/now-markdown.js`,
+  `docs/_assets/backend/css/now.css` — the `/now` page, a real MkDocs Material page
   (wired into `mkdocs.yml`'s nav, same as `docs/sitemap.md`) generated
   directly from `content/now.tsv` + `now-data.js`. See `NOW-PAGE.md` for
   the full design decisions, including why this replaced an earlier
@@ -198,6 +208,42 @@ in the TSVs is still path-relative with no leading slash (`about/`, not
 serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
+
+### `docs/` asset reorg: underscore convention for supporting files (2026-09-02)
+
+`docs/` used to mix hand-authored content pages/images with system CSS/JS
+and downloadable attachments across five flat top-level folders
+(`images/`, `assets/`, `js/`, `stylesheets/`, `files/`), with no naming
+signal for which was which. Reorganized into two kinds of top-level
+folder: unprefixed for actual content pages (unchanged — `3dp/`, `fffx/`,
+`makings/`, `teaching/`, root `.md` files) and underscore-prefixed for
+supporting files that aren't pages themselves (`_images/`, `_downloads/`
+— renamed from `files/`, it's a page attachment not a system file despite
+the name — and `_assets/`, split into `material/` for hand-edited MkDocs
+Material theme extras and `backend/` for the mostly machine-written v3
+map/TSV-generated/`/now`-config assets, nested subsystem-first so each
+subsystem's CSS and JS sit together). `docs/index.html` and `docs/CNAME`
+stay at root (GitHub Pages/MkDocs conventions).
+
+Content pages themselves were deliberately **not** relocated — moving a
+`.md` file changes its live URL, and this site has external inbound
+links, so grouping pages into section folders is left for a later pass
+(`compass/about.md` etc.). That later move doesn't undo any of this one:
+MkDocs rewrites relative links from each page's own source location at
+build time, so a moved page only needs an added `../` per nesting level
+in its own links, not a change to where `_images/`/`_assets/` live.
+
+Every path this touched got updated together — `mkdocs.yml`, the TSV
+image column (`content/now.tsv`), the `.md` pages with relative asset
+links, and every build script/tool with the old paths hardcoded
+(`build-cabinet-content.js`, `build-now-content.js`, `now-editor.js`,
+`now-data-editor.js`, `cabinet-editor.js` + its UI, `admin-controls.js` +
+its UI, `landing-v3/promote.mjs`, `landing-v3/index.template.html`,
+`landing-v3/layout-engine/build-render.html` and `cabinet-v3-layout.js`)
+— then the full pipeline (`build-static.mjs` → `promote.mjs` →
+`build-cabinet-content.js` → `build-now-content.js` → `mkdocs build
+--strict`) was re-run to verify nothing broke. Full file-by-file mapping:
+`documentation/FILE-MANIFEST.md`'s `docs/` section.
 
 ### Copy config reworked: full state export/import, colours/fonts moved into JS (#32, 2026-08-30)
 

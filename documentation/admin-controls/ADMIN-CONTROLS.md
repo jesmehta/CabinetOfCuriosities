@@ -81,7 +81,7 @@ never leave stray build output for git to notice.
 **Static serving falls through to the repo root**, not `docs/` like
 `cabinet-editor.js`/`now-editor.js` do — specifically so
 `/landing-v3/dev-tool/islands-tool.html`'s own relative asset references
-(`../../docs/assets/css/cabinet-tokens.css`, `../shared/cabinet-v3-style.css`,
+(`../../docs/_assets/backend/css/cabinet-tokens.css`, `../shared/cabinet-v3-style.css`,
 `../layout-engine/cabinet-v3-layout.js`) resolve correctly when opened
 through this dashboard rather than needing a separate static server.
 

@@ -5,9 +5,9 @@ Bulk-content folders (images, screenshots, frozen archive snapshots) are
 described as one entry each rather than file-by-file — see each area's own
 docs (linked below) for exhaustive detail where it exists. Companion to
 `README.md`'s "Structure" section (the practical guide); this is the
-exhaustive map. Generated 2026-08-29, updated 2026-08-29 (documentation/
-relocation) — not auto-built, update by hand alongside structural changes,
-same as every other doc here.
+exhaustive map. Generated 2026-08-29, updated 2026-09-02 (`docs/` asset
+reorg — see below) — not auto-built, update by hand alongside structural
+changes, same as every other doc here.
 
 ## Root-level files
 
@@ -120,7 +120,7 @@ folder is scoped to the dashboard itself, same as `now/` or
 
 | File | Role |
 |---|---|
-| `build-cabinet-content.js` | Parses the two `cabinet-*.tsv` files into `docs/assets/js/cabinet-generated-content.js`. Refactored 2026-08-29 onto `cabinet-tsv.js`'s shared reader/validator (byte-identical output verified) — see `CABINET-EDITOR.md`. |
+| `build-cabinet-content.js` | Parses the two `cabinet-*.tsv` files into `docs/_assets/backend/js/cabinet-generated-content.js`. Refactored 2026-08-29 onto `cabinet-tsv.js`'s shared reader/validator (byte-identical output verified) — see `CABINET-EDITOR.md`. |
 | `build-now-content.js` | Parses `content/now.tsv` + `now-data.js` directly into `docs/now.md` — same "script writes Markdown into `docs/`" pattern as `generate_sitemap.py`. Pre-renders entry text through `now-markdown.js` first. (2026-08-29: previously wrote a `now-generated-content.js` JS blob for a client-rendered `docs/now.html`; that page and its generated-JS output are both gone now — see `NOW-PAGE.md`'s v2.0 entry.) |
 | `generate_sitemap.py` | Fetches sections/entries TSVs live from all three worlds' repos (Cabinet, fffx, Bookshelf) over GitHub raw, writes `docs/sitemap.md`. (2026-08-30: also writes `documentation/CONTENT-INVENTORY.md`, a Cabinet-only, local-file, no-network cross-check of `content/cabinet-*.tsv` against `mkdocs.yml`'s own nav tree — replaces the old hand-maintained Content Inventory table in `three-world-launch-phases-ToDo.md`, #126.) |
 | `now-tsv.js` | Shared TSV parse/serialize logic, used by both `build-now-content.js` and the admin editor — kept in one place so the two can't quietly diverge. |
@@ -135,6 +135,21 @@ folder is scoped to the dashboard itself, same as `now/` or
 
 ## `docs/` — the live MkDocs site + standalone static pages
 
+Reorganized 2026-09-02: top-level folders now follow a page-vs-asset
+convention — a leading underscore marks "supporting files, not a browsable
+page" (`_images/`, `_downloads/`, `_assets/`), while unprefixed folders
+hold actual `.md` content pages (`3dp/`, `fffx/`, `makings/`, `teaching/`).
+Content pages themselves were **not** relocated in this pass — moving a
+`.md` file changes its live URL (MkDocs derives the URL from the file's
+path under `docs/`), and this site has external inbound links, so that's
+deliberately left for a later, separate move (tracked as a to-do — content
+pages will eventually group into section folders, e.g. `compass/about.md`).
+Every asset move here is purely mechanical: MkDocs rewrites relative
+links (image `src`, page `href`) at build time based on the *source*
+file's location, so nothing about this reorg needs redoing when pages do
+eventually move — only an added `../` per nesting level in each moved
+page's own links.
+
 | Path | Role |
 |---|---|
 | `docs/index.html` | Standalone Level-1 landing page (the archipelago map). Auto-generated — promoted from `landing-v3/index.html`, do not hand-edit. |
@@ -146,23 +161,31 @@ folder is scoped to the dashboard itself, same as `now/` or
 | `docs/fffx/*.md` | fffx-related MkDocs pages not covered by the fffx subdomain itself (100 Gradients, Packing Shapes, Vera Molnar Retrospective, particle systems, fffx landing stub). |
 | `docs/teaching/*.md` | Per-cohort teaching write-ups (class-2023-24, class-2025-26). |
 | `docs/makings/*.md` | Making-process write-ups (drawing machines, lasercutting, origami/paper). |
-| `docs/CNAME` | Custom-domain file for GitHub Pages (`cabinetofcuriosities.in`). |
-| `docs/images/`, `docs/files/` | Static image/downloadable-file assets referenced from MkDocs pages. |
+| `docs/CNAME` | Custom-domain file for GitHub Pages (`cabinetofcuriosities.in`). Stays at `docs/` root — GitHub Pages requirement, not part of the underscore convention. |
+| `docs/_images/` | Content images referenced from MkDocs pages: `avatar-photo.jpg`, `CirclePacking/`, `DotMandala/`, `FabLoom/` (linked from `about.md`/`fffx/PackingShapes.md`/`dotMandalaTool.md`/`mini_loom.md`), plus `now/{reading,travel,found}/` — uploaded `/now` images, populated by the now-editor's upload endpoint, referenced root-relative (`/​_images/now/...`) from `content/now.tsv`'s `image` column since `now.md` renders one directory deep (`/now/`). |
+| `docs/_downloads/` | Downloadable content attachments linked from `site_notes.md` (`deploy.yml.txt`, `requirements.txt`) — snapshots for illustration, not the live deploy config (that's `.github/workflows/deploy.yml` + root `requirements.txt`). Renamed from `docs/files/` — it's a page attachment, same category as `_images/`, not a system file, despite the name. |
 
-### `docs/assets/` — CSS/JS shipped to production
+### `docs/_assets/` — CSS/JS shipped to production, split by subsystem
+
+Split into `material/` (hand-edited MkDocs Material theme extras — small,
+stable, rarely touched) and `backend/` (mostly machine-written by three
+different pipelines: `landing-v3/promote.mjs` for the v3 map's CSS/JS,
+`tools/build-cabinet-content.js` for `cabinet-generated-content.js`, the
+now-editor for `now-data.js`) — nested subsystem-first (`material/{css,js}`,
+`backend/{css,js}`) rather than type-first, so each subsystem's CSS and JS
+sit next to each other.
 
 | File | Role |
 |---|---|
-| `css/cabinet-tokens.css` | Single source of truth for the parchment/ink palette + type, shared by the v3 map and MkDocs Material theme mapping. |
-| `css/cabinet-v3-style.css` | v3 map's own stylesheet. Promoted copy — dev original lives at `landing-v3/shared/cabinet-v3-style.css`. |
-| `css/now.css` | `/now` entry-list layout, fade hierarchy, colour accents (page chrome/typography itself comes from `cabinet-material.css`, same as every other MkDocs page). |
-| `js/cabinet-generated-content.js` | Auto-generated from `content/cabinet-*.tsv` — do not hand-edit. |
-| `js/cabinet-v3-data.js`, `cabinet-v3-dragon.js`, `cabinet-v3-flowfield.js`, `cabinet-v3-islandshape.js`, `cabinet-v3-particles.js`, `cabinet-v3-production-animate.js` | Promoted runtime copies of `landing-v3/shared/`'s same-named files — the boats/dragons animation actually shipped to browsers. |
-| `js/now-data.js` | Hand-edited: `/now` section titles, mode, visibility, groupSize, imageLayout. |
-| `js/now-markdown.js` | Shared tiny Markdown renderer — dynamically imported by `tools/build-now-content.js` to pre-render entry text into `docs/now.md`, and used by the admin editor's live preview. |
-| `now/<section>/` | Uploaded `/now` images (`reading/`, `travel/`, `found/`), populated by the admin server's upload endpoint. |
-| `stylesheets/cabinet-material.css`, `extra.css` | MkDocs Material theme extras (token mapping, misc overrides). |
-| `js/extra.js` | MkDocs Material extra JS. |
+| `backend/css/cabinet-tokens.css` | Single source of truth for the parchment/ink palette + type, shared by the v3 map and MkDocs Material theme mapping. |
+| `backend/css/cabinet-v3-style.css` | v3 map's own stylesheet. Promoted copy — dev original lives at `landing-v3/shared/cabinet-v3-style.css`. |
+| `backend/css/now.css` | `/now` entry-list layout, fade hierarchy, colour accents (page chrome/typography itself comes from `cabinet-material.css`, same as every other MkDocs page). |
+| `backend/js/cabinet-generated-content.js` | Auto-generated from `content/cabinet-*.tsv` — do not hand-edit. |
+| `backend/js/cabinet-v3-data.js`, `cabinet-v3-dragon.js`, `cabinet-v3-flowfield.js`, `cabinet-v3-islandshape.js`, `cabinet-v3-particles.js`, `cabinet-v3-production-animate.js` | Promoted runtime copies of `landing-v3/shared/`'s same-named files — the boats/dragons animation actually shipped to browsers. |
+| `backend/js/now-data.js` | Hand-edited: `/now` section titles, mode, visibility, groupSize, imageLayout. |
+| `backend/js/now-markdown.js` | Shared tiny Markdown renderer — dynamically imported by `tools/build-now-content.js` to pre-render entry text into `docs/now.md`, and used by the admin editor's live preview. |
+| `material/css/cabinet-material.css`, `extra.css` | MkDocs Material theme extras (token mapping, misc overrides). |
+| `material/js/extra.js` | MkDocs Material extra JS. |
 
 ## `landing-v3/` — the v3 map's dev/build system
 
@@ -202,7 +225,7 @@ day (see above) — this folder is code/build only now.
 | `cabinet-v3-particles.js` | Particle pool + per-tick stepping for the ambient sea particles. |
 | `cabinet-v3-dragon.js` | Sea-dragon spawn/step logic. |
 | `cabinet-v3-production-animate.js` | The slim runtime module actually shipped to browsers — boats/dragons animation running on top of the frozen SVG, reusing the modules above. |
-| `cabinet-v3-style.css` | v3 map's stylesheet — dev original; promoted copy lives at `docs/assets/css/cabinet-v3-style.css`. |
+| `cabinet-v3-style.css` | v3 map's stylesheet — dev original; promoted copy lives at `docs/_assets/backend/css/cabinet-v3-style.css`. |
 
 ### `dev-tool/` — dev-only, never ships
 
