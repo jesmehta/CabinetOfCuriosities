@@ -6,7 +6,7 @@
 // generator renders into now.md" can never drift apart -- see
 // documentation/NOW-PAGE.md's "Local admin server".
 
-import { renderInline, splitParagraphs } from "../assets/js/now-markdown.js";
+import { renderInline, splitParagraphs } from "../_assets/backend/js/now-markdown.js";
 
 let state = null;
 let editingEntryIndex = null;

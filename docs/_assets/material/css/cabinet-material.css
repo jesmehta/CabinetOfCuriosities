@@ -3,7 +3,7 @@
    as part of the same parchment/ink world as the standalone map homepage,
    instead of Material's default light theme. */
 
-@import url("../assets/css/cabinet-tokens.css");
+@import url("../../backend/css/cabinet-tokens.css");
 
 :root {
   --md-primary-fg-color: var(--cab-ink);
