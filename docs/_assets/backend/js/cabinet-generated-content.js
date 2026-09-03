@@ -80,7 +80,7 @@ export const sections = [
       "ry": 120
     },
     "extraCount": 3,
-    "notes": "Real dedicated Teaching landing page (docs/teaching.md) added 2026-08-24 -- href was a placeholder pointing at the external SSD Creative Coding showcase before this."
+    "notes": "Real dedicated Teaching landing page (docs/teaching/index.md, moved under teaching/ 2026-09-03) added 2026-08-24 -- href was a placeholder pointing at the external SSD Creative Coding showcase before this."
   },
   {
     "id": "visual-field-notes",
@@ -397,7 +397,7 @@ export const entries = [
     ],
     "location": "mkdocs",
     "subtitle": "Working with AI, Coding with AI, and class write-ups.",
-    "notes": "Links to the Emergent Technology subheading on teaching.md."
+    "notes": "Links to the Emergent Technology subheading on teaching/index.md."
   },
   {
     "id": "teaching-approach",

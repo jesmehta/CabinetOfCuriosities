@@ -10,13 +10,13 @@ nav:
     - Now : compass/now.md
     - Site Map : compass/sitemap.md
   - Teaching :
-    - Teaching : teaching.md
+    - Teaching : teaching/index.md
     - SSD Creative Coding : https://cabinetofcuriosities.in/teaching/ssd-creative-coding/
     - Working with AI : https://cabinetofcuriosities.in/teaching/working-with-ai/
     - Prompt Generator : https://cabinetofcuriosities.in/teaching/prompt-generator/
     - Oblique Strategies : https://cabinetofcuriosities.in/teaching/oblique-strategies/
   - Machines & Makings :
-    - Makings : makings.md
+    - Makings : makings/index.md
     - MiniLoom : makings/mini_loom.md
     - Origami & Paper : makings/origami-paper.md
     - Lasercutting : makings/lasercutting.md
@@ -45,7 +45,7 @@ nav:
     # (2026-09-03) -- same underlying content, one umbrella. See
     # documentation/backend-and-deploy/conversation-backend-and-deploy.md
     # Part 6.
-    - Webtech : webtech.md
+    - Webtech : webtech/index.md
     - Dot Mandala Generator : webtech/dotMandalaTool.md
     - Tracery Bots :
       - Tracery Bots : webtech/traceryBots.md

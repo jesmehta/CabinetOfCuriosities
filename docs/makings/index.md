@@ -4,11 +4,11 @@ Maker stuff.
 
 Page under construction !
 
-- [MiniLoom](makings/mini_loom.md)
-- [Origami & Paper](makings/origami-paper.md)
-- [Lasercutting](makings/lasercutting.md)
-- [Drawing Machines](makings/drawing-machines.md)
-- [3D Printing](3dp/3DP_2019.md)
+- [MiniLoom](mini_loom.md)
+- [Origami & Paper](origami-paper.md)
+- [Lasercutting](lasercutting.md)
+- [Drawing Machines](drawing-machines.md)
+- [3D Printing](../3dp/3DP_2019.md)
 
 Have a look at these for now.
 
