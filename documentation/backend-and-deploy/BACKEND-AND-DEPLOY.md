@@ -244,6 +244,27 @@ bookmark or a link shared elsewhere to an old URL 404s once this
 deploys. Not fixable from here, and no redirect stubs were added (not
 requested).
 
+## Section landing pages as `index.md` (2026-09-03, same day)
+
+Same-day follow-on to the content-folder reorg above: each section's
+own landing page (`makings.md`, `teaching.md`, `webtech.md`,
+`fffx/fffx.md`) moved inside its own folder as `index.md`, rather than
+staying a same-named sibling one level up or being repeated as
+`<section>/<section>.md`. Confirmed by a real build, not assumed:
+`docs/makings/makings.md` → `/makings/makings/` (double-nested
+regression); `docs/makings/index.md` → `/makings/` (clean, matching
+the pre-move URL). An underscore-prefixed name (`_makings.md`) would
+have no special meaning to MkDocs and would collide with this repo's
+own `_`-means-"not-a-page" convention from the asset reorg above —
+the opposite of what a section's own landing page is.
+
+Also created: the six section folders the content-folder reorg's plan
+had reserved but left unbuilt (`writings/`, `dataviz/`,
+`visual-field-notes/`, `blog/`, `travels/`, `physComp/`), each with a
+one-line "coming soon" `index.md` stub — not wired into `mkdocs.yml`'s
+nav or any TSV, since there's no real content yet to surface. Full
+record: `conversation-backend-and-deploy.md`, this same Part 6.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
@@ -304,6 +325,11 @@ Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
 
+### 2026-09-03 — section landing pages renamed to `index.md`; reserved-section stubs created
+
+See "Section landing pages as `index.md`" above. Same conversation-log
+Part as the content-folder reorg below.
+
 ### 2026-09-03 — `docs/` content-folder reorganization
 
 See "`docs/` content-folder reorganization" above. Conversation log:
@@ -359,9 +385,11 @@ See "Repo structure" above.
   TSVs live from GitHub, so its Cabinet-facing links still reflect the
   pre-reorg live URLs until the actual push happens (see "`docs/`
   content-folder reorganization" above).
-- **Six reserved section folders not yet created**: `physComp/`,
-  `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`, `travels/` —
-  from the Atlas plan, made when real content for them exists.
+- **Six reserved section folders exist as stubs only** (`physComp/`,
+  `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`, `travels/`)
+  — created 2026-09-03 with a one-line "coming soon" `index.md` each,
+  not wired into `mkdocs.yml`'s nav or any TSV. Build out and wire in
+  once real content for each exists.
 - **Section id/title labeling in the TSVs wasn't updated** to match the
   new `webtech` umbrella (e.g. `interfaces-data-texts` section keeps
   its old id/title, only its `href` changed) — a deliberate scope

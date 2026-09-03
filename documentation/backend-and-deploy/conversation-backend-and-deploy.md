@@ -105,6 +105,7 @@ this merge.
 - [Not decided in the Atlas session — carried forward](#part6-not-decided)
 - [Resumed in Claude Code: settling Compass, confirming the rest](#part6-resumed-in-claude-code)
 - [Executed: the physical move](#part6-executed)
+- [Follow-up, same day: `index.md` renames and the reserved-section stubs](#part6-followup-index)
 - [This handoff, Part 6](#this-handoff-part-6)
 
 ---
@@ -1569,7 +1570,60 @@ the Atlas provenance stated up front and this session's own resumption —
 including the one actual decision it changed (Compass) — recorded as its
 own subsection rather than blended into the Atlas material. The physical
 move itself (see "Executed" above) followed in the same session, once
-asked for directly. Six section folders from the Atlas plan
-(`physComp/`, `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`,
-`travels/`) remain reserved names only — not created as empty
-scaffolding, left for whenever real content for them actually exists.
+asked for directly, with one further same-day follow-up (below): the
+section landing pages moved to `index.md` inside their own folders, and
+the six reserved section folders got created after all, each with a
+one-line stub.
+
+<a id="part6-followup-index"></a>
+
+## Follow-up, same day: `index.md` renames and the reserved-section stubs
+
+> **the makings teachings webtech md files should be in their respetive
+> folders
+>
+> should these section head files - makings.md, fffx.md be _makings.md
+> or does that break some kind of best practice somewhere ?
+>
+> what about the currently empty sections - travel, writings etc - you
+> might as well make the folders atleast, and maybe the lander files as
+> well**
+
+Three asks, answered before any file moved. On naming: rather than
+answer the underscore question from memory, it was tested directly —
+a throwaway two-page mkdocs project confirmed `docs/makings/makings.md`
+resolves to `/makings/makings/` (double-nested, a real regression from
+the clean `/makings/` the page already had), while `docs/makings/index.md`
+resolves to the clean `/makings/`, matching what MkDocs already gave
+the page before it moved. The underscore option was rejected on a
+second ground beyond that: this repo's own `docs/` convention (Part 5)
+already gives `_` a specific meaning — "supporting file, not a page" —
+and a section's own landing page is exactly a page, so `_makings.md`
+would directly contradict a convention just established two days
+earlier, not merely be redundant with it.
+
+Moved: `makings.md` → `makings/index.md`, `teaching.md` →
+`teaching/index.md`, `webtech.md` → `webtech/index.md`, and
+`fffx/fffx.md` → `fffx/index.md` (for consistency, even though it isn't
+currently wired into nav either way). `mkdocs.yml`'s three nav paths
+updated to match; `makings/index.md`'s own links to its now-sibling
+children (previously written `makings/origami-paper.md` etc. from when
+the file lived one level up) needed fixing too — caught immediately by
+`mkdocs build --strict` treating an unresolvable internal link target
+as a hard error, not just an informational note.
+
+On the empty sections: created all six reserved folders
+(`writings/`, `dataviz/`, `visual-field-notes/`, `blog/`, `travels/`,
+`physComp/` — the last added for symmetry with the other five, which
+the Atlas plan had paired with a landing page while leaving `physComp/`
+folder-only) with a one-line "coming soon" `index.md` stub each,
+matching the existing `makings/origami-paper.md`-style convention.
+Deliberately left unwired from `mkdocs.yml`'s nav and every TSV — there
+being a folder is not the same as there being anything to surface, and
+wiring in empty sections wasn't asked for.
+
+Six section folders from the Atlas plan (`physComp/`, `writings/`,
+`dataviz/`, `visual-field-notes/`, `blog/`, `travels/`) now physically
+exist with stub landing pages, not created as empty scaffolding but as
+real (if minimal) pages — built out further, and wired into nav/TSV,
+once actual content for each exists.

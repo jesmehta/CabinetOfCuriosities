@@ -215,6 +215,36 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Section landing pages moved to `index.md`; six reserved section stubs created (2026-09-03)
+
+Same-day follow-on to the content-folder reorg below. Each section's
+own landing page (`makings.md`, `teaching.md`, `webtech.md`, and
+`fffx/fffx.md`) moved inside its own folder, alongside its children,
+rather than staying a same-named sibling one level up — specifically
+renamed to `index.md`, not repeated as `<section>/<section>.md`: a
+real build confirmed `makings/makings.md` produces the URL
+`/makings/makings/` (double-nested, a regression), where
+`makings/index.md` produces the clean `/makings/` MkDocs already gave
+it. An underscore-prefixed name (`_makings.md`) was considered and
+rejected — no special meaning to MkDocs, and it collides with this
+repo's own convention where a leading `_` at the top of `docs/` means
+"not a page," the opposite of what a section's landing page is.
+
+Also created: `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`,
+`travels/`, `physComp/` — the six section folders reserved (not yet
+built) in the content-folder reorg's own Atlas-sourced plan — each with
+a one-line "coming soon" `index.md` stub, matching the existing
+`makings/origami-paper.md`-style stub convention. Deliberately not
+wired into `mkdocs.yml`'s nav or any TSV — there's no real content yet
+to surface, so nothing links to them; they get wired in once actual
+content for each exists.
+
+`makings/index.md`'s own links to its (now-sibling) children needed
+fixing too — caught by `mkdocs build --strict`, which flags an
+unresolvable relative link as a hard error, not just an INFO line, when
+the *target* file doesn't exist at the computed path (as opposed to an
+external/anchor link it can't resolve at all, which stays INFO).
+
 ### `docs/` content-folder reorg: pages grouped into section folders (2026-09-03)
 
 Follow-on to the asset reorg below, this time moving the content
