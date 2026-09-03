@@ -8,7 +8,7 @@ const {
 const root = path.resolve(__dirname, "..");
 const sectionsPath = path.join(root, "content", "cabinet-sections.tsv");
 const entriesPath = path.join(root, "content", "cabinet-entries.tsv");
-const outputPath = path.join(root, "docs", "assets", "js", "cabinet-generated-content.js");
+const outputPath = path.join(root, "docs", "_assets", "backend", "js", "cabinet-generated-content.js");
 
 function buildSections() {
   const rows = readSections(fs.readFileSync(sectionsPath, "utf8"), path.relative(root, sectionsPath));

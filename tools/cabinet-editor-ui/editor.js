@@ -496,7 +496,7 @@ document.getElementById("rebuild-btn").addEventListener("click", async () => {
   btn.disabled = true;
   try {
     const result = await apiCall("POST", "/api/rebuild");
-    showStatus(`Rebuilt docs/assets/js/cabinet-generated-content.js\n${result.output || ""}`, "ok");
+    showStatus(`Rebuilt docs/_assets/backend/js/cabinet-generated-content.js\n${result.output || ""}`, "ok");
   } catch (err) {
     showStatus(err.message, "error");
   } finally {

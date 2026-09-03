@@ -118,7 +118,7 @@ function entryFormHtml({ formAction, dataAttrs, initial, submitLabel, showCancel
       <label>Image
         <div class="image-row">
           ${v.image ? `<img src="${esc(v.image)}" alt="" />` : ""}
-          <input type="text" name="image" value="${esc(v.image)}" placeholder="/assets/now/section/file.jpg" class="image-path" />
+          <input type="text" name="image" value="${esc(v.image)}" placeholder="/_images/now/section/file.jpg" class="image-path" />
           <input type="file" accept="image/*" data-role="image-upload" />
           <span data-role="upload-status"></span>
         </div>

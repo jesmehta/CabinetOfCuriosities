@@ -1,4 +1,4 @@
-// Now page -- programmatic read/write access to docs/assets/js/now-data.js
+// Now page -- programmatic read/write access to docs/_assets/backend/js/now-data.js
 // for tools/now-editor.js (the local admin server). Reading uses a real ESM
 // dynamic import (so it's parsed as actual JS, not regexed -- immune to
 // whitespace/formatting variation). Writing locates the sectionConfig
@@ -11,7 +11,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const NOW_DATA_PATH = path.join(__dirname, "..", "docs", "assets", "js", "now-data.js");
+const NOW_DATA_PATH = path.join(__dirname, "..", "docs", "_assets", "backend", "js", "now-data.js");
 const KEY_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
 function findBalancedSpan(text, marker, openChar, closeChar) {

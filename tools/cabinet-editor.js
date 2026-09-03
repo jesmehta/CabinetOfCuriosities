@@ -345,5 +345,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`Cabinet editor running at http://127.0.0.1:${PORT}/admin/`);
-  console.log(`(localhost only, Ctrl+C to stop -- "Rebuild" regenerates docs/assets/js/cabinet-generated-content.js; the v3 map itself needs a separate landing-v3/build-static.mjs pass to reflect it)`);
+  console.log(`(localhost only, Ctrl+C to stop -- "Rebuild" regenerates docs/_assets/backend/js/cabinet-generated-content.js; the v3 map itself needs a separate landing-v3/build-static.mjs pass to reflect it)`);
 });

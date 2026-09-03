@@ -79,7 +79,7 @@ theme:
     code: Ubuntu Mono
   icon:
     logo: material/tortoise
-  favicon: images/favicon.svg
+  favicon: _images/favicon.svg
   features:
     # - navigation.tabs
     # - navigation.instant
@@ -101,9 +101,9 @@ plugins:
   - mkdocs-video
 
 extra_css:
-  - stylesheets/extra.css
-  - stylesheets/cabinet-material.css
-  - assets/css/now.css
+  - _assets/material/css/extra.css
+  - _assets/material/css/cabinet-material.css
+  - _assets/backend/css/now.css
 
 extra_javascript:
-  - js/extra.js
+  - _assets/material/js/extra.js

@@ -15,7 +15,7 @@ const ROOT = path.resolve(__dirname, "..");
 const NOW_TSV_PATH = path.join(ROOT, "content", "now.tsv");
 const DOCS_ROOT = path.join(ROOT, "docs");
 const UI_ROOT = path.join(__dirname, "now-editor-ui");
-const IMAGES_ROOT = path.join(DOCS_ROOT, "assets", "now");
+const IMAGES_ROOT = path.join(DOCS_ROOT, "_images", "now");
 const PORT = Number(process.env.NOW_EDITOR_PORT) || 5757;
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
 
@@ -326,9 +326,9 @@ async function apiUploadImage(req, res) {
     fs.writeFileSync(path.join(sectionDir, safeName), buffer);
     // Root-relative, not docs-relative -- now.md renders at site/now/ (MkDocs'
     // directory-URL pretty-links), one level deeper than the old flat
-    // docs/now.html, so a bare "assets/now/..." would resolve one directory
+    // docs/now.html, so a bare "_images/now/..." would resolve one directory
     // too deep once deployed. See documentation/NOW-PAGE.md's "Image paths".
-    const relPath = `/assets/now/${section}/${safeName}`;
+    const relPath = `/_images/now/${section}/${safeName}`;
     sendJson(res, 200, { ok: true, path: relPath });
   } catch (err) {
     sendJson(res, 422, { error: err.message });
@@ -397,7 +397,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Everything else: serve docs/ as the static site root -- mainly so
-    // uploaded images (docs/assets/now/...) are viewable by the same
+    // uploaded images (docs/_images/now/...) are viewable by the same
     // root-relative path the generated now.md and this UI both use. now.md
     // itself isn't previewable here (it's raw Markdown, not rendered HTML);
     // run `mkdocs serve` separately for a live-rendered preview.

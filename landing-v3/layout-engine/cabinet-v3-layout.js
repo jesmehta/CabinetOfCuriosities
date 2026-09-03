@@ -25,7 +25,7 @@
 // subsequent resize.
 
 import { v3Config, EXTRA_WEIGHT, applyThemeStyle } from "../shared/cabinet-v3-data.js";
-import { sections, entries } from "../../docs/assets/js/cabinet-generated-content.js";
+import { sections, entries } from "../../docs/_assets/backend/js/cabinet-generated-content.js";
 import { squarify } from "./cabinet-v3-treemap.js";
 import { generateScatterPoints, sortPointsByBandReadingOrder, growCircles, createSeededRng, safeMinSeparation, insetRect, centerPointsInRect } from "./cabinet-v3-circlepack.js";
 import { buildIslandHeightmap, traceContourFromHeightmap, buildCoastlineDistanceField, buildInlandDistanceField } from "../shared/cabinet-v3-islandshape.js";

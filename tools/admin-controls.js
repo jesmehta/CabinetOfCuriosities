@@ -222,7 +222,7 @@ const server = http.createServer(async (req, res) => {
 
     // Everything else falls through to the repo root -- so links to
     // landing-v3/dev-tool/islands-tool.html (and whatever it in turn
-    // references relative to the repo root: docs/assets/css/cabinet-tokens.css,
+    // references relative to the repo root: docs/_assets/backend/css/cabinet-tokens.css,
     // landing-v3/shared/, landing-v3/layout-engine/) resolve correctly.
     const target = safeJoin(ROOT, pathname);
     if (!target) { res.writeHead(400); res.end("Bad path"); return; }

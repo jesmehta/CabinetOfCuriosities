@@ -12,8 +12,8 @@
 // file's own header comment.)
 //
 // What it does:
-//   1. Copies every file in landing-v3/shared/ to docs/assets/js/ or
-//      docs/assets/css/ (by extension). These ship as real production
+//   1. Copies every file in landing-v3/shared/ to docs/_assets/backend/js/ or
+//      docs/_assets/backend/css/ (by extension). These ship as real production
 //      assets and import each other by bare relative filename
 //      (`import ... from "./cabinet-v3-data.js"`), so a flat copy keeps
 //      those imports working unchanged in both locations -- no rewriting
@@ -56,14 +56,14 @@ const destIndexPath = path.join(docsDir, "index.html");
 // index.template.html that alters these lines fails loudly here instead of
 // silently promoting a broken (or silently-unrewritten) path.
 const PATH_REWRITES = [
-  ['href="../docs/assets/css/cabinet-tokens.css"', 'href="assets/css/cabinet-tokens.css"'],
-  ['href="shared/cabinet-v3-style.css"', 'href="assets/css/cabinet-v3-style.css"'],
-  ['src="shared/cabinet-v3-production-animate.js"', 'src="assets/js/cabinet-v3-production-animate.js"'],
+  ['href="../docs/_assets/backend/css/cabinet-tokens.css"', 'href="_assets/backend/css/cabinet-tokens.css"'],
+  ['href="shared/cabinet-v3-style.css"', 'href="_assets/backend/css/cabinet-v3-style.css"'],
+  ['src="shared/cabinet-v3-production-animate.js"', 'src="_assets/backend/js/cabinet-v3-production-animate.js"'],
   // Prose comments referencing the same file, not live paths -- kept
   // accurate in the promoted copy per the ed45d15 convention (see
   // documentation/landing-v3-notes/three-world-launch-phases-ToDo.md's #132).
-  ["-- see cabinet-v3-style.css's", "-- see assets/css/cabinet-v3-style.css's"],
-  ["(cabinet-v3-style.css's .sr-only)", "(assets/css/cabinet-v3-style.css's .sr-only)"]
+  ["-- see cabinet-v3-style.css's", "-- see _assets/backend/css/cabinet-v3-style.css's"],
+  ["(cabinet-v3-style.css's .sr-only)", "(_assets/backend/css/cabinet-v3-style.css's .sr-only)"]
 ];
 
 const BANNER = [
@@ -138,7 +138,7 @@ async function main() {
 
   for (const f of sharedFiles) {
     const destSubdir = f.endsWith(".css") ? "css" : "js";
-    const destPath = path.join(docsDir, "assets", destSubdir, f);
+    const destPath = path.join(docsDir, "_assets", "backend", destSubdir, f);
     let previous = null;
     try {
       previous = await readFile(destPath, "utf8");
@@ -147,7 +147,7 @@ async function main() {
     }
     const next = await readFile(path.join(sharedDir, f), "utf8");
     await copyFile(path.join(sharedDir, f), destPath);
-    console.log(`${previous === next ? "unchanged" : "wrote"}: docs/assets/${destSubdir}/${f}`);
+    console.log(`${previous === next ? "unchanged" : "wrote"}: docs/_assets/backend/${destSubdir}/${f}`);
   }
 
   await verify();

@@ -1,5 +1,5 @@
 // Now page -- builds docs/now.md (a real MkDocs Material page, same as
-// docs/sitemap.md) directly from content/now.tsv + docs/assets/js/now-data.js.
+// docs/sitemap.md) directly from content/now.tsv + docs/_assets/backend/js/now-data.js.
 // Emits real Markdown headings (so the sidebar TOC and search index pick
 // sections up) with a raw HTML block per section for the entry list itself
 // (image layout is a flex/stacked structure attr_list alone can't express).
@@ -15,8 +15,8 @@ const { readEntries } = require("./now-tsv");
 const root = path.resolve(__dirname, "..");
 const sourcePath = path.join(root, "content", "now.tsv");
 const outputPath = path.join(root, "docs", "now.md");
-const dataPath = path.join(root, "docs", "assets", "js", "now-data.js");
-const markdownPath = path.join(root, "docs", "assets", "js", "now-markdown.js");
+const dataPath = path.join(root, "docs", "_assets", "backend", "js", "now-data.js");
+const markdownPath = path.join(root, "docs", "_assets", "backend", "js", "now-markdown.js");
 
 function toFileUrl(p) {
   return `file:///${p.replace(/\\/g, "/")}`;

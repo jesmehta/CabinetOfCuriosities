@@ -1,7 +1,7 @@
 /* v3 layout prototype styling. Reuses cabinet-tokens.css (the real
    parchment/ink palette) for continuity while the LAYOUT is what's under
    review here -- deliberately not restyling color/type from scratch too,
-   see Landing-page-notes.2.0.md's "why reuse tokens" note. */
+   see landing-page-v3-notes.2.0.md's "why reuse tokens" note. */
 
 /* v3.6.5 -- local colour tokens for sea-depth and beach/vegetation
    banding (see drawIslandsPath() in cabinet-v3-layout.js). Deliberately
@@ -112,7 +112,7 @@ body.v3-proto {
 
 /* v3.6.14-v3.6.15 -- originally seven parallel colour/type treatments,
    explicitly meant to be compared against each other rather than one
-   replacing the other (see Landing-page-notes.2.0.md's punch-list item 10
+   replacing the other (see landing-page-v3-notes.2.0.md's punch-list item 10
    and documentation/landing-v3-notes/v3-scheme-candidates.md for the full reasoning behind each one) --
    switched live via a `data-theme` attribute on <body> (dev panel:
    Visuals > Theme, cabinet-v3-controls.js), same pattern as
@@ -146,11 +146,20 @@ body.v3-proto {
    discarded outright -- copied into "medieRiso" instead, see that
    theme's own comment below. Pairs with colour bands on, wave rings off
    -- the bands are the effect this theme is about. */
+/* #32 rework, 2026-08-30 -- every COLOR_TOKENS entry (cabinet-v3-
+   controls.js: sea-deep/-shallow/veg/sand/peak/ink/ring-ink/halo-ink/
+   label-outline -- 9 total) moved out of every body.v3-proto
+   [data-theme="X"] block below into v3Config.colors (cabinet-v3-data.js),
+   applied at load as inline custom properties on <body> -- inline style
+   always outranks these attribute-selector rules, so declaring them here
+   too would just be dead weight. --v3-compass-accent/--v3-compass-white
+   are the only two theme-able tokens NOT in COLOR_TOKENS (no dev-panel
+   swatch edits them), so they're the only ones still declared per-theme
+   below. See documentation/landing-v3-notes/cabinet-v3-config-
+   reference.md for each theme's actual colour values and the reasoning
+   behind them (moved there from these blocks' own comments, which still
+   explain the DERIVED tokens -- compass-accent etc. -- below). */
 body.v3-proto[data-theme="satellite"] {
-  --v3-sea-deep: #1c5f8a;
-  --v3-sea-shallow: #43d6d6;
-  --v3-veg: #4caf3f;
-  --v3-sand: #f2c94c;
   /* v3.7.22 -- this theme had no --v3-ink/--v3-compass-accent of its own
      before the merge (relied entirely on generic fallbacks), which the
      compass rose ("colour the compass appropriately") would have shown
@@ -159,8 +168,9 @@ body.v3-proto[data-theme="satellite"] {
      (distinct from every saturated body colour here) plus a warm coral
      accent -- the one hue family (red/orange) this palette (blue/cyan/
      green/yellow) doesn't already have, same "give the compass a hue
-     nothing else in the theme uses" logic as medieval-map's violet. */
-  --v3-ink: #0d2436;
+     nothing else in the theme uses" logic as medieval-map's violet. --v3-
+     ink itself is now set via v3Config.colors, not here -- this comment's
+     reasoning is about the choice, not the declaration. */
   --v3-compass-accent: #c1440e;
   /* v3.7.23 -- direct feedback: "compass rose white parts can be the
      colour of the glow or any other pale shade already in use, blue on
@@ -195,15 +205,6 @@ body.v3-proto[data-theme="satellite"] {
    toward the same two hue families so the theme still reads coherently
    if flat mode is switched off from the dev panel. */
 body.v3-proto[data-theme="medieval-map"] {
-  /* v3.7.14 -- direct value: "Deep sea - #f4ebdd" (was #c9974f, a
-     darker amber -- this is a much lighter cream/parchment). */
-  --v3-sea-deep: #f4ebdd;
-  --v3-sea-shallow: #ddbd82;
-  /* v3.7.16 -- direct value: "#fbf0ee for vegetation" (was #5c2417, the
-     reddish-brown -- this is a pale blush cream). */
-  --v3-veg: #fbf0ee;
-  --v3-sand: #7d3a24;
-  --v3-ink: #1c1712;
   /* v3.7.17 -- compass rose "blue" rings: direct request, "a dark-midtone
      hue, darker than the ink, lighter than the sea, either deep violet or
      brick red." Went with deep violet at first -- medieval-map's palette
@@ -215,30 +216,35 @@ body.v3-proto[data-theme="medieval-map"] {
      all-warm palette" logic the violet was chosen for, just a hue the
      user actually wants to see here. */
   --v3-compass-accent: #1f2c52;
-  /* v3.7.60 -- direct report: the glow/halo label style "seems to not be
-     working anymore." Mechanism was never broken (filter: drop-shadow
-     was firing) -- v3.7.16 repainted --v3-veg to #fbf0ee (a pale blush
-     cream) as a direct colour request, unrelated to labels, but
-     --v3-label-outline still defaulted to --cab-land-light (#f4ead0) --
-     two near-identical pale creams, so the glow had almost no contrast
-     against medieval-map's own land fill specifically. Reuses
-     --v3-sea-shallow's existing amber (already in this theme's palette,
-     not a new colour) for real contrast against both the pale veg/sea
-     fills and the label's own dark ink. */
-  --v3-label-outline: var(--v3-sea-shallow);
+  /* #32 rework, 2026-08-30 -- --v3-label-outline (COLOR_TOKENS, so it's
+     live-panel-editable -- a truncated grep earlier in that rework missed
+     it entirely, caught before it shipped) moved into v3Config.colors as
+     a resolved literal (#ddbd82), same value this var() reference always
+     pointed at. Its own v3.7.60 history: direct report, the glow/halo
+     label style "seems to not be working anymore." Mechanism was never
+     broken (filter: drop-shadow was firing) -- v3.7.16 repainted --v3-veg
+     to #fbf0ee (a pale blush cream) as a direct colour request, unrelated
+     to labels, but label-outline still defaulted to --cab-land-light
+     (#f4ead0) -- two near-identical pale creams, so the glow had almost
+     no contrast against medieval-map's own land fill specifically. Fixed
+     by reusing sea-shallow's existing amber (already in this theme's
+     palette, not a new colour) for real contrast against both the pale
+     veg/sea fills and the label's own dark ink -- preserved here as a
+     literal since the live var() link no longer exists once sea-shallow
+     itself moved out of this block. */
 }
 
+/* #32 rework, 2026-08-30 -- font-family itself moved into v3Config.fonts
+   (cabinet-v3-data.js), applied at load as --v3-font-heading/-section-
+   label/-island-label inline custom properties -- see the base .v3-
+   header h1/.v3-section-label/.v3-island-label rules further down for the
+   var()-with-fallback that reads them. letter-spacing stays here,
+   theme-scoped as before -- it's a Cinzel-specific flourish, not
+   currently modeled as part of the live-tunable font choice (known gap:
+   picking Cinzel for a DIFFERENT theme via the dev panel won't also pick
+   up this letter-spacing). */
 body.v3-proto[data-theme="medieval-map"] .v3-header h1 {
-  font-family: "Cinzel", var(--cab-font-heading);
   letter-spacing: 0.04em;
-}
-
-body.v3-proto[data-theme="medieval-map"] .v3-section-label {
-  font-family: "IM Fell English", var(--cab-font-body);
-}
-
-body.v3-proto[data-theme="medieval-map"] .v3-island-label {
-  font-family: "EB Garamond", var(--cab-font-body);
 }
 
 /* "cyanotype" -- kept live/selectable (direct request: "Cyanotype was
@@ -260,22 +266,16 @@ body.v3-proto[data-theme="medieval-map"] .v3-island-label {
    instead of drifting grey. Island labels stay on the shared body font
    rather than Caveat -- the doc's own caveat (its word) is that
    handwriting faces degrade below ~14px, and island labels render at
-   13px, so only the larger, sparser section labels get the script face. */
-body.v3-proto[data-theme="cyanotype"] {
-  --v3-sea-deep: #0c3a5a;
-  --v3-sea-shallow: #4d6c7e;
-  --v3-veg: #b8beb9;
-  --v3-sand: #8c9ca1;
-  --v3-ink: #003153;
-}
+   13px, so only the larger, sparser section labels get the script face.
 
+   #32 rework, 2026-08-30 -- the five colour tokens (all precomposited
+   Prussian-blue-over-paper tiers, see above) moved into v3Config.colors;
+   Cormorant/Caveat moved into v3Config.fonts. No colour rule or font-
+   family rule remains here for this theme -- font-weight stays, a
+   Cormorant-specific flourish same as medieval-map's Cinzel letter-
+   spacing. */
 body.v3-proto[data-theme="cyanotype"] .v3-header h1 {
-  font-family: "Cormorant", var(--cab-font-heading);
   font-weight: 600;
-}
-
-body.v3-proto[data-theme="cyanotype"] .v3-section-label {
-  font-family: "Caveat", var(--cab-font-body);
 }
 
 /* "medieRiso" -- v3.6.28, direct request: originally a dark warm-brown/
@@ -333,17 +333,14 @@ body.v3-proto[data-theme="cyanotype"] .v3-section-label {
      (see .v3-sea-band etc. below) -- this is the one purely NEW
      treatment, not a token swap of an existing rule, adding a thin
      --v3-ring-ink stroke so each band's own edge reads as an iso-line
-     too, not just the wave rings. */
-body.v3-proto[data-theme="medieRiso"] {
-  --v3-sea-deep: #14588a;
-  --v3-sea-shallow: #7ec8e3;
-  --v3-veg: #4f7942;
-  --v3-sand: #f0dfa8;
-  --v3-ink: #16324a;
-  --v3-ring-ink: #f21d92;
-  --v3-halo-ink: #1bf2b5;
-  --v3-label-outline: #e031eb;
-}
+     too, not just the wave rings.
+
+   #32 rework, 2026-08-30 -- all 9 COLOR_TOKENS (sea-deep/-shallow/veg/
+   sand/peak/ink/ring-ink/halo-ink/label-outline) moved into
+   v3Config.colors -- an earlier pass here mistakenly left label-outline
+   behind, believing it wasn't part of COLOR_TOKENS (a truncated grep
+   missed the 9th entry); caught and fixed before shipping. No colour
+   rule remains for this theme at all now. */
 
 body.v3-proto[data-theme="medieRiso"] .v3-sea-band,
 body.v3-proto[data-theme="medieRiso"] .v3-sand-band,
@@ -353,14 +350,11 @@ body.v3-proto[data-theme="medieRiso"] .v3-veg-band {
   stroke-opacity: 0.8;
 }
 
+/* #32 rework, 2026-08-30 -- font-family (Cinzel / Space Mono) moved into
+   v3Config.fonts, same as medieval-map's own rule above. letter-spacing
+   stays theme-scoped, same known gap noted there. */
 body.v3-proto[data-theme="medieRiso"] .v3-header h1 {
-  font-family: "Cinzel", var(--cab-font-heading);
   letter-spacing: 0.04em;
-}
-
-body.v3-proto[data-theme="medieRiso"] .v3-island-label,
-body.v3-proto[data-theme="medieRiso"] .v3-section-label {
-  font-family: "Space Mono", var(--cab-font-body);
 }
 
 /* v3.6.12 -- header reverted to a normal top-of-flow row (was: absolute
@@ -425,7 +419,11 @@ body.v3-proto[data-theme="medieRiso"] .v3-section-label {
    line-height forces the same line-box height regardless of which
    font is actually rendering inside it. */
 .v3-header h1 {
-  font-family: var(--cab-font-heading);
+  /* #32 rework, 2026-08-30 -- reads v3Config.fonts[theme].heading (JS,
+     applyThemeStyle() in cabinet-v3-data.js) when set, else the site
+     default -- see this property's own comment further up for why it
+     used to be a hardcoded per-theme override instead. */
+  font-family: var(--v3-font-heading, var(--cab-font-heading));
   font-size: 2.1rem;
   line-height: 1.2;
   margin: 0 0 6px;
@@ -1334,7 +1332,9 @@ body.v3-proto[data-theme="satellite"] .v3-topo-structural {
 }
 
 .v3-island-label {
-  font-family: var(--cab-font-body);
+  /* #32 rework, 2026-08-30 -- reads v3Config.fonts[theme].islandLabel
+     when set, else the site default -- see .v3-header h1's own comment. */
+  font-family: var(--v3-font-island-label, var(--cab-font-body));
   font-size: 13px;
   fill: var(--cab-ink);
   text-anchor: middle;
@@ -1372,7 +1372,7 @@ body.v3-proto[data-theme="satellite"] .v3-topo-structural {
    re-render, so they can be compared directly against the real map.
    "halo" (the original hard 3px stroke) stays the default only because
    it shipped first, not because it's the chosen look -- see
-   Landing-page-notes.2.0.md punch-list item 13a. */
+   landing-page-v3-notes.2.0.md punch-list item 13a. */
 body:not([data-label-style]) .v3-island-label,
 body[data-label-style="halo"] .v3-island-label {
   paint-order: stroke;
@@ -1423,7 +1423,9 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
    (cabinet-v3-layout.js) for the full reasoning. */
 
 .v3-section-label {
-  font-family: var(--cab-font-heading);
+  /* #32 rework, 2026-08-30 -- reads v3Config.fonts[theme].sectionLabel
+     when set, else the site default -- see .v3-header h1's own comment. */
+  font-family: var(--v3-font-section-label, var(--cab-font-heading));
   fill: var(--cab-ink);
   letter-spacing: 0.03em;
   /* v3.7.8 -- direct request ("make them small caps to differentiate

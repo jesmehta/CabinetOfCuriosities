@@ -363,9 +363,9 @@ export const entries = [
     "subtitle": "A study in generated colour fields."
   },
   {
-    "id": "teaching-student-work",
+    "id": "students-creative-coding-2025-26",
     "section": "teaching",
-    "title": "Student Work",
+    "title": "Student Work - Creative Coding",
     "href": "teaching/ssd-creative-coding/",
     "order": 10,
     "weight": 3,
@@ -381,11 +381,29 @@ export const entries = [
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding/ (jesmehta/SSD_CreativeCodingPage) -- was an external link before 2026-08-24."
   },
   {
+    "id": "students-emergent-technology",
+    "section": "teaching",
+    "title": "Student Work - Emergent Technology",
+    "href": "teaching/#emergent-technology",
+    "order": 20,
+    "weight": 2,
+    "status": true,
+    "kind": "teaching-page",
+    "tags": [
+      "teaching",
+      "ai",
+      "emergent-technology"
+    ],
+    "location": "mkdocs",
+    "subtitle": "Working with AI, Coding with AI, and class write-ups.",
+    "notes": "Links to the Emergent Technology subheading on teaching.md."
+  },
+  {
     "id": "teaching-approach",
     "section": "teaching",
     "title": "History & Approach",
     "href": "",
-    "order": 20,
+    "order": 30,
     "weight": 2,
     "status": "wip",
     "kind": "teaching-page",
@@ -396,23 +414,6 @@ export const entries = [
     "location": "mkdocs",
     "subtitle": "A concise teaching history and approach statement.",
     "notes": "No page yet -- renders as non-navigating (coming soon)."
-  },
-  {
-    "id": "teaching-research",
-    "section": "teaching",
-    "title": "Research & Interests",
-    "href": "",
-    "order": 30,
-    "weight": 2,
-    "status": "wip",
-    "kind": "teaching-page",
-    "tags": [
-      "teaching",
-      "research"
-    ],
-    "location": "mkdocs",
-    "subtitle": "Research directions and pedagogical interests.",
-    "notes": "No page yet."
   },
   {
     "id": "gujarati-type",
@@ -698,22 +699,21 @@ export const entries = [
     "notes": "Auto-generated from all three worlds' TSVs by tools/generate_sitemap.py -> docs/sitemap.md, mirroring build-cabinet-content.js's own TSV-as-source-of-truth pattern. CV moved off this compass point; it now lives inside the About Me page instead."
   },
   {
-    "id": "working-with-ai",
+    "id": "teaching-research",
     "section": "teaching",
-    "title": "Working with AI",
-    "href": "teaching/working-with-ai/",
+    "title": "Research & Interests",
+    "href": "",
     "order": 40,
-    "weight": 3,
-    "status": true,
+    "weight": 2,
+    "status": "wip",
     "kind": "teaching-page",
     "tags": [
       "teaching",
-      "ai",
-      "guide"
+      "research"
     ],
-    "location": "assembly",
-    "subtitle": "15 principles for working with AI tools, assembled straight into Cabinet.",
-    "notes": "Multi-repo assembly (#43), mounted at /teaching/working-with-ai/ -- not built by mkdocs. location: assembly is a new value (field is descriptive only, not read by the layout code) since existing subdomain/mkdocs/external didn't fit."
+    "location": "mkdocs",
+    "subtitle": "Research directions and pedagogical interests.",
+    "notes": "No page yet."
   },
   {
     "id": "swatch-fields",
@@ -733,11 +733,29 @@ export const entries = [
     "subtitle": "An atlas of material swatches and colour fields."
   },
   {
+    "id": "working-with-ai",
+    "section": "teaching",
+    "title": "Working with AI",
+    "href": "teaching/working-with-ai/",
+    "order": 50,
+    "weight": 3,
+    "status": true,
+    "kind": "teaching-page",
+    "tags": [
+      "teaching",
+      "ai",
+      "guide"
+    ],
+    "location": "assembly",
+    "subtitle": "15 principles for working with AI tools, assembled straight into Cabinet.",
+    "notes": "Multi-repo assembly (#43), mounted at /teaching/working-with-ai/ -- not built by mkdocs. location: assembly is a new value (field is descriptive only, not read by the layout code) since existing subdomain/mkdocs/external didn't fit."
+  },
+  {
     "id": "prompt-generator",
     "section": "teaching",
     "title": "Prompt Generator",
     "href": "teaching/prompt-generator/",
-    "order": 50,
+    "order": 60,
     "weight": 2,
     "status": true,
     "kind": "web-experiment",
@@ -756,7 +774,7 @@ export const entries = [
     "section": "teaching",
     "title": "Oblique Strategies",
     "href": "teaching/oblique-strategies/",
-    "order": 60,
+    "order": 70,
     "weight": 2,
     "status": true,
     "kind": "web-experiment",
@@ -769,24 +787,6 @@ export const entries = [
     "location": "assembly",
     "subtitle": "A digital deck of Oblique Strategies cards for creative blocks.",
     "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
-  },
-  {
-    "id": "emergent-technology",
-    "section": "teaching",
-    "title": "Emergent Technology",
-    "href": "teaching/#emergent-technology",
-    "order": 70,
-    "weight": 2,
-    "status": true,
-    "kind": "teaching-page",
-    "tags": [
-      "teaching",
-      "ai",
-      "emergent-technology"
-    ],
-    "location": "mkdocs",
-    "subtitle": "Working with AI, Coding with AI, and class write-ups.",
-    "notes": "Links to the Emergent Technology subheading on teaching.md."
   },
   {
     "id": "swatch-fields-interfaces",
