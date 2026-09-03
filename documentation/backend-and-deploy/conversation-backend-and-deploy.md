@@ -104,6 +104,7 @@ this merge.
 - [Final folder set agreed with Atlas](#part6-final-folder-set)
 - [Not decided in the Atlas session — carried forward](#part6-not-decided)
 - [Resumed in Claude Code: settling Compass, confirming the rest](#part6-resumed-in-claude-code)
+- [Executed: the physical move](#part6-executed)
 - [This handoff, Part 6](#this-handoff-part-6)
 
 ---
@@ -1509,6 +1510,50 @@ once real work on it starts, not speculatively now.
 
 <a id="this-handoff-part-6"></a>
 
+<a id="part6-executed"></a>
+
+## Executed: the physical move
+
+> **yes please**
+
+Given directly in response to an offer to plan the move in detail, and
+taken as authorization to execute, not just plan — matching this
+session's own established rhythm (Part 5 followed the same pattern).
+Before moving anything, every hardcoded touchpoint was found by
+reading, not assumed: `content/cabinet-entries.tsv` turned out to have
+12 rows whose `href` values point at exactly the pages being moved —
+the live v3 map's own front-door data, not just `mkdocs.yml`'s nav —
+and `makings.md` had one internal link to `mini_loom.md` that would
+silently 404 once that file moved one level deeper.
+
+Moved (11 files): `about.md`/`colophon.md`/`now.md`/`sitemap.md`/
+`site_notes.md` → `compass/`; `mini_loom.md` → `makings/`;
+`creative_code.md` → `webtech.md` (rename); `dotMandalaTool.md`/
+`traceryBots.md`/`emergent_twine.md`/`trippyGourmet.md` → `webtech/`.
+Updated to match: `mkdocs.yml`'s nav (paths, plus merging "Wild wild
+web"/"Interfaces, Data & Texts" into one "Webtech" heading, per the
+Atlas session's own framing of the merge above); both TSVs' `href`
+columns; `makings.md`'s internal link; every moved page's own relative
+links to `_images`/`_assets`/`_downloads` (one added `../` per nesting
+level — the exact mechanism anticipated in Part 5, confirmed correct in
+practice, not just in theory); `build-now-content.js`'s and
+`generate_sitemap.py`'s hardcoded output paths; every doc/UI-text
+mention of an old path across `NOW-PAGE.md`, `SITEMAP.md`,
+`FILE-MANIFEST.md`, `README.md`, `admin-controls-ui`, `now-editor-ui`.
+
+Verified by re-running the actual pipeline, not just eyeballing the
+diff: `build-cabinet-content.js` (picks up the TSV href changes) →
+`build-static.mjs` → `promote.mjs` (re-promotes the map with corrected
+links, headless Chromium clean) → `build-now-content.js` → the
+network-dependent `generate_sitemap.py` (worked; also surfaced a
+non-bug worth recording — it fetches Cabinet's own TSVs live from
+GitHub `main`, same as Bookshelf/fffx, not from local files, so
+`sitemap.md`'s Cabinet-facing links stayed on the old, still-actually-
+live URLs until this is pushed and redeployed; only
+`CONTENT-INVENTORY.md`'s separate cross-check reads local files) →
+`mkdocs build --strict` (clean) → manual resolved-HTML checks on a root
+page, a depth-1 page, and `makings.md`'s own link.
+
 ## This handoff, Part 6
 
 > **absorb the documentation into your own - either delete this file
@@ -1522,8 +1567,9 @@ Resolved by absorption rather than a kept-alongside "v1": the standalone
 folded into this Part unchanged (down to its own verbatim quotes), with
 the Atlas provenance stated up front and this session's own resumption —
 including the one actual decision it changed (Compass) — recorded as its
-own subsection rather than blended into the Atlas material. The final
-target folder set is: Atlas's list above, with Compass moved into
-`compass/`. Not yet executed against the repo — the physical `git mv`
-pass, `mkdocs.yml`/TSV updates, and verification are still to come, same
-shape as Part 5's asset move.
+own subsection rather than blended into the Atlas material. The physical
+move itself (see "Executed" above) followed in the same session, once
+asked for directly. Six section folders from the Atlas plan
+(`physComp/`, `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`,
+`travels/`) remain reserved names only — not created as empty
+scaffolding, left for whenever real content for them actually exists.

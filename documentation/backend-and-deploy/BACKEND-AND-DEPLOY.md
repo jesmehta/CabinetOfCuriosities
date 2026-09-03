@@ -155,6 +155,95 @@ drift, so a future pass shouldn't treat either version as "more recent,
 therefore correct" without actually revisiting whether Bookshelf/fffx
 should adopt the same scheme.
 
+## `docs/` content-folder reorganization (2026-09-03)
+
+Follow-on to the asset reorg above, this time moving the content
+*pages* themselves — deliberately excluded from that pass since it
+changes live URLs (MkDocs derives a page's URL from its `docs/` path).
+The target layout came from a separate planning session with a
+different Claude instance ("Chirp", Atlas/project-assistant context,
+read-only repo access) that has visibility into future planned content
+this repo's own sessions don't — settled first, before any file moved,
+specifically so the newer sections (webtech, writings, dataviz,
+physComp, blog, travels, visual-field-notes) don't need a repeat reorg
+once real content lands. Full record, including the planning
+conversation itself: `conversation-backend-and-deploy.md` Part 6.
+
+```text
+docs/
+├── compass/          about.md, colophon.md, now.md, sitemap.md, site_notes.md
+├── teaching.md + teaching/       (unchanged)
+├── makings.md + makings/         (unchanged, now also holds mini_loom.md)
+├── 3dp/                          (independent -- not nested under makings/)
+├── webtech.md + webtech/         (new umbrella, replaces creative_code.md;
+│                                   absorbs dotMandalaTool.md, traceryBots.md,
+│                                   trippyGourmet.md, emergent_twine.md)
+└── fffx/                         (unchanged -- frozen, live, shrinking)
+```
+
+Six more section folders from the Atlas plan (`physComp/`, `writings/`,
+`dataviz/`, `visual-field-notes/`, `blog/`, `travels/`) are reserved
+names, not created here — they get made when real content for them
+exists, not as empty scaffolding.
+
+**What had to change to match** — this move touches more than
+`mkdocs.yml`'s nav, because the live v3 map's own front-door data
+points at these exact page URLs:
+
+- `mkdocs.yml`'s nav paths, plus merging the old "Wild wild web" and
+  "Interfaces, Data & Texts" headings into one "Webtech" heading
+  (matching the file-level merge — same content, previously pitched
+  two ways).
+- **`content/cabinet-entries.tsv`** — 12 rows' `href` values pointed at
+  moved pages (the Compass points, Looms, Branching Narrative, the
+  `webtech`/`tracery-bots` entries). This is the v3 map's own link
+  data, so fixing it required re-running `build-cabinet-content.js`
+  and re-promoting the map (`build-static.mjs` → `promote.mjs`), not
+  just an `mkdocs build`. `content/cabinet-sections.tsv`'s
+  `interfaces-data-texts` section href also updated
+  (`creative_code/` → `webtech/`); the section's own id/title was
+  deliberately left unchanged — per the Atlas session's own stated
+  principle, physical file location and TSV/nav labeling are separate
+  concerns, only the `href` *path* needed to match reality.
+- `makings.md`'s one internal link to `mini_loom.md` (would have
+  silently 404'd once that file moved a level deeper).
+- Every moved page's own relative links to `_images`/`_assets`/
+  `_downloads` — one added `../` per nesting level, exactly the
+  mechanism the asset reorg's own doc entry anticipated, confirmed
+  correct in practice here, not just in theory.
+- `tools/build-now-content.js`'s and `tools/generate_sitemap.py`'s
+  hardcoded output paths (`docs/now.md` → `docs/compass/now.md`,
+  `docs/sitemap.md` → `docs/compass/sitemap.md`), plus every doc/UI-text
+  mention of the old paths (`NOW-PAGE.md`, `SITEMAP.md`,
+  `FILE-MANIFEST.md`, `README.md`, `admin-controls-ui`,
+  `now-editor-ui`).
+
+**A non-bug worth recording**: running `generate_sitemap.py` as part of
+verification surfaced that it fetches Cabinet's own TSVs live from
+GitHub's `main` branch, the same as it does for Bookshelf/fffx — not
+from local files (only `CONTENT-INVENTORY.md`'s separate, Cabinet-only
+cross-check reads local files). Since nothing from this reorg had been
+pushed yet, `docs/compass/sitemap.md`'s Cabinet-facing links correctly
+stayed on the old URLs, because those URLs were still what was actually
+live. Expected, by design — not something to fix — but `sitemap.md`
+needs one more regen after this is pushed and deployed.
+
+**Verification**: same pipeline discipline as the asset reorg —
+`build-cabinet-content.js` → `build-static.mjs` → `promote.mjs`
+(headless Chromium, zero console/request errors) →
+`build-now-content.js` → `generate_sitemap.py` → `mkdocs build
+--strict` (clean) — plus manual checks of the rendered HTML for a root
+page (`webtech.md`), a depth-1 page (`compass/about.md`,
+`makings/mini_loom.md`), and `makings.md`'s own link, confirming
+correct resolution in each case.
+
+**The one real, unavoidable cost**, unchanged from what was flagged
+before this ran: every moved page's live URL changed. Everything
+inside this repo/ecosystem was updated in the same pass; an external
+bookmark or a link shared elsewhere to an old URL 404s once this
+deploys. Not fixable from here, and no redirect stubs were added (not
+requested).
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
@@ -215,6 +304,11 @@ Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
 
+### 2026-09-03 — `docs/` content-folder reorganization
+
+See "`docs/` content-folder reorganization" above. Conversation log:
+Part 6 of `conversation-backend-and-deploy.md`.
+
 ### 2026-09-02 — `docs/` asset reorganization
 
 See "`docs/` asset reorganization" above. Conversation log: Part 5 of
@@ -260,14 +354,20 @@ See "Repo structure" above.
   not fixed here since it's outside this doc's own scope.
 - Bookshelf/fffx Cloudflare rollout still open — `#135`/`#136` in
   `three-world-launch-phases-ToDo.md`.
-- **Content pages still live flat under `docs/`** — the `_images`/
-  `_assets`/`_downloads` reorg deliberately didn't touch page locations
-  (URL-breaking risk). Grouping pages into section folders
-  (`compass/about.md` etc.) is planned but not scheduled; when it
-  happens, each moved page's relative asset links need an added `../`
-  per nesting level (mechanical, MkDocs resolves relative links from
-  the source file's own location — see "`docs/` asset reorganization"
-  above).
+- **`docs/compass/sitemap.md` needs one more regen after this reorg is
+  pushed and deployed** — `generate_sitemap.py` fetches Cabinet's own
+  TSVs live from GitHub, so its Cabinet-facing links still reflect the
+  pre-reorg live URLs until the actual push happens (see "`docs/`
+  content-folder reorganization" above).
+- **Six reserved section folders not yet created**: `physComp/`,
+  `writings/`, `dataviz/`, `visual-field-notes/`, `blog/`, `travels/` —
+  from the Atlas plan, made when real content for them exists.
+- **Section id/title labeling in the TSVs wasn't updated** to match the
+  new `webtech` umbrella (e.g. `interfaces-data-texts` section keeps
+  its old id/title, only its `href` changed) — a deliberate scope
+  boundary (file location vs. labeling are separate concerns per the
+  Atlas session), not an oversight, but worth a look if the TSV's own
+  section model ever gets revisited.
 - **`WORLD-SYSTEMS.md`'s "Asset naming" convention now describes
   Bookshelf/fffx, not Cabinet** — noted inline in that file rather than
   resolved. Revisit whether Bookshelf/fffx should adopt Cabinet's
