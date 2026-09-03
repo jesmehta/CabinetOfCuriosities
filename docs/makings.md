@@ -4,7 +4,7 @@ Maker stuff.
 
 Page under construction !
 
-- [MiniLoom](mini_loom.md)
+- [MiniLoom](makings/mini_loom.md)
 - [Origami & Paper](makings/origami-paper.md)
 - [Lasercutting](makings/lasercutting.md)
 - [Drawing Machines](makings/drawing-machines.md)

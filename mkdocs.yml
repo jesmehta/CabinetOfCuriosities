@@ -5,10 +5,10 @@ copyright: Copyright 2024 Jesal Mehta - Creative Commons Attribution Non Commerc
 
 nav:
   - Compass :
-    - About Me : about.md
-    - Colophon : colophon.md
-    - Now : now.md
-    - Site Map : sitemap.md
+    - About Me : compass/about.md
+    - Colophon : compass/colophon.md
+    - Now : compass/now.md
+    - Site Map : compass/sitemap.md
   - Teaching :
     - Teaching : teaching.md
     - SSD Creative Coding : https://cabinetofcuriosities.in/teaching/ssd-creative-coding/
@@ -17,7 +17,7 @@ nav:
     - Oblique Strategies : https://cabinetofcuriosities.in/teaching/oblique-strategies/
   - Machines & Makings :
     - Makings : makings.md
-    - MiniLoom : mini_loom.md
+    - MiniLoom : makings/mini_loom.md
     - Origami & Paper : makings/origami-paper.md
     - Lasercutting : makings/lasercutting.md
     - Drawing Machines : makings/drawing-machines.md
@@ -40,21 +40,24 @@ nav:
     - Fab 23 (Jesal's FabAcademy Chronicles) : https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/
     - Fab 26 (Fabricademy 2026) : https://class.textile-academy.org/2026/jesal-mehta/
     # Fabricademy's general/public site URL still unconfirmed -- see cabinet-entries.tsv's fabricademy row.
-  - Interfaces, Data & Texts :
-    - Swatch Fields : https://cabinetofcuriosities.in/swatch-fields/
-  - Wild wild web :
-    - Dot Mandala Generator : dotMandalaTool.md
+  - Webtech :
+    # Replaces the old "Wild wild web" + "Interfaces, Data & Texts" split
+    # (2026-09-03) -- same underlying content, one umbrella. See
+    # documentation/backend-and-deploy/conversation-backend-and-deploy.md
+    # Part 6.
+    - Webtech : webtech.md
+    - Dot Mandala Generator : webtech/dotMandalaTool.md
     - Tracery Bots :
-      - Tracery Bots : traceryBots.md
-      # - Trippy Gourmet : trippyGourmet.md
+      - Tracery Bots : webtech/traceryBots.md
+      # - Trippy Gourmet : webtech/trippyGourmet.md
       - Trippy Gourmet : https://cabinetofcuriosities.in/tracery-bots/TrippyGourmetBot/
       - Mad Solutionist : https://cabinetofcuriosities.in/tracery-bots/MadSolutionistBot/
-    - Twine : emergent_twine.md
-    - Creative Coding : creative_code.md
+    - Twine : webtech/emergent_twine.md
+    - Swatch Fields : https://cabinetofcuriosities.in/swatch-fields/
   - Bookshelf of Curiosities : https://bookshelf.cabinetofcuriosities.in/
   - Form follows f(x) : https://fffx.cabinetofcuriosities.in/
 
-  - Notes on this site : site_notes.md
+  - Notes on this site : compass/site_notes.md
 
   
 extra:

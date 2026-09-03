@@ -1,6 +1,6 @@
 // Now page -- the tiny Markdown-subset renderer, shared between
 // tools/build-now-content.js (dynamically imported to pre-render entry text
-// into docs/now.md at build time) and tools/now-editor's browser UI (its
+// into docs/compass/now.md at build time) and tools/now-editor's browser UI (its
 // live preview), so the two can never drift apart. Pure functions, no DOM
 // dependency beyond the strings/HTML they produce -- see
 // documentation/NOW-PAGE.md's "Markdown subset".

@@ -80,7 +80,7 @@
       <div class="step" data-run="now-content">
         <div class="step-row">
           <button class="btn btn-run" data-run-btn="now-content">Rebuild Now content</button>
-          <code>content/now.tsv &rarr; docs/now.md</code>
+          <code>content/now.tsv &rarr; docs/compass/now.md</code>
         </div>
         <p class="hint">Convenience mirror of the Now editor's own Rebuild button.</p>
         <pre class="output" data-run-out="now-content"></pre>
@@ -116,7 +116,7 @@
       <div class="step" data-run="sitemap">
         <div class="step-row">
           <button class="btn btn-run" data-run-btn="sitemap">Refresh sitemap</button>
-          <code>fetches Bookshelf + fffx TSVs live &rarr; docs/sitemap.md, documentation/CONTENT-INVENTORY.md</code>
+          <code>fetches Bookshelf + fffx TSVs live &rarr; docs/compass/sitemap.md, documentation/CONTENT-INVENTORY.md</code>
         </div>
         <p class="hint warn">Goes stale when <strong>Bookshelf's or fffx's own content changes</strong>, not just this repo's -- nothing currently reminds you to re-run this. A dead compass-rose link shipped once because of exactly that. Safe to run any time; needs network access.</p>
         <pre class="output" data-run-out="sitemap"></pre>
@@ -265,7 +265,7 @@
   <section class="block">
     <h2>Gotchas &amp; conventions</h2>
     <ul class="gotchas">
-      <li><strong>Auto-generated files -- never hand-edit:</strong> <code>docs/index.html</code>, <code>docs/_assets/backend/css/cabinet-v3-style.css</code>, <code>docs/_assets/backend/js/cabinet-v3-*.js</code> (all via Promote), <code>docs/_assets/backend/js/cabinet-generated-content.js</code> (via Rebuild Cabinet content), <code>docs/now.md</code> (via Rebuild Now content), <code>docs/sitemap.md</code> + <code>documentation/CONTENT-INVENTORY.md</code> (via Refresh sitemap). Every one of these gets silently overwritten by its own script the next time it runs -- edit the real source (TSVs, <code>index.template.html</code>, etc.) instead.</li>
+      <li><strong>Auto-generated files -- never hand-edit:</strong> <code>docs/index.html</code>, <code>docs/_assets/backend/css/cabinet-v3-style.css</code>, <code>docs/_assets/backend/js/cabinet-v3-*.js</code> (all via Promote), <code>docs/_assets/backend/js/cabinet-generated-content.js</code> (via Rebuild Cabinet content), <code>docs/compass/now.md</code> (via Rebuild Now content), <code>docs/compass/sitemap.md</code> + <code>documentation/CONTENT-INVENTORY.md</code> (via Refresh sitemap). Every one of these gets silently overwritten by its own script the next time it runs -- edit the real source (TSVs, <code>index.template.html</code>, etc.) instead.</li>
       <li><strong>Build and Promote are deliberately two separate scripts.</strong> Build alone (<code>landing-v3/build-static.mjs</code>) never writes to <code>docs/</code> -- it's also used on its own while iterating, without wanting every run to touch the live site. Promote is the explicit "ship this" step.</li>
       <li><strong>External repos assembled at deploy time are not pinned to a commit.</strong> <code>.github/workflows/deploy.yml</code> pulls Working with AI / Prompt Generator / Oblique Strategies / SSD Creative Coding / Swatch Fields / Tracery Bots' current default branch at build time. Pushing to one of those repos alone does <strong>not</strong> update the live site -- push a commit here too (anything, even a doc tweak), or re-run the latest "Deploy MkDocs to GitHub Pages" Action run.</li>
       <li><strong>Always commit TSVs and their generated output together.</strong> None of the build scripts (or this page) commit anything for you.</li>

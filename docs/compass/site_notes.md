@@ -151,7 +151,7 @@ Other resources and things to look into later :
 ---
 
 Files  
-[deploy.yml](_downloads/deploy.yml.txt)  
-[requirements.txt](_downloads/requirements.txt)  
+[deploy.yml](../_downloads/deploy.yml.txt)  
+[requirements.txt](../_downloads/requirements.txt)  
 
 ---

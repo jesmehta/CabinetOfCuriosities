@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-08-30 03:26 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-09-03 02:50 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -25,13 +25,13 @@ _Creative coding, generative systems, and procedural visuals._
 ### 🟢 [Teaching](https://cabinetofcuriosities.in/teaching/)
 _Teaching history, approach, and student work._
 
-- 🟢 [Student Work](https://cabinetofcuriosities.in/teaching/ssd-creative-coding/)
+- 🟢 [Student Work - Creative Coding](https://cabinetofcuriosities.in/teaching/ssd-creative-coding/)
+- 🟢 [Student Work - Emergent Technology](https://cabinetofcuriosities.in/teaching/#emergent-technology)
 - 🟡 History & Approach _(no page yet)_
 - 🟡 Research & Interests _(no page yet)_
 - 🟢 [Working with AI](https://cabinetofcuriosities.in/teaching/working-with-ai/)
 - 🟢 [Prompt Generator](https://cabinetofcuriosities.in/teaching/prompt-generator/)
 - 🟢 [Oblique Strategies](https://cabinetofcuriosities.in/teaching/oblique-strategies/)
-- 🟢 [Emergent Technology](https://cabinetofcuriosities.in/teaching/#emergent-technology)
 
 ### 🟡 Visual Field Notes _(section, no standalone page)_
 _Type, doors, streets, places, patterns, and observed details._

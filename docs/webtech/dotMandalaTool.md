@@ -1,6 +1,6 @@
 # Dot Mandala Creator
 
-![](./_images/DotMandala/DMUI-22.jpg)
+![](../_images/DotMandala/DMUI-22.jpg)
 
 A drawing tool that lets you create patterns on a circular grid.
 I also allows you to save the image, export the data and reload the data at a later date for more modifications.
@@ -36,7 +36,7 @@ But I was clear on a few things
 
 So I started off.  
 The first version was me just describing everything to ChatGPT in more-or-less one shot, and it produced a fairly decent outcome with the html, css and js files. Atrocious UI layout and general look and feel though.  
-![](./_images/DotMandala/DMUI-10.jpg){width="300";}
+![](../_images/DotMandala/DMUI-10.jpg){width="300";}
 
 I started trying to improve it but several things came up  
 
@@ -50,17 +50,17 @@ I took a different approach this time.
 
 First, I had my fun. I wrote the primary logic for the whole thing by hand. Debugged it, got it to run, iterated some improvements and complexities, etc. This was the fun part of coding for me, why would I outsource this ?!  
 
-![](./_images/DotMandala/DMUI-21.jpg){width="300";}
-![](./_images/DotMandala/DMUI-23.jpg){width="300";}
+![](../_images/DotMandala/DMUI-21.jpg){width="300";}
+![](../_images/DotMandala/DMUI-23.jpg){width="300";}
 
 Second, I sat down with ChatGPT again, and built a UI in stages. 
 
 First, only 1 slider for size. Using that single input, I cleaned and debugged (in collab with ChatGPT) all the necessary previews, some look and feel, etc. Then added inputs for colour. Once those were incorporated, and ChatGPT and me had ironed out how to deal with sliders and colour inputs, I finally asked it to add a bunch of sliders and radio buttons for other parameters. After that I asked it for a set of "admin tool" buttons for the save, clear and other functions.  
 
-![](./_images/DotMandala/DMUI-11.jpg){width="300";}
-![](./_images/DotMandala/DMUI-12.jpg){width="300";}
-![](./_images/DotMandala/DMUI-13.jpg){width="300";}
-![](./_images/DotMandala/DMUI-14.jpg){width="300";}
+![](../_images/DotMandala/DMUI-11.jpg){width="300";}
+![](../_images/DotMandala/DMUI-12.jpg){width="300";}
+![](../_images/DotMandala/DMUI-13.jpg){width="300";}
+![](../_images/DotMandala/DMUI-14.jpg){width="300";}
 
 Only once this was done, with the UI nicely aligned, padded, etc, did I upload my sketch.js file to ChatGPT and also told it what to look for in terms of the variables that the sketch was using how I expected the inputs from the UI to match that. And this binding of the UI to the sketch also took a few iterations. By this time the HTML was already complex, and now the js file also became extremely complex as well. However, everything was working fine, and things were rather satisfactory.
 
@@ -77,5 +77,5 @@ Anyway, while I am not suddenly adept at HTML and CSS, my familiarity with them 
 
 Cheers.
 
-![](./_images/DotMandala/DMUI-24.jpg){width="300";}
-![](./_images/DotMandala/DMUI-25.jpg){width="300";}
+![](../_images/DotMandala/DMUI-24.jpg){width="300";}
+![](../_images/DotMandala/DMUI-25.jpg){width="300";}

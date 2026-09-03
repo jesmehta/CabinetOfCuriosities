@@ -11,10 +11,10 @@ already treats as the source of truth for nav/map/shelf structure.
 No manual page list to maintain: add a row to a TSV in any of the three
 repos, re-run this script, and the sitemap picks it up automatically.
 
-Writes docs/sitemap.md, an mkdocs source page like docs/about.md and
-docs/colophon.md -- mkdocs builds it into the live /sitemap/ page linked
-from the compass rose's W point (see content/cabinet-entries.tsv's
-compass-w row).
+Writes docs/compass/sitemap.md, an mkdocs source page like
+docs/compass/about.md and docs/compass/colophon.md -- mkdocs builds it
+into the live /sitemap/ page linked from the compass rose's W point
+(see content/cabinet-entries.tsv's compass-w row).
 
 Also writes documentation/CONTENT-INVENTORY.md -- Cabinet-only (not
 cross-world; Bookshelf/fffx status is what /sitemap/ above is for),
@@ -46,7 +46,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUTPUT_PATH = os.path.join(ROOT, "docs", "sitemap.md")
+OUTPUT_PATH = os.path.join(ROOT, "docs", "compass", "sitemap.md")
 INVENTORY_OUTPUT_PATH = os.path.join(ROOT, "documentation", "CONTENT-INVENTORY.md")
 MKDOCS_YML_PATH = os.path.join(ROOT, "mkdocs.yml")
 CABINET_SECTIONS_TSV = os.path.join(ROOT, "content", "cabinet-sections.tsv")
@@ -308,7 +308,7 @@ def build_content_inventory():
     out.append("")
     out.append(
         "Cabinet-only. Bookshelf/fffx and other assembled content's live "
-        "status is what [/sitemap/](../docs/sitemap.md) is for -- not "
+        "status is what [/sitemap/](../docs/compass/sitemap.md) is for -- not "
         "duplicated here. `Map` is simply each row's own `status` column "
         "(`true`/`wip`/`false`), read directly, not separately computed."
     )
