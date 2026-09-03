@@ -15,11 +15,12 @@ it touches the whole repo. Rather than spin up a new file per topic,
 the rule is: **if it doesn't have its own place to live, it lives
 here.** This file currently covers Cloudflare Web Analytics, the
 file/folder reorganization, launch-milestone tracking, the
-documentation standard's own build-out, and the `docs/` asset
-reorganization (Part 5 — this file's own conversation, the most
-directly-sourced entry here); future backend/infrastructure work
-(multi-repo assembly generalization, the deployment manifesto, etc.)
-gets appended here too, not split into another new file.
+documentation standard's own build-out, the `docs/` asset
+reorganization, and the `docs/` content-folder physical layout (Part 6
+— this file's own conversation, the most directly-sourced entry here);
+future backend/infrastructure work (multi-repo assembly
+generalization, the deployment manifesto, etc.) gets appended here
+too, not split into another new file.
 
 **Provenance**: this file merges two conversation-logs that were each
 written separately, from real live conversations (verbatim quotes,
@@ -88,6 +89,22 @@ this merge.
 - [A final sweep finds two real bugs the strict build couldn't catch](#a-final-sweep-finds-two-real-bugs)
 - [WORLD-SYSTEMS.md: a cross-repo question asked instead of decided alone](#world-systems-a-cross-repo-question)
 - [This handoff, Part 5](#this-handoff-part-5)
+
+**Part 6 — The `docs/` content-folder physical layout**
+- [The trigger: discuss sections before moving files](#part6-the-trigger)
+- [Starting state, read from the repo](#part6-starting-state)
+- [Principle established early: decouple file location from nav labeling](#part6-decouple-principle)
+- [`fffx/` status clarified](#part6-fffx-status)
+- [Webtech established as the umbrella](#part6-webtech-umbrella)
+- [Writings gets its own folder](#part6-writings-folder)
+- [DataViz: domain-vs-delivery-format distinction carried over from Atlas](#part6-dataviz-distinction)
+- [Two folders added outside Atlas: Blog and Travels](#part6-blog-travels)
+- [PhysComp added; 3DP's independence confirmed](#part6-physcomp-3dp)
+- [Windows of Berlin resolved](#part6-windows-of-berlin)
+- [Final folder set agreed with Atlas](#part6-final-folder-set)
+- [Not decided in the Atlas session — carried forward](#part6-not-decided)
+- [Resumed in Claude Code: settling Compass, confirming the rest](#part6-resumed-in-claude-code)
+- [This handoff, Part 6](#this-handoff-part-6)
 
 ---
 
@@ -1195,3 +1212,318 @@ Nothing in this session was committed — every change (the move, the
 ~25 files of path fixes, and the documentation) sits uncommitted in the
 working tree, consistent with this repo's standing rule of only
 committing on explicit request.
+
+---
+
+# Part 6 — The `docs/` content-folder physical layout
+
+**Provenance**: the bulk of this Part (everything through "Not decided
+in the Atlas session") was not written by this assistant or in this
+session. It's absorbed, content unchanged, from a standalone
+conversation-log file a *different* Claude instance — Chirp, in an
+Atlas/project-assistant context with visibility into future planned
+content that this repo's own sessions don't have — wrote after a
+separate, direct conversation with the user, 2026-09-03. That instance
+had read-only clone access to this repo, not write access, so nothing
+was executed there; it was planning only, meant to be applied by hand.
+The user pointed this Claude Code session at that file directly and
+asked it to be absorbed into this one rather than left as an orphaned
+standalone doc — the original file
+(`conversation-docs-content-folder-layout.md`, same folder) is deleted
+as part of that absorption, its content now living here instead. The
+final subsection — "Resumed in Claude Code" — **is** this session's own
+conversation, verbatim, same standard as every other Part in this file.
+
+<a id="part6-the-trigger"></a>
+
+## The trigger: discuss sections before moving files
+
+> **Don't execute anything. I don't think you have access to edit
+> GitHub anyway, right?**
+
+Opened as a narrower, deliberately-scoped follow-on to the earlier
+`docs/` reorg work (Part 2, Part 5): this pass is specifically about
+the *content* subfolders (`webtech`, `writings`, `dataviz`, etc.) as
+opposed to the system/asset split those earlier parts settled. The
+explicit ask was to settle the sectioning first, precisely to avoid
+repeat reorganizing:
+
+> **I could also eschew too much granular sectioning here and make 3-4
+> large sections, while the mkdocs and tsv can organise the access to
+> them more granularly, and changing that does not require changing
+> links in half a dozen places. Basically, good maintainability,
+> clarity in organising the files, future proofing the folder
+> structure.**
+
+<a id="part6-starting-state"></a>
+
+## Starting state, read from the repo
+
+Before proposing anything, the actual `docs/` tree was read via a
+fresh clone: root-level Compass pages (`about.md`, `colophon.md`,
+`now.md`, `sitemap.md`, `site_notes.md`), `teaching.md` + `teaching/`,
+`makings.md` + `makings/` (origami-paper, lasercutting,
+drawing-machines), `3dp/` (independent, not nested under makings),
+`fffx/` (Vera Molnar, Circle Packing, Particle Systems, 100 Gradients —
+legacy copies), and a scatter of ungrouped root-level pages
+(`creative_code.md`, `dotMandalaTool.md`, `traceryBots.md`,
+`trippyGourmet.md`, `emergent_twine.md`, `mini_loom.md`). `mkdocs.yml`'s
+nav, `content/cabinet-sections.tsv`/`cabinet-entries.tsv`, and the
+auto-generated `documentation/CONTENT-INVENTORY.md` were also read —
+the latter already flagging drift between nav, TSV, and actual files
+(orphaned `fffx/` entries, `3dp/` mecha/flexures/polyhedra pages with
+no TSV row, duplicate `swatch-fields` hrefs).
+
+<a id="part6-decouple-principle"></a>
+
+## Principle established early: decouple file location from nav labeling
+
+The core design decision, stated by the user and confirmed as the
+organizing principle for the whole discussion: physical folder
+structure should be coarse and stable, while `mkdocs.yml` nav and the
+`cabinet-*.tsv` files handle finer-grained labeling and cross-listing.
+This mirrors the same domain-vs-output separation already established
+for Project Atlas — a project's *file location* answers "what kind of
+thing is this," not "how is it currently being pitched or grouped for
+a reader."
+
+<a id="part6-fffx-status"></a>
+
+## `fffx/` status clarified
+
+> **Fffx - these are the files that are live, so yes, will shrink in
+> time but not to be deleted now**
+
+Not a target for new content (most of Form follows f(x) is migrating
+to its own repo), but not to be deleted or reorganized in this pass
+either — left as a frozen, naturally-shrinking folder.
+
+<a id="part6-webtech-umbrella"></a>
+
+## Webtech established as the umbrella
+
+Confirmed to replace the split between the legacy "Wild wild web" and
+"Interfaces, Data & Texts" nav headings, which turned out to be the
+same underlying content (Dot Mandala, Tracery Bots, Twine) pitched two
+different ways rather than a real content distinction:
+
+> **Webtech is a great umbrella, yes**
+
+Scope: `creative_code.md` becomes the `webtech.md` index; `webtech/`
+holds Dot Mandala, Tracery Bots (+ Trippy Gourmet), Twine, plus
+not-yet-built seeds from Atlas (Lenticular Generator, 4-Bar
+Fringe/Stop Motion, Mumbai Voronoi Map, Telegram Poetry Bot, Zine Fest
+AR component).
+
+<a id="part6-writings-folder"></a>
+
+## Writings gets its own folder
+
+> **Writings can have its own folder, yes**
+
+Scope: design explainers, object/material semantics, food writing
+(including the Kurush Sir collaboration), Branches research —
+thematic essay output, distinct from the dated/chronological Blog
+folder decided later.
+
+<a id="part6-dataviz-distinction"></a>
+
+## DataViz: domain-vs-delivery-format distinction carried over from Atlas
+
+The most substantive design call in this session. Initial framing
+treated "does this project involve dataviz" as the sorting question;
+the user corrected this to match the domain/output separation already
+locked in for Atlas:
+
+> **dataViz is a question - based on our discussions for Atlas,
+> dataViz is a delivery mechanism for some things that are stronger
+> elsewhere - sci-fi timeline is definitely for bookshelf first and
+> not dataViz, while assorted dataViz projects like climate change
+> stuff are DataViz forward because no stronger theme exists within
+> the cabinet worlds**
+
+Resulting rule: if a project has a stronger thematic home elsewhere in
+the Cabinet worlds (e.g. the Asimov/Foundation timeline → Bookshelf;
+the Hamzanama map → Bookshelf, since it's connected there already), it
+stays in that home even though its output is a chart or map.
+`dataviz/` is reserved for projects where dataviz *is* the theme, with
+no competing pull: Climate Change + Poetry series, the Personal Data
+Selfies cluster (cab rides, flights, Zomato, workplace, 3DP frequency,
+photography, reading history), Hamilton, Panchatantra, Rainfall in
+Mumbai.
+
+<a id="part6-blog-travels"></a>
+
+## Two folders added outside Atlas: Blog and Travels
+
+Neither existed as an Atlas entry at the time of this discussion. Both
+were volunteered directly:
+
+> **It may not be in Atlas right now but what about - a personal Blog,
+> not necessarily regular, and more than the Now page - travels -
+> writing and photos**
+
+**Blog** was distinguished from `now.md` (a snapshot, overwritten in
+place) and from `writings/` (thematic essays) on structural grounds: a
+blog is dated, accumulating, and can be about anything, so routing
+posts by topic into `writings/` would fight the format. Also absorbs
+several previously-homeless Atlas writing-cue orphans: Vignettes,
+Terribly Tiny Tales-style pieces, everyday-events writing, "Where Are
+You Local?"
+
+**Travels** was distinguished from the planned `visual-field-notes/`
+folder (thematic/typological — doors, type, patterns) on the grounds
+that travel content is bound by geography and chronology of a specific
+journey rather than a recurring visual theme. Pulls together the
+Cycling Journey Maps/DataViz project, Travelogue snippets, the
+named-trip list (Manali-Leh, Gujarat, Himachal, Bhandardara, Diu, Sar
+Pass, Bombay-to-Sikkim), and Process Travel Panoramas.
+
+<a id="part6-physcomp-3dp"></a>
+
+## PhysComp added; 3DP's independence confirmed
+
+> **Yes do add a physComp folder for all electronics builds, separate
+> from the material builds or webtech**
+
+`physComp/` absorbs PCB/circuit-sculpture work (Map of Bombay LEDs,
+Starry Night PCB, circuit sculptures, PCB trace-generation code),
+electronics (NodeMCU home automation, VAT69, Arduino+automata,
+unassembled kits), and code-driven machine builds (RasPi timelapse app and camera rigs,
+both plotters, Urumbot, Spherobot, Clay 3D printer, braille dot
+printer) — physical + electronic + code together, distinct from pure
+material craft and pure software.
+
+Asked directly whether `3dp/` should fold under `makings/` or stay
+independent:
+
+> **Should 3dp be part of makings or independent?**
+
+Kept independent — same logic that already justifies `teaching/` and
+`makings/` sitting as peers rather than one nested under the other:
+`3dp/` already outweighs `makings/`'s three children in volume (15+
+Atlas entries) and represents a distinct technique/tooling identity
+(slicers, filament, printer), not a sibling craft to
+origami/lasercutting.
+
+<a id="part6-windows-of-berlin"></a>
+
+## Windows of Berlin resolved
+
+Raised as an open call in the folder-mapping stage (code-first but
+travel-triggered — `webtech/` or `travels/`?) and settled directly:
+
+> **Windows of Berlin is a creative coding project through and
+> through**
+
+Stays in `webtech/`, not `travels/`.
+
+<a id="part6-final-folder-set"></a>
+
+## Final folder set agreed with Atlas
+
+```text
+docs/
+├── about.md, colophon.md, now.md, sitemap.md, site_notes.md   (Compass — unchanged)
+├── teaching.md + teaching/                                     (unchanged)
+├── makings.md + makings/                                       (unchanged)
+├── 3dp/                                                        (confirmed independent)
+├── physComp/                                                   (new)
+├── webtech.md + webtech/                                       (new umbrella, replaces creative_code.md)
+├── writings.md + writings/                                     (new)
+├── dataviz.md + dataviz/                                       (new, domain-vs-delivery rule applies)
+├── visual-field-notes.md + visual-field-notes/                 (new; already a TSV placeholder)
+├── blog.md + blog/                                             (new, dated/chronological)
+├── travels.md + travels/                                       (new, journey-bound writing + photos)
+└── fffx/                                                       (unchanged — frozen, live, shrinking)
+```
+
+As a downstream application of this folder mapping, sections were
+tiered by actual build-state for a possible Phase A (p001) thumbnail
+grid in the same Atlas session — not a folder decision, but recorded
+here since it followed directly from this mapping:
+
+- **Ready now (thumbnail-worthy):** Bookshelf (external), Form follows
+  f(x) (external), Teaching, Machines & Makings (3DP folded in as a
+  live peer), Webtech
+- **Thin but existing:** Fab (links-only, sparse — lighter visual
+  weight, not full thumbnail parity)
+- **Build the folder, skip the thumbnail for now:** Visual Field Notes
+  (closest — has raw material but no built page yet), PhysComp,
+  DataViz, Writings, Blog, Travels (all seed-stage, zero built pages
+  as of this session)
+
+<a id="part6-not-decided"></a>
+
+## Not decided in the Atlas session — carried forward
+
+- Whether the Collections cluster (mechanical drawing machines, looms)
+  eventually splits out of `makings/` once it grows, or stays absorbed
+- Whether Food writing (Kurush Sir collab, food semantics, food-formula
+  dataviz) stays folded into `writings/` or eventually earns its own
+  folder
+- Exact page-level contents and index-page structure for each new
+  folder (`webtech.md`, `writings.md`, `dataviz.md`, etc.) — the Atlas
+  session settled folder *boundaries*, not what each index page says
+  or how each folder's internal pages subdivide
+- Blog and Travels have not yet been added as entries to Project Atlas
+  itself, despite being volunteered in that session — flagged but not
+  actioned
+
+<a id="part6-resumed-in-claude-code"></a>
+
+## Resumed in Claude Code: settling Compass, confirming the rest
+
+Back in this Claude Code session (2026-09-03, immediately following
+Part 5's asset reorg), the Atlas-planned folder set above was handed
+over directly, with a pointer to go read it:
+
+> **This is a conversation I had with a different instance of claude
+> that had visibility on future planned content as well, to make the
+> reorg future proof. Have a look and tell me the reorg plan.**
+
+Reading it back surfaced one real discrepancy against this session's
+own earlier ground: the Atlas plan left Compass (`about.md`,
+`colophon.md`, `now.md`, `sitemap.md`, `site_notes.md`) flat at
+`docs/` root, but the user had told *this* session, before ever seeing
+the Atlas doc, "colophon.md, now.md will be inside a compass/*.md or
+something" (Part 5's own record). That contradiction was surfaced
+directly rather than silently resolved either way, alongside a second,
+smaller divergence — this session's own earlier proposal had nested
+`3dp/` under `makings/`, where the Atlas plan kept it independent.
+
+> **compass nodes to be inside compass folder, and yes 3dp to be
+> separate. Collection will eventually split but is fine for now - the
+> current miniloom.md is not a loom collection file anyway - and food
+> we will decide when I strat working on it.**
+
+Resolved: Compass pages move into their own `compass/` folder —
+overriding the Atlas plan's "stays flat" conclusion, the one actual
+change made to it — and `3dp/`'s independence is confirmed, matching
+Atlas and overriding this session's own earlier draft. Collections and
+Food both stay exactly as "not decided, carried forward" — not a
+change, just reconfirmed, with two added reasons: the current
+`mini_loom.md` isn't actually a Collections-shaped file yet (so there's
+nothing to split out of `makings/` prematurely), and Food gets decided
+once real work on it starts, not speculatively now.
+
+<a id="this-handoff-part-6"></a>
+
+## This handoff, Part 6
+
+> **absorb the documentation into your own - either delete this file
+> itself of keep it as a v1 based on actual conversation and then the
+> updates from ths conversation as additional changes etc - basically,
+> I do want the fact that I went to Atlas to discuss this noted, but we
+> did also make changes to the decisions from that conversation**
+
+Resolved by absorption rather than a kept-alongside "v1": the standalone
+`conversation-docs-content-folder-layout.md` is deleted, its full content
+folded into this Part unchanged (down to its own verbatim quotes), with
+the Atlas provenance stated up front and this session's own resumption —
+including the one actual decision it changed (Compass) — recorded as its
+own subsection rather than blended into the Atlas material. The final
+target folder set is: Atlas's list above, with Compass moved into
+`compass/`. Not yet executed against the repo — the physical `git mv`
+pass, `mkdocs.yml`/TSV updates, and verification are still to come, same
+shape as Part 5's asset move.
