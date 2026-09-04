@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-09-04 14:52 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-09-04 14:59 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -132,7 +132,7 @@ Live site: https://fffx.cabinetofcuriosities.in/
 
 ### 🟢 Student Work _(section, no standalone page)_
 
-- 🟢 [SSD Creative Coding Class highlights](https://jesmehta.github.io/SSD_CreativeCodingPage/)
+- 🟢 [SSD Creative Coding Class highlights](https://jesmehta.github.io/SSD_Student_Work/ssd-creative-coding-2025-26/)
 
 ## Bookshelf of Curiosities
 Live site: https://bookshelf.cabinetofcuriosities.in/
