@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-09-03 02:50 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-09-04 14:52 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -25,7 +25,7 @@ _Creative coding, generative systems, and procedural visuals._
 ### 🟢 [Teaching](https://cabinetofcuriosities.in/teaching/)
 _Teaching history, approach, and student work._
 
-- 🟢 [Student Work - Creative Coding](https://cabinetofcuriosities.in/teaching/ssd-creative-coding/)
+- 🟢 [Student Work - Creative Coding](https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2025-26/)
 - 🟢 [Student Work - Emergent Technology](https://cabinetofcuriosities.in/teaching/#emergent-technology)
 - 🟡 History & Approach _(no page yet)_
 - 🟡 Research & Interests _(no page yet)_
@@ -46,18 +46,18 @@ _Making processes, fabrication notes, and machine collections._
 - 🟢 [3D Printing](https://cabinetofcuriosities.in/3dp/3DP_2019/)
 - 🟢 [Origami & Paper](https://cabinetofcuriosities.in/makings/origami-paper/)
 - 🟢 [Lasercutting](https://cabinetofcuriosities.in/makings/lasercutting/)
-- 🟢 [Looms](https://cabinetofcuriosities.in/mini_loom/)
+- 🟢 [Looms](https://cabinetofcuriosities.in/makings/mini_loom/)
 - 🟢 [Drawing Machines](https://cabinetofcuriosities.in/makings/drawing-machines/)
 - 🟢 [Swatch Fields](https://cabinetofcuriosities.in/swatch-fields/)
 
-### 🟢 [Interfaces, Data & Texts](https://cabinetofcuriosities.in/creative_code/)
+### 🟢 [Interfaces, Data & Texts](https://cabinetofcuriosities.in/webtech/)
 _Web experiments, data visualisations, and digital writings._
 
-- 🟢 [Branching Narrative](https://cabinetofcuriosities.in/emergent_twine/)
+- 🟢 [Branching Narrative](https://cabinetofcuriosities.in/webtech/emergent_twine/)
 - 🟡 Data Visualisations _(no page yet)_
 - 🟡 Writings _(no page yet)_
-- 🟢 [WebTech](https://cabinetofcuriosities.in/dotMandalaTool/)
-- 🟢 [Tracery Bots](https://cabinetofcuriosities.in/traceryBots/)
+- 🟢 [WebTech](https://cabinetofcuriosities.in/webtech/dotMandalaTool/)
+- 🟢 [Tracery Bots](https://cabinetofcuriosities.in/webtech/traceryBots/)
 - 🟢 [Swatch Fields](https://cabinetofcuriosities.in/swatch-fields/)
 
 ### 🟡 Fab _(section, no standalone page)_
@@ -75,10 +75,10 @@ _(no entries yet)_
 
 ### 🟢 Compass Rose _(section, no standalone page)_
 
-- 🟢 [About Me](https://cabinetofcuriosities.in/about/)
-- 🟢 [Now](https://cabinetofcuriosities.in/now/)
-- 🟢 [Colophon](https://cabinetofcuriosities.in/colophon/)
-- 🟢 [Site map](https://cabinetofcuriosities.in/sitemap/)
+- 🟢 [About Me](https://cabinetofcuriosities.in/compass/about/)
+- 🟢 [Now](https://cabinetofcuriosities.in/compass/now/)
+- 🟢 [Colophon](https://cabinetofcuriosities.in/compass/colophon/)
+- 🟢 [Site map](https://cabinetofcuriosities.in/compass/sitemap/)
 
 ## fffx (Form follows f(x))
 Live site: https://fffx.cabinetofcuriosities.in/
