@@ -65,7 +65,7 @@ jobs:
     - name: Checkout SSD Student Work
       uses: actions/checkout@v4
       with:
-        repository: jesmehta/SSD_CreativeCodingPage
+        repository: jesmehta/SSD_Student_Work
         path: _external/ssd-creative-coding
 
     - name: Checkout Swatch Fields

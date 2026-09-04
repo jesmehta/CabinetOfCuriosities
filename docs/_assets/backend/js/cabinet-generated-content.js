@@ -379,7 +379,7 @@ export const entries = [
     ],
     "location": "assembly",
     "subtitle": "Selected student work and showcases from SSD Creative Coding.",
-    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2025-26/ (jesmehta/SSD_CreativeCodingPage, subfolder ssd-creative-coding-2025-26/) -- was an external link before 2026-08-24; SSD repo reorganised into a multi-gallery \"SSD Student Work\" repo 2026-09-04, mount path updated to match."
+    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2025-26/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2025-26/) -- was an external link before 2026-08-24; repo reorganised into a multi-gallery \"SSD Student Work\" repo and renamed to match, 2026-09-04, mount path updated accordingly."
   },
   {
     "id": "students-emergent-technology",
