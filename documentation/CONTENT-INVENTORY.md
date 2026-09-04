@@ -1,6 +1,6 @@
 # Cabinet Content Inventory
 
-_Auto-generated 2026-09-03 02:50 UTC by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do not hand-edit, re-run the script to refresh._
+_Auto-generated 2026-09-04 14:37 UTC by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do not hand-edit, re-run the script to refresh._
 
 Cabinet-only. Bookshelf/fffx and other assembled content's live status is what [/sitemap/](../docs/compass/sitemap.md) is for -- not duplicated here. `Map` is simply each row's own `status` column (`true`/`wip`/`false`), read directly, not separately computed.
 
@@ -31,7 +31,7 @@ Flags below are mechanical string-matching, not judgement calls -- deliberate cr
 | `circle-packing-library` | fffx | Circle Packing Library | `https://fffx.cabinetofcuriosities.in/tools-and-libraries/circle-packing-library/` | true | N |
 | `particle-systems` | fffx | Particle Systems | `https://fffx.cabinetofcuriosities.in/deep-studies/particle-systems/` | wip | N |
 | `100-gradients` | fffx | 100 Gradients | `https://fffx.cabinetofcuriosities.in/deep-studies/100-gradients/` | wip | N |
-| `students-creative-coding-2025-26` | teaching | Student Work - Creative Coding | `teaching/ssd-creative-coding/` | true | N |
+| `students-creative-coding-2025-26` | teaching | Student Work - Creative Coding | `teaching/ssd-creative-coding-2025-26/` | true | N |
 | `students-emergent-technology` | teaching | Student Work - Emergent Technology | `teaching/#emergent-technology` | true | N |
 | `teaching-approach` | teaching | History & Approach | `--` | wip | -- |
 | `gujarati-type` | visual-field-notes | Gujarati Type | `--` | wip | -- |
@@ -66,7 +66,7 @@ Flags below are mechanical string-matching, not judgement calls -- deliberate cr
 
 - **Duplicate href** (`https://bookshelf.cabinetofcuriosities.in`): section `bookshelf`, entry `christie`
 - **Duplicate href** (`swatch-fields`): entry `swatch-fields`, entry `swatch-fields-interfaces`
-- **Nav entry with no TSV row**: "SSD Creative Coding" (`https://cabinetofcuriosities.in/teaching/ssd-creative-coding/`)
+- **Nav entry with no TSV row**: "SSD Creative Coding" (`https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2025-26/`)
 - **Nav entry with no TSV row**: "Working with AI" (`https://cabinetofcuriosities.in/teaching/working-with-ai/`)
 - **Nav entry with no TSV row**: "Prompt Generator" (`https://cabinetofcuriosities.in/teaching/prompt-generator/`)
 - **Nav entry with no TSV row**: "Oblique Strategies" (`https://cabinetofcuriosities.in/teaching/oblique-strategies/`)
@@ -84,7 +84,7 @@ Flags below are mechanical string-matching, not judgement calls -- deliberate cr
 - **TSV row with no nav entry**: entry `circle-packing-library` (`https://fffx.cabinetofcuriosities.in/tools-and-libraries/circle-packing-library/`)
 - **TSV row with no nav entry**: entry `particle-systems` (`https://fffx.cabinetofcuriosities.in/deep-studies/particle-systems/`)
 - **TSV row with no nav entry**: entry `100-gradients` (`https://fffx.cabinetofcuriosities.in/deep-studies/100-gradients/`)
-- **TSV row with no nav entry**: entry `students-creative-coding-2025-26` (`teaching/ssd-creative-coding/`)
+- **TSV row with no nav entry**: entry `students-creative-coding-2025-26` (`teaching/ssd-creative-coding-2025-26/`)
 - **TSV row with no nav entry**: entry `students-emergent-technology` (`teaching/#emergent-technology`)
 - **TSV row with no nav entry**: entry `swatch-fields` (`swatch-fields/`)
 - **TSV row with no nav entry**: entry `working-with-ai` (`teaching/working-with-ai/`)

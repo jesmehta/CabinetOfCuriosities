@@ -62,7 +62,7 @@ jobs:
         repository: jesmehta/ObliqueStrategies
         path: _external/oblique-strategies
 
-    - name: Checkout SSD Creative Coding
+    - name: Checkout SSD Student Work
       uses: actions/checkout@v4
       with:
         repository: jesmehta/SSD_CreativeCodingPage
@@ -104,11 +104,19 @@ jobs:
         cp -r _external/oblique-strategies/. public/teaching/oblique-strategies/
         rm -rf public/teaching/oblique-strategies/.git
 
-    - name: Assemble SSD Creative Coding
+    - name: Assemble SSD Creative Coding 2025-26
+      # The SSD repo was reorganised (2026-09-04) into a multi-gallery
+      # "SSD Student Work" repo with its own root index.html/README/docs.
+      # Those aren't wanted here -- Cabinet's own teaching/index.md is the
+      # landing page for this section -- so copy only the one gallery
+      # subfolder that has real content, not the repo root (copying the
+      # root would silently overwrite public/teaching/index.html, the
+      # MkDocs-built teaching page, with the SSD repo's own landing page).
+      # Update this path (and add sibling steps) as the other five planned
+      # galleries in that repo get built out.
       run: |
-        mkdir -p public/teaching/ssd-creative-coding
-        cp -r _external/ssd-creative-coding/. public/teaching/ssd-creative-coding/
-        rm -rf public/teaching/ssd-creative-coding/.git
+        mkdir -p public/teaching/ssd-creative-coding-2025-26
+        cp -r _external/ssd-creative-coding/ssd-creative-coding-2025-26/. public/teaching/ssd-creative-coding-2025-26/
 
     - name: Assemble Swatch Fields
       run: |
@@ -130,8 +138,8 @@ jobs:
         test -f public/teaching/prompt-generator/app.js || (echo "ERROR: assembled Prompt Generator is missing its own content" && exit 1)
         test -f public/teaching/oblique-strategies/index.html || (echo "ERROR: assembled Oblique Strategies is missing its index.html" && exit 1)
         grep -q "Oblique Strategies" public/teaching/oblique-strategies/index.html || (echo "ERROR: assembled Oblique Strategies is missing its own content" && exit 1)
-        test -f public/teaching/ssd-creative-coding/index.html || (echo "ERROR: assembled SSD Creative Coding is missing its index.html" && exit 1)
-        test -f public/teaching/ssd-creative-coding/script.js || (echo "ERROR: assembled SSD Creative Coding is missing its own content" && exit 1)
+        test -f public/teaching/ssd-creative-coding-2025-26/index.html || (echo "ERROR: assembled SSD Creative Coding 2025-26 is missing its index.html" && exit 1)
+        test -f public/teaching/ssd-creative-coding-2025-26/script.js || (echo "ERROR: assembled SSD Creative Coding 2025-26 is missing its own content" && exit 1)
         test -f public/swatch-fields/index.html || (echo "ERROR: assembled Swatch Fields is missing its index.html" && exit 1)
         test -f public/swatch-fields/swatch_lookup.json || (echo "ERROR: assembled Swatch Fields is missing its own content" && exit 1)
         test -f public/tracery-bots/index.html || (echo "ERROR: assembled Tracery Bots is missing its index.html" && exit 1)
