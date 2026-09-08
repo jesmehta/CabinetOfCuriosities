@@ -29,10 +29,12 @@ Rendered live at `http://127.0.0.1:5959/admin/` once running.
 Same three-file split as `cabinet-editor-ui/`/`now-editor-ui/`:
 
 ```text
-tools/admin-controls.js             -- the server
-tools/admin-controls-ui/index.html  -- the dashboard markup
-tools/admin-controls-ui/home.css    -- styling (same parchment/ink tokens as the other two editors)
-tools/admin-controls-ui/home.js     -- status polling, server-start, run-button wiring
+tools/admin-controls.js                    -- the server
+tools/admin-controls-ui/index.html         -- the dashboard markup
+tools/admin-controls-ui/home.css           -- styling (same parchment/ink tokens as the other two editors)
+tools/admin-controls-ui/home.js            -- status polling, server-start, run-button wiring
+tools/admin-controls-ui/content-inventory.html -- local CONTENT-INVENTORY.md viewer markup (v1.6)
+tools/admin-controls-ui/content-inventory.js   -- fetch + hand-rolled markdown-to-HTML render (v1.6)
 run-admin-controls.bat              -- double-click launcher
 ```
 
@@ -189,10 +191,12 @@ of any kind, same as its two sibling editors.
 ## Files
 
 ```text
-tools/admin-controls.js             -- local admin server (see "Architecture"/"Routes" above)
-tools/admin-controls-ui/index.html  -- dashboard markup
-tools/admin-controls-ui/home.css    -- styling
-tools/admin-controls-ui/home.js     -- status polling, server-start, run-button wiring
+tools/admin-controls.js                    -- local admin server (see "Architecture"/"Routes" above)
+tools/admin-controls-ui/index.html         -- dashboard markup
+tools/admin-controls-ui/home.css           -- styling
+tools/admin-controls-ui/home.js            -- status polling, server-start, run-button wiring
+tools/admin-controls-ui/content-inventory.html -- local CONTENT-INVENTORY.md viewer markup (v1.6)
+tools/admin-controls-ui/content-inventory.js   -- fetch + hand-rolled markdown-to-HTML render (v1.6)
 run-admin-controls.bat              -- double-click launcher for tools/admin-controls.js
 ```
 
@@ -211,6 +215,38 @@ run-admin-controls.bat              -- double-click launcher for tools/admin-con
    tool in this repo.
 
 ## Changelog
+
+### v1.6 — Content Inventory local-live viewer added (2026-09-08)
+
+Direct question: "I'd like to see Content Inventory directly from the
+page — the documentation section can link to the gthub repo one, but I
+want one that shows me the current, freshly build, local repo content
+inventory.md page rendered in html — is that too much and I should just
+see it in vscode, or is it doable?" Doable: `tools/admin-controls.js`
+already served the whole repo root as static files (see "Static serving
+falls through to the repo root" above), so `documentation/CONTENT-INVENTORY.md`
+only needed rendering, not a new route. Added `tools/admin-controls-ui/content-inventory.html` and
+`content-inventory.js` — fetches that file fresh off disk on load
+(`?t=Date.now()`, `cache: "no-store"`) and renders it with a small
+hand-rolled markdown-to-HTML converter (headers, bold/italic/code/links,
+bullet lists, GFM tables), not a library — consistent with this
+dashboard's zero-dependency convention, and workable here specifically
+because `CONTENT-INVENTORY.md` is itself script-generated with a fixed,
+known shape, not arbitrary Markdown. A "Regenerate & reload" button
+POSTs the existing `/api/run/sitemap` route before refetching, so a
+stale local copy can be refreshed without switching back to this page.
+One server-side addition: a `.md` → `text/markdown` entry in `admin-
+controls.js`'s `MIME` map (cosmetic — `fetch().text()` doesn't need it).
+
+Placement went through one direct correction: first linked from the
+Documentation table next to `CONTENT-INVENTORY.md`'s GitHub link,
+then moved — "please put that local live button under the Refresh
+Sitemap button it the same card, it's too far away at the bottom to go
+hunting for" — into the "Refresh sitemap" pipeline card itself, as a
+`.step-extra`-styled link directly under its hint text. The Documentation
+table's row was reworded to point up at the pipeline card rather than
+keeping its own copy of the link. See `conversation-admin-controls.md`
+for the exchange.
 
 ### v1.5 — Islands tool card text updated for the post-`#32` Copy config workflow (2026-09-08)
 

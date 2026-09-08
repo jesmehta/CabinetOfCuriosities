@@ -341,3 +341,46 @@ independent docs (`README.md`'s `#32` changelog entry,
 All three agreed with the code and with each other; nothing needed
 correcting a second time. See `ADMIN-CONTROLS.md`'s `v1.5` changelog
 entry.
+
+## The Content Inventory local-live viewer
+
+Asked as two questions in one message, the second phrased as a genuine
+open question rather than a spec:
+
+> **In the Cabinet Editor page - update the text for the Islands tool...
+> I'd like to see Content Inventory directly from the page - the
+> documentation section can link to the gthub repo one, but I want one
+> that shows me the current, freshly build, local repo content
+> inventory.md page rendered in html - is that too much and I should
+> just see it in vscode, or is it doable?**
+
+Investigated before answering either way: `tools/admin-controls.js`
+already serves the whole repo root as static files (confirmed by
+reading its routing table directly), so `documentation/CONTENT-INVENTORY.md`
+was already reachable raw — the only missing piece was rendering it.
+Built as `content-inventory.html`/`content-inventory.js`: a small
+hand-rolled markdown-to-HTML converter rather than a library, matching
+this dashboard's existing zero-dependency convention (already on record
+in this same file's "Organizing and styling the doc table" section, and
+in `ADMIN-CONTROLS.md`'s own "Architecture" note) — justified here
+specifically because `CONTENT-INVENTORY.md` is itself script-generated
+with a fixed, known shape (headers, one italic line, GFM tables, a flat
+bullet list), not arbitrary Markdown needing general-purpose handling.
+A "Regenerate & reload" button on the new page reuses the existing
+`/api/run/sitemap` route rather than adding a new one.
+
+First placement put the new link in the Documentation table, next to
+the GitHub link it was meant to complement. Direct correction once it
+was live:
+
+> **please put that local live button under the Refresh Sitemap button
+> it the same card, it's too far away at the bottom to go hunting for.**
+
+Moved into the pipeline card itself, directly under the "Refresh
+sitemap" button and its hint text — not duplicated, the doc-table entry
+was rewritten to point up at the pipeline card instead of carrying its
+own copy of the link. Sized as a normal `.btn`, not the smaller
+`.btn-mini` variant first reached for, since the point was easy access,
+not a tucked-away tag — leaving `.btn-mini` itself unused, so it was
+removed rather than left as dead CSS. See `ADMIN-CONTROLS.md`'s `v1.6`
+changelog entry.

@@ -134,6 +134,7 @@ folder is scoped to the dashboard itself, same as `now/` or
 | `cabinet-editor-ui/index.html`, `editor.css`, `editor.js` | The admin server's browser UI — grid editor with a collapsed "reserved/layout" panel per row for TSV columns the live v3 renderer doesn't currently read (see `CABINET-EDITOR.md`). Replaces the earlier one-file `cabinet-data-editor.html` sketch (deleted). |
 | `admin-controls.js` | Local-only zero-dependency Node HTTP admin dashboard (`port 5959`, added 2026-08-30) — one page linking every other local tool: start/status for the Cabinet/Now editor servers, buttons for build/publish scripts that previously had no UI trigger (`build-static.mjs`, `promote.mjs`, `generate_sitemap.py`, a `mkdocs build --strict` sanity check to an OS-temp dir), a documentation-file index, and a gotchas section (auto-generated files, the external-repos-aren't-pinned deploy gotcha, the port map). Served from the repo root so relative asset paths resolve. |
 | `admin-controls-ui/index.html`, `home.css`, `home.js` | The dashboard's browser UI. |
+| `admin-controls-ui/content-inventory.html`, `content-inventory.js` | Renders `documentation/CONTENT-INVENTORY.md` as HTML, fetched fresh off this machine's disk (added `v1.6`, 2026-09-08) -- a small hand-rolled markdown-to-HTML converter, not a library. Linked from the dashboard's "Refresh sitemap" pipeline card. |
 
 ## `docs/` — the live MkDocs site + standalone static pages
 

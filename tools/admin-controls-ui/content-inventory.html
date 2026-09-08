@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cabinet -- Content Inventory (local)</title>
+<link rel="stylesheet" href="home.css" />
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Content Inventory <span class="src-tag">local build</span></h1>
+    <div class="sub"><a class="back-link" href="/admin/">&larr; Admin controls</a> -- rendered straight from this machine's <code>documentation/CONTENT-INVENTORY.md</code>, not GitHub. Reflects whatever's on disk right now, including uncommitted edits.</div>
+  </div>
+  <button class="btn btn-primary" id="regen-btn">Regenerate &amp; reload</button>
+</header>
+
+<main class="md-main">
+  <div id="status" class="md-status"></div>
+  <div id="view" class="md-view"></div>
+</main>
+
+<script src="content-inventory.js"></script>
+</body>
+</html>

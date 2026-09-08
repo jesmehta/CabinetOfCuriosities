@@ -67,6 +67,7 @@ main{ padding:26px 32px 90px; max-width:980px; }
 .btn-link{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
 .btn-run{ min-width:220px; justify-content:flex-start; }
 .btn-primary{ background:var(--accent); color:var(--card); border-color:var(--accent); font-weight:600; }
+.step-extra{ margin-top:8px; }
 .btn.running{ opacity:0.7; }
 
 /* pipeline steps */
@@ -116,3 +117,30 @@ main{ padding:26px 32px 90px; max-width:980px; }
 /* gotchas */
 .gotchas{ margin:0; padding-left:20px; display:flex; flex-direction:column; gap:10px; }
 .gotchas li{ font-size:12.5px; line-height:1.6; }
+
+/* content-inventory.html -- local markdown viewer */
+.src-tag{
+  font-family:var(--mono); font-weight:400; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em;
+  color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:1px 8px; margin-left:8px; vertical-align:middle;
+}
+.back-link{ color:var(--accent); }
+header .btn{ height:fit-content; }
+.md-main{ padding:26px 32px 90px; max-width:900px; }
+.md-status{ font-size:12px; color:var(--ink-soft); margin-bottom:12px; min-height:1.4em; }
+.md-status.error{ color:var(--danger); }
+.md-view{ font-size:13px; line-height:1.6; }
+.md-view h1{ font-family:var(--serif); font-size:23px; margin:0 0 14px; }
+.md-view h2{ font-family:var(--serif); font-size:17px; border-bottom:1px solid var(--hairline); padding-bottom:6px; margin:28px 0 12px; }
+.md-view h3{ font-family:var(--serif); font-size:14.5px; margin:20px 0 8px; }
+.md-view p{ color:var(--ink-soft); margin:0 0 12px; }
+.md-view em{ color:var(--ink-soft); }
+.md-view strong{ color:var(--ink); }
+.md-view a{ color:var(--accent); }
+.md-view ul{ margin:0 0 14px; padding-left:22px; display:flex; flex-direction:column; gap:6px; }
+.md-view li{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+.md-table-wrap{ overflow-x:auto; margin:0 0 20px; border:1px solid var(--hairline); border-radius:8px; }
+.md-table{ width:100%; border-collapse:collapse; background:var(--card); font-size:12px; }
+.md-table th, .md-table td{ padding:7px 12px; border-top:1px solid var(--hairline); text-align:left; white-space:nowrap; }
+.md-table thead th{ background:var(--paper-alt); border-top:none; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); }
+.md-table tbody tr:nth-child(even){ background:var(--paper-alt); }
+.md-table td:last-child, .md-table th:last-child{ white-space:normal; }
