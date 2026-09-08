@@ -99,6 +99,11 @@ and phase placement, this is just the current ordering of attention.
    headings, generated alongside the SVG map) and its caveats.
 5. **`#126`** (split up this ToDo file / documentation coherently) --
    direct note, 2026-08-30: "also an easy task."
+6. **`#141`** (why does "Copy config" need a manual paste into
+   `pasted-config.json` instead of the button just writing it) -- direct
+   request, 2026-09-08, flagged for priority investigation. Find the
+   earlier conversation this may already have been weighed in before
+   assuming it's unaddressed.
 
 Backburner, deliberately not urgent -- direct instruction, 2026-08-30:
 
@@ -765,6 +770,31 @@ own numbering note near the top) -- a move, not a re-add.
       controls already exist. Related but distinct from `#30`'s
       theme-specific boat ARTWORK (a swap, not a management-panel
       question).
+- [ ] **#141** Why does "Copy config" require a manual paste into
+      `landing-v3/pasted-config.json` at all? Direct question, 2026-09-08:
+      the button (`cabinet-v3-controls.js`) only ever puts the JSON on the
+      clipboard -- you then have to open `pasted-config.json` yourself,
+      paste, save, before `node apply-config.mjs` can read it and patch
+      `cabinet-v3-data.js` per-key. Since `pasted-config.json` is gitignored
+      scratch (discarded after use, never committed, not the source of
+      truth), it's not obvious why the button doesn't just write/overwrite
+      that file directly instead of routing through the clipboard and a
+      hand paste -- `apply-config.mjs` would run unchanged either way, this
+      would only remove the manual copy-paste step in front of it. **First
+      step: find the earlier conversation this may already have been
+      weighed in** (likely `conversation-copy-config-resolution.md`'s
+      `#32` discussion) before assuming it's an oversight rather than a
+      deliberate call -- a skim of that file during this same 2026-09-08
+      session didn't turn up this exact question (it covers manual-paste
+      (a) vs. an auto-loaded override file (b), not "should the button
+      itself write the scratch file"), but the file wasn't re-read
+      exhaustively for this. If genuinely undecided: technically, `islands-
+      tool.html` is only served with a live write path when opened through
+      `tools/admin-controls.js` (port 5959, which already serves the whole
+      repo and has a `/api/` route) -- worth confirming that's always how
+      it's opened before assuming a `fetch()`-based write is safe to rely
+      on (vs. file:// or some other static server with no backend behind
+      it).
 
 <details>
 <summary>#64</summary>
