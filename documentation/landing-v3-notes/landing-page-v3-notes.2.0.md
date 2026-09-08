@@ -27,6 +27,7 @@
 - [Next steps (not started)](#next-steps-not-started)
 - [To-do](#to-do)
 - [Changelog](#changelog)
+  - [v3.7.70 bugfix -- production shipped with no theme colours at all since v3.7.69, base map read as flat blue](#v3770-bugfix----production-shipped-with-no-theme-colours-at-all-since-v3769-base-map-read-as-flat-blue)
   - [v3.7.69 -- Copy config reworked end-to-end: full state export + colours/fonts moved into JS, closing #32](#v3769----copy-config-reworked-end-to-end-full-state-export--coloursfonts-moved-into-js-closing-32)
   - [v3.7.68 -- real h2/h3 heading outline for the map's sections/entries, closing #70](#v3768----real-h2h3-heading-outline-for-the-maps-sectionsentries-closing-70)
   - [v3.7.67 -- Site map compass point wired, closing #73](#v3767----site-map-compass-point-wired-closing-73)
@@ -1550,6 +1551,64 @@ the design reasoning and back-and-forth behind the decisions already
 made in the v3-prototype phase.
 
 ## Changelog
+
+### v3.7.70 bugfix -- production shipped with no theme colours at all since v3.7.69, base map read as flat blue
+
+Direct report, after a Teaching-content update and the routine
+build/promote that followed: "the medieval colours have not come in,
+the blue flat topo has come in as the default. The hover effect with
+the topo bands is fine, but the base... has been replaced by the flat
+blue of topo." Second time this exact symptom ("base theme reads as
+flat topology, not medieval") has shown up -- see v3.7.45 above -- but
+a genuinely different root cause this time, introduced the same day as
+v3.7.69 landed, four versions further down this same changelog.
+
+**Root cause.** v3.7.69's `#32` rework moved every theme's actual
+colour values out of `cabinet-v3-style.css`'s unconditional
+`[data-theme="X"]` CSS blocks and into `v3Config.colors`
+(`cabinet-v3-data.js`), applied at runtime as inline custom properties
+on `<body>` via a new shared `applyThemeStyle()`. That changelog entry
+itself says the new call was "added at the same top-level init site
+`render()` itself runs from" in "production's own
+`cabinet-v3-layout.js`" -- but `cabinet-v3-layout.js` is NOT what
+production runs. `cabinet-v3-production-animate.js` (v3.7.47) exists
+specifically so visitors' browsers don't have to load
+`cabinet-v3-layout.js`'s 170KB+ treemap/circle-pack machinery, which
+only matters at build time; `docs/index.html` only ever loads
+`cabinet-v3-production-animate.js`, and that file predates
+`applyThemeStyle()` entirely -- it was never updated to call it.
+`cabinet-v3-layout.js`'s own call only ever ran inside the dev tool
+and inside `build-render.html`'s headless-Chromium capture (the source
+`build-static.mjs` snapshots into `index.html`'s SVG markup) -- and
+since the colours are applied to `<body>`, not baked into the captured
+`#v3-stage` markup itself, even that capture-time call left no trace
+in the shipped file. Net effect: on the real production page,
+`applyThemeStyle()` never ran at all, so `<body>` never got its
+per-theme custom properties, and the browser fell back to
+`body.v3-proto`'s generic placeholder palette (`--v3-sea-deep:
+#5b7f93`, `--v3-veg: #a8c478` -- a slate-blue/khaki pair, not either
+theme's real one) -- flat because `flatColourMode` is still correctly
+on for medieval-map, just the wrong colour underneath it. The
+hover-preview bands were never affected: they read from separate,
+hardcoded `--v3-preview-*` fallback tokens (same base block) that were
+never routed through `applyThemeStyle` in the first place, which is
+exactly why the report described the hover effect as fine and only the
+base as wrong. `startThemeSwap()` (v3.7.48) compounded this
+silently -- its own comment claimed "no colour math here" because at
+the time it was written that was true; v3.7.69 made it false the same
+day, so the click-to-swap compass control had been flipping
+`data-theme` with no visible colour change ever since, unreported.
+
+**Fix.** `cabinet-v3-production-animate.js` now imports
+`applyThemeStyle` and calls it once at load with
+`document.body.dataset.theme`, and again inside `startThemeSwap()`'s
+click handler after flipping the attribute. Rebuilt
+(`build-static.mjs`) and promoted (`promote.mjs`, which re-renders the
+promoted `docs/index.html` in headless Chromium and failed loudly on
+any error) -- zero console/request errors, confirmed clean. Verified
+live in the browser: base map renders medieval-map's parchment/cream
+palette, compass click-to-swap to Topology and back both recolour
+correctly.
 
 ### v3.7.69 -- Copy config reworked end-to-end: full state export + colours/fonts moved into JS, closing #32
 
