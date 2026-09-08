@@ -29,7 +29,7 @@
 // "capture once, freeze, ship" pattern the SVG markup itself already
 // uses.
 
-import { v3Config } from "./cabinet-v3-data.js";
+import { v3Config, applyThemeStyle } from "./cabinet-v3-data.js";
 import { buildIslandHeightmap } from "./cabinet-v3-islandshape.js";
 import { createFlowSampler } from "./cabinet-v3-flowfield.js";
 import { createParticlePool, stepParticle } from "./cabinet-v3-particles.js";
@@ -224,22 +224,40 @@ export function startProductionAnimation() {
 }
 
 // v3.7.48 (#21) -- click the compass's inner circle to swap the whole
-// canvas between Medieval and Topology. The two themes' CSS already
-// ship unconditionally (cabinet-v3-style.css's body.v3-proto[data-
-// theme=...] blocks aren't behind any build flag), so this is just the
-// attribute flip -- no colour math here. Known limitation, inherited
-// from #64/v3.7.47: boats/dragons only have Medieval colours defined
-// (PARTICLE_COLORS/v3Config.dragon.fillColors above), so they won't
-// re-tint on swap to Topology -- already flagged as future scope
-// ("may ask for theme based colour later"), not fixed by this.
+// canvas between Medieval and Topology. Originally just an attribute
+// flip -- at the time, cabinet-v3-style.css's body.v3-proto[data-
+// theme=...] blocks carried every theme's real colours unconditionally,
+// so the CSS picked the swap up on its own. The #32 rework later that
+// same day moved those colours out of CSS into v3Config.colors, applied
+// only via applyThemeStyle() -- this call was missed then, silently
+// leaving the swap flipping the attribute with no colour change to
+// show for it. Fixed alongside the same gap at load, below. Known
+// limitation, inherited from #64/v3.7.47: boats/dragons only have
+// Medieval colours defined (PARTICLE_COLORS/v3Config.dragon.fillColors
+// above), so they won't re-tint on swap to Topology -- already flagged
+// as future scope ("may ask for theme based colour later"), not fixed
+// by this.
 function startThemeSwap() {
   const themeHit = document.querySelector(".v3-compass-theme-hit");
   if (!themeHit) return;
   themeHit.addEventListener("click", () => {
     const current = document.body.dataset.theme;
-    document.body.dataset.theme = current === "medieval-map" ? "satellite" : "medieval-map";
+    const next = current === "medieval-map" ? "satellite" : "medieval-map";
+    document.body.dataset.theme = next;
+    applyThemeStyle(next);
   });
 }
 
+// #32 rework (2026-08-30) moved theme colours/fonts out of CSS into
+// v3Config.colors/v3Config.fonts, applied at load via applyThemeStyle()
+// -- wired into cabinet-v3-layout.js (the dev tool and build-static.mjs's
+// capture page) but missed here, the file that actually ships to and
+// runs on the live production page. Without this, production rendered
+// with only body.v3-proto's generic placeholder palette (a slate-blue/
+// khaki pair) instead of medieval-map's parchment tones -- the "flat
+// blue base, hover bands fine" bug: the hover-preview mechanism uses
+// its own separate hardcoded --v3-preview-* fallback tokens, never
+// routed through applyThemeStyle, so it never broke.
+applyThemeStyle(document.body.dataset.theme);
 startProductionAnimation();
 startThemeSwap();
