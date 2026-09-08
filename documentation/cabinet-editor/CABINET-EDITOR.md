@@ -375,6 +375,35 @@ write the same files, no separate state to keep in sync.
 
 ## Changelog
 
+### v1.6 — section `weight` is a live-computed display, not an editable field (2026-09-08)
+
+Direct correction after the user noticed the editor let you type a number
+into a section's `weight` cell even though `cabinet-v3-layout.js`'s
+`buildSectionMetas()` never reads it — a section's real weight is always
+the sum of its own visible entries' weights, computed at render time (see
+that function's own comment). Editing the TSV's `weight` cell for a
+section was therefore silently inert: it changed a value nothing consumed.
+
+Fixed by rendering that one cell as a plain read-only number
+(`computeSectionWeights()`, sums `Number(row.weight)` over every entry
+whose `section` matches and whose `status` isn't `false` — same
+"hidden entries don't count, wip entries do" rule the real renderer
+uses) instead of an `<input>`, with a title tooltip pointing at
+`buildSectionMetas()` as the source of truth. Sorting the sections table
+by `weight` now sorts on that same computed sum, not the underlying
+(now-vestigial) TSV cell, via a small `computeRows`/`applySort` extension
+that only kicks in for `kind === "sections" && col === "weight"` —
+entries' own `weight` column is untouched, still a normal editable
+numeric field, since an entry's weight *is* the authored number the
+renderer actually reads.
+
+The TSV column itself is untouched (still present, still validated as
+"must be numeric" on load) — this was a display-layer fix in
+`cabinet-editor-ui/editor.js` only, not a schema change. A newly-added
+section still seeds a placeholder `weight: "2"` on the raw row so that
+validation check keeps passing; it's just never shown or edited as a
+number anymore.
+
 ### v1.5 — numeric columns clipped from the wrong edge; resize-triggered sort (2026-08-30)
 
 Direct bug report: narrowing `order`/`weight` clipped the number's

@@ -143,7 +143,15 @@ function cycleSort(s, col) {
   s.col = null; s.dir = 1;
 }
 
-function compareRows(a, b, col) {
+function compareRows(a, b, col, computedWeights) {
+  // Sections' "weight" isn't a stored value to compare (see
+  // computeSectionWeights()) -- sort on the same live sum the cell displays,
+  // not the vestigial raw TSV cell.
+  if (computedWeights) {
+    const av = computedWeights.get(a.row.id) || 0;
+    const bv = computedWeights.get(b.row.id) || 0;
+    return av - bv;
+  }
   const av = (a.row[col] ?? "").toString();
   const bv = (b.row[col] ?? "").toString();
   const aBlank = av.trim() === "", bBlank = bv.trim() === "";
@@ -154,10 +162,11 @@ function compareRows(a, b, col) {
   return av.localeCompare(bv, undefined, { sensitivity: "base", numeric: true });
 }
 
-function applySort(visible, kind) {
+function applySort(visible, kind, sectionWeights) {
   const s = sortState[kind];
   if (!s.col) return visible; // file order -- what the ▲▼ buttons operate on
-  return visible.slice().sort((a, b) => compareRows(a, b, s.col) * s.dir);
+  const computedWeights = (kind === "sections" && s.col === "weight") ? sectionWeights : null;
+  return visible.slice().sort((a, b) => compareRows(a, b, s.col, computedWeights) * s.dir);
 }
 
 function renderColgroup(kind, cols) {
@@ -176,7 +185,10 @@ function renderHeaderRow(kind, cols) {
   cols.forEach(c => {
     const active = s.col === c;
     const arrow = active ? (s.dir === 1 ? " ▲" : " ▼") : "";
-    html += `<th data-col="${c}" class="${active ? "sorted" : ""}" title="Click to sort">${esc(c)}${arrow}<span class="col-resize-handle" data-col="${c}"></span></th>`;
+    const title = (kind === "sections" && c === "weight")
+      ? "Computed live from entries -- click to sort"
+      : "Click to sort";
+    html += `<th data-col="${c}" class="${active ? "sorted" : ""}" title="${title}">${esc(c)}${arrow}<span class="col-resize-handle" data-col="${c}"></span></th>`;
   });
   html += `</tr>`;
   return html;
@@ -274,6 +286,25 @@ function updateExpandButton(kind) {
 
 const SECTION_SELECT_MAP = { status: STATUS_OPTIONS, location: SECTION_LOCATION_OPTIONS };
 
+// Mirrors cabinet-v3-layout.js's buildSectionMetas(): a section's weight is
+// never an independently authored number, it's the sum of its own visible
+// (status !== false) entries' weights. The TSV still carries a `weight`
+// cell per section row (has to, for the file's own column shape / the
+// "weight must be numeric" validation), but the live renderer never reads
+// it -- so the editor shouldn't offer it as something worth editing either.
+// Excludes hidden ("false") entries the same way the renderer does; wip
+// entries still count, same as on the real map.
+function computeSectionWeights() {
+  const map = new Map();
+  state.sections.forEach(({ row }) => map.set(row.id, 0));
+  state.entries.forEach(({ row }) => {
+    if ((row.status || "").trim().toLowerCase() === "false") return;
+    if (!map.has(row.section)) return;
+    map.set(row.section, map.get(row.section) + (Number(row.weight) || 0));
+  });
+  return map;
+}
+
 function renderSections() {
   const container = document.getElementById("table-sections");
   const q = searchSections.trim().toLowerCase();
@@ -283,7 +314,8 @@ function renderSections() {
 
   if (!rows.length) { container.innerHTML = `<div class="empty">No sections yet. Add one to get started.</div>`; return; }
 
-  visible = applySort(visible, "sections");
+  const sectionWeights = computeSectionWeights();
+  visible = applySort(visible, "sections", sectionWeights);
   const sorted = sortState.sections.col !== null;
   const problems = problemsByIndex(state.sectionProblems);
   const cols = displayCols("sections");
@@ -305,6 +337,11 @@ function renderSections() {
       <button class="icon" data-act="del" title="Delete row">✕</button>
     </td>`;
     cols.forEach(col => {
+      if (col === "weight") {
+        const live = sectionWeights.get(row.id) || 0;
+        html += `<td class="readonly-cell" title="Computed live: sum of this section's visible entries' weights (hidden/status=false entries excluded). Not stored or editable here — see buildSectionMetas() in cabinet-v3-layout.js.">${live}</td>`;
+        return;
+      }
       const control = fieldControl(row[col], col, SECTION_SELECT_MAP, false);
       html += `<td>${badFields.has(col) ? control.replace(/(<(?:input|select))/, `$1 class="bad"`) : control}</td>`;
     });
