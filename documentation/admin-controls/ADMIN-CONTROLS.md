@@ -212,6 +212,29 @@ run-admin-controls.bat              -- double-click launcher for tools/admin-con
 
 ## Changelog
 
+### v1.5 — Islands tool card text updated for the post-`#32` Copy config workflow (2026-09-08)
+
+The Islands tool card's description hadn't been touched since `#32`
+("Rework Copy config," `v3.7.69`) actually shipped — it still said
+"hand-paste it into `cabinet-v3-layout.js`'s defaults," the pre-`#32`
+mechanism, and only mentioned the `island` block rather than the full
+`pack/island/flow/particles/geo/themePreview/colors/fonts` export.
+Direct request: "update the text for the Islands tool - hasnt been
+updated since copy-config was worked out and settled." Rewritten after
+re-verifying the actual mechanism against the live code
+(`cabinet-v3-controls.js`'s `copyBtn`, `apply-config.mjs`'s own header
+comment) rather than the earlier description, per
+`DOCUMENTATION-GUIDE.md`'s "verify before you write it down": Copy
+config puts JSON on the clipboard only; you paste it into
+`landing-v3/pasted-config.json`; `node apply-config.mjs` (run from
+`landing-v3/`) is what actually writes it back into
+`cabinet-v3-data.js`, per-key, comments untouched. A follow-up question
+in the same session — "are you sure... I believe we worked that out in
+quite some detail" — was answered by cross-checking the card's wording
+against `README.md`, `three-world-launch-phases-ToDo.md`'s `#32`
+closure, and `cabinet-v3-config-reference.md`; all three agreed with the
+code, nothing needed changing a second time.
+
 ### v1.4 — renamed from "backend home" to "admin controls" (2026-08-30)
 
 `tools/backend-home.js` → `tools/admin-controls.js`,

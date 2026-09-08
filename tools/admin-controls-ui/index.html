@@ -53,7 +53,7 @@
           <strong>Islands tool</strong>
           <span class="port">v3 live preview</span>
         </div>
-        <p class="warn"><strong>Not a save-to-file tool.</strong> Live in-browser tuning of the v3 map's visual config (coastlines, particles, layout weights). "Copy config" puts the tuned object on your clipboard only. To actually ship a change made here: hand-paste it into <code>cabinet-v3-layout.js</code>'s defaults, then run Build + Promote below.</p>
+        <p class="warn"><strong>Not a save-to-file tool.</strong> Live in-browser tuning of the v3 map's visual config -- island shape, flow/particles, layout/pack, base &amp; window theme colours and fonts. "Copy config" puts the full tuned object (<code>pack/island/flow/particles/geo/themePreview/colors/fonts</code>) on your clipboard only. To ship a change made here: paste it into <code>landing-v3/pasted-config.json</code>, run <code>node apply-config.mjs</code> from <code>landing-v3/</code> (writes it back into <code>cabinet-v3-data.js</code> per-key, comments untouched), then Build + Promote below.</p>
         <div class="card-actions">
           <a class="btn btn-link" href="/landing-v3/dev-tool/islands-tool.html" target="_blank" rel="noopener">Open islands tool &rarr;</a>
         </div>

@@ -308,3 +308,36 @@ prose describing it inline rather than at this folder — wiring that
 cross-reference in is a follow-up, not done here, for the same
 concurrent-editing reason `AI-DEPENDENCY-AUDIT.md` wasn't cross-referenced
 either.
+
+## "update the text for the Islands tool" (2026-09-08)
+
+A short, direct request opened a later session:
+
+> **update the text for the Islands tool - hasnt been updated since
+> copy-config was worked out and settled**
+
+Checked directly rather than assumed stale: the card still described
+the pre-`#32` mechanism ("hand-paste it into `cabinet-v3-layout.js`'s
+defaults"), reading `cabinet-v3-controls.js`'s actual `copyBtn` handler
+and `apply-config.mjs`'s own header comment to confirm the real,
+current workflow before rewriting anything. A later follow-up in the
+same session pressure-tested that rewrite rather than taking it on
+faith:
+
+> **Are you sure the Copy Config tool description is accurate? Does it
+> put everything on the clipboard and I need to paste it or does it
+> paste it into a file on its own - I believe we worked that out in
+> quite some detail**
+
+Re-verified against the live code a second time (not just the first
+pass's memory of it) — clipboard-only, no path where the button itself
+writes a file — then cross-checked the card's wording against three
+independent docs (`README.md`'s `#32` changelog entry,
+`three-world-launch-phases-ToDo.md`'s `#32` closure, and
+`cabinet-v3-config-reference.md`) on direct request:
+
+> **can you check the documentation on this?**
+
+All three agreed with the code and with each other; nothing needed
+correcting a second time. See `ADMIN-CONTROLS.md`'s `v1.5` changelog
+entry.
