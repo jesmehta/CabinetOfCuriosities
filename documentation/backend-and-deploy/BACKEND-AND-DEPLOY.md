@@ -265,6 +265,37 @@ one-line "coming soon" `index.md` stub — not wired into `mkdocs.yml`'s
 nav or any TSV, since there's no real content yet to surface. Full
 record: `conversation-backend-and-deploy.md`, this same Part 6.
 
+## Sidebar section headers become clickable: `mkdocs-section-index` (2026-09-08)
+
+Cabinet and fffx both picked up the `mkdocs-section-index` plugin, ported
+over from Bookshelf's own fix (commit `7e5c1f3`, 2026-09-06): a plain
+MkDocs nav section can't be both a page and a section, so a section whose
+first child is its own unlabeled index page shows that page's title
+duplicated in the sidebar -- once as the (non-clickable) section header,
+once as a normal, separately-clickable child directly beneath it. The
+plugin merges that first child into the section header itself, making the
+header the click target and removing the duplicate row.
+
+**Cabinet**: added to `plugins:` in `mkdocs.yml` and to `requirements.txt`.
+Three sections already had exactly this problem worked around by hand --
+an explicit duplicate-titled child row instead of a bare path
+(`Teaching: teaching/index.md`; `Makings: makings/index.md` inside
+"Machines & Makings"; `Webtech: webtech/index.md`) -- each converted to a
+bare `teaching/index.md` / `makings/index.md` / `webtech/index.md` entry
+so the plugin now does the merge instead. Direct continuation of "Section
+landing pages as `index.md`" above: that pass gave these three sections
+real hub pages; this pass is what finally lets the sidebar treat them as
+such, rather than showing the hub page's own title twice. No other
+Cabinet section currently has an `index.md` first child (`Compass`,
+`Fab`, and the nested `3D Printing`/`Tracery Bots` groups don't), so
+nothing else changed shape.
+
+**fffx**: same plugin/dependency added, but no fffx section currently has
+an `index.md` child at all -- `mkdocs.yml`'s own comment there explains
+why (unfinished sections are deliberately left out of the nav entirely,
+not linked via a hub page). Installed for when one exists; nothing to
+restructure yet.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
@@ -324,6 +355,10 @@ backend/frontend things are left"):
 Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
+
+### 2026-09-08 — `mkdocs-section-index` plugin (Cabinet + fffx)
+
+See "Sidebar section headers become clickable" above.
 
 ### 2026-09-03 — section landing pages renamed to `index.md`; reserved-section stubs created
 
@@ -401,3 +436,6 @@ See "Repo structure" above.
   resolved. Revisit whether Bookshelf/fffx should adopt Cabinet's
   underscore scheme, or whether this stays a permanent Cabinet-specific
   exception.
+- **fffx has `mkdocs-section-index` installed but nothing using it yet**
+  (see "Sidebar section headers become clickable" above) — revisit once
+  any fffx section gets a real `index.md` hub page wired into its nav.
