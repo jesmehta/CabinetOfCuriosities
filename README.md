@@ -215,6 +215,20 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### New `documentation/content/` folder; Teaching/Machines & Makings/Webtech nav headers become clickable (2026-09-08)
+
+`mkdocs-section-index` added to Cabinet and fffx (ported from Bookshelf's
+own fix, `7e5c1f3`) so a nav section whose first child is its own hub
+page can have a clickable header instead of a hand-authored duplicate
+child row. Fixed the duplicate-title sidebar entry on Teaching, Machines
+& Makings, and Webtech. Direct instruction, same session: keep content-
+organization documentation (what's grouped where, nav structure) separate
+from `backend-and-deploy/`'s build/deploy/tooling scope — new
+`documentation/content/CONTENT-STRUCTURE.md` holds the nav-header change
+itself, `backend-and-deploy/BACKEND-AND-DEPLOY.md` keeps the plugin's own
+mechanism. See `DOCUMENTATION-GUIDE.md`'s "Placement" section for the
+split, `documentation/FILE-MANIFEST.md` for the new folder's row.
+
 ### Section landing pages moved to `index.md`; six reserved section stubs created (2026-09-03)
 
 Same-day follow-on to the content-folder reorg below. Each section's

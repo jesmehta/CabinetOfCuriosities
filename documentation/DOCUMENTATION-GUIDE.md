@@ -33,7 +33,8 @@ pointing to the next:
    into a separate file per concern. `NOW-PAGE.md`, `CABINET-EDITOR.md`,
    `SITEMAP.md`, `landing-page-v3-notes.2.0.md`,
    `backend-and-deploy/cloudflare-web-analytics-setup.md`,
-   `backend-and-deploy/BACKEND-AND-DEPLOY.md`. Repo-wide todo tracking
+   `backend-and-deploy/BACKEND-AND-DEPLOY.md`,
+   `content/CONTENT-STRUCTURE.md`. Repo-wide todo tracking
    lives in one place,
    `backend-and-deploy/three-world-launch-phases-ToDo.md`, not
    duplicated per subsystem. A topic doesn't need its own tier-2 doc if
@@ -72,6 +73,25 @@ stand alone (`cloudflare-web-analytics-setup.md`,
 absorb into `BACKEND-AND-DEPLOY.md` instead of spawning a one-topic
 file. Same folder-scoping principle as every other feature, just with
 more than one technical doc inside it because the scope is broader.
+
+**Content organization/presentation work — what's in the nav, how it's
+grouped, hub-page structure, section content decisions** (as opposed to
+*how the site is built and shipped*) lives in `content/`, mirroring
+Bookshelf's own `documentation/content/` convention (2026-09-08,
+direct instruction: *"let's keep all content documentation separate
+from site functions and maintenance. A nav reshuffle is content not
+backend."*). `backend-and-deploy/` still owns the mechanism side of the
+same change when there is one (installing a plugin, a dependency, the
+physical file/folder layout) — cross-reference between the two rather
+than duplicate when a topic touches both, same as
+`CONTENT-STRUCTURE.md`'s nav-headers entry does with
+`BACKEND-AND-DEPLOY.md`'s plugin entry. Bookshelf's version is one
+subfolder per content initiative, since each is substantial enough to
+stand alone (`favorite-poems/`, `my-writings/`); Cabinet's starts as one
+shared doc (`CONTENT-STRUCTURE.md`) instead, same "absorb into a
+broader doc until a topic outgrows it" reasoning as `backend-and-deploy/`
+above — split out a per-topic file/folder only once one actually
+justifies it.
 
 ## Writing a conversation-log doc
 
