@@ -54,7 +54,7 @@ nav:
     - webtech/index.md
     - Dot Mandala Generator : webtech/dotMandalaTool.md
     - Tracery Bots :
-      - Tracery Bots : webtech/traceryBots.md
+      - webtech/traceryBots.md
       # - Trippy Gourmet : webtech/trippyGourmet.md
       - Trippy Gourmet : https://cabinetofcuriosities.in/tracery-bots/TrippyGourmetBot/
       - Mad Solutionist : https://cabinetofcuriosities.in/tracery-bots/MadSolutionistBot/

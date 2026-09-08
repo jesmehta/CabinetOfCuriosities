@@ -58,11 +58,59 @@ export const sections = [
     "notes": "fffx site_url is configured for this subdomain but no CNAME file exists in the fffx repo yet -- verify DNS is live before treating this link as production-ready."
   },
   {
+    "id": "web-tech",
+    "title": "WebTech",
+    "subtitle": "Web experiments, Generative bots, twine and other web ephemera.",
+    "href": "webtech/",
+    "order": 30,
+    "weight": 2,
+    "status": true,
+    "kind": "region",
+    "tags": [
+      "creative-coding",
+      "bots",
+      "generative",
+      "web"
+    ],
+    "location": "mkdocs",
+    "map": {
+      "islandId": "",
+      "mapForm": "",
+      "cx": 0,
+      "cy": 0,
+      "rx": 0,
+      "ry": 0
+    },
+    "extraCount": 1,
+    "notes": "status: false -- has an mkdocs nav section already (TraceryBots/Dot Mandala/Twine/Creative Coding) but no map placement yet; the 6-region + compass grid is currently full (see machines-makings/interfaces-data-texts/visual-field-notes/teaching cx/cy). Needs a layout decision before flipping to wip/true -- see ToDo #69."
+  },
+  {
+    "id": "writings",
+    "title": "Writings",
+    "subtitle": "Poetry, Essays, and Miscellany",
+    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/",
+    "order": 40,
+    "weight": 2,
+    "status": true,
+    "kind": "region",
+    "tags": [],
+    "location": "subdomain",
+    "map": {
+      "islandId": "",
+      "mapForm": "",
+      "cx": 0,
+      "cy": 0,
+      "rx": 0,
+      "ry": 0
+    },
+    "extraCount": 3
+  },
+  {
     "id": "teaching",
     "title": "Teaching",
     "subtitle": "Teaching history, approach, and student work.",
     "href": "teaching/",
-    "order": 30,
+    "order": 50,
     "weight": 2,
     "status": true,
     "kind": "region",
@@ -87,7 +135,7 @@ export const sections = [
     "title": "Visual Field Notes",
     "subtitle": "Type, doors, streets, places, patterns, and observed details.",
     "href": "",
-    "order": 40,
+    "order": 60,
     "weight": 2,
     "status": "wip",
     "kind": "region",
@@ -113,9 +161,9 @@ export const sections = [
     "title": "Machines & Makings",
     "subtitle": "Making processes, fabrication notes, and machine collections.",
     "href": "makings/",
-    "order": 50,
+    "order": 70,
     "weight": 3,
-    "status": true,
+    "status": "wip",
     "kind": "region",
     "tags": [
       "fabrication",
@@ -134,18 +182,17 @@ export const sections = [
     "extraCount": 3
   },
   {
-    "id": "interfaces-data-texts",
-    "title": "Interfaces, Data & Texts",
-    "subtitle": "Web experiments, data visualisations, and digital writings.",
-    "href": "webtech/",
-    "order": 60,
+    "id": "data-interactions",
+    "title": "Interactive Data",
+    "subtitle": "Data Visualisations",
+    "href": "dataviz/",
+    "order": 80,
     "weight": 3,
-    "status": true,
+    "status": false,
     "kind": "region",
     "tags": [
-      "web",
       "dataviz",
-      "writing"
+      "web"
     ],
     "location": "mkdocs",
     "map": {
@@ -164,7 +211,7 @@ export const sections = [
     "title": "Compass Rose",
     "subtitle": "",
     "href": "",
-    "order": 80,
+    "order": 90,
     "weight": 4,
     "status": true,
     "kind": "compass",
@@ -182,40 +229,13 @@ export const sections = [
     "notes": "SE-reserved compass rose section -- kind: compass triggers a dedicated render path in landing-v3 (no archipelago growth, no filler islands); cx/cy/rx/ry are unused placeholders, real placement comes from the deterministic SE-corner square carve in cabinet-v3-layout.js."
   },
   {
-    "id": "wild-wild-web",
-    "title": "Wild wild web",
-    "subtitle": "Generative bots, mandalas, twine and other web ephemera.",
-    "href": "",
-    "order": 70,
-    "weight": 2,
-    "status": false,
-    "kind": "region",
-    "tags": [
-      "creative-coding",
-      "bots",
-      "generative",
-      "web"
-    ],
-    "location": "mkdocs",
-    "map": {
-      "islandId": "",
-      "mapForm": "",
-      "cx": 0,
-      "cy": 0,
-      "rx": 0,
-      "ry": 0
-    },
-    "extraCount": 3,
-    "notes": "status: false -- has an mkdocs nav section already (TraceryBots/Dot Mandala/Twine/Creative Coding) but no map placement yet; the 6-region + compass grid is currently full (see machines-makings/interfaces-data-texts/visual-field-notes/teaching cx/cy). Needs a layout decision before flipping to wip/true -- see ToDo #69."
-  },
-  {
     "id": "fab",
     "title": "Fab",
     "subtitle": "Fab Academy, Fabricademy, and reflections from Fab Academy cohorts.",
     "href": "",
-    "order": 65,
+    "order": 100,
     "weight": 2,
-    "status": "wip",
+    "status": true,
     "kind": "region",
     "tags": [
       "fabacademy",
@@ -272,22 +292,28 @@ export const entries = [
     "subtitle": "Foundation, Robots, and the Grand Unification."
   },
   {
-    "id": "christie",
-    "section": "bookshelf",
-    "title": "Christie",
-    "href": "https://bookshelf.cabinetofcuriosities.in/",
-    "order": 30,
+    "id": "writings-poetry",
+    "section": "writings",
+    "title": "Poetry",
+    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/poems/",
+    "order": 40,
     "weight": 2,
-    "status": "wip",
-    "kind": "world-entry",
-    "tags": [
-      "crime",
-      "author",
-      "christie"
-    ],
-    "location": "subdomain",
-    "subtitle": "The geography of murder -- places, books, literary maps.",
-    "notes": "Author page not live yet; links to Bookshelf root as placeholder."
+    "status": true,
+    "kind": "writing-collection",
+    "tags": [],
+    "location": ""
+  },
+  {
+    "id": "writings-essays",
+    "section": "writings",
+    "title": "Essays",
+    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/essays/",
+    "order": 50,
+    "weight": 2,
+    "status": true,
+    "kind": "writing-collection",
+    "tags": [],
+    "location": ""
   },
   {
     "id": "vera-molnar",
@@ -336,7 +362,7 @@ export const entries = [
     "href": "https://fffx.cabinetofcuriosities.in/deep-studies/particle-systems/",
     "order": 30,
     "weight": 3,
-    "status": "wip",
+    "status": false,
     "kind": "deep-study",
     "tags": [
       "p5",
@@ -353,7 +379,7 @@ export const entries = [
     "href": "https://fffx.cabinetofcuriosities.in/deep-studies/100-gradients/",
     "order": 40,
     "weight": 3,
-    "status": "wip",
+    "status": false,
     "kind": "deep-study",
     "tags": [
       "gradients",
@@ -406,7 +432,7 @@ export const entries = [
     "href": "",
     "order": 30,
     "weight": 2,
-    "status": "wip",
+    "status": false,
     "kind": "teaching-page",
     "tags": [
       "teaching",
@@ -423,7 +449,7 @@ export const entries = [
     "href": "",
     "order": 10,
     "weight": 2,
-    "status": "wip",
+    "status": false,
     "kind": "gallery",
     "tags": [
       "type",
@@ -440,7 +466,7 @@ export const entries = [
     "href": "",
     "order": 20,
     "weight": 2,
-    "status": "wip",
+    "status": false,
     "kind": "gallery",
     "tags": [
       "doors",
@@ -457,7 +483,7 @@ export const entries = [
     "href": "",
     "order": 30,
     "weight": 2,
-    "status": "wip",
+    "status": false,
     "kind": "gallery",
     "tags": [
       "kochi",
@@ -474,7 +500,7 @@ export const entries = [
     "href": "3dp/3DP_2019/",
     "order": 10,
     "weight": 3,
-    "status": true,
+    "status": false,
     "kind": "making-notes",
     "tags": [
       "3d-printing",
@@ -490,7 +516,7 @@ export const entries = [
     "href": "makings/origami-paper/",
     "order": 20,
     "weight": 2,
-    "status": true,
+    "status": false,
     "kind": "making-notes",
     "tags": [
       "origami",
@@ -507,7 +533,7 @@ export const entries = [
     "href": "makings/lasercutting/",
     "order": 30,
     "weight": 2,
-    "status": true,
+    "status": false,
     "kind": "making-notes",
     "tags": [
       "lasercutting",
@@ -541,7 +567,7 @@ export const entries = [
     "href": "makings/drawing-machines/",
     "order": 50,
     "weight": 2,
-    "status": true,
+    "status": false,
     "kind": "machine-collection",
     "tags": [
       "plotters",
@@ -553,7 +579,7 @@ export const entries = [
   },
   {
     "id": "branching-narrative",
-    "section": "interfaces-data-texts",
+    "section": "web-tech",
     "title": "Branching Narrative",
     "href": "webtech/emergent_twine/",
     "order": 10,
@@ -570,12 +596,12 @@ export const entries = [
   },
   {
     "id": "dataviz",
-    "section": "interfaces-data-texts",
+    "section": "data-interactions",
     "title": "Data Visualisations",
     "href": "",
-    "order": 20,
+    "order": 10,
     "weight": 3,
-    "status": "wip",
+    "status": false,
     "kind": "dataviz",
     "tags": [
       "dataviz",
@@ -587,13 +613,13 @@ export const entries = [
     "notes": "Direct correction, 2026-08-24: was cross-listed to Bookshelf's Christie/agatha page, but that's not actually Data Visualisations content -- reverted to a real stub (no page yet) like the section's other wip entries."
   },
   {
-    "id": "writings",
-    "section": "interfaces-data-texts",
-    "title": "Writings",
-    "href": "",
-    "order": 30,
+    "id": "writings-misc",
+    "section": "writings",
+    "title": "Miscellany",
+    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/miscellany/",
+    "order": 10,
     "weight": 2,
-    "status": "wip",
+    "status": true,
     "kind": "writing-collection",
     "tags": [
       "writing",
@@ -603,11 +629,11 @@ export const entries = [
     "subtitle": "Essays, notes, reflections, and digital texts."
   },
   {
-    "id": "webtech",
-    "section": "interfaces-data-texts",
-    "title": "WebTech",
+    "id": "dot-mandala-tool",
+    "section": "web-tech",
+    "title": "Dot Mandala Tool",
     "href": "webtech/dotMandalaTool/",
-    "order": 40,
+    "order": 20,
     "weight": 3,
     "status": true,
     "kind": "web-experiment",
@@ -620,10 +646,10 @@ export const entries = [
   },
   {
     "id": "tracery-bots",
-    "section": "interfaces-data-texts",
+    "section": "web-tech",
     "title": "Tracery Bots",
     "href": "webtech/traceryBots/",
-    "order": 50,
+    "order": 30,
     "weight": 2,
     "status": true,
     "kind": "web-experiment",
@@ -706,7 +732,7 @@ export const entries = [
     "href": "",
     "order": 40,
     "weight": 2,
-    "status": "wip",
+    "status": false,
     "kind": "teaching-page",
     "tags": [
       "teaching",
@@ -718,17 +744,18 @@ export const entries = [
   },
   {
     "id": "swatch-fields",
-    "section": "machines-makings",
+    "section": "web-tech",
     "title": "Swatch Fields",
     "href": "swatch-fields/",
-    "order": 60,
+    "order": 40,
     "weight": 3,
     "status": true,
     "kind": "material-collection",
     "tags": [
       "materials",
       "swatches",
-      "colour"
+      "colour",
+      "dye"
     ],
     "location": "assembly",
     "subtitle": "An atlas of material swatches and colour fields."
@@ -790,29 +817,10 @@ export const entries = [
     "notes": "Multi-repo assembly, mounted at /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies)."
   },
   {
-    "id": "swatch-fields-interfaces",
-    "section": "interfaces-data-texts",
-    "title": "Swatch Fields",
-    "href": "swatch-fields/",
-    "order": 60,
-    "weight": 2,
-    "status": true,
-    "kind": "web-experiment",
-    "tags": [
-      "materials",
-      "swatches",
-      "colour",
-      "dye"
-    ],
-    "location": "assembly",
-    "subtitle": "An atlas of material swatches and colour fields -- dye and colour work, cross-listed from Machines & Makings.",
-    "notes": "Intersectional entry (2026-08-24) -- same repo as machines-makings's swatch-fields, cross-listed here since it's equally a colour/data-texture piece. Two separate TSV rows, two islands, deliberate."
-  },
-  {
     "id": "fab-academy",
     "section": "fab",
-    "title": "Fab Academy",
-    "href": "https://fabacademy.org/",
+    "title": "Fabacademy",
+    "href": "https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/",
     "order": 10,
     "weight": 3,
     "status": true,
@@ -828,10 +836,10 @@ export const entries = [
     "id": "fabricademy",
     "section": "fab",
     "title": "Fabricademy",
-    "href": "",
+    "href": "https://class.textile-academy.org/2026/jesal-mehta/",
     "order": 20,
     "weight": 3,
-    "status": "wip",
+    "status": true,
     "kind": "program-link",
     "tags": [
       "fabricademy"
@@ -843,11 +851,11 @@ export const entries = [
   {
     "id": "fab-23",
     "section": "fab",
-    "title": "Fab 23",
-    "href": "https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/",
+    "title": "Fab 23 Bhutan",
+    "href": "",
     "order": 30,
     "weight": 3,
-    "status": true,
+    "status": false,
     "kind": "reflection",
     "tags": [
       "fabacademy",
@@ -860,11 +868,11 @@ export const entries = [
   {
     "id": "fab-26",
     "section": "fab",
-    "title": "Fab 26",
-    "href": "https://class.textile-academy.org/2026/jesal-mehta/",
+    "title": "Fab 26 Czechia",
+    "href": "",
     "order": 40,
     "weight": 3,
-    "status": true,
+    "status": false,
     "kind": "reflection",
     "tags": [
       "fabricademy",

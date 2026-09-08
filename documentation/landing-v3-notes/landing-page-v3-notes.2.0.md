@@ -1442,6 +1442,26 @@ not a finished visual pass. In priority order:
     tuning tool (see its own doc comment), not part of the page design
     being reviewed -- scroll or resize the browser window to see anything
     it's covering, or collapse/remove it once tuning is done.
+11. **Entry-circle final size doesn't reliably reflect weight -- growth,
+    not weight, dominates.** `packRadiusFor()` only uses an entry's weight
+    to set its *starting* radius (`minRadius` (12) plus up to
+    `maxWeightExtra` (14), sqrt-scaled against the *global* min/max weight
+    across every entry+extra on the whole map) -- at most a 12-26px
+    spread. `growCircles()`'s actual growth loop afterward is weight-blind:
+    every circle grows by the same fixed `growStep` (1px) per iteration,
+    for up to `maxIterations` (4000), stopping only on its own section's
+    `maxRadius` cap, the canvas edge, or a neighbour collision -- so final
+    size ends up dominated by how much open space happened to sit near
+    that entry's randomly scattered seed point and how crowded its own
+    section is, not by weight. Confirmed directly against real content
+    (2026-09-08): all four `fab` entries share an identical weight (3) yet
+    render at visibly different sizes purely from scatter/collision luck;
+    `tracery-bots` (weight 2) renders larger than `vera-molnar` (weight 4)
+    despite the lower weight, since the two compete for space in different
+    sections. Not a bug -- confirmed acceptable for now in the same
+    session that found it -- but a real gap between what `weight` implies
+    and what it actually controls. See "Next steps" for the proposed fix
+    direction.
 
 ## About Me: what was going on, and what was done about it
 
@@ -1508,6 +1528,20 @@ combination produces a bad shape that a weight floor doesn't fix.
   to also capture the rendered header) but not a priority; revisit once
   the header stabilizes.
 - Font-size-from-radius + truncation for circle labels (limitation #1).
+- **Make circle growth itself weight-aware, not just the starting radius**
+  (limitation #11). Direct instruction (2026-09-08): a low-weight circle
+  should *grow slower* than a high-weight one, so relative final sizes
+  emerge naturally from the growth race over `maxIterations`, rather than
+  clamping any circle to a hard weight-derived size ceiling. Concretely:
+  replace `growCircles()`'s single shared `growStep` with a per-item
+  value scaled by that item's own weight (e.g.
+  `growStep * (item.weight / referenceWeight)`), leaving the
+  bounds/collision/`maxRadius` blocking logic exactly as-is per circle --
+  only the *rate* differs, not a ceiling. Untried; needs a real reference
+  weight to scale against (global min/max, same convention
+  `packRadiusFor()` already uses, is the obvious first candidate) and a
+  check that a very-low-weight circle's growStep doesn't round to
+  effectively zero and stall it at `minRadius` forever.
 - If cross-region overlap is ever observed against a different content
   mix: re-validate (or re-clamp) `centerPointsInRect()`'s output against
   `allPlacedPoints` rather than trusting the pre-centering scatter check
