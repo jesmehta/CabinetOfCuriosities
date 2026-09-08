@@ -140,3 +140,29 @@ deliberately not a general allowlist mechanism, which this file's own
 `#126` build already rejected on purpose (see *"I will manually
 filter/ignore them"* above). See `SITEMAP.md`'s `v1.4` changelog entry
 for the mechanism.
+
+## "there are entries that are actually mates to each other" (2026-09-08)
+
+Same session, a follow-up question about the Flags list — not asking
+for a fix yet, asking how the matching actually works:
+
+> **how are entries in nav and the tsv match for the content inventory ?
+> There are entries that are actually mates to each other but are
+> currently listed as "A in Nav has not TSV entry" but there is also an
+> "A' in TSV has not Nav entry"**
+
+Investigated by reading `path_key()` directly rather than describing it
+from memory (per `DOCUMENTATION-GUIDE.md`'s "verify before you write it
+down"), then cross-checking specific flagged pairs against `mkdocs.yml`
+and `cabinet-entries.tsv` to confirm the theory, not just assert it:
+five pages were genuinely the same page, split across both flag lists
+only because `mkdocs.yml` writes them as absolute URLs and the TSV
+writes them as relative hrefs, and `path_key()` never reconciled the two
+forms. Findings reported back with the five confirmed pairs and a
+proposed fix before touching any code — "want me to make that fix now,
+or log it as a ToDo?" — answered directly:
+
+> **do make that fix now**
+
+Implemented as described; see `SITEMAP.md`'s `v1.5` changelog entry for
+the mechanism.

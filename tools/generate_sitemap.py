@@ -89,6 +89,12 @@ WORLDS = [
     },
 ]
 
+# This repo's own site -- pulled out of WORLDS[0] so path_key() (below) can
+# recognize an absolute https://cabinetofcuriosities.in/... nav target as
+# "this site" and compare it against a TSV row's relative href for the same
+# page, rather than the two forms silently never matching.
+CABINET_BASE_URL = WORLDS[0]["base_url"]
+
 
 def fetch_tsv(repo, branch, path):
     url = RAW.format(repo=repo, branch=branch, path=path)
@@ -261,12 +267,20 @@ def parse_mkdocs_nav(mkdocs_path):
 def path_key(raw):
     """Canonical comparison key for a TSV href or a nav target, so
     `about.md` (nav) and `about/` (TSV) land on the same key. Absolute
-    URLs compare literally (minus a trailing slash); relative paths drop
+    URLs compare literally (minus a trailing slash) UNLESS they start with
+    this site's own `CABINET_BASE_URL` -- mkdocs.yml often writes Cabinet's
+    own pages as full absolute URLs while cabinet-entries.tsv writes the
+    same page as a site-relative href, and those need to land on the same
+    key too, not just the `about.md`/`about/` case. A cross-domain absolute
+    URL (Bookshelf, fffx, an external site) has no relative TSV form to
+    reconcile against, so it still compares literally. Relative paths drop
     a `.md` suffix / trailing `/index`, then compare case-insensitively."""
     s = (raw or "").strip()
     if not s:
         return None
-    if s.startswith("http://") or s.startswith("https://"):
+    if s.startswith(CABINET_BASE_URL):
+        s = s[len(CABINET_BASE_URL):]
+    elif s.startswith("http://") or s.startswith("https://"):
         return s.rstrip("/")
     s = s.strip("/")
     if s.endswith(".md"):

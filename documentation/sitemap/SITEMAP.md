@@ -59,8 +59,15 @@ uncommitted local edits, not just what's already pushed.
 since this script only ever needs "does this target have a matching TSV
 row," never the nav's visual nesting. `path_key()` is the normalizer
 that makes a TSV `href` (`about/`) and a nav `target` (`about.md`)
-compare equal: absolute URLs compare literally (minus a trailing
-slash); relative paths get `.md`/`/index` stripped and are lower-cased.
+compare equal: relative paths get `.md`/`/index` stripped and are
+lower-cased; an absolute URL compares literally (minus a trailing
+slash) UNLESS it starts with `CABINET_BASE_URL`
+(`https://cabinetofcuriosities.in/`), in which case that prefix is
+stripped first and the remainder normalized the same way a relative
+path is — `mkdocs.yml` often writes Cabinet's own pages as full
+absolute URLs while `cabinet-entries.tsv` writes the same page as a
+site-relative href, and without this the two forms never produced the
+same key even for the identical page (fixed `v1.5`, see Changelog).
 `build_content_inventory()` cross-references every section/entry row's
 `href` against the nav-leaf set via that key, and separately tracks
 which `path_key` each TSV row claims, to catch duplicates.
@@ -193,6 +200,32 @@ above), so reading it is the actual review step, not optional.
   repo's own real `mkdocs.yml`, which has never hit this case.
 
 ## Changelog
+
+### v1.5 — `path_key()` now reconciles Cabinet's own absolute nav URLs against relative TSV hrefs (2026-09-08)
+
+Direct question from the user after reading a Flags list: *"there are
+entries that are actually mates to each other but are currently listed
+as 'A in Nav has [no] TSV entry' but there is also an 'A' in TSV has [no]
+Nav entry."* Confirmed against the code and the actual flagged pairs —
+`mkdocs.yml` writes several of Cabinet's own pages as full absolute URLs
+(`https://cabinetofcuriosities.in/teaching/working-with-ai/`) while
+`cabinet-entries.tsv` writes the identical page as a site-relative href
+(`teaching/working-with-ai/`); `path_key()` compared absolute URLs
+literally and relative paths after normalization, with no step ever
+converting one form into the other, so five genuinely-identical pages
+(SSD Creative Coding, Working with AI, Prompt Generator, Oblique
+Strategies, Swatch Fields) were silently split across both Flags lists
+instead of matching. Fixed by pulling `WORLDS[0]["base_url"]` out as
+`CABINET_BASE_URL` and having `path_key()` strip that prefix off an
+absolute target before applying the normal relative-path normalization
+— a cross-domain absolute URL (Bookshelf, fffx, `fabacademy.org`, etc.)
+still compares literally, since those have no relative TSV form to
+reconcile against. Verified against a scratch regeneration (discarded,
+not committed — see `ADMIN-CONTROLS.md`'s own precedent for treating a
+verification-only regen as no different from a smoke test) confirming
+all five pairs resolve to a real `Y (...)` nav match instead of a
+suppressed flag, and that unrelated Flags entries were untouched. See
+`conversation-sitemap.md` for the exchange.
 
 ### v1.4 — "TSV row with no nav entry" no longer flags a `status: false` row (2026-09-08)
 
