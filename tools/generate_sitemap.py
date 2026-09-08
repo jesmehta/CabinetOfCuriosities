@@ -318,7 +318,9 @@ def build_content_inventory():
         "deliberate cross-listings (e.g. Swatch Fields) and map-only entries "
         "with no nav entry by design (e.g. assembled Teaching entries) will "
         "show up here too. Skim and dismiss the ones that are fine rather "
-        "than treating every flag as a bug."
+        "than treating every flag as a bug. One exception is filtered out "
+        "automatically: a TSV row with `status` false is expected to have no "
+        "nav entry (it's not live), so that combination is never flagged."
     )
     out.append("")
 
@@ -378,6 +380,8 @@ def build_content_inventory():
             href = row.get("href")
             if not href:
                 continue
+            if normalize_status(row.get("status")) == "hidden":
+                continue  # status false -- not live, so no nav entry is expected, not a flag
             key = path_key(href)
             if key and key not in nav_by_key:
                 flags.append(

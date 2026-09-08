@@ -98,21 +98,28 @@ than silently carried forward as if it did something.
 matching — it can detect *that* something doesn't line up, never *why*:
 
 - **TSV row with no nav entry** — a `content/cabinet-*.tsv` row has an
-  `href` that no `mkdocs.yml` nav leaf points at.
+  `href` that no `mkdocs.yml` nav leaf points at, EXCEPT a row whose own
+  `status` is `false` — not live, so having no nav entry is expected,
+  not a flag (fixed `v1.4`, see Changelog).
 - **Nav entry with no TSV row** — the reverse: a nav leaf's target
   matches no TSV row's `href`.
 - **Duplicate href** — two or more TSV rows (section or entry) resolve
   to the same `path_key`.
 
-**By design, this list is not filtered.** Deliberate cross-listings
+**By design, this list is otherwise unfiltered.** One exception now
+exists (`status: false` rows above); everything else still shows up
+regardless of whether it's a real problem. Deliberate cross-listings
 (Swatch Fields appearing under two sections) and map-only entries with
 no nav entry on purpose (assembled Teaching/Working-with-AI-style
 entries, reached only from the map, never the sidebar) show up here
-exactly the same as a real mistake would. There is no exceptions/
-allowlist mechanism in the script — direct instruction when this was
-built: read the Flags list and dismiss what's fine, rather than have
-the script try to encode judgment it structurally can't make (see
-`conversation-sitemap.md`, *"I will manually filter/ignore them"*).
+exactly the same as a real mistake would. There is still no general
+exceptions/allowlist mechanism in the script — direct instruction when
+this was built: read the Flags list and dismiss what's fine, rather
+than have the script try to encode judgment it structurally can't make
+(see `conversation-sitemap.md`, *"I will manually filter/ignore
+them"*); the `status: false` case above was a deliberate, narrow
+exception to that rule, not a reversal of it — see that file's own
+entry for the reasoning.
 
 ## Files
 
@@ -186,6 +193,23 @@ above), so reading it is the actual review step, not optional.
   repo's own real `mkdocs.yml`, which has never hit this case.
 
 ## Changelog
+
+### v1.4 — "TSV row with no nav entry" no longer flags a `status: false` row (2026-09-08)
+
+Direct request: *"if the TSV says status false, there is no need for a
+Nav entry anyway, so that check is easier."* A row marked `false` isn't
+live, so it having no nav entry is the expected, correct state, not a
+mistake worth surfacing — `build_content_inventory()`'s TSV-side flag
+loop now calls the same `normalize_status()` the Sections/Entries tables
+already use and skips any row that normalizes to `"hidden"` before
+generating that specific flag. Deliberately narrow: only this one flag
+kind is filtered, not a general allowlist mechanism (see "What it
+catches" above) — `status: true`/`wip` rows, and the reverse "Nav entry
+with no TSV row" direction, are unaffected. Verified by regenerating and
+confirming exactly the three previously-flagged `status: false` rows
+(section `interfaces-data-texts`; entries `particle-systems`,
+`100-gradients`) dropped out, nothing else changed. See
+`conversation-sitemap.md` for the exchange.
 
 ### v1.3 — a second claim corrected after the same review (2026-08-30)
 

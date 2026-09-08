@@ -122,3 +122,21 @@ file's own ~137-item sequence should also split into separate files —
 raised in passing, not decided. (The reorg and launch-milestone threads
 from this same overall working stretch live in
 `conversation-backend-and-deploy.md`, not here.)
+
+## "there is no need for a Nav entry anyway, so that check is easier" (2026-09-08)
+
+A later session, reading a fresh Flags list, pushed back on one specific
+flag kind rather than the mechanism as a whole:
+
+> **Also, make sure that if the TSV says status false, there is no need
+> for a Nav entry anyway, so that check is easier**
+
+Straightforward once stated: a `status: false` row isn't live, so it
+having no nav entry is the correct, expected state, not a mistake worth
+surfacing in the Flags list at all. Implemented as a narrow, targeted
+skip in `build_content_inventory()`'s TSV-side flag loop (reusing
+`normalize_status()`, already used elsewhere in the same function) —
+deliberately not a general allowlist mechanism, which this file's own
+`#126` build already rejected on purpose (see *"I will manually
+filter/ignore them"* above). See `SITEMAP.md`'s `v1.4` changelog entry
+for the mechanism.
