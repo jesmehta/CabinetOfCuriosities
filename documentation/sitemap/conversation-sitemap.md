@@ -166,3 +166,37 @@ or log it as a ToDo?" — answered directly:
 
 Implemented as described; see `SITEMAP.md`'s `v1.5` changelog entry for
 the mechanism.
+
+## "why am I getting these warnings" — bare nav leaves (2026-09-08)
+
+Same session, later on, after regenerating the inventory for an
+unrelated reason (a `mkdocs serve` debugging session, see
+`conversation-backend-and-deploy.md`) surfaced flags that looked wrong:
+
+> **TSV row with no nav entry: section web-tech (webtech/)**
+> **TSV row with no nav entry: section writings (https://bookshelf.cabinetofcuriosities.in/my-writings/)**
+> **TSV row with no nav entry: section teaching (teaching/)**
+> **TSV row with no nav entry: entry students-emergent-technology (teaching/#emergent-technology)**
+>
+> **Why am I getting these warning in the content inventory ?**
+
+Investigated all four individually rather than assuming they were the
+same bug: `teaching`/`web-tech` turned out to be real false positives
+(`mkdocs.yml` deliberately writes both sections' first nav leaf bare, no
+`Label :` prefix, so `mkdocs-section-index` can merge it into the
+clickable heading — `NAV_LEAF_RE` structurally can't match a line with
+no colon in it at all, so the target was invisible to the script). The
+other two were correctly-behaving, already-understood cases: `writings`
+because its landing-page nav line had just been removed by direct
+choice earlier in the same session (see
+`conversation-backend-and-deploy.md`), and the Teaching entry because
+its href is a same-page anchor (`#emergent-technology`), which
+`path_key()` was never going to match against a real nav target — the
+script's own docstring already calls this shape of entry out as
+expected. Findings reported back distinguishing the real bug from the
+two non-bugs before touching code; confirmed directly:
+
+> **yes fix the regex, do please**
+
+Implemented as `NAV_BARE_RE`; see `SITEMAP.md`'s `v1.6` changelog entry
+for the mechanism.

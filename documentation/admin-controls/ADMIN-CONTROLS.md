@@ -216,6 +216,24 @@ run-admin-controls.bat              -- double-click launcher for tools/admin-con
 
 ## Changelog
 
+### v1.7 — Content Inventory viewer widened to full window width (2026-09-08)
+
+Direct follow-up the same day `v1.6` shipped: "dont limit table width -
+let it stretch to the full width of the window." Traced to `home.css`'s
+`.md-main{ max-width:900px; }` — the class `content-inventory.html`'s
+`<main>` carries specifically for this viewer (checked first: `.md-main`/
+`.md-view`/`.md-table` are used only by this one page, not shared with
+the other admin-controls cards, so widening them couldn't affect
+anything else). First attempt only deleted the `max-width` declaration
+from `.md-main` itself — reported as still constrained, because a
+second, more general rule already in `home.css` for every OTHER admin
+page's bare `<main>` tag (`main{ max-width:980px; }`) was still in
+scope and, with `.md-main`'s own override gone, silently took over
+instead of the page actually going unconstrained. Fixed by setting
+`.md-main{ max-width:none; }` explicitly rather than removing the
+property, so the class rule's higher specificity beats the tag rule on
+purpose instead of by accident.
+
 ### v1.6 — Content Inventory local-live viewer added (2026-09-08)
 
 Direct question: "I'd like to see Content Inventory directly from the

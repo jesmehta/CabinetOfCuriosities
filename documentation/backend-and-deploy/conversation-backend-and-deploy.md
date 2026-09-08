@@ -1680,3 +1680,73 @@ with the six reserved sections built out as stubs; and this closing
 round confirmed the underscore convention's broader intent and that
 grouping different folders under one frontend section was already
 supported, needing no code change at all.
+
+# Part 7 — `mkdocs serve` wouldn't start, and what that turned up
+
+Opened with a plain diagnostic question, no theory attached:
+
+> **why is mkdocs not serving currently ?**
+
+then narrowed to the right repo:
+
+> **we are talking about the Cabinet repo,**
+
+Investigated rather than guessed: actually ran `mkdocs serve` and read
+its own traceback instead of assuming a config problem. Root cause was
+mundane — `docs/fab/fab23-bhutan.md` and `fab25-czechia.md` were both
+untracked, 0-byte files, and MkDocs errors out with "Document is empty"
+partway through the build, before it ever binds a port. Fixed with
+placeholder content matching the site's own "coming soon" stub
+convention, confirmed by re-running `mkdocs serve` to a clean bind.
+
+While that build ran, a startup banner appeared claiming MkDocs'
+"owner has completely abandoned maintenance" and pushing
+`pip install properdocs` as "a continuation of MkDocs 1.x." Flagged
+directly rather than acted on, since the messaging pattern (scare
+language + push to install a competing package) reads as a supply-chain
+red flag on its face. The user's own reaction confirmed this wasn't
+expected or already known:
+
+> **2 warning banner - I dont have any of that**
+
+Traced to ground truth rather than left as suspicion: read
+`properdocs`'s actual installed source. `replacement_warning.py` only
+prints the banner (confirmed nothing else ran here); a separate,
+unused-so-far `replacement.py` installs a `sys.meta_path` import hook
+that would silently redirect every `mkdocs.*` import to `properdocs.*`
+if ever triggered. Confirmed via PyPI's own per-version `requires_dist`
+that `mkdocs-section-index` only started depending on `properdocs` as of
+its `0.3.11` release — `0.3.10` is clean. Options laid out before
+touching anything (pin the plugin; just uninstall `properdocs`;
+suppress the banner via env var; user handles it separately); answered:
+
+> **I am ok with an older version of section-index, but I am not seeing
+> this banner anywhere - where is it ?**
+
+That question caught something real: the diagnosis so far had used
+`python -m mkdocs` (`Python314`, Roaming), but the user's actual
+workflow runs `run Mkdocs serve.bat`, which resolves `mkdocs` on PATH to
+a completely different install (`Python313`,
+`AppData\Local\Programs\Python\Python313`). Checked both environments
+directly rather than assumed they matched — both had `properdocs`
+installed, and running the *actual* `mkdocs.exe` the `.bat` uses
+confirmed the banner prints there too, just easy to miss above the
+build's own scrolling `INFO` lines. Pinned `mkdocs-section-index==0.3.10`
+and uninstalled `properdocs` in both environments. Logged as
+`three-world-launch-phases-ToDo.md` `#142` (the pin, plus the still-open,
+never-actually-investigated question of whether mkdocs-material's own
+*separate*, genuine MkDocs-2.0 warning is a real near-term risk to this
+site's plugin stack).
+
+Writing up this fix afterward, while drafting `BACKEND-AND-DEPLOY.md`'s
+own entry, surfaced a gap the mitigation itself had missed: it only
+touched the two local Python environments, not the repo. Checked
+`requirements.txt` directly — correcting an assumption stated earlier in
+this same session that no such file existed — and found
+`mkdocs-section-index` listed there unpinned, in all three worlds' own
+`requirements.txt` (Cabinet/fffx/Bookshelf, all three carrying the same
+plugin per the `mkdocs-section-index` plugin entry above). A bare
+`pip install -r requirements.txt` on any of the three could have
+quietly reintroduced `properdocs` regardless of what was pinned locally.
+Pinned `mkdocs-section-index==0.3.10` with an inline comment explaining
+why, in all three repos' `requirements.txt`, not just Cabinet's.

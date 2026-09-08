@@ -2067,6 +2067,53 @@ section to empty out.*
       template, with its own Cloudflare Web Analytics token if tracked as
       a distinct property, rather than inheriting Cabinet's mkdocs
       override.
+- [ ] **#142** Investigate the actual state of MkDocs's maintenance/"MkDocs
+      2.0" situation -- surfaced 2026-09-08 while debugging `mkdocs serve`
+      not starting (root cause of that was unrelated: two 0-byte stub
+      files, `docs/fab/fab23-bhutan.md`/`fab25-czechia.md`, crashed the
+      build with "Document is empty" before it could bind a port -- fixed
+      by adding placeholder content). While diagnosing, a startup banner
+      appeared warning that "the owner of MkDocs has completely abandoned
+      maintenance" and pushing a switch to a package called `properdocs`
+      ("a continuation of MkDocs 1.x... `pip install properdocs`"). Traced
+      the banner to its actual source: `mkdocs-section-index` (the real,
+      widely-used section-index plugin, author Oleh Prypin) started
+      depending on `properdocs>=1.6.5` as of its own 0.3.11 release
+      (2026-03-16) -- confirmed via PyPI's per-version `requires_dist`,
+      0.3.10 (2025-04-05) has no such dependency. `properdocs` itself
+      (PyPI, claims author "Tom Christie" -- MkDocs's real original
+      author) ships a `replacement_warning.py` (just prints the banner,
+      confirmed that's all that ran here) alongside a separate, unused-so-
+      far `replacement.py` that installs a `sys.meta_path` import hook
+      silently redirecting every `mkdocs.*` import to `properdocs.*` and
+      overwriting `sys.modules['mkdocs']` outright if ever imported --
+      dormant in this repo's case, nothing currently triggers it, but the
+      combination (aggressive switch-vendors messaging + dormant module-
+      hijack code shipped in the same package) is worth treating with
+      real suspicion rather than acting on the banner's advice.
+      **Mitigation done**: pinned `mkdocs-section-index==0.3.10` and
+      uninstalled `properdocs` in both Python environments this repo's
+      tooling touches (`Python313` -- what `run Mkdocs serve.bat` actually
+      resolves `mkdocs` to on PATH -- and the separate `Python314`/Roaming
+      user-site environment), AND pinned the same version, with an inline
+      comment explaining why, in `requirements.txt` -- corrected same
+      session after first wrongly assuming no such file existed; it does,
+      and `mkdocs-section-index` was listed there unpinned in all three
+      worlds (Cabinet/fffx/Bookshelf), so a bare `pip install -r
+      requirements.txt` on any of them could have silently reintroduced
+      `properdocs` even after the local-environment pin. All three
+      repos' `requirements.txt` now carry the pin, not just this one.
+      Separately, the still-open half: the
+      *genuine* half of the banner -- mkdocs-material's own real, upstream
+      warning (`material/templates/__init__.py`, unrelated to the
+      properdocs banner) about an actual planned MkDocs 2.0 release
+      breaking plugins/themes/config compatibility, linked from
+      `https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/`
+      -- was never actually read or evaluated here; whether MkDocs 2.0 is
+      a real near-term risk to this site's plugin stack (section-index,
+      material theme, whatever else `mkdocs.yml` depends on) is still an
+      open question, not something this session resolved one way or the
+      other.
 - [ ] **#137** Speculative, not on the drawing board yet: a finer tier of
       map entries on the island coast (or similar), a level below the
       existing section-level plaques -- planned very early on in v3's

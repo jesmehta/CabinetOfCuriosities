@@ -74,30 +74,41 @@ which `path_key` each TSV row claims, to catch duplicates.
 
 ### The nav scanner, and why regex instead of YAML
 
-`mkdocs.yml`'s `nav:` block is a flat, consistently-shaped list — every
-real entry reads `- Label : target`. `NAV_LEAF_RE` matches that shape
-directly with a plain line scanner (find the `nav:` line, read until the
-block dedents back to column 0, skip `#`-commented lines, keep any line
-`NAV_LEAF_RE` matches). Chosen over a real YAML parser (PyYAML)
-specifically to avoid adding a `pip install` requirement — the script's
-own docstring has promised "no pip installs needed, standard library
-only" since it was first written for the sitemap half, and a YAML
-dependency would have quietly broken that promise for a piece of
+`mkdocs.yml`'s `nav:` block is a flat, consistently-shaped list — most
+entries read `- Label : target`, matched directly by `NAV_LEAF_RE` with
+a plain line scanner (find the `nav:` line, read until the block
+dedents back to column 0, skip `#`-commented lines, keep any line one of
+the three regexes below matches). Chosen over a real YAML parser
+(PyYAML) specifically to avoid adding a `pip install` requirement — the
+script's own docstring has promised "no pip installs needed, standard
+library only" since it was first written for the sitemap half, and a
+YAML dependency would have quietly broken that promise for a piece of
 functionality that doesn't actually need YAML's full generality.
 
-**`NAV_GROUP_RE` is dead code**, corrected here 2026-08-30 after a
-direct review against the actual file rather than trusting an earlier
-description of it: it's defined (matches a group header, `- Label :`
-with no target) but never referenced anywhere — `parse_mkdocs_nav()`
-only ever calls `NAV_LEAF_RE.match()`. Group headers get skipped anyway,
-but only as an accidental side effect of also failing to match
-`NAV_LEAF_RE` (which requires a non-empty target after the colon) — the
-same fallthrough that silently drops a genuinely malformed line (see
-"Non-goals / known limitations" below), not a distinct, intentional
-check. `NAV_GROUP_RE` should either be wired in (to tell "this is a
-group header, skip on purpose" apart from "this line didn't parse,
-which might be a bug") or removed; left as-is for now, flagged rather
-than silently carried forward as if it did something.
+Three regexes, tried in order, now cover the three shapes a nav line
+actually takes in this file:
+
+1. **`NAV_LEAF_RE`** — `- Label : target`, the common case.
+2. **`NAV_GROUP_RE`** — `- Label :` with nothing after the colon, a
+   section header (`- Compass :`). Matched and explicitly skipped —
+   **wired in `v1.6`** after being dead code (defined, never called)
+   through `v1.2`–`v1.5`; see that changelog entry for why it needed to
+   be distinguished from a line that simply failed to parse.
+3. **`NAV_BARE_RE`** — a bare target with no label at all, e.g.
+   `- teaching/index.md`. Used deliberately for a section's first leaf
+   so `mkdocs-section-index` can merge it into the clickable section
+   heading (`teaching/index.md`, `webtech/index.md` in this repo's own
+   `mkdocs.yml`). `NAV_LEAF_RE` structurally can't match these — a plain
+   relative path has no `:` in it at all — so before `v1.6` these lines
+   just vanished from the leaf list, the exact silent-drop failure mode
+   described below, except it wasn't a hypothetical: `teaching` and
+   `web-tech` were both real, permanent false positives in
+   `CONTENT-INVENTORY.md`'s Flags section for as long as this script
+   existed. **Added in `v1.6`**, using the bare target itself as a
+   stand-in label (there's no real title to use — that lives in the
+   Markdown file's own front matter/H1, which this script never reads)
+   so the Sections/Entries tables print `Y (teaching/index.md)` rather
+   than a bare `Y` or a misleading `Y (None)`.
 
 ## What it catches
 
@@ -184,22 +195,51 @@ above), so reading it is the actual review step, not optional.
   six live HTTP requests (two TSVs x three worlds); no offline mode for
   that half. The Content Inventory half has no such limitation, since it
   reads everything locally.
-- **The nav scanner fails silently on a malformed leaf line**, not
-  visibly — corrected here 2026-08-30, an earlier version of this doc
-  claimed the opposite without checking. `parse_mkdocs_nav()`'s loop has
-  no `else` branch when `NAV_LEAF_RE` fails to match a line inside the
-  `nav:` block: the line is just skipped, with nothing appended and no
-  warning printed, indistinguishable from an intentional group header.
-  The only thing that visibly stops the scan is the block dedenting back
-  to column 0 (a real top-level YAML key ending `nav:` entirely) — a
-  single bad *line* inside an otherwise well-formed block (e.g. a bare
-  `- page.md` with no `Label :` prefix) would simply vanish from the
-  leaf list, silently under-reporting nav coverage in
-  `CONTENT-INVENTORY.md`'s Flags section rather than erroring. No test
-  coverage exists for this scanner beyond exercising it against this
-  repo's own real `mkdocs.yml`, which has never hit this case.
+- **The nav scanner still fails silently on a genuinely malformed leaf
+  line**, not visibly — narrowed in scope by `v1.6`, not eliminated. The
+  three known real shapes (`Label : target`, `Label :` group header,
+  bare `target`) are now all handled; `parse_mkdocs_nav()`'s loop still
+  has no final `else`/warning for a line that matches none of the three,
+  so anything actually malformed (a typo breaking all three shapes at
+  once) still vanishes from the leaf list with no error, silently
+  under-reporting nav coverage in `CONTENT-INVENTORY.md`'s Flags section
+  rather than erroring. The only thing that visibly stops the scan
+  entirely is the block dedenting back to column 0 (a real top-level
+  YAML key ending `nav:` entirely). No test coverage exists for this
+  scanner beyond exercising it against this repo's own real
+  `mkdocs.yml`.
 
 ## Changelog
+
+### v1.6 — bare-target nav leaves (`teaching`/`webtech`) recognized; `NAV_GROUP_RE` wired in (2026-09-08)
+
+Surfaced while investigating two permanent `CONTENT-INVENTORY.md` false
+positives the user asked about directly: *"TSV row with no nav entry:
+section web-tech (webtech/)"* and the same for `teaching`. Root cause,
+confirmed by reading `parse_mkdocs_nav()` against the real
+`mkdocs.yml`: both sections deliberately write their first nav leaf bare
+(`- teaching/index.md`, `- webtech/index.md`, no `Label :` prefix) so
+`mkdocs-section-index` can merge it into the clickable section heading
+— but `NAV_LEAF_RE` requires a literal `:` separating label from target,
+and a plain relative path has no colon in it at all, so the line never
+matched and the target was never added to `nav_by_key`. Both pages are
+real and correctly wired into the site; the script just couldn't see
+them. Fixed by adding `NAV_BARE_RE` (`^\s*-\s+(\S+)\s*$`) as a fallback
+tried after `NAV_LEAF_RE` and `NAV_GROUP_RE` both fail to match, using
+the bare target as its own stand-in label. Wiring in `NAV_GROUP_RE` (previously
+dead code, per `v1.2`) was a necessary side effect, not a separate
+fix: without it, a group header like `- Compass :` — a single
+whitespace-free-after-strip token followed by a bare colon — risked
+being misread by a naive bare-leaf pattern; matching and explicitly
+skipping `NAV_GROUP_RE` first keeps that case correctly excluded rather
+than relying on it happening to fail `NAV_BARE_RE` too. Verified by
+regenerating `CONTENT-INVENTORY.md`: `teaching`/`web-tech` now show
+`Y (teaching/index.md)`/`Y (webtech/index.md)` in the Sections table and
+no longer appear in Flags; the three genuinely-expected remaining flags
+(`writings` — no nav entry by direct choice; the anchor-based
+`students-emergent-technology` entry; cross-world Bookshelf/fffx hrefs)
+are unaffected, confirming the fix is scoped to the actual bug and
+didn't suppress anything real.
 
 ### v1.5 — `path_key()` now reconciles Cabinet's own absolute nav URLs against relative TSV hrefs (2026-09-08)
 

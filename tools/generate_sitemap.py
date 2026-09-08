@@ -231,6 +231,7 @@ def read_local_tsv(path):
 
 NAV_LEAF_RE = re.compile(r"^\s*-\s+(.+?)\s*:\s*(\S+)\s*$")
 NAV_GROUP_RE = re.compile(r"^\s*-\s+(.+?)\s*:\s*$")
+NAV_BARE_RE = re.compile(r"^\s*-\s+(\S+)\s*$")
 
 
 def parse_mkdocs_nav(mkdocs_path):
@@ -238,7 +239,16 @@ def parse_mkdocs_nav(mkdocs_path):
     `nav:` key. Ignores nesting/hierarchy entirely -- this script only
     needs "does this target have a matching TSV row", not the nav's
     visual tree shape. Skips commented-out lines (`#`) and group headers
-    (a label ending in `:` with no target on the same line)."""
+    (a label ending in `:` with no target on the same line).
+
+    A section's first leaf is often written bare -- `- teaching/index.md`,
+    no `Label :` prefix -- specifically so mkdocs-section-index can merge
+    it into the clickable section heading. NAV_LEAF_RE requires a literal
+    `:` separating label from target, so it never matches these (a plain
+    relative path has no colon at all); NAV_BARE_RE catches that case as a
+    fallback, using the target itself as a stand-in label. Tried after
+    NAV_GROUP_RE so an actual group header (a label ending in `:` with no
+    target, e.g. `- Compass :`) is never misread as a bare leaf."""
     with open(mkdocs_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
@@ -261,6 +271,13 @@ def parse_mkdocs_nav(mkdocs_path):
         m = NAV_LEAF_RE.match(line)
         if m:
             leaves.append((m.group(1).strip(), m.group(2).strip()))
+            continue
+        if NAV_GROUP_RE.match(line):
+            continue
+        m = NAV_BARE_RE.match(line)
+        if m:
+            target = m.group(1).strip()
+            leaves.append((target, target))
     return leaves
 
 

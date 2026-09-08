@@ -286,6 +286,37 @@ dependency installed but nothing using it yet -- `mkdocs.yml`'s own
 comment there explains why (unfinished sections are deliberately left
 out of the nav entirely, not linked via a hub page).
 
+**Pinned to `0.3.10`, same day, all three `requirements.txt`
+(Cabinet/fffx/Bookshelf).** Surfaced while debugging an unrelated
+`mkdocs serve` failure: a startup banner appeared claiming "the owner of
+MkDocs has completely abandoned maintenance" and pushing
+`pip install properdocs`. Traced directly rather than trusted: the *real*
+mkdocs-material package does print a genuine, separate warning about an
+actual planned MkDocs 2.0 release
+(`material/templates/__init__.py`, linked from
+`https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/`)
+-- that half is real and unrelated. The "switch to ProperDocs" half is
+not from mkdocs-material at all: `mkdocs-section-index` started
+depending on `properdocs>=1.6.5` as of its own `0.3.11` release
+(2026-03-16, confirmed via PyPI's per-version `requires_dist` --
+`0.3.10`, 2025-04-05, has no such dependency), and `properdocs` itself
+ships `replacement_warning.py` (prints the banner -- confirmed that's
+all that ran here) alongside a separate, dormant `replacement.py` that
+installs a `sys.meta_path` import hook silently redirecting every
+`mkdocs.*` import to `properdocs.*` and overwriting
+`sys.modules['mkdocs']` outright if ever imported. Nothing in this
+repo's toolchain currently imports it, but the combination (aggressive
+switch-vendors messaging bundled with dormant module-hijack code) reads
+as a real supply-chain risk regardless of intent, not something to
+`pip install` on the banner's own advice. Mitigation: pinned
+`mkdocs-section-index==0.3.10` and uninstalled `properdocs` in both
+local Python environments this repo's tooling touches, and pinned the
+same version in all three `requirements.txt` so a future bare
+`pip install -r requirements.txt` can't reintroduce it silently. The
+genuine mkdocs-material 2.0 warning itself was NOT investigated further
+-- whether it's a real near-term risk to this site's plugin stack is
+still open, tracked as `three-world-launch-phases-ToDo.md` `#142`.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
@@ -345,6 +376,17 @@ backend/frontend things are left"):
 Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
+
+### 2026-09-08 — `mkdocs-section-index` pinned to `0.3.10` (Cabinet + fffx + Bookshelf); two empty `docs/fab/*.md` stubs fixed
+
+See "`mkdocs-section-index` plugin" above for the `properdocs`
+supply-chain finding and pin. Unrelated root cause of the `mkdocs serve`
+failure that led to finding it: `docs/fab/fab23-bhutan.md` and
+`fab25-czechia.md` were both untracked, 0-byte files, which crashed the
+build with "Document is empty" before it could bind a port -- fixed with
+placeholder content matching this site's existing "coming soon"
+convention (`makings/drawing-machines.md` etc.). Conversation log: Part 7
+of `conversation-backend-and-deploy.md`.
 
 ### 2026-09-08 — `mkdocs-section-index` plugin (Cabinet + fffx)
 

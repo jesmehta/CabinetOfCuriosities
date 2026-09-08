@@ -125,7 +125,7 @@ main{ padding:26px 32px 90px; max-width:980px; }
 }
 .back-link{ color:var(--accent); }
 header .btn{ height:fit-content; }
-.md-main{ padding:26px 32px 90px; max-width:900px; }
+.md-main{ padding:26px 32px 90px; max-width:none; }
 .md-status{ font-size:12px; color:var(--ink-soft); margin-bottom:12px; min-height:1.4em; }
 .md-status.error{ color:var(--danger); }
 .md-view{ font-size:13px; line-height:1.6; }
