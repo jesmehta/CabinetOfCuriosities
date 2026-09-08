@@ -1,6 +1,6 @@
 # Cabinet Content Inventory
 
-_Auto-generated 2026-09-08 08:32 UTC by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do not hand-edit, re-run the script to refresh._
+_Auto-generated 2026-09-08 08:45 UTC by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do not hand-edit, re-run the script to refresh._
 
 Cabinet-only. Bookshelf/fffx and other assembled content's live status is what [/sitemap/](../docs/compass/sitemap.md) is for -- not duplicated here. `Map` is simply each row's own `status` column (`true`/`wip`/`false`), read directly, not separately computed.
 
@@ -48,7 +48,7 @@ Flags below are mechanical string-matching, not judgement calls -- deliberate cr
 | `dataviz` | data-interactions | Data Visualisations | `--` | false | -- |
 | `writings-misc` | writings | Miscellany | `https://bookshelf.cabinetofcuriosities.in/my-writings/miscellany/` | true | Y (Miscellany) |
 | `dot-mandala-tool` | web-tech | Dot Mandala Tool | `webtech/dotMandalaTool/` | true | Y (Dot Mandala Generator) |
-| `tracery-bots` | web-tech | Tracery Bots | `webtech/traceryBots/` | true | Y (Tracery Bots) |
+| `tracery-bots` | web-tech | Tracery Bots | `webtech/traceryBots/` | true | Y (webtech/traceryBots.md) |
 | `compass-n` | compass | About Me | `compass/about/` | true | Y (About Me) |
 | `compass-e` | compass | Now | `compass/now/` | true | Y (Now) |
 | `compass-s` | compass | Colophon | `compass/colophon/` | true | Y (Colophon) |
@@ -65,8 +65,6 @@ Flags below are mechanical string-matching, not judgement calls -- deliberate cr
 
 ## Flags
 
-- **Nav entry with no TSV row**: "Fab 23 Bhutan" (`fab/fab23-bhutan.md`)
-- **Nav entry with no TSV row**: "Fab 25 Czechia" (`fab/fab25-czechia.md`)
 - **Nav entry with no TSV row**: "Trippy Gourmet" (`https://cabinetofcuriosities.in/tracery-bots/TrippyGourmetBot/`)
 - **Nav entry with no TSV row**: "Mad Solutionist" (`https://cabinetofcuriosities.in/tracery-bots/MadSolutionistBot/`)
 - **Nav entry with no TSV row**: "Notes on this site" (`compass/site_notes.md`)
