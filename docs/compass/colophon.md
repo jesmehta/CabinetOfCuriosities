@@ -33,7 +33,7 @@ After ironing out the content and structural kinks in it, I moved onto FFFX. I b
 
 I spent some time playing with the two existing worlds, bringing them upto shape. I had decided to give them custom landing pages while keeping the mkdocs backends. For the Bookshelf, I initially embedded the html within the index.md, while for Fffx, I began with and independent index.html. Bookshelf went through several look and feel iterations before coming back to the base that Claude had initially proposed and I had discarded. I then reworked it carefully and made it the version seen today.
 
-Given my learnings from the Bookshelf, I created Fffx with a very strong specification, algorithm and steps defined, and outcome very specific. It worked out with very few issues and I spend more time fine-tuning the details.
+Given that the Bookshelf landing page was nice enough to keep but I had had to make some effort in order to make it feel "mine", I created Fffx with a very strong specification, algorithm and steps defined, and outcome very specific, from the very beginning. It worked out with very few issues and I spent more time fine-tuning the details than fighting the system.
 
 As I was migrating old content, adding new stuff, linking to standalone repos that weren't anchored to any place online apart from their own index pages, I learnt a lot about managing data and webpage development.
 
