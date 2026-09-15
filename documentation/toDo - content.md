@@ -64,28 +64,28 @@ whether the page fulfils its role.
 
 ## Essential content — do first
 
-- [ ] **Write the real About page (`#42/#66/#74`).** It is live in the TSV,
-  map, nav, and `docs/compass/about.md`, but the file is only about 30 words of
-  instruction-like placeholder copy and contains spelling errors. Broad source
-  material already exists across Notion pages and several emails, with the CV
-  available separately. Gather those sources, then reassemble and lightly edit
-  them into the public bio and contact context rather than drafting from nothing.
-  Present the CV as readable embedded page content and also provide a
-  downloadable PDF. The public contact method remains undecided: do not expose
-  a direct email address or build a form until the maintainer chooses. This is
-  the clearest remaining
-  launch-essential content gap.
-- [ ] **Write the real Colophon and absorb Site Notes (`#20/#75/#76`).** The
-  route and archive links work,
-  but `docs/compass/colophon.md` still opens with “coming soon.” Explain the
-  three-world system, TSV → generated map → promoted page flow, archived v1/v2,
-  and the role of human direction/AI-assisted implementation at the level the
-  maintainer wants public. The current Site Notes describes v1 from 2024; use it
-  as historical source material, not as a second current page. After completing
-  the Colophon, remove the current Site Notes source/nav entry. The rendered v1
-  page is already preserved at
-  `archived-landing-pages/v1/site_notes/index.html`; an additional Colophon
-  subpage is optional, not required for preservation.
+- [ ] **Publication-clean the substantially completed About page
+  (`#42/#66/#74`).** The page is now a filled ~1,434-word draft with extensive
+  imagery, not a stub. Remaining work:
+  - remove the visible authoring placeholders (`<picture with bookshelves>` and
+    `<to do - ...>`) and resolve the cycling TODO/comment block;
+  - fix every `_images/about/` reference to match the actual case-sensitive
+    `_images/About/` directory before Linux deployment;
+  - audit old project links and proofread the visible copy;
+  - embed the CV as readable content and add the downloadable PDF;
+  - leave contact method undecided until the maintainer chooses.
+- [ ] **Publication-clean the substantially completed Colophon and retire Site
+  Notes (`#20/#75/#76`).** The Colophon is now a filled ~1,932-word account of
+  the site's origins, three worlds, v3 construction, maintenance system, and
+  archives—not a stub. Remaining work:
+  - change `[jesalmehta.com](jesalmehta.com)` to an absolute URL; this is the one
+    warning currently causing `mkdocs build --strict` to fail;
+  - proofread the draft and resolve small wording/typography errors;
+  - confirm all intentionally external-to-MkDocs archive links in the assembled
+    artifact;
+  - remove the current Site Notes source/nav entry after confirming its useful
+    history is represented. The rendered v1 page is already preserved at
+    `archived-landing-pages/v1/site_notes/index.html`.
 - [ ] **Repair Teaching publication according to actual readiness.** The six
   locally unresolved routes are different kinds of work:
   - Creative Coding 2024–25: content is currently on the maintainer's work
@@ -113,9 +113,9 @@ whether the page fulfils its role.
 
 | Area/content | TSV | Landing | MkDocs nav | Content maturity | State and next action |
 |---|---|---|---|---|---|
-| About Me | `compass-n`, live | Yes | Yes | **Stub page, source material exists elsewhere:** 30-word instruction placeholder | **Essential reassembly:** gather and lightly edit the existing biographical/CV/contact material. |
+| About Me | `compass-n`, live | Yes | Yes | **Filled draft:** ~1,434 words and extensive imagery | **Mostly done:** remove authoring markers, fix Linux-sensitive image-path case, proofread/link-check, and add embedded + downloadable CV. |
 | Now | `compass-e`, live | Yes | Yes | **Filled:** substantial generated page | **Live:** maintain through `content/now.tsv`, not by editing generated Markdown. |
-| Colophon | `compass-s`, live | Yes | Yes | **Partial/stub:** working archive links plus placeholder intro | **Essential:** write the actual colophon; the links alone do not fulfil its explanatory role. |
+| Colophon | `compass-s`, live | Yes | Yes | **Filled draft:** ~1,932 words plus archive links | **Mostly done:** fix the malformed external URL, proofread, verify assembled archive links, and retire current Site Notes. |
 | Site map | `compass-w`, live | Yes | Yes | **Intentionally concise index:** generated cross-world routes | **Live:** refresh after sibling TSV changes; distinguish generated flags from editorial decisions. |
 | Site Notes | No TSV row | No compass direction | Yes | **Historical:** substantial account of v1 (2024), not current-site documentation | **Consolidate and retire:** absorb useful material into Colophon, then remove the current page/nav entry. Preservation already exists at `archived-landing-pages/v1/site_notes/index.html`; a Colophon archive subpage is optional. |
 | Teaching hub | Section live | Yes | Clickable header | **Filled hub:** 345 words; six routes unresolved locally, although two targets are confirmed live elsewhere | **Partial wiring/assembly/curation:** retain its useful copy and handle each target according to the readiness list above. It does not need padding merely because it is a hub. |
