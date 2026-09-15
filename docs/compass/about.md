@@ -6,7 +6,7 @@
 rag-tag 60-somethings, homestays, meeting Tibetan-Buddhist traditions and Nepali/
 Jharkhand road crews, the airpump/Samarkand cyclists moment -->
 
-![CCMe](../_images/avatar-photo.jpg) -->
+<!-- ![CCMe](../_images/avatar-photo.jpg) -->
 
 <picture with bookshelves>
 <to do - correct or add links to all the interests>
@@ -25,7 +25,7 @@ I worked in the lighting industry, handling New Product Development for Renata L
 
 ## Teaching
 
-More [here.](../teaching/index.md)
+*More* [*here.*](../teaching/index.md)
 
 I started teaching formally at the NMIMS School of Design, where I was early faculty, setting curriculum, setting up the labs, and leading the lab teams as well as library procurement.
 
@@ -33,7 +33,7 @@ I have since moved to the Somaiya School of Design, where I do all of those thin
 
 Before I started teaching formally, I had been taking workshops and talks for a while - at Makers Asylum and elsewhere - on Design Thinking, on Digital Fabrication, and so on. I was also a mentor for a lot of the Maker's Asylum hackathons and STEAM programs.
 
-Today, beyond the classroom, I mentor at hackathons and speak at Virtual Creative Coding Fest, SECIP, and the Fab conferences.
+Today, beyond the classroom, I mentor hackathons and SECIP, and take workshops at Virtual Creative Coding Fest, and the Fab conferences.
 
 ## My Interests
 
@@ -52,11 +52,14 @@ My interests, personal as well as teaching, range or intersect across the shifti
 ![](../_images/about/p5CollageHz.jpg)  
 
 
-- [**Closing the circle between the material and the digital**](https://jesmehta.github.io/CabinetOfCuriosities/fffx/PackingShapes/) - [**digital fabrication**](https://www.jesalmehta.com/cabinet-of-curiosities/), plotter art <insert images>, 3d scanning, [**interactive electronics**](https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/project_final/)
+- [**Closing the circle between the material and the digital**](https://jesmehta.github.io/CabinetOfCuriosities/fffx/PackingShapes/) - [**digital fabrication**](https://www.jesalmehta.com/cabinet-of-curiosities/), plotter art, 3d scanning, [**interactive electronics**](https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/project_final/)
 
+![](../_images/about/2022_0103_205557.jpg)  
 ![](../_images/about/DigiFabHz.jpg) 
 
-- **Traditional crafts**, and their interaction with modern technology <insert dokra>
+- **Traditional crafts**, and their interaction with modern technology
+
+![dokra art workshop at Devrai, Panchgani](<../_images/about/Dokra Collage.jpg>)
 
 Beyond my obvious affinities with Design and Fabrication, I have also been studying (somewhat sporadically)  
 
@@ -88,7 +91,7 @@ My interest in history also led me down another strange and wonderful route. Sin
 
 Similarly, through the **Somaiya School of Design and the Somaiya Kala Vidya**, I have had the privilege of **meeting and being taught** by the **local craftspeople of Kutch**, part of the **desert region of Western India**. This has led to a renewed interest in the **fabric and textile arts, printing, dyeing, weaving** and so on.  
 
-<picture in kutch>
+![](../_images/about/2024_0227_105736.jpg)
 
 ## Lifelong Learner
 
@@ -132,4 +135,4 @@ I read a lot of science fiction, graphic novels, and poetry. Occasionally, I wri
 
 I am currently rebuilding my rock collection.
 
-<picture of rock>
+![Antimonite, at the Museum of Natural History, Berlin](../_images/about/2025_0716_160448.jpg)
