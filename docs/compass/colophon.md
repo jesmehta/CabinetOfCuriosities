@@ -13,15 +13,17 @@ Late 2024, I got myself a new laptop, and had to setup my systems all over again
 
 That first version can be seen archived here - [v1 - the original MkDocs site](../../archived-landing-pages/v1/)
 
-The first version grew in spurts. When Twitter shutdown the bot API, my Tracery Bots were homeless. At some point in May, during the summer break, I migrated them to Tracery x p5.js projects and then put them up on webpages. August 2025, I was headed to Fab25 in Czechia, and I had seen Walter work with a mini FabLoom during the Fab23 workshops. I had built my own and used it with some Kutchi weaving techniques, and was eager to show that to Walter. So I put up the Loom page, hoping that I was going to bump into Walter or others from the Lima lab who could pass my appreciation along to Walter. In September 2025, I was doing a couple of workshops for CCFest, and I needed a webpage to host resources and instructions, which eventually became the Circle Packing Library.  
+The first version grew in spurts. When Twitter shutdown the bot API, my Tracery Bots were homeless. In May 2025, during the summer break, I migrated them to Tracery x p5.js projects and then put them up on webpages. August 2025, I was headed to Fab25 in Czechia, and I had seen Walter work with a mini FabLoom during the Fab23 workshops. I had built my own and used it with some Kutchi weaving techniques, and was eager to show it off and start some discussions through it. So I put up the Loom page, hoping that I was going to bump into Walter or others from the Lima lab who could pass my appreciation along. In September 2025, I was doing a couple of workshops for CCFest, and I needed a webpage to host resources and instructions, which eventually became the Circle Packing Library.  
 
-With the coming of AI, I had jumped on the bandwagon. I had initially used ChatGPT, probably 3.5 or so, to structure the Tracery Bots generator pages. I continued to use ChatGPT at work. However, the pages were lying fairly stagnant since Sep 2025.  
-
-Work was keeping me occupied, and along with doing the Fabricademy diploma program on the side, my plate was full, and then some. As the Fabricademy program wound down and the summer break of 2026 arrived, I was playing around with Claude as well, alongwith ChatGPT.
+With the coming of AI, I had jumped on the bandwagon. I had initially used early models of ChatGPT to write HTML for the Tracery Bots generator pages; and I continued to use it at work for all sorts of things, especially writing scripts. Work was keeping me occupied, and along with doing the Fabricademy diploma program on the side, my plate was full, and then some. The webpages remained stagnant starting September 2025. As the Fabricademy program wound down and the summer of 2026 arrived, I was playing around with Claude as well, alongwith ChatGPT.
 
 I attended Dr Kurush Dalal and the GyanFactory's 5 day workshop on Science Fiction sometime in mid-May. Day 2 was a session on the Golden Age of Scifi, and I took down a crazy amount of notes, and decided I needed to make it all into a coherent reading list. One thing led to another, and before I realised what had happened, I had used the tools at my disposal to assemble the list, gather more data on the authors and books mentioned, and turned it into a timeline. Then the timeline turned into other visualisations, and the page turned into a set of tabs with a fairly comprehensive reading list, filters and groups, magazine data, and so on.
 
-This needed a home, and needed to be shared. All at once, I had an idea for a triptych of pages. The Cabinet of Curiosities, which while it already existed, would certainly need to be revamped. In a similar vein, The Bookshelf of Curiosities, where the SciFi would find a home, with dreams of more writings and visualisations on comics, other authors, and all things orbiting my love of reading would find a home. And finally, Form follows f(x) - a name I had initially created as a hashtag on instagram for my generative art and creative coding. I had always though it was a particulary clever play, intersecting the Design adage, "Form follows Function" with f(x), a function of math which is central to my generative art.
+This needed to be shared, and so needed a home.  
+
+All at once, I had an idea for a triptych of pages. The Cabinet of Curiosities, which while it already existed, would certainly need to be revamped. In a similar vein, The Bookshelf of Curiosities, where the SciFi would find a home, with dreams of more writings and visualisations on comics, other authors, and all things orbiting my love of reading would be collected. And finally, Form follows f(x) - a name I had initially created as a hashtag on instagram for my generative art and creative coding. I had always though it was a particulary clever play, intersecting the Design adage, "Form follows Function" with f(x), a function of math which is central to my generative art.
+
+
 
 I dumped the whole vision into ChatGPT, and brainstormed with it on the structure and content bifurcation, and so much more. One good advice that came out of this was to start with the simplest first, and work out the kinks in that, before moving onto the next higher complexity. This was very useful, and I started with the least complex (and most AI) page - The Bookshelf. After ironing out the content and structural kinks in it, I moved onto FFFX. I brought over all the learnings and design decisions from the Bookshelf, but with the added complexity of a generative landing page that created it's layout on the spot when it is loaded. Once that was done, I spent some time adding and moving entries from the old Cabinet to the two new worlds I had built.
 
@@ -33,7 +35,9 @@ Given my learnings from the Bookshelf, I created Fffx with a very strong specifi
 
 As I was migrating old content, adding new stuff, linking to standalone repos that weren't anchored to any place online apart from their own index pages, I learnt a lot about managing data and webpage development.
 
-Finally, as the summer break started, I decided to tackle the Cabinet redesign itself.
+
+
+Finally, as the summer break of June 2026 arrived, I decided to tackle the Cabinet redesign itself.
 
 I had always wanted a Medieval map look, but it had been a struggle to get Claude to create a map that looked good. I was used to generating noise based topology, and I threw everything I had it, specifying outcomes, specifying steps, cajoling it, being curt, to no avail.
 
