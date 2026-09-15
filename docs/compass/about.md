@@ -2,6 +2,10 @@
 
 <!-- List my extensive list of wide ranging interests from geogrpahy and the tibetan plateau to behavioural economics to emerging technologies to object history and other such.
 
+<!-- TODO: add cycling narrative — unsupported Kulu-Leh trips since 2013 with the 
+rag-tag 60-somethings, homestays, meeting Tibetan-Buddhist traditions and Nepali/
+Jharkhand road crews, the airpump/Samarkand cyclists moment -->
+
 ![CCMe](../_images/avatar-photo.jpg) -->
 
 <picture with bookshelves>
@@ -29,6 +33,8 @@ I have since moved to the Somaiya School of Design, where I do all of those thin
 
 Before I started teaching formally, I had been taking workshops and talks for a while - at Makers Asylum and elsewhere - on Design Thinking, on Digital Fabrication, and so on. I was also a mentor for a lot of the Maker's Asylum hackathons and STEAM programs.
 
+Today, beyond the classroom, I mentor at hackathons and speak at Virtual Creative Coding Fest, SECIP, and the Fab conferences.
+
 ## My Interests
 
 <!-- ![](../_images/about/p5Collage.jpg){width="300" align="right"}   -->
@@ -37,11 +43,9 @@ Before I started teaching formally, I had been taking workshops and talks for a 
 
 My interests, personal as well as teaching, range or intersect across the shifting sands of :  
 
-
 - **Material play** - making, building with [**paper**](https://www.jesalmehta.com/explorations/folding-curves-to-infinity/), clay, [**wood**](https://www.jesalmehta.com/cabinet-of-curiosities/tardis-bookshelf), concrete, resin, glass and metal, and craftsmanship of any kind
 
 ![](../_images/about/MaterialHz.jpg)  
-
 
 - **Digital play** - [**procedural generation**](https://www.behance.net/jesmehta#), [**quirky webpages**](https://jesmehta.github.io/DotMandalaGenerator/), [**bots**](https://jesmehta.github.io/CabinetOfCuriosities/traceryBots/), [**data art**](https://www.jesalmehta.com/explorations/coding-a-population-density-visual/), new media
 
