@@ -118,12 +118,22 @@ and phase placement, this is just the current ordering of attention.
    `pasted-config.json` instead of the button just writing it) -- direct
    request, 2026-09-08, flagged for priority investigation. Find the
    earlier conversation this may already have been weighed in before
-   assuming it's unaddressed.
+   assuming it's unaddressed. **Still open, 2026-09-16** -- the only item
+   in this working set with no progress since 2026-08-30.
+
+**This working set is now resolved or annotated as of 2026-09-16** --
+items 1-5 above are done or explicitly marked partial; `#141` is the one
+genuinely untouched item. A new "immediate priorities" set hasn't been
+set since; treat the phase-ordered items below as the working list until
+one is.
 
 Backburner, deliberately not urgent -- direct instruction, 2026-08-30:
 
 - **`#66`/`#42`** (About Me real content) -- low priority, to be written
   opportunistically alongside other work rather than blocked on.
+  **Substantially advanced, 2026-09-16** -- see `#66`'s own entry in
+  Phase 1: About is now a filled ~1,434-word draft, not the 30-word stub
+  this was written against.
 - **`#37`/`#39`** (map label overflow, desktop/mobile QA) -- backburner
   for now.
 
@@ -942,6 +952,8 @@ own numbering note near the top) -- a move, not a re-add.
       byproduct of checking what the panel actually controls today.
 
 </details>
+
+<details>
 <summary>#62</summary>
 
 - [x] **#62** Rework `archived-landing-pages/index.html` (the archive landing
@@ -1180,6 +1192,12 @@ marked as such.*
       titles). Bookshelf/FFFX -> Cabinet not checked -- no local access
       to either repo from this environment, would need fetching their
       live pages and grepping for a link back.
+      **Now checked, 2026-09-16** (all three repos are in this workspace):
+      neither `TheBookshelfOfCuriosities` nor `form-follows-fx` link back to
+      `cabinetofcuriosities.in` anywhere in their `mkdocs.yml` nav or
+      `docs/` content -- grepped both repos directly, zero hits. Confirmed
+      gap, not just an unchecked one; real work for `#116`
+      ("improve cross-linking and discovery").
 
 <details>
 <summary>#56</summary>
@@ -1218,6 +1236,16 @@ marked as such.*
       Needs the user's own GitHub Actions tab to actually close (any
       past failed run, confirm the site didn't change), or
       `gh`/API access if that ever becomes available here.
+      **Partial real-world evidence, 2026-09-16**: no `gh` CLI in this
+      environment still, but `api.github.com` is reachable directly via
+      plain `curl` (no auth needed for a public repo's run list) -- used
+      this session to confirm two real `build`-job failures (`427687c`,
+      `8e7e502`, both from this same day) show `conclusion: failure` with
+      no matching `deploy` run, exactly as the structural argument
+      predicts. Still not a full close: the live site's served content
+      wasn't diffed before/after either failure window to directly confirm
+      it stayed on the prior successful deploy, only the run-level
+      structure was checked.
 
 <details>
 <summary>#59</summary>
@@ -1243,6 +1271,10 @@ marked as such.*
 
 - [ ] **#66** About needs to be written properly -- currently 30 words of
       placeholder text (`docs/about.md`). Part of #42.
+      **Substantially advanced, 2026-09-16**: now a filled ~1,434-word
+      draft with extensive imagery at `docs/compass/about.md` (moved under
+      `compass/` since this was written). See `#74`'s own note above for
+      what's left (image placeholders, embedded/downloadable CV).
 
 <details>
 <summary>#67</summary>
@@ -1265,6 +1297,12 @@ marked as such.*
       `fffx/formFollowsFx.md` (file is actually `fffx/fffx.md`, a 404 in
       production) -- fixed same day since it was a one-line typo, not a
       content decision.
+      **This snapshot is now three weeks stale, 2026-09-16** -- rather than
+      re-taking every word count here, see `toDo - content.md`'s current
+      surface matrix for the up-to-date state (About and Colophon are both
+      now filled; `fffx/PackingShapes.md` is deleted and redirected to
+      FFFX, see `#85`/`#79` above); that file is the one being kept current
+      going forward, not this historical entry.
 
 </details>
 
@@ -1286,6 +1324,10 @@ marked as such.*
       effect on the live site because of this, only the hardcoded
       `.md-header`/`.md-tabs` background ever visibly themed. Still
       needs a second, bolder pass -- not done.
+
+<details>
+<summary>#69</summary>
+
 - [x] **#69** `wild-wild-web` added to `cabinet-sections.tsv` (2026-08-24,
       `status: false` so it doesn't render) -- has an `mkdocs.yml` nav
       section already (TraceryBots, Dot Mandala Generator, Twine,
@@ -1312,6 +1354,8 @@ marked as such.*
       umbrella listing all of them. `content/cabinet-sections.tsv`'s own
       `web-tech` note, which had drifted from this correction, was fixed to
       match on the same day.
+
+</details>
 
 <details>
 <summary>#70</summary>
@@ -1396,11 +1440,18 @@ marked as such.*
       promoted copies (`docs/index.html`,
       `docs/assets/css/cabinet-v3-style.css`) were hand-promoted the same
       way as the rest of that pipeline -- see `FILE-MANIFEST.md`'s
-      `docs/index.html` entry; there's still no automated promotion
-      script, so this needs re-promoting by hand after any future
-      `landing-v3/index.template.html` or
-      `landing-v3/shared/cabinet-v3-style.css` edit, same as before this
-      change.
+      `docs/index.html` entry; at the time there was no automated
+      promotion script, so this needed re-promoting by hand after any
+      future `landing-v3/index.template.html` or
+      `landing-v3/shared/cabinet-v3-style.css` edit.
+      **Stale as of `landing-v3/promote.mjs`** (added 2026-08-30, same
+      day, per `#138`'s own reference to it): it now copies
+      `landing-v3/shared/` into `docs/_assets/backend/{js,css}/`, promotes
+      `index.html` with the dev-relative asset paths rewritten, and
+      re-renders the result in headless Chromium to catch a broken
+      promotion before deploy -- manual re-promotion is no longer the only
+      path, though `promote.mjs` is still a deliberate manual "ship this"
+      step, not run automatically by CI.
 
 </details>
 
@@ -1530,17 +1581,45 @@ system easy to maintain. Threshold: the sites are not just launched;
 they are maintainable, documented and structurally complete enough for
 routine publishing.*
 
-- [ ] **#74** Add/finish fuller About/site-context pages
-- [ ] **#75** Colophon (Phase 0 above)
+- [ ] **#74** Add/finish fuller About/site-context pages -- **substantially
+      advanced, 2026-09-16**: `docs/compass/about.md` is now a filled
+      ~1,434-word draft with extensive imagery (was a 30-word stub at
+      `#67`'s 2026-08-24 audit). Remaining per `toDo - content.md`:
+      replace the last image-authoring placeholders, embed CV content and
+      add a downloadable PDF.
+- [ ] **#75** Colophon (Phase 0 above) -- **substantially advanced,
+      2026-09-16**: `docs/compass/colophon.md` is now a filled
+      ~1,932-word account of the site's origins/construction/maintenance
+      (was the deliberate placeholder `#20` scaffolded). Not marked fully
+      done here since `toDo - content.md` still tracks it as a live page
+      that could grow further, not a closed item.
+
+<details>
+<summary>#76</summary>
+
 - [x] **#76** Site Notes where useful. **Done, 2026-09-16** (`80d4970`,
       `b441b0c`): nav entry and source removed, useful v1 history folded into
       the Colophon, original preserved at
       `archived-landing-pages/v1/site_notes/index.html`.
+
+</details>
+
 - [ ] **#77** At least a basic landing/overview page for every active
       top-level section
 - [ ] **#78** Link existing pages/projects that were not essential enough to
       block launch
 - [ ] **#79** Continue selective migration of worthwhile older Cabinet content
+      -- **progress, 2026-09-16**: two concrete migrations landed since this
+      was opened, in opposite directions -- My Writings moved *into* Cabinet
+      from Bookshelf (`39a2adb`/`117a2cc`), and Circle Packing/PackingShapes
+      moved *out* of Cabinet to FFFX's canonical copy, with a redirect left
+      behind (`b667bc2`, see `#85` below). `VeraMolnarRetrospective.md` and
+      the other three orphaned `docs/fffx/*.md` files (see Content
+      Inventory below) are the next candidates, not yet done.
+
+<details>
+<summary>#80</summary>
+
 - [x] **#80** Expand Cabinet multi-repo assembly beyond Working with AI:
       Student Work, Rock Collection, Dupatta Collection, other substantial
       independent projects. **Done, 2026-09-16** (`30c1de6`): the manifest
@@ -1550,28 +1629,65 @@ routine publishing.*
       Bots) -- Rock Collection/Dupatta Collection specifically were not part
       of what actually got added; treat those two as still-open candidates
       if they're still wanted, not part of this completion.
+
+</details>
+
+<details>
+<summary>#81</summary>
+
 - [x] **#81** Build TSV editors for Cabinet, Bookshelf, FFFX (see
       `three-world-launch-phases-Notes.md` for requirements). **Done,
       2026-09-16**: Cabinet's editor was ported to both siblings --
       `tools/bookshelf-editor.js`/`bookshelf-editor-ui` and
       `tools/fffx-editor.js`/`fffx-editor-ui` now exist in their own repos,
       each a real ~370-line implementation, not a stub.
+
+</details>
+
+<details>
+<summary>#82</summary>
+
 - [x] **#82** Generalize Cabinet assembly into a manifest-driven workflow so
       additional repos can be mounted through configuration rather than
       hard-coded workflow steps. **Done, 2026-09-16** (`30c1de6`):
       `tools/assemble-external.js` + the manifest above replaced the
       hand-written per-repo checkout/assemble/validate steps in `deploy.yml`.
+
+</details>
+
 - [ ] **#83** Add automatic rebuild triggers from child repos (only after the
-      basic assembly is stable)
+      basic assembly is stable) -- **still open, confirmed 2026-09-16**:
+      `README.md`'s own "Multi-repo assembly gotcha" section explicitly
+      documents the opposite of this today -- pushing to a child repo does
+      NOT trigger Cabinet's rebuild, only a push to Cabinet's own `main` or
+      a manual Actions re-run does.
+
+<details>
+<summary>#84</summary>
+
 - [x] **#84** Add stronger validation before deploy. **Done, 2026-09-16**
       (`30c1de6` added `tools/validate-deployment.js`; `e3577bf` extended it
       to also check `wip`-status rows, `cabinet-sections.tsv` hrefs,
       self-domain `mkdocs.yml` nav targets, and docs/**/*.md body links --
       see that file's own header for the full breakdown).
+
+</details>
+
 - [ ] **#85** Normalize duplicated documentation where Bookshelf/FFFX docs
-      have drifted (see the doc-audit item above)
+      have drifted (see the doc-audit item above) -- **first case closed,
+      2026-09-16**: Circle Packing/PackingShapes was a live example of
+      exactly this drift (Cabinet's frozen copy and FFFX's canonical copy
+      had independently picked up the identical malformed-link bug) --
+      resolved by deleting Cabinet's copy and redirecting to FFFX's
+      (`b667bc2`). `VeraMolnarRetrospective.md` and the rest of
+      `docs/fffx/*.md` are the same class of problem, not yet done -- see
+      the Content Inventory note below.
 - [ ] **#86** Replace obvious placeholder metadata/thumbnails where easy (see
-      the doc-audit item above)
+      the doc-audit item above) -- Circle Packing dropped off this
+      candidate list entirely, 2026-09-16, per the `#85` deletion above
+      (there's no longer a Cabinet-side entry for it to have a thumbnail
+      at all); see `toDo - content.md` for the current candidate list
+      (Dot Mandala, MiniLoom, About).
 
 **Cabinet file/folder reorganization** -- direct request, 2026-08-29:
 "the v3 folder has a lot going on, there are a lot of legacy files from
@@ -2145,6 +2261,13 @@ section to empty out.*
       requirements.txt` on any of them could have silently reintroduced
       `properdocs` even after the local-environment pin. All three
       repos' `requirements.txt` now carry the pin, not just this one.
+      **Same pattern caught a second time, 2026-09-16**: before adding
+      `mkdocs-redirects` (to retire Cabinet's Circle Packing duplicate with
+      a redirect, see `#85` above), checked its `requires_dist` on PyPI
+      first rather than assuming -- `1.2.3`+ has the identical undeclared
+      `properdocs>=1.6.5` hard dependency, `1.2.2` doesn't. Pinned to
+      `1.2.2` in Cabinet's `requirements.txt` before it ever got installed
+      here, so this is a caught-before-landing case, not a second cleanup.
       Separately, the still-open half: the
       *genuine* half of the banner -- mkdocs-material's own real, upstream
       warning (`material/templates/__init__.py`, unrelated to the
@@ -2214,11 +2337,13 @@ being no TSV row and no nav entry means there's nothing left to
 cross-reference against) -- kept here as plain notes since they're
 rare-to-change facts, not something that needs a status table:
 
-- `docs/fffx/*.md` -- five files (`fffx.md`, `particleSystems.md`,
-  `100Gradients.md`, `VeraMolnarRetrospective.md`, `PackingShapes.md`)
-  orphaned from nav since `#72`; two have real content
-  (`VeraMolnarRetrospective.md` 311w, `PackingShapes.md` 819w), worth
-  migrating into the fffx repo itself (`#85`) rather than left stranded
-  here.
+- `docs/fffx/*.md` -- **four files now, 2026-09-16** (`fffx.md`,
+  `particleSystems.md`, `100Gradients.md`, `VeraMolnarRetrospective.md`),
+  down from five: `PackingShapes.md` (819w) was deleted and redirected to
+  FFFX's canonical copy (`b667bc2`, see `#85`/`#79` above), the first of
+  this set to actually get migrated rather than just flagged. The
+  remaining three are still orphaned from nav since `#72`; one has real
+  content (`VeraMolnarRetrospective.md`, 311w), worth migrating into the
+  fffx repo itself (`#85`) the same way, rather than left stranded here.
 - `docs/3dp/GCodeBending.md` -- untracked, 825w real content, not wired
   into any TSV row or nav entry yet (`#133` left it alone on request).
