@@ -26,11 +26,10 @@ restructure has since been implemented.
 
 - [x] `main` is clean apart from the maintainer's in-progress
   `documentation/scratchNotes.md` edit and these new todo documents.
-- [ ] `mkdocs build --strict` no longer completes cleanly as of 2026-09-16.
-  The current Colophon link `[jesalmehta.com](jesalmehta.com)` is interpreted as
-  a missing relative document; change it to an absolute `https://` URL. The
-  other reported relative links are assembled/non-MkDocs routes and should be
-  verified against the final deployment artifact.
+- [x] `mkdocs build --strict` completes successfully as of 2026-09-16. Commit
+  `46160a0` corrected the Colophon's `jesalmehta.com` link. The informational
+  relative-link messages are assembled/non-MkDocs routes and remain covered by
+  final-artifact validation.
 - [x] The v3 landing page is generated and promoted; active TSV-backed map
   links are present in the static page.
 - [x] Cabinet has a working local TSV editor and Admin Controls dashboard.
