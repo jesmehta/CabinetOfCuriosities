@@ -1938,79 +1938,325 @@ unless it is.
 progress. Principle: low-effort, high-value work that makes existing
 projects visible and complete.*
 
-**Framing note, 2026-09-16**: unlike Phase 0-2's items, `#87`-`#101` below
-are categories, not one-time tasks -- "finish near-done galleries," "link
-existing pages," "add current independent repos" describe an ongoing kind
-of work, not a fixed list that empties out once done. A new trip writeup,
-a new gallery, a newly-finished WIP portal all land as fresh instances of
-the same bullet, the same way Phase 3B+ already says about itself below.
-Don't expect this phase to ever show all-`[x]`; track specific concrete
-asks (a named gallery, a named repo) as they come up instead, the way
-Phase 0-2's individually-numbered items did.
+**Corrected framing, 2026-09-16 (direct instruction, supersedes the
+previous version of this note)**: `#87`-`#101` are being resolved now,
+scoped to what actually exists and can be named as of the Jun-Sep 2026
+launch period -- NOT extended to cover hypothetical future content (a page
+thought up three months from now is a new entry in `toDo - content.md` or
+`toDo - website.md`, which are the living content/backend todos going
+forward and will keep being updated; this file tracks the launch-phase
+period specifically and is not meant to keep growing). Each item below is
+resolved into the concrete named work it actually refers to right now,
+cross-referenced to wherever that work is tracked going forward, rather
+than kept open as an abstract category indefinitely.
 
 Across all three worlds:
 
-- [ ] **#87** Complete near-finished projects
-- [ ] **#88** Link existing but currently unlinked pages
-- [ ] **#89** Add obvious missing entries/sections to TSVs
-- [ ] **#90** Add current independent repos to Cabinet assembly
-- [ ] **#91** Fill small metadata/thumbnail gaps
-- [ ] **#92** Clean up cross-world links
+<details>
+<summary>#87</summary>
+
+- [x] **#87** Complete near-finished projects. **Resolved into named work,
+      2026-09-16, direct instruction**: FFFX -- Vera Molnar (already live),
+      Island Generator, Dance of Planets (both coded, not yet embedded/
+      published, see `toDo - content.md`'s FFFX content order); Bookshelf --
+      Isaac Asimov (live but unfinished per its own `Readme_4_todo_decisions.md`)
+      and Kipling/Hamzanama. **Hamzanama flagged for confirmation**: direct
+      check of `content/bookshelf-entries.tsv` in `TheBookshelfOfCuriosities`
+      shows it as `status: wip`, no `href`, `internal-html` (never built) --
+      matches `toDo - content.md`'s existing "concept only, research-heavy,
+      no destination" characterization, not "near-finished." Left open in
+      `toDo - content.md` pending confirmation of what near-finished material
+      exists (research notes outside this repo?) rather than silently
+      overriding one characterization with the other. Teaching -- Dragons of
+      SSD, Playing with Pulp, Emergent Technologies 2024-25 (all three
+      already tracked as the "remaining Teaching hub route gaps" in
+      `toDo - immediate.md`).
+
+</details>
+
+<details>
+<summary>#88</summary>
+
+- [x] **#88** Link existing but currently unlinked pages. **Done for the
+      most part, 2026-09-16, direct confirmation**: a pass through all
+      repos has happened (Prompt Generator, Swatch Fields, Working with AI,
+      etc. are all linked and assembled). Treat as closed; a final spot-check
+      pass is optional, not blocking.
+
+</details>
+
+<details>
+<summary>#89</summary>
+
+- [x] **#89** Add obvious missing entries/sections to TSVs. **Done for the
+      most part, 2026-09-16, direct confirmation**: covered between the
+      Content Inventory audits, the deployment manifesto (`#80`/`#82`), and
+      this session's work.
+
+</details>
+
+<details>
+<summary>#90</summary>
+
+- [x] **#90** Add current independent repos to Cabinet assembly. **Done,
+      2026-09-16**: six source repos, eight assembly destinations (see
+      `#80` above) -- direct confirmation this is covered for the most part.
+
+</details>
+
+- [ ] **#91** Fill small metadata/thumbnail gaps -- not specifically
+      addressed by direct instruction; still tracked in `toDo - content.md`'s
+      thumbnail candidates (Dot Mandala, MiniLoom, About).
+
+<details>
+<summary>#92</summary>
+
+- [x] **#92** Clean up cross-world links. **Mostly done, 2026-09-16, direct
+      confirmation**: the Circle Packing Cabinet/FFFX overlap (`#85`) and
+      the Writings section move (Bookshelf -> Cabinet) are cited as the
+      concrete examples resolved.
+
+</details>
 
 **Cabinet**
-- [ ] **#93** Current Teaching pages
-- [ ] **#94** Student Work
-- [ ] **#95** Near-finished galleries
-- [ ] **#96** Existing Travel material
-- [ ] **#97** Active standalone project integrations
+
+<details>
+<summary>#93</summary>
+
+- [x] **#93** Current Teaching pages. **Mostly done, 2026-09-16, direct
+      confirmation**: remaining bits are noted in `toDo - content.md`/
+      `toDo - immediate.md` (the three unbuilt hub routes) rather than
+      tracked separately here.
+
+</details>
+
+- [ ] **#94** Student Work -- **mostly done, 2026-09-16, direct
+      confirmation**, same as `#93`: remaining bits live in
+      `toDo - content.md` going forward, not itemized again here.
+- [ ] **#95** Near-finished galleries -- **split, 2026-09-16, direct
+      instruction**: this bundles work at very different distances from
+      done, and shouldn't be tracked as one item.
+  - Student Work galleries (Creative Coding 2024-25/2023-24, Emergent
+    Technologies 2024-25, Dragons of SSD, Playing with Pulp) -- near-term,
+    already tracked in `toDo - content.md`/`toDo - immediate.md`.
+  - Rock Collection and Dupatta Collection -- longer-term; not yet
+    assembled or scoped (see `#80`'s own note that these weren't part of
+    what actually got added to the manifest). Track as its own future
+    entry in `toDo - content.md` when scoped, not here.
+- [ ] **#96** Existing Travel material -- **split, 2026-09-16, direct
+      instruction**, same shape as `#95`: this is a whole section, not one
+      task, and multiple travel pages will come into existence over time
+      rather than landing as a single completion. `toDo - content.md`
+      already frames this correctly (P3 backlog: "inventory Cycling
+      Journey Maps, travelogue snippets, Process Travel Panoramas, Windows
+      of Berlin... select one text-and-image journey"). Leave future
+      individual travel pages to be added there as their own entries, not
+      folded back into this one.
+
+<details>
+<summary>#97</summary>
+
+- [x] **#97** Active standalone project integrations. **Assessed,
+      2026-09-16, direct question ("this may have lost all meaning... let
+      me know if it pertains to something else")**: it does appear
+      redundant with `#90` (add current independent repos to Cabinet
+      assembly) -- the concrete cases this would name (Working with AI,
+      Prompt Generator, Oblique Strategies, Swatch Fields, Tracery Bots,
+      the SSD galleries) are exactly what `#90`'s six-repo manifest already
+      covers. Marked resolved/merged into `#90` on that basis. The one
+      alternate reading not covered by `#90` -- standalone tools built
+      directly *inside* Cabinet's own docs rather than assembled from an
+      external repo (MiniLoom, Dot Mandala Tool, Tracery Bots' own pages)
+      -- are already live content, not an integration task, so they
+      wouldn't reopen this item either way. Flag if something else was
+      meant.
+
+</details>
 
 **Bookshelf**
-- [ ] **#98** Existing writing/interactives already represented in the
-      current structure
+
+<details>
+<summary>#98</summary>
+
+- [x] **#98** Existing writing/interactives already represented in the
+      current structure. **Mostly done, 2026-09-16, direct confirmation**:
+      British Poetry Workshop, Asimov, Christie cited as covered.
+
+</details>
+
 - [ ] **#99** Strengthen links to current static projects and content pages
-- [ ] **#100** Finish easy dormant/WIP entries where source material already
-      exists
+      -- same "mostly done" bucket as `#98`/`#100` per direct confirmation;
+      no further action tracked here.
+- [ ] **#100** Finish easy dormant/WIP entries where source material
+      already exists -- same bucket as `#98`. **Caveat**: Hamzanama was
+      named in this context too (see `#87` above) but doesn't currently
+      show source material in the repo -- same confirmation needed.
 
 **FFFX**
+
 - [ ] **#101** Prioritize current WIP portals and already-active
-      computational/generative projects before inventing new categories
+      computational/generative projects before inventing new categories --
+      **this is a directive, not a task, per direct clarification**: there
+      can be a list of already-active/created material (per the FFFX
+      content audit in `toDo - content.md`: Genuary, Windows of Berlin,
+      Image Filters, Flow Fields, etc.) that needs curation, upload, and a
+      short write-up -- tracked there as the "FFFX content order" list, not
+      separately here.
 
 ---
 
 ## Phase 3B+ -- Long-Term Development
 
 *Goal: treat all three worlds as ongoing publishing systems rather than
-projects waiting to be "finished." These stay unchecked indefinitely by
-nature -- add new items as they emerge rather than expecting this
-section to empty out.*
+projects waiting to be "finished."*
 
-**Cabinet**
-- [ ] **#102** Add new Teaching material
-- [ ] **#103** Expand Student Work
-- [ ] **#104** Add Travels and Galleries
-- [ ] **#105** Integrate new independent repos
-- [ ] **#106** Refine V3 visuals as real content stresses the layout
+**Corrected framing, 2026-09-16 (direct instruction, supersedes "stay
+unchecked indefinitely by nature")**: `#102`-`#114` are absorbed below --
+each is either a specific task now done, or a category/approach that
+resolves into one or more of `#87`-`#101`'s now-named projects above, not
+a separate open-ended tracker of its own. Genuinely new content thought up
+after this reconciliation (a page three months from now, say) is a new
+entry in `toDo - content.md`/`toDo - website.md` going forward, not
+appended here -- this file tracks the launch-phase period, not an
+indefinitely-growing backlog. `#115`-`#120` are treated differently, per
+direct instruction: parked future-consideration items, more concrete than
+`#102`-`#114` but not currently necessary or executable -- kept visible,
+not absorbed, since there's nothing to resolve them into yet.
 
-**Bookshelf**
-- [ ] **#107** Add writing/research entries
-- [ ] **#108** Expand interactive reading/timeline projects
-- [ ] **#109** Refine curation, metadata and visual treatments
-- [ ] **#110** Explore longer-term alternate views or filters
+<details>
+<summary>#102</summary>
 
-**FFFX**
-- [ ] **#111** Complete WIP portals
-- [ ] **#112** Add new computational/generative work
-- [ ] **#113** Consolidate and document experiments
-- [ ] **#114** Refine sections, taxonomy and visual systems
+- [x] **#102** Add new Teaching material -- **absorbed, 2026-09-16, direct
+      instruction**: this is the ongoing-content version of `#93`/`#95`
+      above; specific new Teaching pages are tracked in
+      `toDo - content.md` as they're identified, not as a standing open
+      item here.
 
-**Cross-world**
-- [ ] **#115** Improve shared schema conventions where useful
-- [ ] **#116** Improve cross-linking and discovery
-- [ ] **#117** Automate child-repo rebuild triggers
-- [ ] **#118** Consider Atlas -> public-site tooling
-- [ ] **#119** Improve search, accessibility, performance and metadata
+</details>
+
+<details>
+<summary>#103</summary>
+
+- [x] **#103** Expand Student Work -- **absorbed, 2026-09-16, direct
+      instruction**: same treatment as `#102`, resolves into `#94`/`#95`'s
+      named galleries above and future `toDo - content.md` entries.
+
+</details>
+
+<details>
+<summary>#104</summary>
+
+- [x] **#104** Add Travels and Galleries -- **absorbed, 2026-09-16, direct
+      instruction**: resolves into `#95`/`#96` above (Rock/Dupatta
+      Collections, individual future travel pages) -- see those entries
+      for the near/far split, not tracked separately here.
+
+</details>
+
+<details>
+<summary>#105</summary>
+
+- [x] **#105** Integrate new independent repos -- **absorbed, 2026-09-16,
+      direct instruction**: resolves into `#90`'s six-repo manifest above;
+      a future new repo is a new `content/external-repos.tsv` row, not a
+      standing open item here.
+
+</details>
+
+- [ ] **#106** Refine V3 visuals as real content stresses the layout --
+      not a content item like `#102`-`#105`, and not specifically
+      addressed by direct instruction; left open as a genuine engineering
+      watch-item (squarify's aspect-ratio behavior under real content
+      volume, per `#9`'s own still-open note in Phase 0).
+
+<details>
+<summary>#107</summary>
+
+- [x] **#107** Add writing/research entries -- **absorbed, 2026-09-16**,
+      same treatment as `#102` (not explicitly named in the direct
+      instruction, but identical shape to `#108`-`#114` which were):
+      resolves into `#98`-`#100` above and future `toDo - content.md`
+      entries as new Bookshelf writing is identified.
+
+</details>
+
+<details>
+<summary>#108</summary>
+
+- [x] **#108** Expand interactive reading/timeline projects -- **absorbed,
+      2026-09-16, direct instruction**: resolves into `#98`-`#100` above.
+
+</details>
+
+<details>
+<summary>#109</summary>
+
+- [x] **#109** Refine curation, metadata and visual treatments -- **absorbed,
+      2026-09-16, direct instruction**: ongoing polish work, tracked as
+      specific items in `toDo - content.md` as they're identified.
+
+</details>
+
+<details>
+<summary>#110</summary>
+
+- [x] **#110** Explore longer-term alternate views or filters -- **absorbed,
+      2026-09-16, direct instruction**: no specific instance named yet;
+      becomes a `toDo - content.md` entry if/when one is scoped.
+
+</details>
+
+<details>
+<summary>#111</summary>
+
+- [x] **#111** Complete WIP portals -- **absorbed, 2026-09-16, direct
+      instruction**: resolves into `#101`'s FFFX content-order list above
+      (Genuary, Windows of Berlin, Image Filters, Flow Fields, etc.).
+
+</details>
+
+<details>
+<summary>#112</summary>
+
+- [x] **#112** Add new computational/generative work -- **absorbed,
+      2026-09-16, direct instruction**: ongoing-content version of `#87`'s
+      FFFX projects above; new work becomes a `toDo - content.md` entry.
+
+</details>
+
+<details>
+<summary>#113</summary>
+
+- [x] **#113** Consolidate and document experiments -- **absorbed,
+      2026-09-16, direct instruction**: resolves into `#101`'s curation
+      note above.
+
+</details>
+
+<details>
+<summary>#114</summary>
+
+- [x] **#114** Refine sections, taxonomy and visual systems -- **absorbed,
+      2026-09-16, direct instruction**: ongoing polish, tracked as
+      specific items in `toDo - content.md` as identified.
+
+</details>
+
+**Cross-world -- parked, not absorbed (direct instruction, 2026-09-16:
+"far future see-if-this-is-useful-and-may-be-consider things, more
+specific but currently unnecessary or not executable")**
+
+- [ ] **#115** Improve shared schema conventions where useful -- parked.
+- [ ] **#116** Improve cross-linking and discovery -- parked. Note: `#55`
+      above now has a confirmed concrete instance of this gap (Bookshelf/
+      FFFX don't link back to Cabinet at all) if this is ever picked up.
+- [ ] **#117** Automate child-repo rebuild triggers -- parked. Same
+      underlying gap `#83` above confirms is still genuinely open.
+- [ ] **#118** Consider Atlas -> public-site tooling -- parked.
+- [ ] **#119** Improve search, accessibility, performance and metadata --
+      parked.
 - [ ] **#120** Use Cloudflare routing only where a future project genuinely
-      needs it
+      needs it -- parked.
 
 <details>
 <summary>#121</summary>
@@ -2226,6 +2472,21 @@ section to empty out.*
       same two-part pattern applies there (MkDocs template override +
       each site's own standalone/custom pages, if any), using each site's
       own Cloudflare Web Analytics token, not Cabinet's.
+      **Confirmed still not done, 2026-09-16, direct question ("I suspect
+      the beacon is already listening [via the subdomain] -- check")**:
+      checked directly, both in source and live. Neither
+      `TheBookshelfOfCuriosities` nor `form-follows-fx` has `theme.custom_dir`,
+      an `overrides/` folder, or any mention of Cloudflare in their
+      `mkdocs.yml` -- and fetching the live pages confirms it: Cabinet's
+      homepage HTML contains `cloudflareinsights.com/beacon.min.js`,
+      `bookshelf.cabinetofcuriosities.in`'s and
+      `fffx.cabinetofcuriosities.in`'s do not. The subdomain-inheritance
+      theory doesn't hold: Cloudflare Web Analytics is a client-side
+      beacon script tied to a site-specific token and loaded per-page --
+      proxying a subdomain through the same Cloudflare account/zone
+      doesn't inject that script into pages that never load it. Each site
+      genuinely needs its own beacon added, per the setup doc's own
+      "apply independently to Cabinet, Bookshelf, FFFX" instruction.
 - [ ] **#136** Same beacon rollout for other external repos assembled into
       Cabinet/Bookshelf/FFFX at deploy time (the `deploy.yml`
       checkout-and-copy pattern from #43/#71/#128: Working with AI,
@@ -2235,6 +2496,18 @@ section to empty out.*
       template, with its own Cloudflare Web Analytics token if tracked as
       a distinct property, rather than inheriting Cabinet's mkdocs
       override.
+      **Answered, 2026-09-16, direct question ("is this affected by the
+      deployment system or will it need to be done for individual
+      repos?")**: individual repos, confirmed live -- `tools/
+      assemble-external.js` does a byte-for-byte `fs.cpSync` copy of each
+      source repo's files into `public/`, with zero HTML transformation,
+      so Cabinet's `overrides/main.html` (which only wraps MkDocs' own
+      generated pages) never touches these at all. Fetched
+      `/teaching/working-with-ai/` and
+      `/teaching/ssd-creative-coding-2025-26/` directly: neither contains
+      the beacon, confirming the assembly pipeline cannot carry it. The
+      original note's reasoning was already correct; this just replaces
+      "each needs..." with a live-confirmed fact rather than an inference.
 - [ ] **#142** Investigate the actual state of MkDocs's maintenance/"MkDocs
       2.0" situation -- surfaced 2026-09-08 while debugging `mkdocs serve`
       not starting (root cause of that was unrelated: two 0-byte stub
