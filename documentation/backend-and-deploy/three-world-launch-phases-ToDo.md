@@ -1938,6 +1938,16 @@ unless it is.
 progress. Principle: low-effort, high-value work that makes existing
 projects visible and complete.*
 
+**Framing note, 2026-09-16**: unlike Phase 0-2's items, `#87`-`#101` below
+are categories, not one-time tasks -- "finish near-done galleries," "link
+existing pages," "add current independent repos" describe an ongoing kind
+of work, not a fixed list that empties out once done. A new trip writeup,
+a new gallery, a newly-finished WIP portal all land as fresh instances of
+the same bullet, the same way Phase 3B+ already says about itself below.
+Don't expect this phase to ever show all-`[x]`; track specific concrete
+asks (a named gallery, a named repo) as they come up instead, the way
+Phase 0-2's individually-numbered items did.
+
 Across all three worlds:
 
 - [ ] **#87** Complete near-finished projects
