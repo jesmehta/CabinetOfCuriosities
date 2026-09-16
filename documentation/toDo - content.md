@@ -77,12 +77,11 @@ whether the page fulfils its role.
   the site's origins, three worlds, v3 construction, maintenance system, and
   archives. The external URL was corrected in `46160a0`, and Cabinet passes
   `mkdocs build --strict` as of 2026-09-16.
-- [ ] **Retire current Site Notes separately (`#76`).** Its useful v1 history is
+- [x] **Retire current Site Notes separately (`#76`).** Its useful v1 history is
   represented in the Colophon and the rendered original is preserved at
-  `archived-landing-pages/v1/site_notes/index.html`. The MkDocs nav entry has
-  now been removed; remove the remaining unlinked current source file when
-  ready. This is information-architecture cleanup, not unfinished Colophon
-  writing.
+  `archived-landing-pages/v1/site_notes/index.html`. The MkDocs nav entry was
+  removed, then `docs/compass/site_notes.md` itself deleted and
+  `FILE-MANIFEST.md`/`CONTENT-INVENTORY.md` updated to match (2026-09-16).
 - [ ] **Repair Teaching publication according to actual readiness.** The six
   locally unresolved routes are different kinds of work:
   - Creative Coding 2024–25: content is currently on the maintainer's work
@@ -112,9 +111,9 @@ whether the page fulfils its role.
 |---|---|---|---|---|---|
 | About Me | `compass-n`, live | Yes | Yes | **Filled draft:** ~1,434 words and extensive imagery | **Mostly done:** complete the remaining image/cycling placeholders and add embedded + downloadable CV. The lowercase `_images/about/` paths correctly match both disk and Git. |
 | Now | `compass-e`, live | Yes | Yes | **Filled:** substantial generated page | **Live:** maintain through `content/now.tsv`, not by editing generated Markdown. |
-| Colophon | `compass-s`, live | Yes | Yes | **Filled and publication-clean:** ~1,932 words plus archive links | **Complete:** link correction committed in `46160a0`; strict Cabinet build passes. Site Notes retirement is tracked separately. |
+| Colophon | `compass-s`, live | Yes | Yes | **Filled and publication-clean:** ~1,932 words plus archive links | **Complete:** link correction committed in `46160a0`; strict Cabinet build passes. |
 | Site map | `compass-w`, live | Yes | Yes | **Intentionally concise index:** generated cross-world routes | **Live:** refresh after sibling TSV changes; distinguish generated flags from editorial decisions. |
-| Site Notes | No TSV row | No compass direction | Removed | **Historical source now unlinked:** substantial account of v1 (2024) | **Almost retired:** useful material is in Colophon and the v1 rendering is archived; remove the remaining current Markdown source when ready. |
+| Site Notes | No TSV row | No compass direction | Removed | **Retired (2026-09-16):** useful material folded into Colophon, original preserved at `archived-landing-pages/v1/site_notes/index.html` | **Done.** Source file, nav entry, and manifest/inventory references all removed. |
 | Teaching hub | Section live | Yes | Clickable header | **Filled hub:** 345 words; six routes unresolved locally, although two targets are confirmed live elsewhere | **Partial wiring/assembly/curation:** retain its useful copy and handle each target according to the readiness list above. It does not need padding merely because it is a hub. |
 | SSD Creative Coding 2025–26 | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Working with AI | Entry live | Yes | Yes | Assembled and validated | **Live.** |

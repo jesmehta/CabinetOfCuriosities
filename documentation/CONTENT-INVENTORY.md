@@ -1,6 +1,6 @@
 # Cabinet Content Inventory
 
-_Auto-generated 2026-09-08 08:45 UTC by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do not hand-edit, re-run the script to refresh._
+_Auto-generated 2026-09-16 04:04 UTC by `tools/generate_sitemap.py` from `content/cabinet-sections.tsv`, `content/cabinet-entries.tsv`, and `mkdocs.yml`'s own nav tree -- do not hand-edit, re-run the script to refresh._
 
 Cabinet-only. Bookshelf/fffx and other assembled content's live status is what [/sitemap/](../docs/compass/sitemap.md) is for -- not duplicated here. `Map` is simply each row's own `status` column (`true`/`wip`/`false`), read directly, not separately computed.
 
@@ -67,7 +67,6 @@ Flags below are mechanical string-matching, not judgement calls -- deliberate cr
 
 - **Nav entry with no TSV row**: "Trippy Gourmet" (`https://cabinetofcuriosities.in/tracery-bots/TrippyGourmetBot/`)
 - **Nav entry with no TSV row**: "Mad Solutionist" (`https://cabinetofcuriosities.in/tracery-bots/MadSolutionistBot/`)
-- **Nav entry with no TSV row**: "Notes on this site" (`compass/site_notes.md`)
 - **TSV row with no nav entry**: section `writings` (`https://bookshelf.cabinetofcuriosities.in/my-writings/`)
 - **TSV row with no nav entry**: entry `scifi` (`https://bookshelf.cabinetofcuriosities.in/scifi/`)
 - **TSV row with no nav entry**: entry `asimov` (`https://bookshelf.cabinetofcuriosities.in/asimov/`)

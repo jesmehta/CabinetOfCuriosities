@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-09-08 08:45 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-09-16 04:04 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -161,7 +161,7 @@ Live site: https://bookshelf.cabinetofcuriosities.in/
 ### 🟢 Book Data & Visualisation _(section, no standalone page)_
 
 - 🟡 Foundation Universe _(no page yet)_
-- 🟢 [Geography of Murder](https://bookshelf.cabinetofcuriosities.in/agatha/)
+- 🟢 [Geography of Murder](https://bookshelf.cabinetofcuriosities.in/christie/)
 - 🟡 Authors vs Books _(no page yet)_
 
 ### 🔴 Writings on Reading _(section, no standalone page)_
