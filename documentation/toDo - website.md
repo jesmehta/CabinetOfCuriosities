@@ -2,7 +2,9 @@
 
 Current website, tooling, build, deployment, and cross-world work for the
 Cabinet and its two sibling worlds. Cabinet was audited 2026-09-12 against the
-repository at `ec1f6df`, the open
+repository at `ec1f6df`, then reconciled again 2026-09-16 through `a241ca3`
+(see "Do now"/"Next"/FFFX below for what that reconciliation found done),
+against the open
 items in
 [`three-world-launch-phases-ToDo.md`](backend-and-deploy/three-world-launch-phases-ToDo.md),
 recent Git history, the live source files, and a clean `mkdocs build --strict`.
@@ -61,34 +63,43 @@ restructure has since been implemented.
   Technologies 2026–27 now points to its live `SSD_Student_Work` gallery, and
   Coding with AI points to its live nested page under Working with AI. The
   Creative Coding 2024–25 and 2023–24 are built and wired by `30c1de6`;
-  verify their deployed routes/assets rather than redoing assembly. Emergent Technologies
+  **verified live 2026-09-16** — both routes return 200 with real
+  content/assets. Emergent Technologies
   2024–25 is partially underway as Twine branching narratives blocked on
   background images; and the two papier-mâché galleries need
   curation from the image archive. Assemble and publish those three collections.
-- [ ] **Fix stale source-of-truth notes.** They do not currently break the
-  build, but they actively misdescribe the system:
-  - `content/cabinet-sections.tsv` says `web-tech` has `status: false`, uses
-    the old `interfaces-data-texts` name, and needs `#69`; the actual row is
-    `status: true` and ships on the map.
-  - `content/cabinet-entries.tsv`'s `fabricademy` note says its href is blank;
-    it actually points to the 2026 personal Fabricademy site.
-  - the four compass-entry notes still name the old flat `docs/about.md`,
-    `docs/now.md`, `docs/colophon.md`, and `docs/sitemap.md` paths.
-  - `README.md` still documents only two of the six assembled repositories.
-  - `BACKEND-AND-DEPLOY.md` was updated in `30c1de6`; do not reopen that pass.
-- [ ] **Reconcile the historical master todo with current reality.** Mark or
-  annotate `#69`, `#76`, `#81`, and the completed portion of `#80`. Site Notes
-  (`#76`) is complete: its useful historical material is represented in the
-  Colophon, its original rendered version remains preserved at
-  `archived-landing-pages/v1/site_notes/index.html`, and the current source and
-  nav entry have been removed. Replace the stale
-  2026-08-30 immediate-priorities view; decide whether these two focused files
-  complete the remaining split intended by `#126`. Preserve its history rather
-  than deleting it.
-- [ ] **Replace Cabinet's legacy Circle Packing duplicate with a WebTech link.**
-  FFFX is the agreed canonical home. Remove/replace the frozen Cabinet page
-  rather than maintain a second copy; its old malformed YouTube link disappears
-  with that cleanup. Vera Molnar likewise belongs purely in FFFX.
+  **Interim fix, 2026-09-16 (`e3577bf`)**: the three unbuilt routes were dead
+  links on the live Teaching hub until a new deploy-time validator (`#84`)
+  caught them; softened to plain "gallery not yet published" text so the
+  hub no longer misdescribes them as live. This item's actual publication
+  work remains open — the softening is a stopgap, not a substitute.
+- [x] **Fix stale source-of-truth notes.** **Done, 2026-09-16 (`47ab009`)** —
+  all four corrected:
+  - `content/cabinet-sections.tsv`'s `web-tech` note now says active/mapped,
+    not waiting on `#69`.
+  - `content/cabinet-entries.tsv`'s `fabricademy` note now reflects the
+    already-set href.
+  - the four compass-entry notes now name the current `docs/compass/` paths.
+  - `README.md` now describes the current six-repo/eight-destination
+    manifest (`cb40b16`).
+  - `BACKEND-AND-DEPLOY.md` was updated in `30c1de6`; not reopened.
+- [x] **Reconcile the historical master todo with current reality.** **Done,
+  2026-09-16 (`442ff95`, `50eab7e`, `a241ca3`)**: `#69`/`#76`/`#80`/`#81`/`#82`/`#84`
+  annotated as done with commit refs and wrapped in the file's own
+  `<details>` collapse convention (a structural bug in that convention —
+  `#62`'s missing `<details>` open tag — was also found and fixed along the
+  way); the stale 2026-08-30 immediate-priorities view replaced with a
+  closure note; Phase 3A/3B+ (`#87`-`#120`) resolved into the specific named
+  projects that actually exist as of the Jun–Sep 2026 launch period, per
+  direct instruction, rather than left open for hypothetical future
+  content. History preserved throughout, nothing deleted.
+- [x] **Replace Cabinet's legacy Circle Packing duplicate with a WebTech link.**
+  **Done, 2026-09-16 (`b667bc2`)**: `docs/fffx/PackingShapes.md` and its six
+  essay images deleted, `docs/compass/about.md`'s stale link retargeted
+  straight to FFFX's canonical page, and a `mkdocs-redirects`-based redirect
+  added (pinned to `1.2.2` — same undeclared `properdocs` dependency problem
+  as `mkdocs-section-index`, same fix) so Cabinet's old URL still resolves.
+  Vera Molnar was already purely in FFFX; not part of this item's scope.
 
 ## Next — important system work
 
@@ -105,21 +116,35 @@ content todo; take these on when they remove a real maintenance or release risk.
 - [x] **Generalize multi-repo assembly (`#82`).** Implemented in `30c1de6`:
   manifest, shared assembly mechanism, subfolders, destinations, required-file/
   content checks, and collision rejection. Future repo additions remain separate.
-- [ ] **Complete deployment validation coverage (`#84`).** `30c1de6` already
-  adds collision rejection, strict builds, generated-content drift checks,
-  and active local entry-TSV route validation. Remaining scope:
-  - verify every public link from `docs/teaching/index.md` has either a local
-    MkDocs source or an assembly-manifest destination;
-  - include visible WIP routes, section hrefs, nav targets, and anchors against
-    the built artifact; the current validator only checks `status: true` entries;
-  - keep the last-successful-deployment dependency invariant explicit.
+- [x] **Complete deployment validation coverage (`#84`).** **Done, 2026-09-16
+  (`e3577bf`)** — all three remaining-scope bullets landed:
+  - `docs/**/*.md` body links (including `docs/teaching/index.md`'s) are now
+    checked, sourced from `mkdocs build`'s own "unrecognized relative link"
+    log rather than a hand-rolled parser;
+  - `wip`-status rows (not just `status: true`), `cabinet-sections.tsv`
+    hrefs, self-domain `mkdocs.yml` nav targets, and explicit anchor/external
+    handling are all now covered — see `tools/validate-deployment.js`'s own
+    header for the full breakdown;
+  - the last-successful-deployment invariant (`deploy: needs: build`) was
+    already structurally explicit in `deploy.yml`; no separate change needed
+    for that bullet specifically.
 - [ ] **Empirically close failed-build safety (`#58`).** Use an existing failed
   Actions run, if available, to confirm the live deployment stayed on the last
   successful artifact. Do not deliberately break production merely to test it.
+  **Partial evidence, 2026-09-16**: two real `build`-job failures this same
+  day (`427687c`, `8e7e502`) both show `conclusion: failure` with no matching
+  `deploy` run, via direct `api.github.com` queries (no `gh` CLI needed) —
+  consistent with the structural argument, though the live site's served
+  content still wasn't diffed before/after either window to fully close this.
 - [ ] **Investigate MkDocs 2.0/plugin maintenance (`#142`).** Keep
   `mkdocs-section-index==0.3.10` pinned while assessing the real MkDocs Material
   migration warning and plugin compatibility. Do not install `properdocs` in
   response to its injected banner.
+  **Same pattern caught again, 2026-09-16**: before adding `mkdocs-redirects`
+  (for the Circle Packing retirement above), checked its `requires_dist` on
+  PyPI first — `1.2.3`+ has the identical undeclared `properdocs` dependency,
+  `1.2.2` doesn't. Pinned to `1.2.2` before it was ever installed. The
+  genuine MkDocs 2.0 migration-risk question itself is still unevaluated.
 
 ## High-value easy wins
 
@@ -132,6 +157,11 @@ content todo; take these on when they remove a real maintenance or release risk.
   recursively copied HTML sites outside MkDocs—must link back to their owning
   homeworld. Audit Cabinet's eight assembled destinations plus Bookshelf's SciFi,
   Asimov, and Christie projects; do not assume MkDocs nav reaches into them.
+  **Confirmed as a real gap, 2026-09-16**: grepped both sibling repos
+  directly (now in this workspace) — neither `TheBookshelfOfCuriosities` nor
+  `form-follows-fx` links back to `cabinetofcuriosities.in` anywhere in their
+  `mkdocs.yml` nav or `docs/` content. Was previously "not checked, no local
+  access"; now a confirmed-missing item, same status on both sides.
 - [ ] **Add an explicit inventory allowlist/annotation mechanism.** Current
   inventory flags include intentional differences: nested Trippy Gourmet/Mad
   Solutionist nav links, map-only external world entries, and an in-page
@@ -160,18 +190,24 @@ while preserving its existing modified and untracked files.
   Markdown files/folders are untracked. Commit source TSV, generated output,
   pages, and documentation together after review so a clean clone contains
   every route the landing page advertises.
-- [ ] **Remove the inherited `scifi asimov` deploy-copy loop.** Neither folder
-  belongs to FFFX, so the step is currently a silent no-op copied from an older
-  Bookshelf workflow. If FFFX later assembles standalone projects, introduce an
-  explicit manifest and validation rather than retaining misleading code.
+- [x] **Remove the inherited `scifi asimov` deploy-copy loop.** **Done,
+  2026-09-16 (`d723f74`)**: step removed entirely from FFFX's `deploy.yml`.
+  If FFFX later assembles standalone projects, introduce an explicit
+  manifest and validation (Cabinet's `content/external-repos.tsv` +
+  `tools/assemble-external.js` is a ready template) rather than
+  reintroducing hand-written per-repo steps.
 - [ ] **Add deployment/content validation.** Check that each `status: true` or
   `wip` internal TSV href has a source page, generated TSV output is current,
   the strict MkDocs build passes, and required landing assets exist before the
-  Pages artifact is uploaded.
+  Pages artifact is uploaded. Cabinet's `tools/validate-deployment.js` (`#84`,
+  substantially extended 2026-09-16) is a ready template for the same
+  checks here — not yet ported to FFFX.
 - [ ] **Add explicit return links to Cabinet and Bookshelf.** No cross-world
   destination was found in FFFX's `docs/` or content data. Make sibling-world
   navigation visible on the FFFX world page and add FFFX-home links to any
   standalone projects that do not inherit MkDocs navigation.
+  **Confirmed still missing, 2026-09-16**: direct grep of this repo found
+  zero links back to `cabinetofcuriosities.in` anywhere.
 - [ ] **Reconcile the three `WORLD-SYSTEMS.md` copies.** FFFX's copy still
   describes old asset paths and says Bookshelf uses `docs/index.md`; both repos
   now use standalone `docs/index.html`. Update all worlds in one synchronized
@@ -209,6 +245,8 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   were found in Bookshelf's `docs/` or content registries. Also add a Bookshelf
   home link inside the standalone SciFi, Asimov, and Christie projects, which do
   not inherit MkDocs navigation.
+  **Confirmed still missing, 2026-09-16**: direct grep of this repo found
+  zero links back to `cabinetofcuriosities.in` anywhere, same as FFFX.
 - [ ] **Add CI parity checks.** Run strict MkDocs, regenerate/compare landing
   data, validate active hrefs, and smoke-test `/scifi/`, `/asimov/`, and the
   chosen Christie route in the assembled artifact.
@@ -233,17 +271,30 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
 - [ ] `#135/#136` — analytics rollout to sibling and assembled repos, after
   deciding whether they are separate Cloudflare properties and obtaining the
   corresponding tokens.
+  **Confirmed live, 2026-09-16**: fetched all three sites directly — the
+  Cloudflare beacon is present only on `cabinetofcuriosities.in`; Bookshelf
+  and FFFX have neither the beacon nor any `overrides/`/`custom_dir` wiring
+  to carry it (subdomain proxying through the same Cloudflare zone doesn't
+  inject it). Also fetched two assembled pages (`/teaching/working-with-ai/`,
+  an SSD gallery) directly: the assembly pipeline (`tools/assemble-external.js`,
+  a raw file copy with no HTML transformation) cannot carry it either, so
+  `#136` genuinely needs per-repo work, not a deployment-system fix.
 
 ## Definition of website-ready
 
 - [ ] No published hub links point at absent local or assembled routes.
+  **Substantially enforced now, 2026-09-16**: `#84`'s extended validator
+  checks doc-body links, entries/sections, and nav targets on every deploy;
+  not the same as a standing guarantee for content not yet written.
 - [ ] Every active TSV href is represented in the generated landing page and
   resolves in the built/deployed artifact.
 - [ ] `mkdocs build --strict`, map build/promote verification, and assembly
   validation all pass from a documented single workflow.
 - [ ] Failed builds are empirically confirmed not to replace the last good
-  deployment.
-- [ ] Cabinet, Bookshelf, and FFFX link back to one another.
+  deployment. **Partial evidence, 2026-09-16** — see `#58` above.
+- [ ] Cabinet, Bookshelf, and FFFX link back to one another. **Confirmed
+  false, 2026-09-16** — see the cross-world nav item above; this is a real
+  gap, not an unchecked assumption.
 - [ ] The About and Colophon essentials in the companion content todo are
   published, then the maintainer explicitly decides when public link-sharing
   warrants the `launched` tag.
