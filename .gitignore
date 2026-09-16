@@ -13,6 +13,13 @@ _test-build/
 public/
 node_modules/
 
+# Scratch clone target for tools/assemble-external.js (#43 Phase 2) -- same
+# role _external/ played as an actions/checkout destination in the old
+# hand-written deploy.yml steps, just no longer created by GitHub Actions
+# itself. Never committed, CI-only in practice, but the script can also be
+# run locally to test the manifest.
+_external/
+
 # Third-party map/design reference images, local-only (unclear licensing
 # for a public repo) -- used as visual reference for the map redesign.
 mapRefs/

@@ -408,6 +408,42 @@ export const entries = [
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2025-26/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2025-26/) -- was an external link before 2026-08-24; repo reorganised into a multi-gallery \"SSD Student Work\" repo and renamed to match, 2026-09-04, mount path updated accordingly."
   },
   {
+    "id": "students-creative-coding-2024-25",
+    "section": "teaching",
+    "title": "Student Work - Creative Coding 2024-25",
+    "href": "teaching/ssd-creative-coding-2024-25/",
+    "order": 12,
+    "weight": 3,
+    "status": true,
+    "kind": "gallery",
+    "tags": [
+      "teaching",
+      "students",
+      "showcase"
+    ],
+    "location": "assembly",
+    "subtitle": "Selected student work and showcases from SSD Creative Coding, 2024-25 cohort.",
+    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2024-25/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2024-25/) -- see content/external-repos.tsv; blocked until that repo's main is pushed with the 2024-25 gallery commits."
+  },
+  {
+    "id": "students-creative-coding-2023-24",
+    "section": "teaching",
+    "title": "Student Work - Creative Coding 2023-24",
+    "href": "teaching/ssd-creative-coding-2023-24/",
+    "order": 14,
+    "weight": 3,
+    "status": true,
+    "kind": "gallery",
+    "tags": [
+      "teaching",
+      "students",
+      "showcase"
+    ],
+    "location": "assembly",
+    "subtitle": "Selected student work and showcases from SSD Creative Coding, 2023-24 cohort.",
+    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2023-24/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2023-24/) -- see content/external-repos.tsv; blocked until that repo's main is pushed with the 2023-24 gallery commits."
+  },
+  {
     "id": "students-emergent-technology",
     "section": "teaching",
     "title": "Student Work - Emergent Technology",

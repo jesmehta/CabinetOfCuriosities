@@ -509,31 +509,36 @@ Steps:
 
 ---
 
-## Quick reference — adding a repo by hand (current, Phase 1)
+## Quick reference — adding a repo (current, Phase 2, since 2026-09-16)
 
-The actual implementation (`.github/workflows/deploy.yml`, #43) is three
-steps per project, all placed between "Build MkDocs Site" and "Setup Pages":
+Generalized once there were enough real examples to generalize from (six
+hand-written projects, per the reasoning this section used to give for
+deferring it). The manifest from section 8 is real now:
+`content/external-repos.tsv`, one row per project (`repository`,
+optional `subfolder`, `destination`, `requiredFiles`/`requiredContent`,
+`status`), parsed/validated by `tools/external-repos-tsv.js` and
+assembled by `tools/assemble-external.js` — a single workflow step that
+reads the manifest, shallow-clones, copies, strips `.git`, and checks
+each project's required files/content, collecting every problem across
+every project before failing (not just the first). Runs between "Build
+MkDocs Site" and "Setup Pages" in `.github/workflows/deploy.yml`, same
+position the old per-project steps occupied. Full as-built account,
+including the SSD reorg that motivated finishing this generalization
+now rather than later: `BACKEND-AND-DEPLOY.md`'s "Multi-repo assembly"
+and "Teaching deployment issue" sections.
 
-1. **Checkout** -- `actions/checkout@v4` the repo into `_external/<name>`
-   (public repo, no auth needed).
-2. **Assemble** -- `mkdir -p public/<destination>`, `cp -r
-   _external/<name>/. public/<destination>/`, then `rm -rf
-   public/<destination>/.git`.
-3. **Validate** -- assert real content exists, not just `index.html` (an
-   empty or half-checked-out repo can still have that) -- so a broken
-   assembly fails `build`, and `deploy` (`needs: build`) never ships it.
-
-Once the live deploy is confirmed (#46), point a Cabinet page at
+**To add a repo now: add one row to `content/external-repos.tsv`. No
+workflow-file change needed.** Then point a Cabinet page at
 `/<destination>/` -- `content/cabinet-entries.tsv` if it belongs on the
 compass map, `mkdocs.yml` if it belongs in the docs nav (#44).
-
-This is deliberately hand-written per project, not the manifest in section 8
--- that generalization is Phase 2 below, worth doing once there are 2-3 real
-examples to generalize from, not before.
+`tools/validate-deployment.js` (new, same pass) then cross-checks that
+`cabinet-entries.tsv` href against the actually-built site on every
+deploy, so a stale/mistyped href fails the build instead of shipping a
+dead link.
 
 ---
 
-## Phase 2 — Generalize
+## Phase 2 — Generalize (done, 2026-09-16)
 
 Create the assembly manifest and assembly script.
 
@@ -542,6 +547,11 @@ Add a small variety of projects, such as:
 - Working with AI;
 - Student Work;
 - one gallery.
+
+Done as `content/external-repos.tsv` + `tools/assemble-external.js`,
+covering all eight projects live at that point (the original six plus
+the two new SSD galleries this same pass added) -- see the "Quick
+reference" section above.
 
 ---
 
@@ -566,20 +576,30 @@ The simplest behaviour is to rebuild the whole site from current sources rather 
 
 ---
 
-## Phase 5 — Validation and resilience
+## Phase 5 — Validation and resilience (done, 2026-09-16)
 
 Before deployment, confirm:
 
-- every required repository was fetched;
-- every project built successfully;
-- expected output folders exist;
-- each project contains an `index.html`;
-- no two projects claim the same mount path;
-- Cabinet output has not been overwritten unexpectedly.
+- every required repository was fetched; -- `assemble-external.js`
+- every project built successfully; -- `assemble-external.js`
+- expected output folders exist; -- `assemble-external.js` (`requiredFiles`)
+- each project contains an `index.html`; -- `assemble-external.js`
+  (`requiredFiles`/`requiredContent`, since a bare `index.html` check
+  alone can't distinguish a real checkout from an empty one for a
+  single-file project)
+- no two projects claim the same mount path; -- rejected at manifest
+  parse time (`external-repos-tsv.js`) *and* at assembly time if a
+  destination collides with something MkDocs already built
+  (`assemble-external.js`)
+- Cabinet output has not been overwritten unexpectedly; -- same
+  collision check, plus `validate-deployment.js` cross-checking every
+  active `cabinet-entries.tsv` href against the built site.
 
 Deployment should be **all-or-nothing**.
 
 If a required project fails, the new Cabinet version should not deploy.
+Structurally true via `deploy`'s `needs: build`, not yet empirically
+confirmed against a real failed run (`BACKEND-AND-DEPLOY.md`'s `#58`).
 
 ---
 

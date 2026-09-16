@@ -321,23 +321,95 @@ still open, tracked as `three-world-launch-phases-ToDo.md` `#142`.
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
 
-1. **`build`** — checks out the repo, installs Python deps, guards
+1. **`build`** — checks out the repo, installs Python + Node, guards
    against `docs/index.md` ever being reintroduced (see
-   `WORLD-SYSTEMS.md`'s homepage rule), checks out six external repos
-   into `_external/` and assembles them into the build:
-   `jesmehta/working-with-ai`, `jesmehta/PromptGenerator`,
-   `jesmehta/ObliqueStrategies`, `jesmehta/SSD_CreativeCodingPage` (all
-   four into `public/teaching/<name>/`), and `jesmehta/swatchFields`,
-   `jesmehta/TraceryBots` (into `public/<name>/` directly, **not**
-   under `teaching/` — a different mount point than the other four).
-   Each assembled repo has an explicit `test -f`/`grep` sanity check
-   before the build proceeds. Runs `mkdocs build --site-dir public`,
-   uploads `public/` as the Pages artifact.
+   `WORLD-SYSTEMS.md`'s homepage rule), then **verifies generated
+   content is current**: re-runs `tools/build-cabinet-content.js` and
+   `build-now-content.js` and fails if that dirties their committed
+   output — those two are otherwise dev-time-only (run locally, output
+   committed), and nothing checks they were actually re-run after the
+   last `content/*.tsv` edit. Runs `mkdocs build --site-dir public
+   --strict`, then **assembles external projects**
+   (`tools/assemble-external.js`, manifest-driven — see "Multi-repo
+   assembly" below) and **validates deployment routes**
+   (`tools/validate-deployment.js`, cross-checks every active
+   `cabinet-entries.tsv` row's local `href` against the actually-built
+   `public/` tree). Uploads `public/` as the Pages artifact.
 2. **`deploy`** — publishes that artifact via `actions/deploy-pages`.
    Has `needs: build`, so a failed `build` means `deploy` never runs
    and GitHub Pages keeps serving the last successful `deploy` —
    structurally all-or-nothing, though not yet empirically confirmed
    against a real failed run (`#58`, still open).
+
+### Multi-repo assembly (#43 Phase 2, generalized 2026-09-16)
+
+`content/external-repos.tsv` is the assembly manifest anticipated by
+`cabinet-multi-repo-assembly-concept-note-short.md` section 8 — one row
+per external project: `repository` (`owner/repo`), optional `subfolder`
+(copy only that subfolder, not the whole repo root — needed for
+`SSD_Student_Work`, a multi-gallery repo), `destination` (mount path
+under `public/`), `requiredFiles` (semicolon-separated paths that must
+exist post-copy) and/or `requiredContent` (semicolon-separated
+`path|substring` pairs, for a project like Oblique Strategies with no
+second file to require — a plain existence check can't tell a real
+checkout from an empty one), and `status` (`true`/`false`/`wip`, only
+`true` rows get assembled). `tools/external-repos-tsv.js` parses/
+validates it (same shared-parser pattern as `cabinet-tsv.js`) —
+duplicate `id`s and duplicate `destination`s are rejected at parse
+time.
+
+`tools/assemble-external.js` replaces the old hand-written
+checkout/assemble/validate step triples (one set of three per project,
+directly in the YAML) with a single step that reads the manifest,
+shallow-clones each active repo (`git clone --depth 1`, not
+`actions/checkout` — no auth needed for these public repos, and this
+way adding a repo never touches the workflow file), copies its
+(sub)folder into `public/<destination>`, strips `.git`, and checks
+`requiredFiles`/`requiredContent`. It also refuses to overwrite a
+destination that already exists in `public/` when it runs (i.e.
+something MkDocs itself already built there) rather than silently
+clobbering it — a second layer against the exact class of bug the
+Sept 2026 SSD reorg produced (see "Teaching deployment issue" below).
+All-or-nothing and fail-loud-on-everything: every project is attempted
+and every problem across every project is collected before the script
+exits non-zero, so one broken project's error message doesn't hide
+another's.
+
+To add another assembled project: add a row to
+`content/external-repos.tsv`. No workflow change needed.
+
+### Teaching deployment issue (SSD Student Work galleries, 2026-09-16)
+
+The Sept 4 2026 `SSD_Student_Work` reorg (repo root became a "SSD
+Student Work" landing page, individual galleries moved into their own
+subfolders) needed a matching Cabinet-side change: the pre-reorg
+`deploy.yml` mounted that repo's whole root at
+`public/teaching/ssd-creative-coding/`, which after the reorg would
+have put the *landing page* there and each gallery one level too deep,
+and its own `script.js` check would have failed outright (`script.js`
+no longer exists at that repo's root). Fixed in the same pass as the
+Phase 2 generalization above by giving each gallery its own manifest
+row with an explicit `subfolder`, rather than mounting the repo root.
+
+`ssd-creative-coding-2025-26` was already fixed this way before this
+pass (mounted correctly, live). This pass added manifest rows +
+`cabinet-entries.tsv` rows for `ssd-creative-coding-2024-25` and
+`ssd-creative-coding-2023-24` (both built in `SSD_Student_Work`, per
+that repo's `documentation/changelog.md`) and a corresponding
+`mkdocs.yml` nav update.
+
+**Not yet live**: as of 2026-09-16, `SSD_Student_Work`'s pushed `main`
+does not yet include the 2024-25/2023-24 gallery commits (held back
+locally, deliberately, per that repo's own `documentation/deployment.md`,
+waiting on this exact Cabinet-side fix). Tested locally against the
+real current GitHub state: `tools/assemble-external.js` correctly fails
+loudly on both new galleries (missing files / missing subfolder) rather
+than deploying a broken or partial assembly — confirmed against a local
+simulation of the post-push state that the rest of the pipeline goes
+fully green once that push happens. **Push `SSD_Student_Work`'s `main`
+before merging/pushing this Cabinet change**, or the very next Cabinet
+deploy fails outright (blocking *all* Cabinet updates, not just the two
+new galleries, since `build` is all-or-nothing) until that push happens.
 
 **Not pinned to a SHA**: the external checkouts pull each repo's
 current default branch at build time. Pushing to one of them alone
@@ -376,6 +448,21 @@ backend/frontend things are left"):
 Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
+
+### 2026-09-16 — Multi-repo assembly generalized (#43 Phase 2); teaching deployment validation added; SSD 2024-25/2023-24 galleries wired in
+
+See "Multi-repo assembly" and "Teaching deployment issue" above for the
+full account. Summary: `content/external-repos.tsv` (new manifest) +
+`tools/assemble-external.js` (new, replaces six hand-written
+checkout/assemble/validate step triples in `deploy.yml`) +
+`tools/validate-deployment.js` (new, cross-checks active
+`cabinet-entries.tsv` hrefs against the built `public/` tree) +
+`tools/external-repos-tsv.js` (new, shared manifest parser). `deploy.yml`
+also gained a Node setup step, a "verify generated content is current"
+step (catches a `content/*.tsv` edit committed without re-running its
+generator), and `--strict` on the `mkdocs build` call (tested clean
+locally beforehand). Not yet pushed/merged — see "Not yet live" above
+for the `SSD_Student_Work` push precondition that has to happen first.
 
 ### 2026-09-08 — `mkdocs-section-index` pinned to `0.3.10` (Cabinet + fffx + Bookshelf); two empty `docs/fab/*.md` stubs fixed
 
@@ -437,6 +524,10 @@ See "Repo structure" above.
 
 ## Todo / watch-out-for
 
+- **Push `SSD_Student_Work`'s `main`** before merging/pushing this
+  Cabinet change (2026-09-16) — see "Teaching deployment issue" above.
+  Not doing so first breaks the very next Cabinet deploy entirely, not
+  just the two new galleries.
 - **`#58`** — failed-build-doesn't-replace-live-deploy is structurally
   sound by construction (`needs: build`) but not empirically confirmed
   against a real failed run. Needs the GitHub Actions tab (or `gh`
