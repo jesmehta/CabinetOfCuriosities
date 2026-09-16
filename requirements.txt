@@ -15,6 +15,13 @@ markdown-captions
 # still shipped) -- see three-world-launch-phases-ToDo.md #142.
 mkdocs-section-index==0.3.10
 
+# Same "properdocs" problem as above, same fix: pinned to 1.2.2, the last
+# release before 1.2.3 added a hard dependency on it. Used to retire
+# docs/fffx/PackingShapes.md in favor of FFFX's canonical copy while still
+# redirecting Cabinet's old URL there -- see mkdocs.yml's `redirects` plugin
+# config.
+mkdocs-redirects==1.2.2
+
 
 
 

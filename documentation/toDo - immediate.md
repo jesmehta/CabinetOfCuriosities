@@ -59,13 +59,17 @@ Completion below means committed implementation, not a verified live deployment.
 - [x] **Rewrite the WebTech hub.** Replace `docs/webtech/index.md`'s stale
   "Creative Coding / this is moving" copy with a concise WebTech introduction.
   Cross-link FFFX's canonical Circle Packing page.
-- [ ] **Replace Cabinet's legacy Circle Packing duplicate with a canonical link.**
-  FFFX holds the project; Cabinet WebTech links to it. Remove/replace the frozen
-  duplicate rather than maintain its malformed YouTube link as a second copy.
-  FFFX's own equivalent link was already fixed in `351fb1f`. The malformed-link
-  *syntax* itself (doubled opening paren) was fixed 2026-09-16 as a side effect
-  of the `#84` validator work below, so it no longer 404s -- the retire/redirect
-  decision for the page itself is still open.
+- [x] **Replace Cabinet's legacy Circle Packing duplicate with a canonical link.**
+  Done 2026-09-16: `docs/fffx/PackingShapes.md` and its six essay images
+  deleted; `docs/compass/about.md`'s stale raw-github.io link retargeted
+  straight to FFFX's canonical page instead. Added the `mkdocs-redirects`
+  plugin (pinned to `1.2.2` -- 1.2.3+ has the same undeclared `properdocs`
+  hard-dependency problem as `mkdocs-section-index`, same fix) so Cabinet's
+  old `/fffx/PackingShapes/` URL still serves a real meta-refresh redirect to
+  FFFX's page instead of 404ing, for anything external still pointing at it.
+  Verified locally: build produces the redirect HTML at the right path with
+  the right target, and the full pipeline (assemble/copy/validate) still
+  passes clean.
 - [ ] **Correct the remaining source-of-truth notes.**
   - WebTech section note: it is active and mapped, not waiting for `#69`.
   - Compass entry notes: use the current `docs/compass/` paths.

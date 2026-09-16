@@ -52,7 +52,7 @@ My interests, personal as well as teaching, range or intersect across the shifti
 ![](../_images/about/p5CollageHz.jpg)  
 
 
-- [**Closing the circle between the material and the digital**](https://jesmehta.github.io/CabinetOfCuriosities/fffx/PackingShapes/) - [**digital fabrication**](https://www.jesalmehta.com/cabinet-of-curiosities/), plotter art, 3d scanning, [**interactive electronics**](https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/project_final/)
+- [**Closing the circle between the material and the digital**](https://fffx.cabinetofcuriosities.in/tools-and-libraries/circle-packing-library/) - [**digital fabrication**](https://www.jesalmehta.com/cabinet-of-curiosities/), plotter art, 3d scanning, [**interactive electronics**](https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/project_final/)
 
 ![](../_images/about/2022_0103_205557.jpg)  
 ![](../_images/about/DigiFabHz.jpg) 
