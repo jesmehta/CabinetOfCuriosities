@@ -173,10 +173,8 @@ whether the page fulfils its role.
   attached to substantive page edits rather than launching a broad stylistic
   rewrite.
 - [ ] **Make the generated inventory distinguish intentional exceptions.** Add
-  explicit annotations/allowlisting for the nav-only placement of Site Notes,
-  without treating that placement as proof its content is current; also cover
-  nested bot pages, map-only external world entries, and in-page anchors. This
-  keeps the content report actionable.
+  explicit annotations/allowlisting for nested bot pages, map-only external
+  world entries, and in-page anchors. This keeps the content report actionable.
 - [ ] **Correct and separate the four Fab records.** They are not competing
   names for the same chronology:
   - Fab23 Bhutan: a future personal write-up of the 2023 Fab conference/event;
@@ -292,12 +290,13 @@ Bookshelf content order:
 
 ## P1 — maximum visible gain
 
-- [ ] **Teaching: wire the already-live Emergent Technologies 2026–27 and
+- [x] **Teaching: wire the already-live Emergent Technologies 2026–27 and
   independent Coding with AI destinations.** Link Emergent Technologies
   directly to its live `SSD_Student_Work/ssd-emergent-tech-2026-27/` gallery.
   Keep Coding with AI and Working with AI as separate but visibly interconnected
   projects; change the current sibling-level link to the live nested
-  `/teaching/working-with-ai/coding-with-ai/index.html` destination.
+  `/teaching/working-with-ai/coding-with-ai/index.html` destination. Completed
+  in `02757d6` (2026-09-16).
 - [ ] **Teaching: assemble Creative Coding 2024–25.** The content exists; make
   it available from the work computer as the sibling folder
   `SSD_Student_Work/ssd-creative-coding-2024-25/`, then wire the Cabinet link.

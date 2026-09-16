@@ -56,26 +56,15 @@ restructure has since been implemented.
 
 ## Do now — correctness and misleading state
 
-- [ ] **Repair unpublished links on the Teaching hub.**
-  `docs/teaching/index.md` currently links to six routes that neither exist in
-  `docs/` nor get assembled by `.github/workflows/deploy.yml`:
-  `ssd-creative-coding-2024-25/`, `ssd-emergent-tech-2026-27/`,
-  `ssd-emergent-tech-2024-25/`, `dragons-of-ssd/`, `ssd-papiermache`, and
-  `coding-with-ai/`. Their content readiness is not uniform: the maintainer
-  confirms Emergent Technologies 2026–27 is live at
-  `https://jesmehta.github.io/SSD_Student_Work/ssd-emergent-tech-2026-27/`
-  and confirmed that Coding with AI branched from, but should stand independently
-  alongside, Working with AI at
-  `https://cabinetofcuriosities.in/teaching/working-with-ai/`; its live nested
-  page is
-  `https://cabinetofcuriosities.in/teaching/working-with-ai/coding-with-ai/index.html`.
-  The hub's current relative `coding-with-ai/` link therefore points at the
-  wrong route. Creative Coding
-  2024–25 needs assembly; Emergent Technologies
+- [ ] **Complete publication of the four unfinished Teaching collections.**
+  The two already-live destinations were corrected in `02757d6`: Emergent
+  Technologies 2026–27 now points to its live `SSD_Student_Work` gallery, and
+  Coding with AI points to its live nested page under Working with AI. The
+  remaining work is no longer a six-link repair. Creative Coding 2024–25 needs
+  assembly; Emergent Technologies
   2024–25 is partially underway as Twine branching narratives blocked on
   background images; and the two papier-mâché galleries need
-  curation from the image archive. Wire the live destinations and assemble the
-  existing gallery instead of treating all six as missing content.
+  curation from the image archive. Assemble and publish those four collections.
 - [ ] **Fix stale source-of-truth notes.** They do not currently break the
   build, but they actively misdescribe the system:
   - `content/cabinet-sections.tsv` says `web-tech` has `status: false`, uses
@@ -89,12 +78,11 @@ restructure has since been implemented.
   - `BACKEND-AND-DEPLOY.md` still names `SSD_CreativeCodingPage` and the old
     mount grouping instead of `SSD_Student_Work`'s year-specific subfolder.
 - [ ] **Reconcile the historical master todo with current reality.** Mark or
-  annotate `#69`, `#81`, and the completed portion of `#80`; keep `#76` open
-  because
-  the existing Site Notes page describes v1 (2024). Resolve `#76` by folding
-  its useful historical material into the Colophon, then remove the current
-  standalone page/nav entry. Its original rendered version is already preserved
-  at `archived-landing-pages/v1/site_notes/index.html`; replace the stale
+  annotate `#69`, `#76`, `#81`, and the completed portion of `#80`. Site Notes
+  (`#76`) is complete: its useful historical material is represented in the
+  Colophon, its original rendered version remains preserved at
+  `archived-landing-pages/v1/site_notes/index.html`, and the current source and
+  nav entry have been removed. Replace the stale
   2026-08-30 immediate-priorities view; decide whether these two focused files
   complete the remaining split intended by `#126`. Preserve its history rather
   than deleting it.
@@ -146,9 +134,9 @@ content todo; take these on when they remove a real maintenance or release risk.
   Asimov, and Christie projects; do not assume MkDocs nav reaches into them.
 - [ ] **Add an explicit inventory allowlist/annotation mechanism.** Current
   inventory flags include intentional differences: nested Trippy Gourmet/Mad
-  Solutionist nav links, nav-only Site Notes, map-only external world entries,
-  and an in-page Teaching anchor. Keep true mismatches visible without teaching
-  readers to ignore the entire Flags section.
+  Solutionist nav links, map-only external world entries, and an in-page
+  Teaching anchor. Keep true mismatches visible without teaching readers to
+  ignore the entire Flags section.
 - [ ] **Cross-reference `promote.mjs` and `index.template.html` path rewrites.**
   The fixed rewrite list is intentionally fail-loud, but each file should point
   maintainers to the other.

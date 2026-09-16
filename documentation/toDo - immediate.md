@@ -58,12 +58,13 @@ Created 2026-09-16.
 
 ## Recommended order
 
-1. Correct the live Teaching links.
-2. Retire the current Site Notes source.
-3. Finish About's CV and image assets.
-4. Assemble and complete the Teaching collections.
-5. Publish the FFFX content sprint.
-6. Add deployment validation.
-7. Generalize repository assembly.
-8. Complete cross-world and homeworld navigation.
+1. Finish About's CV and image assets.
+2. Assemble and complete the remaining Teaching collections.
+3. Publish the FFFX content sprint.
+4. Add deployment validation.
+5. Generalize repository assembly.
+6. Complete cross-world and homeworld navigation.
+
+Completed in this pass: the already-live Teaching links were corrected in
+`02757d6`, and the current Site Notes source was retired on 2026-09-16.
 9. Move My Writings to Cabinet.
