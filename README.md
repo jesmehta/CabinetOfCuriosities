@@ -228,6 +228,14 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Click-to-zoom images via `mkdocs-glightbox` (2026-09-16)
+
+Photo-heavy pages (Fab23-Bhutan and others like it) can now expand images
+in place — an on-page overlay, no new tab — via the `mkdocs-glightbox`
+plugin, enabled site-wide with defaults. See
+`documentation/backend-and-deploy/BACKEND-AND-DEPLOY.md`'s
+"`mkdocs-glightbox` plugin" entry for the full technical account.
+
 ### New `documentation/content/` folder; Teaching/Machines & Makings/Webtech nav headers become clickable (2026-09-08)
 
 `mkdocs-section-index` added to Cabinet and fffx (ported from Bookshelf's

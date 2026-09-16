@@ -109,6 +109,10 @@ this merge.
 - [Clarifying question: shared sections across folders](#part6-shared-sections)
 - [This handoff, Part 6](#this-handoff-part-6)
 
+**Part 7 — `mkdocs serve` wouldn't start, and what that turned up**
+
+**Part 8 — Click-to-zoom images via `mkdocs-glightbox`**
+
 ---
 
 # Part 1 — Cloudflare Web Analytics rollout
@@ -1750,3 +1754,44 @@ plugin per the `mkdocs-section-index` plugin entry above). A bare
 quietly reintroduced `properdocs` regardless of what was pinned locally.
 Pinned `mkdocs-section-index==0.3.10` with an inline comment explaining
 why, in all three repos' `requirements.txt`, not just Cabinet's.
+
+# Part 8 — Click-to-zoom images via `mkdocs-glightbox`
+
+Opened with a direct question about a specific plugin, not a vague ask:
+
+> **for the fab23-bhutan page, as well as other photo heavy pages - look
+> at the fabricademy documentation - cna the glightbox plugin be used to
+> expand the images without moveing to a new tab or opening them
+> eslewhere ?**
+
+Checked whether the plugin was already wired in (`mkdocs.yml`'s
+`plugins:` list, `requirements.txt`) before answering — it wasn't.
+Answered with a recommendation rather than implementing straight away:
+`mkdocs-glightbox` is real and does exactly this — it hooks every `<img>`
+mkdocs-material renders (no need to wrap images in links first) and
+expands them in an on-page overlay, never a new tab. Named the trade-off
+up front (one more dependency to keep pinned, a small self-hosted CSS/JS
+payload added to every page) and asked before wiring it in.
+
+> **yes, and document it as well**
+
+Executed: added `- glightbox` to `mkdocs.yml`'s `plugins:` (defaults, no
+overrides) and `mkdocs-glightbox` to `requirements.txt`. Verified rather
+than assumed working — ran a real `mkdocs build --strict` against a
+throwaway `$TEMP` site-dir using the actual `mkdocs.exe` this repo's
+`run Mkdocs serve.bat` resolves to (the Python 3.13 environment; see
+Part 7 above on why that's not the same environment `python`/`pip`
+resolve to by default), confirmed the strict build stayed clean and that
+Fab23-Bhutan's built HTML had all 36 images wrapped in
+`class="glightbox"` anchors with the plugin's CSS/JS actually injected,
+then deleted the test build directory. `mkdocs-glightbox==0.5.1` turned
+out to already be installed in that Python 3.13 environment beforehand —
+nothing needed installing locally to test; `requirements.txt` is what
+makes CI and any other machine building this repo pick it up too.
+
+Left `auto_caption` off on purpose rather than turning on every option
+that looked available: it would pull each image's `alt` text into the
+lightbox caption, and every image on the fab pages currently carries the
+placeholder alt text `"alt text"` — turning it on now would just repeat
+that placeholder across all 36 slides instead of showing anything real.
+Revisit once actual captions/alt text exist.

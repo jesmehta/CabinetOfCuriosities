@@ -317,6 +317,46 @@ genuine mkdocs-material 2.0 warning itself was NOT investigated further
 -- whether it's a real near-term risk to this site's plugin stack is
 still open, tracked as `three-world-launch-phases-ToDo.md` `#142`.
 
+## `mkdocs-glightbox` plugin (2026-09-16)
+
+Added so photo-heavy pages (`docs/fab/fab23-bhutan.md` and others like
+it) can click-to-zoom images in place, no new tab, no re-authoring of
+existing `![alt](path)` markdown into links first. Before this,
+markdown images were plain, unlinked `<img>` tags with no expand
+behavior at all.
+
+[`mkdocs-glightbox`](https://blueswen.github.io/mkdocs-glightbox/) is an
+`on_page_content`/`on_post_page` MkDocs plugin: it wraps every
+not-already-linked `<img>` on a built page in `<a class="glightbox">`,
+then injects one `GLightbox(...)` JS instance per page (plus its own
+self-hosted CSS/JS, copied into `assets/` at build time — no CDN). With
+no `data-gallery` grouping set, GLightbox treats every image on a given
+page as one sequential set, so a photo-dump page gets next/prev
+navigation through all of it for free. Applies site-wide automatically —
+any page with plain markdown images picks it up, not just `fab/` — a
+page can opt out with `glightbox: false` in its own front matter if that
+'s ever needed.
+
+Enabled with defaults: `- glightbox` under `mkdocs.yml`'s `plugins:`, no
+config overrides. Verified rather than assumed working: a real
+`mkdocs build --strict` (against the Python 3.13 environment this repo's
+`run Mkdocs serve.bat` actually uses — see "mkdocs serve wouldn't start"
+above for why that's not the same environment `python`/`pip` resolve to
+by default) stayed clean, and Fab23-Bhutan's built HTML had all 36
+images wrapped in `class="glightbox"` anchors with the plugin's CSS/JS
+present. `mkdocs-glightbox==0.5.1` was already installed in that
+environment beforehand; added (unpinned) to `requirements.txt` so CI and
+any other machine building this repo picks it up too — no known
+supply-chain concern the way `mkdocs-section-index`/`properdocs` had, so
+no pin needed.
+
+**`auto_caption` deliberately left off** (the default): it would pull
+each image's `alt` text into the lightbox caption, and every image on
+the fab pages still carries the placeholder alt text `"alt text"` —
+turning it on now would just repeat that placeholder across every slide
+instead of showing anything real. Revisit once actual per-image
+captions/alt text exist.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` runs on every push to `main`, two jobs:
@@ -449,6 +489,12 @@ Full resolution note: `three-world-launch-phases-ToDo.md` `#59`.
 
 ## Changelog
 
+### 2026-09-16 — `mkdocs-glightbox` plugin added (click-to-zoom images)
+
+See "`mkdocs-glightbox` plugin" above. Enabled site-wide with defaults;
+verified against a real strict build. Conversation log: Part 8 of
+`conversation-backend-and-deploy.md`.
+
 ### 2026-09-16 — Multi-repo assembly generalized (#43 Phase 2); teaching deployment validation added; SSD 2024-25/2023-24 galleries wired in
 
 See "Multi-repo assembly" and "Teaching deployment issue" above for the
@@ -564,3 +610,7 @@ See "Repo structure" above.
 - **fffx has `mkdocs-section-index` installed but nothing using it yet**
   (see "`mkdocs-section-index` plugin" above) — revisit once any fffx
   section gets a real `index.md` hub page wired into its nav.
+- **`mkdocs-glightbox`'s `auto_caption` is off** (see "`mkdocs-glightbox`
+  plugin" above) because the fab pages' `alt` text is still the literal
+  placeholder `"alt text"` — turn it on once real per-image
+  captions/alt text get written, not before.

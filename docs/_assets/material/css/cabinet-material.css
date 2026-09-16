@@ -29,3 +29,47 @@
 .md-tabs {
   background-color: var(--cab-ink);
 }
+
+/* Fab travel-log photo captions (e.g. docs/fab/fab23-bhutan.md). The
+   markdown_captions extension wraps every `![alt](img)` in a <figure>, so
+   alignment/sizing attributes attached via attr_list (`{ .fab-img-left }`)
+   land on the <figure>, not the <img> -- style the descendant img directly
+   rather than relying on inline styles/attrs that silently no-op. */
+.md-typeset figure.fab-img-left,
+.md-typeset figure.fab-img-right {
+  margin: 0 0 1em 0;
+}
+
+.md-typeset figure.fab-img-left {
+  float: left;
+  margin-right: 1.5em;
+}
+
+.md-typeset figure.fab-img-right {
+  float: right;
+  margin-left: 1.5em;
+}
+
+.md-typeset figure.fab-img-left img,
+.md-typeset figure.fab-img-right img {
+  height: 400px;
+  width: auto;
+}
+
+.md-typeset figure.fab-img-center {
+  display: block;
+  clear: both;
+  margin: 1em auto;
+  text-align: center;
+}
+
+.md-typeset figure.fab-img-center.fab-img-h400 img {
+  height: 400px;
+  width: auto;
+}
+
+/* A day heading after a left/right-floated image must start clear of it,
+   not squeeze into the remaining space beside the photo. */
+.md-typeset h2 {
+  clear: both;
+}

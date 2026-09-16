@@ -109,6 +109,10 @@ markdown_extensions:
 plugins:
   - mkdocs-video
   - section-index
+  # Click-to-zoom overlay for every image, in place -- no new tab, no
+  # link-wrapping needed in the markdown. See BACKEND-AND-DEPLOY.md's
+  # "mkdocs-glightbox plugin" entry.
+  - glightbox
   - redirects:
       redirect_maps:
         # docs/fffx/PackingShapes.md retired in favor of FFFX's canonical
