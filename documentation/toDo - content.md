@@ -1,7 +1,7 @@
 # ToDo — Content
 
 Current Cabinet content and information-architecture work. Reconciled again
-2026-09-16 through Cabinet `1d320df` and Bookshelf `117a2cc`. Original audit
+2026-09-16 through Cabinet `b667bc2` and Bookshelf `117a2cc`. Original audit
 2026-09-12
 against:
 
@@ -91,7 +91,9 @@ observations, not a claim that every build or hosted page was rechecked today.
 - [ ] **Repair Teaching publication according to actual readiness.** Three
   unfinished hub routes remain; distinguish them from completed wiring:
   - Creative Coding 2024–25 and 2023–24: built in SSD Student Work and wired
-    into Cabinet's manifest/registry/nav in `30c1de6`; verify deployment/assets;
+    into Cabinet's manifest/registry/nav in `30c1de6`; **deployment verified
+    live 2026-09-16** — both routes return 200 with real gallery content and
+    assets;
   - Emergent Technologies 2024–25: a real set of Twine branching narratives is
     partially underway and belongs in
     `SSD_Student_Work/ssd-emergent-tech-2024-25/`; progress is currently stuck
@@ -110,6 +112,12 @@ observations, not a claim that every build or hosted page was rechecked today.
 
   Do not label the two live projects “forthcoming,” and do not describe the
   archive-curation jobs as absent ideas.
+  - **Interim fix, 2026-09-16 (`e3577bf`):** Emergent Technologies 2024-25,
+    Dragons of SSD, and Playing with Pulp were dead links on the live Teaching
+    hub (routes never built) until a new deploy-time link validator (`#84`)
+    caught them; softened to plain "gallery not yet published" text rather
+    than left as 404s. Restore as real links once each destination exists —
+    this is a stopgap, not the content work itself.
 
 ## Current surface matrix
 
@@ -120,14 +128,14 @@ observations, not a claim that every build or hosted page was rechecked today.
 | Colophon | `compass-s`, live | Yes | Yes | **Filled and publication-clean:** ~1,932 words plus archive links | **Complete:** link correction committed in `46160a0`; strict Cabinet build passes. |
 | Site map | `compass-w`, live | Yes | Yes | **Intentionally concise index:** generated cross-world routes | **Live:** refresh after sibling TSV changes; distinguish generated flags from editorial decisions. |
 | Site Notes | No TSV row | No compass direction | Removed | **Retired (2026-09-16):** useful material folded into Colophon, original preserved at `archived-landing-pages/v1/site_notes/index.html` | **Done.** Source file, nav entry, and manifest/inventory references all removed. |
-| Teaching hub | Section live | Yes | Clickable header | **Filled hub:** three unfinished routes (Emergent 2024–25, Dragons, Pulp) | **Partial publication/curation:** two live links repaired; Creative Coding 2024–25/2023–24 built and wired, deployment verification pending. Retain useful hub copy; no padding required. |
-| SSD Creative Coding 2024–25 / 2023–24 | Entries active | Generated data wired | Yes | **Built galleries:** SSD source committed; Cabinet assembly wired in `30c1de6` | **Implementation done; release check open:** verify Actions and deployed routes/assets. |
+| Teaching hub | Section live | Yes | Clickable header | **Filled hub:** three unfinished routes (Emergent 2024–25, Dragons, Pulp) | **Partial publication/curation:** two live links repaired; Creative Coding 2024–25/2023–24 built, wired, and **verified live 2026-09-16**. The three unfinished routes are now honest unlinked text (`e3577bf`), not dead links. Retain useful hub copy; no padding required. |
+| SSD Creative Coding 2024–25 / 2023–24 | Entries active | Generated data wired | Yes | **Built galleries:** SSD source committed; Cabinet assembly wired in `30c1de6` | **Live, verified 2026-09-16:** both routes return 200 with real content/assets; Actions green on both repos. |
 | SSD Creative Coding 2025–26 | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Working with AI | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Prompt Generator | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Oblique Strategies | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Emergent Technology anchor | Entry live | Yes | No exact nav row | Points into Teaching hub | **Live by design:** ensure the target heading/anchor remains stable; annotate inventory rather than adding a duplicate nav item automatically. |
-| WebTech hub | Section live | Yes | Clickable header | **Stub/stale:** 42-word legacy intro | **Needs content correction:** brevity is not the issue; it still calls itself Creative Coding and says the work is moving to FFFX. A concise replacement can be complete. |
+| WebTech hub | Section live | Yes | Clickable header | **Filled, current (2026-09-16, `8e7e502`):** rewritten with real project links | **Done:** no longer calls itself Creative Coding or claims work is "moving"; lists its own live projects (Branching Narrative, Dot Mandala, Tracery Bots, Swatch Fields) and cross-links FFFX's canonical Circle Packing Library. |
 | Dot Mandala Tool | Entry live | Yes | Yes | **Filled:** ~1,000 words with images | **Live:** easy metadata/thumbnail candidate. |
 | Tracery Bots | Entry live | Yes | Yes | **Filled:** ~680 words plus two assembled bot children | **Live:** nested Trippy Gourmet/Mad Solutionist nav rows are intentional, not missing TSV rows. |
 | Branching Narrative/Twine | Entry live | Yes | Yes | **Stub/partial:** very short project page | **Needs content:** confirm the experience works and add enough context or a screenshot to explain it. |
@@ -144,7 +152,7 @@ observations, not a claim that every build or hosted page was rechecked today.
 | Fabricademy 2026 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from the Fab25 Czechia event write-up; correct the stale TSV note claiming the href is blank. |
 | Fab23 Bhutan | Hidden `fab-23` | No | Commented | **Stub:** event-write-up file exists | Gather event material and write the personal event account; correct metadata that conflates it with Fab Academy coursework. |
 | Fab25 Czechia | Incorrectly represented as hidden `fab-26` | No | Commented with correct Fab25 title | **Stub:** event-write-up file exists | Rename/correct the TSV record and develop the 2025 event write-up. |
-| FFFX world | Section and two entries live | Yes | World link only | External subdomain | **Live externally; local legacy folder needs disposition.** |
+| FFFX world | Section and two entries live | Yes | World link only | External subdomain | **Live externally; local legacy folder partially resolved.** Circle Packing/PackingShapes duplicate deleted 2026-09-16 (`b667bc2`), redirected to FFFX's canonical page. `docs/fffx/VeraMolnarRetrospective.md`, `100Gradients.md`, and `particleSystems.md` are still orphaned frozen copies awaiting the same disposition. |
 | Visual Field Notes | Section `wip`, entries hidden | Not rendered because it has no visible entries | No | **Assets complete, concept/page absent:** photography exists for Gujarati Type, Doors of Kutch, and Kochi | **Hub plus three collections:** sort the photographs, clarify the shared editorial approach, design the hub/layout system, then create separate Gujarati Type, Doors of Kutch, and Kochi pages. |
 | DataViz | Section/entry hidden | No | No | **Stub:** one-line file, viable future index role | **Deliberately hidden:** do not activate now, even though a concise curated cross-world index could eventually fulfil the role. |
 | Blog | No TSV | No | No | **Stub:** one-line file | **Reserved with a real concept:** seed from the Atlas writing cues listed in `scratchNotes.md`. |
@@ -153,27 +161,31 @@ observations, not a claim that every build or hosted page was rechecked today.
 
 ## Low-hanging content wins
 
-- [ ] **Rewrite `docs/webtech/index.md`.** Keep it short, but make its heading,
-  description, and relationship to FFFX match the now-settled WebTech umbrella.
+- [x] **Rewrite `docs/webtech/index.md`.** Done 2026-09-16 (`8e7e502`): short,
+  lists WebTech's own live projects, and cross-links FFFX's canonical Circle
+  Packing Library instead of claiming the work is "moving" there.
 - [ ] **Develop the 3D-printing fragments into individual write-ups.** Mecha,
   Flexures, Polyhedra, and George Hart already have external source material.
   Use those links to gather text/images, then create real project treatments;
   add a concise 3D-printing index only to orient readers among the filled pages.
-- [ ] **Migrate the two substantive legacy FFFX pages.** Local
-  `fffx/PackingShapes.md` (~819 words) and `VeraMolnarRetrospective.md`
-  (~311 words) are orphaned from Cabinet nav and the folder is declared frozen.
-  Move any unique Vera Molnar material to FFFX, then delete the Cabinet copy;
-  Vera belongs purely in FFFX. FFFX is also canonical for Circle Packing/Packing
-  Shapes: consolidate the full write-up there, then make Cabinet's WebTech entry
-  link to it rather than maintaining a duplicate Cabinet copy.
-- [x] **FFFX Circle Packing links repaired.** Commit `351fb1f` fixed its six
-  image paths and malformed YouTube link; FFFX strict build now passes. The
-  frozen Cabinet duplicate still contains the old malformed link, but it is to
-  be removed/replaced by a WebTech link to canonical FFFX rather than repaired
-  as a second maintained copy.
+- [ ] **Migrate the remaining legacy FFFX page.** Local
+  `fffx/VeraMolnarRetrospective.md` (~311 words) is orphaned from Cabinet nav
+  and the folder is declared frozen. Move any unique material to FFFX, then
+  delete the Cabinet copy and redirect, same pattern as Circle Packing below.
+  (Circle Packing/PackingShapes itself is done — see next item.)
+- [x] **FFFX Circle Packing links repaired, Cabinet duplicate retired.**
+  Commit `351fb1f` fixed FFFX's six image paths and malformed YouTube link;
+  FFFX strict build now passes. **2026-09-16 (`e3577bf`, `b667bc2`):** the two
+  copies had already drifted — Cabinet's frozen duplicate had the identical
+  malformed-link bug, fixed there too as a side effect of `#84`'s validator
+  work — then Cabinet's `docs/fffx/PackingShapes.md` and its six essay images
+  were deleted outright, `docs/compass/about.md`'s stale link retargeted
+  straight to FFFX's canonical page, and a `mkdocs-redirects`-based redirect
+  added so Cabinet's old URL still resolves instead of 404ing.
 - [ ] **Add real thumbnails where assets already exist (`#23/#86/#91`).** Best
-  first candidates are Circle Packing/Packing Shapes, Dot Mandala, MiniLoom,
-  and About. Confirm the landing renderer's expected path/format before filling
+  first candidates are Dot Mandala, MiniLoom, and About (Circle Packing was
+  never a Cabinet TSV entry, and is now retired from Cabinet entirely — see
+  above). Confirm the landing renderer's expected path/format before filling
   the TSV; do not merely populate a currently unused column.
 - [ ] **Clean small visible copy errors during the page pass.** Examples found
   in live pages include “geogrpahy,” “percieve,” and “Olderpage.” Keep this
@@ -207,7 +219,7 @@ published yet.
 | Content | TSV / landing | MkDocs nav | Source state | Next action |
 |---|---|---|---|---|
 | Vera Molnar | Live | Yes | **Filled:** ~322 words | Keep live; add stronger imagery/context only if it improves the study. |
-| Circle Packing Library | Live | Yes | **Filled and technically clean:** ~941 words | Six image paths and the malformed YouTube link were fixed in `351fb1f`; strict FFFX build passes. Cabinet WebTech still needs its canonical cross-link. |
+| Circle Packing Library | Live | Yes | **Filled and technically clean:** ~941 words | Six image paths and the malformed YouTube link were fixed in `351fb1f`; strict FFFX build passes. **Done 2026-09-16:** Cabinet WebTech now cross-links here (`8e7e502`), and Cabinet's own frozen duplicate page is deleted with a redirect to this page (`b667bc2`) — this is now the single maintained copy. |
 | Prompt Generator | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
 | Oblique Strategies | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
 | SSD Creative Coding 2025–26 | Live external | Yes | **External:** year-specific gallery present; content maturity not re-audited here | Verified current destination. |
@@ -226,7 +238,8 @@ published yet.
 
 FFFX content order:
 
-- [x] Circle Packing repaired and verified under a strict FFFX build (`351fb1f`).
+- [x] Circle Packing repaired and verified under a strict FFFX build (`351fb1f`);
+  now the sole copy, Cabinet's duplicate retired with a redirect (`b667bc2`).
 - [ ] Then publish Dance of Planets and Island Generator: both are already
   coded and need embedding, image examples, and write-ups rather than invention.
 - [ ] Complete Lenticular next when its remaining code and DOM controls are
