@@ -162,13 +162,12 @@ content todo; take these on when they remove a real maintenance or release risk.
 
 ## FFFX — structure and deployment
 
-Audited 2026-09-13 directly against `form-follows-fx` at committed HEAD
-`95434d7`, while preserving its existing modified and untracked files.
+Audited again 2026-09-16 against `form-follows-fx` at committed HEAD `351fb1f`,
+while preserving its existing modified and untracked files.
 
-- [ ] **Make the strict build pass.** `mkdocs build --strict` currently aborts:
-  Circle Packing has six image links one directory too high and one malformed
-  YouTube link with doubled parentheses. CI currently runs a non-strict build,
-  so these warnings do not prevent deployment and are easy to overlook.
+- [x] **FFFX strict build passes.** Commit `351fb1f` fixed Circle Packing's six
+  image paths and malformed YouTube link. Reverified with
+  `mkdocs build --strict` on 2026-09-16.
 - [ ] **Commit the in-progress content set coherently.** The tracked generated
   landing data already names the new portal routes, while several matching
   Markdown files/folders are untracked. Commit source TSV, generated output,
@@ -199,13 +198,14 @@ Audited 2026-09-13 directly against `form-follows-fx` at committed HEAD
 
 ## Bookshelf — structure and deployment
 
-Audited 2026-09-13 directly against `TheBookshelfOfCuriosities` at committed
-HEAD `fb312e6`, plus clearly separated maintainer working-tree changes.
+Audited again 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
+`28fe92a`, plus clearly separated maintainer working-tree changes.
 
-- [ ] **Fix Christie publication routing before the next deploy.** Decision:
-  `/christie/` is canonical and `christie-timeline-v3.html` can be renamed to
-  `projects/christie/index.html`. Change the landing TSV's `agatha/` href,
-  regenerate its landing data, and keep MkDocs nav on `/christie/`.
+- [x] **Christie publication routing fixed.** Commit `28fe92a` made
+  `/christie/` canonical, created `projects/christie/index.html`, updated the
+  TSV/generated landing data, and retained MkDocs nav on `/christie/`.
+  Reverified with a strict Bookshelf build and assembled entry-point check on
+  2026-09-16.
 - [ ] **Validate assembled project entry points.** The workflow copies every
   `projects/*/` directory without checking for `index.html`; this allowed the
   Christie mismatch. Require an entry point and any essential assets for every

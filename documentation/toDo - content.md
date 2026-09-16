@@ -163,8 +163,11 @@ whether the page fulfils its role.
   Vera belongs purely in FFFX. FFFX is also canonical for Circle Packing/Packing
   Shapes: consolidate the full write-up there, then make Cabinet's WebTech entry
   link to it rather than maintaining a duplicate Cabinet copy.
-- [ ] **Fix the Packing Shapes YouTube link** while reviewing that page:
-  `]((https://youtu.be/QHEQuoIKgNE))` should have one pair of parentheses.
+- [x] **FFFX Circle Packing links repaired.** Commit `351fb1f` fixed its six
+  image paths and malformed YouTube link; FFFX strict build now passes. The
+  frozen Cabinet duplicate still contains the old malformed link, but it is to
+  be removed/replaced by a WebTech link to canonical FFFX rather than repaired
+  as a second maintained copy.
 - [ ] **Add real thumbnails where assets already exist (`#23/#86/#91`).** Best
   first candidates are Circle Packing/Packing Shapes, Dot Mandala, MiniLoom,
   and About. Confirm the landing renderer's expected path/format before filling
@@ -203,7 +206,7 @@ published yet.
 | Content | TSV / landing | MkDocs nav | Source state | Next action |
 |---|---|---|---|---|
 | Vera Molnar | Live | Yes | **Filled:** ~322 words | Keep live; add stronger imagery/context only if it improves the study. |
-| Circle Packing Library | Live | Yes | **Filled but technically broken:** ~941 words | Keep live; repair six broken image paths and the malformed YouTube link immediately. |
+| Circle Packing Library | Live | Yes | **Filled and technically clean:** ~941 words | Six image paths and the malformed YouTube link were fixed in `351fb1f`; strict FFFX build passes. Cabinet WebTech still needs its canonical cross-link. |
 | Prompt Generator | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
 | Oblique Strategies | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
 | SSD Creative Coding 2025–26 | Live external | Yes | **External:** year-specific gallery present; content maturity not re-audited here | Verified current destination. |
@@ -222,8 +225,7 @@ published yet.
 
 FFFX content order:
 
-- [ ] First repair Circle Packing so one of the two flagship pages is fully
-  intact under a strict build.
+- [x] Circle Packing repaired and verified under a strict FFFX build (`351fb1f`).
 - [ ] Then publish Dance of Planets and Island Generator: both are already
   coded and need embedding, image examples, and write-ups rather than invention.
 - [ ] Complete Lenticular next when its remaining code and DOM controls are
@@ -259,7 +261,7 @@ projects, a large poetry archive, and several pieces of personal writing.
 |---|---|---|---|---|
 | Golden Age Science Fiction | Live | Yes | **Filled:** deployed standalone project | Maintain; use its own living `ToDo.md` for project refinements. |
 | Isaac Asimov | Live | Yes | **Filled but unfinished:** deployed standalone project | Finish the explicit priorities in `Readme_4_todo_decisions.md`; do not count integration work as content completion. |
-| Agatha Christie / Geography of Murder | Landing route inconsistent | Nav points `/christie/` | **Filled but unreachable at promised route:** substantial timeline, Atlas and story work | Canonical route decided: rename `christie-timeline-v3.html` to `index.html`, publish at `/christie/`, and change the TSV from `agatha/`. Then review approximate location data before calling the Atlas definitive. |
+| Agatha Christie / Geography of Murder | `/christie/` consistently | Nav points `/christie/` | **Filled and reachable:** substantial timeline, Atlas and story work | Routing fixed in `28fe92a` and verified in an assembled strict build. Approximate location data can still receive a later editorial review. |
 | My Writings | **Present in Bookshelf's current working tree/site structure, but not publicly launched** | **Currently in Bookshelf MkDocs nav** | **Filled collection; clean migration to Cabinet planned** | Move the files and navigation to Cabinet, then remove them from Bookshelf entirely. Because this material is new and unlaunched, no redirect, breadcrumb, or doorway page is required. |
 | Favourite Poetry | **Custom landing card uncommitted** | **Already live in MkDocs nav** | **Filled, live collection:** large anthology + workshop archive | Do not classify the collection as unpublished. Verify and commit only its pending custom-landing integration. Its short collection/long-poem indexes can remain concise if their scope and routes are clear. |
 | History of Design | Inside My Writings | Indirect | **Filled:** existing essay | Surface through the collection; it is not a new P1 writing assignment. |
