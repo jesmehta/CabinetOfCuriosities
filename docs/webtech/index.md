@@ -1,7 +1,10 @@
-# Creative Coding
+# WebTech
 
-My creative coding work, mainly in Processing and p5. Occasional DataViz. Some other web tools and HTTPoetics. Lots of random.
+Web experiments, generative text bots, interactive narratives, and small tools built to follow interesting thoughts.
 
-Olderpage, this is moving to [Form Follows F(x)](../fffx/index.md)
+- [Branching Narrative](emergent_twine.md) — A Twine-based interactive narrative experiment.
+- [Dot Mandala Tool](dotMandalaTool.md) — A web tool for creating dot mandalas.
+- [Tracery Bots](traceryBots.md) — Generative text bots built with Tracery.
+- [Swatch Fields](../swatch-fields/) — An atlas of material swatches and colour fields.
 
-Or go straight to [my Behance page for Creative Coding explorations](https://www.behance.net/jesmehta)
+For creative coding and procedural visuals, explore [Form follows f(x)](https://fffx.cabinetofcuriosities.in/), including the [Circle Packing Library](https://fffx.cabinetofcuriosities.in/tools-and-libraries/circle-packing-library/).
