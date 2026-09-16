@@ -3,7 +3,7 @@ working-with-ai	Working with AI	jesmehta/working-with-ai		teaching/working-with-
 prompt-generator	Prompt Generator	jesmehta/PromptGenerator		teaching/prompt-generator	index.html;app.js		true	
 oblique-strategies	Oblique Strategies	jesmehta/ObliqueStrategies		teaching/oblique-strategies	index.html	index.html|Oblique Strategies	true	Single-file app -- no second file to require, so content match is the only real signal a full checkout landed.
 ssd-creative-coding-2025-26	SSD Creative Coding 2025-26	jesmehta/SSD_Student_Work	ssd-creative-coding-2025-26	teaching/ssd-creative-coding-2025-26	index.html;script.js		true	
-ssd-creative-coding-2024-25	SSD Creative Coding 2024-25	jesmehta/SSD_Student_Work	ssd-creative-coding-2024-25	teaching/ssd-creative-coding-2024-25	index.html;script.js		true
-ssd-creative-coding-2023-24	SSD Creative Coding 2023-24	jesmehta/SSD_Student_Work	ssd-creative-coding-2023-24	teaching/ssd-creative-coding-2023-24	index.html;script.js		true
+ssd-creative-coding-2024-25	SSD Creative Coding 2024-25	jesmehta/SSD_Student_Work	ssd-creative-coding-2024-25	teaching/ssd-creative-coding-2024-25	index.html;script.js		true	
+ssd-creative-coding-2023-24	SSD Creative Coding 2023-24	jesmehta/SSD_Student_Work	ssd-creative-coding-2023-24	teaching/ssd-creative-coding-2023-24	index.html;script.js		true	
 swatch-fields	Swatch Fields	jesmehta/swatchFields		swatch-fields	index.html;swatch_lookup.json		true	
 tracery-bots	Tracery Bots	jesmehta/TraceryBots		tracery-bots	index.html;TrippyGourmetBot/sketch.js;MadSolutionistBot/sketch.js		true	

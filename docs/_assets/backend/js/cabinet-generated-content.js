@@ -426,7 +426,7 @@ export const entries = [
     ],
     "location": "assembly",
     "subtitle": "Selected student work and showcases from SSD Creative Coding, 2024-25 cohort.",
-    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2024-25/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2024-25/) -- see content/external-repos.tsv; blocked until that repo's main is pushed with the 2024-25 gallery commits."
+    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2024-25/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2024-25/) -- see content/external-repos.tsv."
   },
   {
     "id": "students-creative-coding-2023-24",
@@ -444,7 +444,7 @@ export const entries = [
     ],
     "location": "assembly",
     "subtitle": "Selected student work and showcases from SSD Creative Coding, 2023-24 cohort.",
-    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2023-24/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2023-24/) -- see content/external-repos.tsv; blocked until that repo's main is pushed with the 2023-24 gallery commits."
+    "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2023-24/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2023-24/) -- see content/external-repos.tsv."
   },
   {
     "id": "students-emergent-technology",
