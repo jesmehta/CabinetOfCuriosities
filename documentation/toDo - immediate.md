@@ -2,24 +2,22 @@
 
 Quick wins and urgent work selected from [Content](toDo%20-%20content.md) and
 [Website](toDo%20-%20website.md). Reconciled with local Git history and source
-on 2026-09-16, through Cabinet `30c1de6` and SSD Student Work `5b4188c`.
-The longlists retain broader scope; older audit statements there may be stale.
+on 2026-09-16, through Cabinet `1d320df`, Bookshelf `117a2cc`,
+and SSD Student Work `5b4188c`. The longlists retain broader scope.
 Completion below means committed implementation, not a verified live deployment.
 
 ## Urgent - verify the latest release
 
-- [ ] **Verify the new Creative Coding galleries deploy in Cabinet.**
-  - Creative Coding 2024-25 and 2023-24 are built and committed in
-    `SSD_Student_Work` (`10aa05c`, `dfbf9ce`); its landing links are in `5b4188c`.
-    Local `main` matches the locally recorded `origin/main`, so the earlier
-    "push SSD first" warning is no longer supported by this checkout. Remote
-    state and Actions have not been checked afresh.
-  - Cabinet `30c1de6` already adds both galleries to the assembly manifest,
-    entry TSV, generated data, and MkDocs nav. Do not rebuild/re-wire them.
-  - Confirm the latest Cabinet Actions build/deploy succeeds and both assembled
-    routes load with working assets. If the remote dependency is missing,
-    publish SSD first, then rerun Cabinet deployment.
-  - Update the two obsolete -not yet pushed- manifest notes once confirmed.
+- [x] **Verify the new Creative Coding galleries deploy in Cabinet.**
+  - Confirmed 2026-09-16: both `SSD_Student_Work` and Cabinet local `main`
+    match `origin/main` (`5b4188c` and `1d320df` respectively). Latest Actions
+    runs on both repos are `completed`/`success`, including Cabinet's run at
+    `30c1de6` (the manifest commit) and its current HEAD.
+  - Both assembled routes return HTTP 200 with correct titles and real gallery
+    content, assets included: `/teaching/ssd-creative-coding-2024-25/` and
+    `/teaching/ssd-creative-coding-2023-24/` (plus their `script.js`).
+  - Removed the two obsolete "not yet pushed" notes in
+    `content/external-repos.tsv` and `content/cabinet-entries.tsv`.
 - [ ] **Close the remaining Teaching hub route gaps.**
   - Emergent Technologies 2024-25: finish the existing Twine narratives and
     background images, then assemble/publish `ssd-emergent-tech-2024-25/`.
@@ -43,9 +41,9 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Rewrite the WebTech hub.** Replace `docs/webtech/index.md`'s stale
   "Creative Coding / this is moving" copy with a concise WebTech introduction.
   Cross-link FFFX's canonical Circle Packing page.
-- [ ] **Fix Cabinet's legacy Circle Packing link.** Remove the extra opening
-  parenthesis in `docs/fffx/PackingShapes.md`'s Dan Shiffman YouTube link;
-  review whether this legacy page should instead point to FFFX's canonical page.
+- [ ] **Replace Cabinet's legacy Circle Packing duplicate with a canonical link.**
+  FFFX holds the project; Cabinet WebTech links to it. Remove/replace the frozen
+  duplicate rather than maintain its malformed YouTube link as a second copy.
   FFFX's own equivalent link was already fixed in `351fb1f`.
 - [ ] **Correct the remaining source-of-truth notes.**
   - WebTech section note: it is active and mapped, not waiting for `#69`.
@@ -67,15 +65,16 @@ Completion below means committed implementation, not a verified live deployment.
   - Embed readable CV content and add a downloadable PDF.
   - Main About writing and imagery have already received substantial updates
     (`daf2c4b`, `9f2d646`, `4b7ef4e`); this is an asset/CV finish, not a rewrite.
-- [ ] **Move My Writings from Bookshelf to Cabinet.**
-  Migrate the existing essays, poems, and miscellany; verify Cabinet pages,
-  assets, registry, and navigation before removing Bookshelf's copies/nav.
-  Keep Favourite Poetry and the British Poetry Workshop in Bookshelf.
-  Check current publication state before deciding whether redirects are needed:
-  the two longlists disagree, and this review did not verify the live site.
+- [x] **Move My Writings from Bookshelf to Cabinet.**
+  Implemented in Cabinet `39a2adb` and Bookshelf `117a2cc`: essays, poems,
+  miscellany, registry, generated landing data, and navigation moved; Bookshelf
+  copies/nav removed. Favourite Poetry and British Poetry Workshop stay there.
+  No redirects or breadcrumbs are required for this unlaunched material.
+  Verify the deployed Cabinet pages/assets as part of release checks.
 - [ ] **Publish Dance of Planets and Island Generator in FFFX.** Integrate the
   existing implementations, select example images, and write explanatory pages.
-  Restore/create missing page sources before promoting their TSV routes.
+  Dance of Planets has an untracked stub page; Island Generator still needs
+  its canonical page/registry entry. Commit filled sources before promotion.
 - [ ] **Finish Lenticular next.** Complete remaining tool code and DOM controls,
   then add the embed, examples, and explanatory project page.
 
@@ -88,10 +87,11 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Bring sibling deployment checks up to parity.** Require Bookshelf
   standalone entry points, reject assembly collisions, and validate both
   siblings' active destinations and generated data before upload.
-  FFFX has WIP registry routes whose source pages are absent in this checkout;
-  resolve those before public promotion. Both sibling working trees are clean
-  here, so the older instructions to commit pending local changes need a fresh
-  source review rather than being carried forward as fact.
+  Several FFFX WIP page sources are untracked and absent from a clean clone;
+  resolve those before public promotion. Both sibling working trees currently
+  contain changes: Bookshelf TSV/generated landing edits, and FFFX section,
+  documentation, and untracked project-page edits. Review and commit coherent
+  source/generated sets; do not assume untracked pages exist in a clean clone.
 
 ## Recently completed - keep out of the work queue
 
@@ -115,25 +115,12 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Cross-machine sync
 
-- [ ] **Replicate CLAUDE.md additions on the home terminal.**
-  - `CLAUDE.md` isn't tracked/synced between machines, so apply this by hand
-    at home — `d:\FabWorld\CLAUDE.md` on this machine currently reads
-    (2026-09-16):
-    ```markdown
-    # CLAUDE.md
-
-    ## Git commits
-
-    Never author or co-author git commits. Do not add "Co-Authored-By: Claude" or any similar attribution line to commit messages, and do not set yourself as the commit author.
-
-    ## Workspace boundaries
-
-    Never go beyond the current workspace. The workspace is the full set of working directories provided in the environment — not just the primary one. Do not read, write, or run commands against files or directories outside that set.
-
-    The current workspace's root folders are:
-    - `D:\FabWorld`
-    - `D:\Projects`
-    - `D:\___Academic content\Emergent\Excercise 1-20260903T051146Z-1-001\Selected`
-    ```
-  - At home, confirm the three root-folder paths still match that machine's
-    actual layout (same drive letters/paths, or adjust) before pasting.
+- [x] **Replicate CLAUDE.md additions on the home terminal.**
+  - Done 2026-09-16 on the home terminal. Since that machine's working
+    directories don't match `d:\FabWorld\CLAUDE.md`'s roots, the file was
+    created at `F:\__SnowCrash\CLAUDE.md` (untracked — `F:\__SnowCrash` is
+    not itself a git repo) with the same Git-commits section and a
+    Workspace-boundaries list adjusted to that machine's actual roots:
+    `F:\__SnowCrash\__WebPages`, `F:\__SnowCrash\_FabSite`,
+    `F:\__SnowCrash\__Project_Complex`, `F:\__SnowCrash\_Scripts`, and
+    `D:\Downloads\Nifty Decon`.

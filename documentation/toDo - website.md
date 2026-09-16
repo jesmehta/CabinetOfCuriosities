@@ -24,8 +24,8 @@ restructure has since been implemented.
 
 ## Verified current state
 
-- [x] `main` is clean apart from the maintainer's in-progress
-  `documentation/scratchNotes.md` edit and these new todo documents.
+- [x] Cabinet's working tree was clean at the start of this recheck, at
+  `1d320df` (2026-09-16). Sibling working-tree changes are recorded below.
 - [x] `mkdocs build --strict` completes successfully as of 2026-09-16. Commit
   `46160a0` corrected the Colophon's `jesalmehta.com` link. The informational
   relative-link messages are assembled/non-MkDocs routes and remain covered by
@@ -35,9 +35,9 @@ restructure has since been implemented.
 - [x] Cabinet has a working local TSV editor and Admin Controls dashboard.
 - [x] Bookshelf and FFFX also have their own schema-specific TSV editors and
   local dashboards. Historical `#81` is complete across all three worlds.
-- [x] The deploy workflow assembles six external repositories: Working with
-  AI, Prompt Generator, Oblique Strategies, SSD Student Work 2025–26, Swatch
-  Fields, and Tracery Bots.
+- [x] The deploy workflow uses `content/external-repos.tsv` and a shared
+  assembly script (`30c1de6`): six source repositories, eight destinations,
+  including SSD Creative Coding 2023–24, 2024–25, and 2025–26.
 - [x] The shared conversation's former P0 SSD Student Work restructure is now
   complete in this checkout: the workflow uses `jesmehta/SSD_Student_Work` and
   mounts the year-specific `ssd-creative-coding-2025-26` gallery. The remaining
@@ -56,15 +56,15 @@ restructure has since been implemented.
 
 ## Do now — correctness and misleading state
 
-- [ ] **Complete publication of the four unfinished Teaching collections.**
+- [ ] **Complete publication of the three unfinished Teaching collections.**
   The two already-live destinations were corrected in `02757d6`: Emergent
   Technologies 2026–27 now points to its live `SSD_Student_Work` gallery, and
   Coding with AI points to its live nested page under Working with AI. The
-  remaining work is no longer a six-link repair. Creative Coding 2024–25 needs
-  assembly; Emergent Technologies
+  Creative Coding 2024–25 and 2023–24 are built and wired by `30c1de6`;
+  verify their deployed routes/assets rather than redoing assembly. Emergent Technologies
   2024–25 is partially underway as Twine branching narratives blocked on
   background images; and the two papier-mâché galleries need
-  curation from the image archive. Assemble and publish those four collections.
+  curation from the image archive. Assemble and publish those three collections.
 - [ ] **Fix stale source-of-truth notes.** They do not currently break the
   build, but they actively misdescribe the system:
   - `content/cabinet-sections.tsv` says `web-tech` has `status: false`, uses
@@ -75,8 +75,7 @@ restructure has since been implemented.
   - the four compass-entry notes still name the old flat `docs/about.md`,
     `docs/now.md`, `docs/colophon.md`, and `docs/sitemap.md` paths.
   - `README.md` still documents only two of the six assembled repositories.
-  - `BACKEND-AND-DEPLOY.md` still names `SSD_CreativeCodingPage` and the old
-    mount grouping instead of `SSD_Student_Work`'s year-specific subfolder.
+  - `BACKEND-AND-DEPLOY.md` was updated in `30c1de6`; do not reopen that pass.
 - [ ] **Reconcile the historical master todo with current reality.** Mark or
   annotate `#69`, `#76`, `#81`, and the completed portion of `#80`. Site Notes
   (`#76`) is complete: its useful historical material is represented in the
@@ -86,9 +85,10 @@ restructure has since been implemented.
   2026-08-30 immediate-priorities view; decide whether these two focused files
   complete the remaining split intended by `#126`. Preserve its history rather
   than deleting it.
-- [ ] **Fix the malformed external link in `docs/fffx/PackingShapes.md`.** The
-  Dan Shiffman YouTube link has two opening parentheses and is emitted as an
-  unrecognized relative link by MkDocs. This is a one-character easy win.
+- [ ] **Replace Cabinet's legacy Circle Packing duplicate with a WebTech link.**
+  FFFX is the agreed canonical home. Remove/replace the frozen Cabinet page
+  rather than maintain a second copy; its old malformed YouTube link disappears
+  with that cleanup. Vera Molnar likewise belongs purely in FFFX.
 
 ## Next — important system work
 
@@ -102,16 +102,16 @@ content todo; take these on when they remove a real maintenance or release risk.
   payload directly. A normal browser page cannot silently write arbitrary
   files, so keep this inside the existing local-tool boundary; retain an
   explicit preview/confirmation before modifying source defaults.
-- [ ] **Generalize multi-repo assembly (`#82`) before adding many more repos
-  (`#80/#90/#105`).** Replace repeated Checkout/Assemble/Validate YAML blocks
-  with a manifest and one validated assembly mechanism. Include source repo,
-  optional source subfolder, destination, and required-file/content checks.
-- [ ] **Strengthen deployment validation (`#84`).** At minimum:
-  - reject destination collisions, especially anything that could overwrite a
-    MkDocs-built section hub;
+- [x] **Generalize multi-repo assembly (`#82`).** Implemented in `30c1de6`:
+  manifest, shared assembly mechanism, subfolders, destinations, required-file/
+  content checks, and collision rejection. Future repo additions remain separate.
+- [ ] **Complete deployment validation coverage (`#84`).** `30c1de6` already
+  adds collision rejection, strict builds, generated-content drift checks,
+  and active local entry-TSV route validation. Remaining scope:
   - verify every public link from `docs/teaching/index.md` has either a local
     MkDocs source or an assembly-manifest destination;
-  - check generated map hrefs and nav targets against the built artifact;
+  - include visible WIP routes, section hrefs, nav targets, and anchors against
+    the built artifact; the current validator only checks `status: true` entries;
   - keep the last-successful-deployment dependency invariant explicit.
 - [ ] **Empirically close failed-build safety (`#58`).** Use an existing failed
   Actions run, if available, to confirm the live deployment stayed on the last
@@ -130,7 +130,7 @@ content todo; take these on when they remove a real maintenance or release risk.
   Level-1 world landing/page should visibly link to the other two worlds.
   Additionally, standalone repo-built subprojects—especially assembled or
   recursively copied HTML sites outside MkDocs—must link back to their owning
-  homeworld. Audit Cabinet's six assembled repositories plus Bookshelf's SciFi,
+  homeworld. Audit Cabinet's eight assembled destinations plus Bookshelf's SciFi,
   Asimov, and Christie projects; do not assume MkDocs nav reaches into them.
 - [ ] **Add an explicit inventory allowlist/annotation mechanism.** Current
   inventory flags include intentional differences: nested Trippy Gourmet/Mad
@@ -185,8 +185,8 @@ while preserving its existing modified and untracked files.
 
 ## Bookshelf — structure and deployment
 
-Audited again 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
-`28fe92a`, plus clearly separated maintainer working-tree changes.
+Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
+`117a2cc`, plus modified TSVs and generated landing data.
 
 - [x] **Christie publication routing fixed.** Commit `28fe92a` made
   `/christie/` canonical, created `projects/christie/index.html`, updated the
@@ -201,11 +201,10 @@ Audited again 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   recursive copy publishes project documentation, conversations, source data,
   and superseded prototypes along with runtime assets. Define a publishable
   subtree or per-project manifest instead.
-- [ ] **Split the in-progress Bookshelf custom-landing changes by destination.**
-  Favourite Poetry belongs in Bookshelf and its pending card can be verified and
-  committed. My Writings is already live there, but is planned to move to
-  Cabinet; do not deepen its Bookshelf landing integration before deciding the
-  migration/redirect sequence. Keep TSV and generated JS synchronized.
+- [ ] **Finish Bookshelf's pending custom-landing integration.** Review and
+  commit the Favourite Poetry TSV/generated-data changes coherently. My Writings
+  has already moved to Cabinet (`39a2adb`, Bookshelf `117a2cc`); do not restore
+  its Bookshelf pages, nav, or card. No redirect/breadcrumb is required.
 - [ ] **Add explicit return links to Cabinet and FFFX.** No cross-world links
   were found in Bookshelf's `docs/` or content registries. Also add a Bookshelf
   home link inside the standalone SciFi, Asimov, and Christie projects, which do

@@ -1,6 +1,8 @@
 # ToDo — Content
 
-Current Cabinet content and information-architecture work. Audited 2026-09-12
+Current Cabinet content and information-architecture work. Reconciled again
+2026-09-16 through Cabinet `1d320df` and Bookshelf `117a2cc`. Original audit
+2026-09-12
 against:
 
 - `content/cabinet-sections.tsv` and `content/cabinet-entries.tsv`;
@@ -8,7 +10,7 @@ against:
 - the baked v3 landing page (`docs/index.html`);
 - `mkdocs.yml`;
 - every Markdown source under `docs/`;
-- the six external destinations assembled by `.github/workflows/deploy.yml`;
+- the assembly manifest's eight destinations from six source repositories;
 - recent content/reorganization commits and `documentation/scratchNotes.md`;
 - a direct 2026-09-13 audit of `form-follows-fx` and
   `TheBookshelfOfCuriosities`, including their working trees, TSVs, generated
@@ -62,6 +64,10 @@ can be intentionally brief because its job is navigation rather than exposition.
 Word counts below are evidence for review, not automatic thresholds. The test is
 whether the page fulfils its role.
 
+Completion marks describe source/committed implementation, not newly verified
+live deployments. Counts and build results from the original audits are dated
+observations, not a claim that every build or hosted page was rechecked today.
+
 ## Essential content — do first
 
 - [ ] **Finish the remaining About assets
@@ -82,20 +88,20 @@ whether the page fulfils its role.
   `archived-landing-pages/v1/site_notes/index.html`. The MkDocs nav entry was
   removed, then `docs/compass/site_notes.md` itself deleted and
   `FILE-MANIFEST.md`/`CONTENT-INVENTORY.md` updated to match (2026-09-16).
-- [ ] **Repair Teaching publication according to actual readiness.** The six
-  locally unresolved routes are different kinds of work:
-  - Creative Coding 2024–25: content is currently on the maintainer's work
-    computer and should become `SSD_Student_Work/ssd-creative-coding-2024-25/`;
+- [ ] **Repair Teaching publication according to actual readiness.** Three
+  unfinished hub routes remain; distinguish them from completed wiring:
+  - Creative Coding 2024–25 and 2023–24: built in SSD Student Work and wired
+    into Cabinet's manifest/registry/nav in `30c1de6`; verify deployment/assets;
   - Emergent Technologies 2024–25: a real set of Twine branching narratives is
     partially underway and belongs in
     `SSD_Student_Work/ssd-emergent-tech-2024-25/`; progress is currently stuck
     on adding suitable background images;
-  - Emergent Technologies 2026–27: already live at
+  - Emergent Technologies 2026–27: link corrected in `02757d6`, already live at
     `https://jesmehta.github.io/SSD_Student_Work/ssd-emergent-tech-2026-27/`;
   - Coding with AI: it originally branched from Working with AI, but is strong
     enough to stand as a separate, interconnected project; its live destination
-    is `/teaching/working-with-ai/coding-with-ai/index.html`, not the Teaching
-    hub's current sibling-level `coding-with-ai/` route;
+    is `/teaching/working-with-ai/coding-with-ai/index.html`; the hub link was
+    corrected in `02757d6`;
   - Dragons of SSD: a distinct Dragons-only gallery, collected from the image
     archive across the maintainer's photo gallery and student Google Drive
     submissions;
@@ -114,7 +120,8 @@ whether the page fulfils its role.
 | Colophon | `compass-s`, live | Yes | Yes | **Filled and publication-clean:** ~1,932 words plus archive links | **Complete:** link correction committed in `46160a0`; strict Cabinet build passes. |
 | Site map | `compass-w`, live | Yes | Yes | **Intentionally concise index:** generated cross-world routes | **Live:** refresh after sibling TSV changes; distinguish generated flags from editorial decisions. |
 | Site Notes | No TSV row | No compass direction | Removed | **Retired (2026-09-16):** useful material folded into Colophon, original preserved at `archived-landing-pages/v1/site_notes/index.html` | **Done.** Source file, nav entry, and manifest/inventory references all removed. |
-| Teaching hub | Section live | Yes | Clickable header | **Filled hub:** 345 words; six routes unresolved locally, although two targets are confirmed live elsewhere | **Partial wiring/assembly/curation:** retain its useful copy and handle each target according to the readiness list above. It does not need padding merely because it is a hub. |
+| Teaching hub | Section live | Yes | Clickable header | **Filled hub:** three unfinished routes (Emergent 2024–25, Dragons, Pulp) | **Partial publication/curation:** two live links repaired; Creative Coding 2024–25/2023–24 built and wired, deployment verification pending. Retain useful hub copy; no padding required. |
+| SSD Creative Coding 2024–25 / 2023–24 | Entries active | Generated data wired | Yes | **Built galleries:** SSD source committed; Cabinet assembly wired in `30c1de6` | **Implementation done; release check open:** verify Actions and deployed routes/assets. |
 | SSD Creative Coding 2025–26 | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Working with AI | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Prompt Generator | Entry live | Yes | Yes | Assembled and validated | **Live.** |
@@ -258,8 +265,8 @@ projects, a large poetry archive, and several pieces of personal writing.
 | Agatha Christie / Geography of Murder | `/christie/` consistently | Nav points `/christie/` | **Filled and reachable:** substantial timeline, Atlas and story work | Routing fixed in `28fe92a` and verified in an assembled strict build. Approximate location data can still receive a later editorial review. |
 | My Writings | **Migrated to Cabinet (2026-09-16)** | **Removed from Bookshelf MkDocs nav** | **Done:** now lives at Cabinet's `docs/writings/` | Moved 2026-09-16 — files, nav, and TSV rows now in Cabinet; removed from Bookshelf entirely. No redirect/breadcrumb was needed since the material was unlaunched. |
 | Favourite Poetry | **Custom landing card uncommitted** | **Already live in MkDocs nav** | **Filled, live collection:** large anthology + workshop archive | Do not classify the collection as unpublished. Verify and commit only its pending custom-landing integration. Its short collection/long-poem indexes can remain concise if their scope and routes are clear. |
-| History of Design | Inside My Writings | Indirect | **Filled:** existing essay | Surface through the collection; it is not a new P1 writing assignment. |
-| Graphic novels / comics essay | Inside My Writings | Indirect | **Filled text, presentation incomplete:** existing essay needs more images | It can seed Comics & Sequential Art, but activation is not a priority. Add the needed images during the eventual essay presentation pass. |
+| History of Design | Moved to Cabinet Writings | Cabinet nav | **Filled:** existing essay | Maintain in Cabinet, not Bookshelf; it is not a new P1 writing assignment. |
+| Graphic novels / comics essay | Moved to Cabinet Writings | Cabinet nav | **Filled text, presentation incomplete:** existing essay needs more images | Add images in Cabinet during its eventual presentation pass. A Bookshelf Comics collection is separate and non-priority. |
 | British Poetry Workshop | Inside Favourite Poetry | Yes | **Filled:** large existing archive | Improve discovery and framing rather than creating a replacement “British Canon Poetry” project. |
 | Clarke / More Authors | WIP, no href | No | **Absent:** no public destination established | Keep dormant until one bounded author treatment is ready. |
 | Kipling / Hamzanama | WIP, no href | No | **Concept only:** public-data cards, no destination | Valuable but research-heavy; do not use for quick density. |
@@ -268,15 +275,13 @@ projects, a large poetry archive, and several pieces of personal writing.
 
 Bookshelf content order:
 
-- [x] Split the current Bookshelf landing changes: verify/publish Favourite
-  Poetry's card, but remove the pending My Writings card and migrate that content
-  cleanly to Cabinet. Remove its Bookshelf nav/pages after verifying the Cabinet
-  copies; no public redirect or breadcrumb is needed because it is unlaunched.
-  **Done 2026-09-16** — My Writings content, nav, and TSV rows moved to Cabinet;
-  Bookshelf's copy deleted.
-- [ ] Make Christie reachable, then separate “substantial and public” from
-  “research complete”: its maps document approximate or placeholder positions
-  for some fictional locations.
+- [x] Migrate My Writings cleanly to Cabinet (`39a2adb`, Bookshelf `117a2cc`).
+  Bookshelf nav/pages removed; no redirects/breadcrumbs needed for unlaunched work.
+- [ ] Verify and commit Favourite Poetry's pending custom-landing integration.
+  This is separate from the completed My Writings migration.
+- [x] Make Christie reachable (`28fe92a`).
+- [ ] Review Christie's approximate/placeholder fictional-location positions
+  when undertaking its next editorial pass; routing completion is not research completion.
 - [ ] Finish Asimov's project-level next priorities after checking its existing
   open questions; preserve the curated rather than exhaustive bibliography
   decision.
@@ -299,9 +304,9 @@ Bookshelf content order:
   projects; change the current sibling-level link to the live nested
   `/teaching/working-with-ai/coding-with-ai/index.html` destination. Completed
   in `02757d6` (2026-09-16).
-- [ ] **Teaching: assemble Creative Coding 2024–25.** The content exists; make
-  it available from the work computer as the sibling folder
-  `SSD_Student_Work/ssd-creative-coding-2024-25/`, then wire the Cabinet link.
+- [x] **Teaching: assemble Creative Coding 2024–25 and 2023–24.** SSD galleries
+  built and Cabinet manifest, entry TSV/generated data, and nav wired in
+  `30c1de6`. Verify deployed routes/assets separately; do not redo the integration.
 - [ ] **Teaching: continue Emergent Technologies 2024–25.** Assemble the
   existing Twine branching narratives under
   `SSD_Student_Work/ssd-emergent-tech-2024-25/`; resolve their background-image
@@ -320,13 +325,13 @@ Bookshelf content order:
   work, not a speculative proposal. Particle Systems remains a placeholder.
 - [ ] **Bookshelf: expose its appropriate live density on the custom landing.**
   Golden Age SF, Asimov, and Favourite Poetry belong there; Favourite Poetry is
-  awaiting its pending custom-landing card. My Writings is not publicly launched
-  and should move cleanly to Cabinet with no Bookshelf redirect. Christie is
-  substantial but needs its route fixed. History of Design, comics writing,
-  and the British Poetry Workshop already exist inside the live collections—do
-  not recreate them or describe them as unpublished.
-- [x] **Develop Cabinet Writings as the canonical home for authored work.** Move
-  My Writings here, then add Design, Food, Semantics, and future personal work.
+  awaiting review/commit of its pending custom-landing card. My Writings has
+  moved to Cabinet; Christie routing is fixed. History of Design and comics
+  writing now belong to Cabinet; British Poetry Workshop stays in Bookshelf.
+  Do not recreate this existing material or reopen completed routing/migration.
+- [x] **Establish Cabinet Writings as the canonical home for authored work.** Move
+  My Writings here; new Design, Food, Semantics, and future personal work remain
+  separate ongoing content additions, not part of this completion mark.
   Bookshelf should retain Favourite Poetry/British Poetry Workshop but should
   not retain My Writings pages, redirects, or breadcrumbs after the move.
   **Done 2026-09-16** — essays/miscellany/poems now live at Cabinet's
