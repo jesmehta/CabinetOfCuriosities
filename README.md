@@ -174,23 +174,36 @@ field conventions (`status`, `weight`, `tags`, etc.) that these TSVs follow.
 
 1. **`build`** — checks out the repo, installs Python deps, guards against
    `docs/index.md` ever being reintroduced (see `WORLD-SYSTEMS.md`'s
-   homepage rule), checks out external repos (`jesmehta/working-with-ai`,
-   `jesmehta/PromptGenerator`) into `_external/` and copies each into its
-   `public/teaching/<name>/` slot, runs `mkdocs build --site-dir public`,
-   uploads `public/` as the Pages artifact.
+   homepage rule), verifies the committed generated content
+   (`cabinet-generated-content.js`, the `now-*` files) is current with
+   `content/*.tsv`, runs `mkdocs build --site-dir public --strict` (teed to
+   `mkdocs-build.log`), assembles external repos per
+   `content/external-repos.tsv` via `tools/assemble-external.js` (six source
+   repos, eight assembly destinations — one manifest row each, no
+   hand-written workflow step per repo), copies in `archived-landing-pages/`,
+   runs `tools/validate-deployment.js` to cross-check every active
+   entry/section href, self-domain nav target, and doc-body link against the
+   actually-assembled `public/` tree, then uploads `public/` as the Pages
+   artifact.
 2. **`deploy`** — publishes that artifact via `actions/deploy-pages`.
 
-**Multi-repo assembly gotcha**: the external checkouts above pull whatever
-is currently on those repos' default branch at build time — they are not
-pinned to a SHA. That means pushing to `working-with-ai` or `PromptGenerator`
-alone does **not** update the live site; this workflow only triggers on a
-push to *this* repo's `main`. To pick up a change made in one of the
-external repos, either push a commit here (anything, even a doc tweak like
-this one) or re-run the latest "Deploy MkDocs to GitHub Pages" workflow run
-from the Actions tab — the re-run re-fetches the external repos fresh since
-the checkout step has no pinned ref. See `.github/workflows/deploy.yml`'s
-"Multi-repo assembly" comment block for the copy-this-pattern how-to when
-adding another external repo.
+See `documentation/backend-and-deploy/BACKEND-AND-DEPLOY.md` for the full
+manifest-driven assembly design (replacing the old hand-written
+checkout/copy/validate step triples, one per repo), and
+`tools/validate-deployment.js`'s own header for what its four route checks
+cover.
+
+**Multi-repo assembly gotcha**: the external checkouts pull whatever is
+currently on their default branch at build time — they are not pinned to a
+SHA. That means pushing to one of the six source repos alone does **not**
+update the live site; this workflow only triggers on a push to *this*
+repo's `main`. To pick up a change made in an external repo, either push a
+commit here (anything, even a doc tweak like this one) or re-run the latest
+"Deploy MkDocs to GitHub Pages" workflow run from the Actions tab — the
+re-run re-fetches the external repos fresh since the checkout step has no
+pinned ref. See `content/external-repos.tsv` and
+`tools/assemble-external.js` for the manifest format when adding another
+external repo — no workflow change needed.
 
 Migrated from `peaceiris/actions-gh-pages@v3` to GitHub's first-party
 Pages actions (`configure-pages` → `upload-pages-artifact` →
