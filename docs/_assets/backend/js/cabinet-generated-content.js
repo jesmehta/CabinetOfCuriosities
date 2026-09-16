@@ -82,7 +82,7 @@ export const sections = [
       "ry": 0
     },
     "extraCount": 1,
-    "notes": "status: false -- has an mkdocs nav section already (TraceryBots/Dot Mandala/Twine/Creative Coding) but no map placement yet; the 6-region + compass grid is currently full (see machines-makings/interfaces-data-texts/visual-field-notes/teaching cx/cy). Needs a layout decision before flipping to wip/true -- see ToDo #69."
+    "notes": "Active and mapped (status: true) -- has an mkdocs nav section (TraceryBots/Dot Mandala/Twine/Creative Coding) and needs no cx/cy of its own: cabinet-v3-layout.js's squarify() computes section placement live from weight, so blank cx/cy here is normal, same as writings/fab. The old #69 \"grid is full, needs a layout decision\" reasoning was corrected in the ledger itself back on 2026-08-24; this note is what was left unupdated after that correction and the later true flip."
   },
   {
     "id": "writings",
@@ -715,7 +715,7 @@ export const entries = [
     "visual": {
       "anchor": "N"
     },
-    "notes": "Links to docs/about.md. CV and Contact live inside that page, not as their own compass points."
+    "notes": "Links to docs/compass/about.md. CV and Contact live inside that page, not as their own compass points."
   },
   {
     "id": "compass-e",
@@ -731,7 +731,7 @@ export const entries = [
     "visual": {
       "anchor": "E"
     },
-    "notes": "Links to docs/now.md. Replaces the earlier \"Contact me\" placeholder at this compass point. Contact does NOT live here (corrected 2026-08-30) -- both CV and Contact are folding into About Me instead, same as compass-n's note says."
+    "notes": "Links to docs/compass/now.md. Replaces the earlier \"Contact me\" placeholder at this compass point. Contact does NOT live here (corrected 2026-08-30) -- both CV and Contact are folding into About Me instead, same as compass-n's note says."
   },
   {
     "id": "compass-s",
@@ -747,7 +747,7 @@ export const entries = [
     "visual": {
       "anchor": "S"
     },
-    "notes": "Dummy page for now (docs/colophon.md) -- links straight to the v1/v2 archive; user will add the actual writing later."
+    "notes": "Links to docs/compass/colophon.md. No longer a dummy page -- filled with the actual writing (site origins, three worlds, v3 construction, maintenance system) and links to the v1/v2 archive within that."
   },
   {
     "id": "compass-w",
@@ -763,7 +763,7 @@ export const entries = [
     "visual": {
       "anchor": "W"
     },
-    "notes": "Auto-generated from all three worlds' TSVs by tools/generate_sitemap.py -> docs/sitemap.md, mirroring build-cabinet-content.js's own TSV-as-source-of-truth pattern. CV moved off this compass point; it now lives inside the About Me page instead."
+    "notes": "Auto-generated from all three worlds' TSVs by tools/generate_sitemap.py -> docs/compass/sitemap.md, mirroring build-cabinet-content.js's own TSV-as-source-of-truth pattern. CV moved off this compass point; it now lives inside the About Me page instead."
   },
   {
     "id": "teaching-research",
@@ -886,7 +886,7 @@ export const entries = [
     ],
     "location": "external",
     "subtitle": "The official Fabricademy program.",
-    "notes": "href still blank -- confirmed domain family is textile-academy.org (from fab-26's class.textile-academy.org/2026/... page), but unsure if the general public site is at textile-academy.org root or a separate fabricademy.net -- confirm before setting."
+    "notes": "href is set to the 2026 cohort's class.textile-academy.org page. The general public site's own root domain (textile-academy.org vs. a separate fabricademy.net) was never separately confirmed -- revisit only if a more general Fabricademy destination is ever wanted instead of this cohort-specific one."
   },
   {
     "id": "fab-23",
