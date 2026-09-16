@@ -43,7 +43,8 @@ nav:
     - Poems : writings/poems/index.md
     - Miscellany : writings/miscellany/index.md
   - Fab :
-    # - Fab 23 Bhutan : fab/fab23-bhutan.md
+    - fab/index.md
+    - Fab 23 Bhutan : fab/fab23-bhutan.md
     # - Fab 25 Czechia : fab/fab25-czechia.md
     - Jesal's Fabacademy Website (2023): https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/
     - Jesal's Fabricademy Website (2026) : https://class.textile-academy.org/2026/jesal-mehta/
