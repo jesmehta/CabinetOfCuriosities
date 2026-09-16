@@ -25,26 +25,47 @@ Completion below means committed implementation, not a verified live deployment.
     student Drive submissions, then publish `dragons-of-ssd/`.
   - Playing with Pulp: curate a separate best-of-papier-mache gallery from the
     same sources, then publish `ssd-papiermache/`.
-  - These three routes remain linked from the Teaching hub. If publication
-    cannot happen promptly, remove the dead links and describe their actual
-    readiness until destinations exist.
-- [ ] **Close the deployment validator's remaining coverage gap (`#84`).**
-  - `validate-deployment.js` currently checks only `status: true` entry TSV
-    routes, not every Teaching hub link, WIP entry, section href, nav target,
-    or anchor. The three hub-only gaps above are therefore not caught by it.
-  - Add built-artifact checks for published hub/nav links and visible WIP
-    destinations; retain explicit treatment of external links and anchors.
-    Do not reopen the completed manifest/assembly implementation.
+  - Done for now (2026-09-16): converted to plain, unlinked text on
+    `docs/teaching/index.md` marked "gallery not yet published" -- the
+    `#84` validator below would otherwise fail CI on these three dead links.
+    Restore as real links once each destination exists.
+- [x] **Close the deployment validator's remaining coverage gap (`#84`).**
+  - `tools/validate-deployment.js` now checks four route sources instead of
+    one: `status: true`/`wip` rows in both `cabinet-entries.tsv` and
+    `cabinet-sections.tsv` (wip included because `generate_sitemap.py` links
+    it on `/sitemap/`), self-domain absolute targets in `mkdocs.yml`'s nav,
+    and docs/**/*.md body links -- the last sourced from `mkdocs build`'s own
+    "unrecognized relative link" log rather than a hand-rolled parser.
+    External links and pure `#anchor`s are explicitly skipped throughout.
+  - `deploy.yml` now tees the MkDocs build to `mkdocs-build.log` for the
+    validator to read, and runs "Copy archived landing pages" *before*
+    validation (was after) so colophon's archived-page links resolve against
+    the actually-assembled tree instead of false-failing on ordering.
+  - Verified with a real local run of the full pipeline (build, assemble,
+    copy, validate) rather than just reading the code.
+  - This surfaced two real, previously-uncaught bugs, both fixed alongside
+    the validator so CI stays green: the three dead Teaching links above,
+    and `docs/fffx/PackingShapes.md`'s malformed Circle Packing link (doubled
+    opening paren) -- only the syntax was fixed here; the larger
+    retire/redirect-to-FFFX decision below is still open.
+  - Also caught in the process: `427687c` (this same day) edited
+    `cabinet-entries.tsv`'s notes without regenerating
+    `cabinet-generated-content.js`, which had already failed that commit's
+    CI on the "generated content is current" gate -- regenerated and
+    included here.
 
 ## Quick wins - small corrections with visible value
 
-- [ ] **Rewrite the WebTech hub.** Replace `docs/webtech/index.md`'s stale
+- [x] **Rewrite the WebTech hub.** Replace `docs/webtech/index.md`'s stale
   "Creative Coding / this is moving" copy with a concise WebTech introduction.
   Cross-link FFFX's canonical Circle Packing page.
 - [ ] **Replace Cabinet's legacy Circle Packing duplicate with a canonical link.**
   FFFX holds the project; Cabinet WebTech links to it. Remove/replace the frozen
   duplicate rather than maintain its malformed YouTube link as a second copy.
-  FFFX's own equivalent link was already fixed in `351fb1f`.
+  FFFX's own equivalent link was already fixed in `351fb1f`. The malformed-link
+  *syntax* itself (doubled opening paren) was fixed 2026-09-16 as a side effect
+  of the `#84` validator work below, so it no longer 404s -- the retire/redirect
+  decision for the page itself is still open.
 - [ ] **Correct the remaining source-of-truth notes.**
   - WebTech section note: it is active and mapped, not waiting for `#69`.
   - Compass entry notes: use the current `docs/compass/` paths.

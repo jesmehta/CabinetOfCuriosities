@@ -15,7 +15,7 @@ So I set about designing my bookmark, which involved a lot of prime numbers and 
 
 That's when I first came across the concept of packing shapes together - dense, touching, but not overlapping. I used an Adobe Illustrator script I found online for this (which has been lost to time and multiple laptop changes.)
 
-Sometime in 2018, I found Processing, and [Dan Shiffman](https://thecodingtrain.com/), and all the rest of that amazing, wonderful world, and I was hooked. I used [Dan's Circle Packing coding challenge]((https://youtu.be/QHEQuoIKgNE)) to mess with packings and played with those for a while.
+Sometime in 2018, I found Processing, and [Dan Shiffman](https://thecodingtrain.com/), and all the rest of that amazing, wonderful world, and I was hooked. I used [Dan's Circle Packing coding challenge](https://youtu.be/QHEQuoIKgNE) to mess with packings and played with those for a while.
 
 Having access to a lasercutter at [Maker's Asylum](https://www.instagram.com/makersasylum/), and having figured how to export SVGs from Processing, it was only a matter of time before I decided to go from code to material. 
 

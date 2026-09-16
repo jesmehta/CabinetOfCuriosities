@@ -61,8 +61,15 @@ jobs:
           exit 1
         fi
 
+    # Tee'd to a log file (not just captured in the Actions UI) so the
+    # validation step below can read back MkDocs' own "unrecognized
+    # relative link" INFO lines -- see tools/validate-deployment.js's
+    # header. `set -o pipefail` so a failing mkdocs build still fails this
+    # step even though its output is piped through `tee`.
     - name: Build MkDocs Site
-      run: mkdocs build --site-dir public --strict
+      run: |
+        set -o pipefail
+        mkdocs build --site-dir public --strict 2>&1 | tee mkdocs-build.log
 
     # --- Multi-repo assembly (#43 Phase 2 -- generalized from Phase 1's
     # hand-written per-project checkout/assemble/validate steps into one
@@ -80,18 +87,27 @@ jobs:
     - name: Assemble external projects
       run: node tools/assemble-external.js --public-dir public
 
-    # Cross-checks every active content/cabinet-entries.tsv row's local
-    # href against the actually-assembled public/ tree. Deliberately
-    # generic over every section, not Teaching-specific -- Teaching's
-    # assembled galleries are just some of the local hrefs this already
-    # covers, so a second special-cased check would only duplicate it.
-    - name: Validate deployment routes
-      run: node tools/validate-deployment.js --public-dir public
-
     # Same pattern as the assembly above, local dir instead of a checkout --
     # makes colophon.md's v1/v2 links resolve instead of 404ing. #61
+    #
+    # Runs BEFORE validation (moved here for #84): the validator now also
+    # checks docs/**/*.md body links, and colophon.md links to these paths,
+    # so it needs the full tree in place first -- checking archived-page
+    # links against a public/ that doesn't have them yet would be a false
+    # positive, not a real bug.
     - name: Copy archived landing pages
       run: cp -r archived-landing-pages public/archived-landing-pages
+
+    # Cross-checks every active content/cabinet-{entries,sections}.tsv
+    # row's local href, every self-domain mkdocs.yml nav target, and every
+    # docs/**/*.md body link against the actually-assembled public/ tree.
+    # Deliberately generic over all of them rather than a Teaching-specific
+    # check -- Teaching's assembled galleries and hub links are just some of
+    # what this already covers, so a second special-cased check would only
+    # duplicate it. See tools/validate-deployment.js's header for the full
+    # breakdown (#84).
+    - name: Validate deployment routes
+      run: node tools/validate-deployment.js --public-dir public --build-log mkdocs-build.log
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
