@@ -5,7 +5,7 @@ The current version came  into being over the summer of 2026.
 
 ## Origins
 
-I had had a site live at [jesalmehta.com](jesalmehta.com) since about 2018. However, I did not create it, I had a friend develop it for me professionally. I knew that gathering the material for the site itself would be a full-fledged task, so developing it alongside would take me an-age-and-a-half before the first cut itself. Paying someone to do it was money absolutely well spent.
+I had had a site live at [jesalmehta.com](https://jesalmehta.com) since about 2018. However, I did not create it, I had a friend develop it for me professionally. I knew that gathering the material for the site itself would be a full-fledged task, so developing it alongside would take me an-age-and-a-half before the first cut itself. Paying someone to do it was money absolutely well spent.
 
 In 2023, I completed my Diploma of the FabAcademy program, and as part of the documentation, I had all my work and the project on a GitLab site, made using MKDocs.
 
