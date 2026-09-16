@@ -78,7 +78,7 @@ and phase placement, this is just the current ordering of attention.
    shipped approach (full state export/import via `apply-config.mjs`,
    colours/fonts moved into `v3Config`) and `landing-page-v3-notes.2.0.md`'s
    v3.7.69 entry for the full narrative.
-2. **The deployment manifesto** -- `#58` (confirm failed builds don't
+2. ~~**The deployment manifesto**~~ -- `#58` (confirm failed builds don't
    replace the last successful live deployment) + `#80` (expand Cabinet
    assembly beyond Working with AI: Student Work, Rock Collection,
    Dupatta Collection, etc.) + `#82` (generalize assembly into a
@@ -87,18 +87,33 @@ and phase placement, this is just the current ordering of attention.
    manifest is naturally what makes `#80`'s expansion cheap instead of
    more copy-pasted workflow steps, and `#58` is the safety property that
    initiative needs to actually hold once more repos depend on it.
-3. **`#81`** (Build TSV editors for Cabinet, Bookshelf, FFFX) -- ongoing.
-   Cabinet's own editor is already substantially built (see
-   `documentation/cabinet-editor/CABINET-EDITOR.md`, v1.0-v1.5); direct note,
-   2026-08-30: "will be easier to port for the other two" once Cabinet's
-   own is settled.
+   **Done, 2026-09-16, `30c1de6`** (`#82`/`#80`) plus further validation
+   coverage in `e3577bf`/`b667bc2` (`#84` below) -- `content/external-repos.tsv`
+   and `tools/assemble-external.js` replaced the hand-written per-repo steps;
+   the manifest now has six source repos across eight assembly destinations
+   (Working with AI, Prompt Generator, Oblique Strategies, three SSD Student
+   Work galleries, Swatch Fields, Tracery Bots), well past just Working with
+   AI. `#58` was never separately built as its own mechanism -- it's
+   structurally satisfied by `deploy.yml`'s existing `deploy: needs: build`
+   (GitHub's first-party Pages actions won't publish an artifact a failed
+   `build` job never uploaded), not a gap that needed its own fix.
+3. ~~**`#81`**~~ (Build TSV editors for Cabinet, Bookshelf, FFFX) --
+   **Done, 2026-09-16** -- Cabinet's editor (`documentation/cabinet-editor/
+   CABINET-EDITOR.md`, v1.0-v1.5) was ported to both siblings as direct
+   note 2026-08-30 anticipated: `tools/bookshelf-editor.js`/`bookshelf-editor-ui`
+   (373 lines) and `tools/fffx-editor.js`/`fffx-editor-ui` (371 lines) now
+   exist in their own repos, matching Cabinet's `cabinet-editor.js` (349
+   lines) -- real implementations, not stubs.
 4. ~~**`#70`**~~ (section/island labels: SVG `<text>` vs. semantic HTML,
    SEO/accessibility implications) -- prioritized for a real decision,
    2026-08-30: "for better semantic organisation." **Done, 2026-08-30** --
    see the item itself for the shipped approach (real hidden `h2`/`h3`
    headings, generated alongside the SVG map) and its caveats.
 5. **`#126`** (split up this ToDo file / documentation coherently) --
-   direct note, 2026-08-30: "also an easy task."
+   direct note, 2026-08-30: "also an easy task." **Partially done** -- see
+   the `#126` detail entry below: the Content Inventory extraction landed
+   2026-08-30, but the actual "split this file's Phase 0-3 sequence up"
+   ask is still open, so this item isn't struck through yet.
 6. **`#141`** (why does "Copy config" need a manual paste into
    `pasted-config.json` instead of the button just writing it) -- direct
    request, 2026-09-08, flagged for priority investigation. Find the
@@ -1271,7 +1286,7 @@ marked as such.*
       effect on the live site because of this, only the hardcoded
       `.md-header`/`.md-tabs` background ever visibly themed. Still
       needs a second, bolder pass -- not done.
-- [ ] **#69** `wild-wild-web` added to `cabinet-sections.tsv` (2026-08-24,
+- [x] **#69** `wild-wild-web` added to `cabinet-sections.tsv` (2026-08-24,
       `status: false` so it doesn't render) -- has an `mkdocs.yml` nav
       section already (TraceryBots, Dot Mandala Generator, Twine,
       Creative Coding) but no map placement. **Correction, 2026-08-24**:
@@ -1289,6 +1304,14 @@ marked as such.*
       Wild wild web into a real island while those three still also live
       under `interfaces-data-texts` would make the duplication visible
       on the map itself, not just in the docs sidebar.
+      **Resolved/superseded, 2026-09-16**: the section was renamed
+      `web-tech`/"WebTech" and its status has since flipped to `true` (live
+      on the map, squarify-placed exactly as predicted above); the
+      Twine/Tracery Bots/Dot Mandala duplication this was blocked on is
+      gone too -- `docs/webtech/index.md` (`8e7e502`) is now the single
+      umbrella listing all of them. `content/cabinet-sections.tsv`'s own
+      `web-tech` note, which had drifted from this correction, was fixed to
+      match on the same day.
 
 <details>
 <summary>#70</summary>
@@ -1509,23 +1532,42 @@ routine publishing.*
 
 - [ ] **#74** Add/finish fuller About/site-context pages
 - [ ] **#75** Colophon (Phase 0 above)
-- [ ] **#76** Site Notes where useful
+- [x] **#76** Site Notes where useful. **Done, 2026-09-16** (`80d4970`,
+      `b441b0c`): nav entry and source removed, useful v1 history folded into
+      the Colophon, original preserved at
+      `archived-landing-pages/v1/site_notes/index.html`.
 - [ ] **#77** At least a basic landing/overview page for every active
       top-level section
 - [ ] **#78** Link existing pages/projects that were not essential enough to
       block launch
 - [ ] **#79** Continue selective migration of worthwhile older Cabinet content
-- [ ] **#80** Expand Cabinet multi-repo assembly beyond Working with AI:
+- [x] **#80** Expand Cabinet multi-repo assembly beyond Working with AI:
       Student Work, Rock Collection, Dupatta Collection, other substantial
-      independent projects
-- [ ] **#81** Build TSV editors for Cabinet, Bookshelf, FFFX (see
-      `three-world-launch-phases-Notes.md` for requirements)
-- [ ] **#82** Generalize Cabinet assembly into a manifest-driven workflow so
+      independent projects. **Done, 2026-09-16** (`30c1de6`): the manifest
+      (`content/external-repos.tsv`) now covers six source repos across
+      eight destinations (Working with AI, Prompt Generator, Oblique
+      Strategies, three SSD Student Work galleries, Swatch Fields, Tracery
+      Bots) -- Rock Collection/Dupatta Collection specifically were not part
+      of what actually got added; treat those two as still-open candidates
+      if they're still wanted, not part of this completion.
+- [x] **#81** Build TSV editors for Cabinet, Bookshelf, FFFX (see
+      `three-world-launch-phases-Notes.md` for requirements). **Done,
+      2026-09-16**: Cabinet's editor was ported to both siblings --
+      `tools/bookshelf-editor.js`/`bookshelf-editor-ui` and
+      `tools/fffx-editor.js`/`fffx-editor-ui` now exist in their own repos,
+      each a real ~370-line implementation, not a stub.
+- [x] **#82** Generalize Cabinet assembly into a manifest-driven workflow so
       additional repos can be mounted through configuration rather than
-      hard-coded workflow steps
+      hard-coded workflow steps. **Done, 2026-09-16** (`30c1de6`):
+      `tools/assemble-external.js` + the manifest above replaced the
+      hand-written per-repo checkout/assemble/validate steps in `deploy.yml`.
 - [ ] **#83** Add automatic rebuild triggers from child repos (only after the
       basic assembly is stable)
-- [ ] **#84** Add stronger validation before deploy
+- [x] **#84** Add stronger validation before deploy. **Done, 2026-09-16**
+      (`30c1de6` added `tools/validate-deployment.js`; `e3577bf` extended it
+      to also check `wip`-status rows, `cabinet-sections.tsv` hrefs,
+      self-domain `mkdocs.yml` nav targets, and docs/**/*.md body links --
+      see that file's own header for the full breakdown).
 - [ ] **#85** Normalize duplicated documentation where Bookshelf/FFFX docs
       have drifted (see the doc-audit item above)
 - [ ] **#86** Replace obvious placeholder metadata/thumbnails where easy (see
