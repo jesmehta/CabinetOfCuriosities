@@ -38,10 +38,10 @@ nav:
         # - 3DP in 2024 : 3dp/3DP_2024.md
         # - 3DP in 2025 : 3dp/3DP_2025.md
   - Writings :
-    # - Overview : https://bookshelf.cabinetofcuriosities.in/my-writings/
-    - Essays : https://bookshelf.cabinetofcuriosities.in/my-writings/essays/
-    - Poems : https://bookshelf.cabinetofcuriosities.in/my-writings/poems/
-    - Miscellany : https://bookshelf.cabinetofcuriosities.in/my-writings/miscellany/
+    - writings/index.md
+    - Essays : writings/essays/index.md
+    - Poems : writings/poems/index.md
+    - Miscellany : writings/miscellany/index.md
   - Fab :
     # - Fab 23 Bhutan : fab/fab23-bhutan.md
     # - Fab 25 Czechia : fab/fab25-czechia.md

@@ -132,7 +132,7 @@ whether the page fulfils its role.
 | Drawing Machines | Hidden entry | No | Yes | 13-word stub | **Reserved:** likely fertile, but no content presently in this repo. |
 | 3D printing | Hidden entry | No | Nav commented out | **Stub set with source links:** four near-empty pages, three pointing to prior project material | **Planned full content:** write individual Mecha, Flexures, Polyhedra, and George Hart treatments; a concise link hub alone is not the intended finish. |
 | Bookshelf world | Section and entries live | Yes | World link only | External subdomain | **Live:** SciFi/Asimov/map-only entries are intentional doors into Bookshelf, not Cabinet nav omissions. |
-| Writings | Section and three entries live | Yes | Three child links, overview commented | **Planned canonical home for authored work, current local stub:** Design, Food, Semantics, and other personal writing belongs here | **Develop and migrate:** move My Writings from Bookshelf into Cabinet, then have Bookshelf link to Cabinet. Bookshelf retains other people's writing—Favourite Poetry and the British Poetry Workshop—because its subject is reading, books, and literature. |
+| Writings | Section and three entries live, internal | Yes | Three child links plus overview, all internal | **Filled:** essays, miscellany, and poems migrated in from Bookshelf | **Done (2026-09-16):** My Writings moved from Bookshelf into Cabinet's `docs/writings/`; TSVs and nav repointed internally; Bookshelf's copy deleted (unlaunched, no redirect needed). Design, Food, Semantics, and other personal writing can still be added here later. Bookshelf retains other people's writing—Favourite Poetry and the British Poetry Workshop—because its subject is reading, books, and literature. |
 | Fab Academy 2023 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from the Fab23 Bhutan event write-up. |
 | Fabricademy 2026 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from the Fab25 Czechia event write-up; correct the stale TSV note claiming the href is blank. |
 | Fab23 Bhutan | Hidden `fab-23` | No | Commented | **Stub:** event-write-up file exists | Gather event material and write the personal event account; correct metadata that conflates it with Fab Academy coursework. |
@@ -256,7 +256,7 @@ projects, a large poetry archive, and several pieces of personal writing.
 | Golden Age Science Fiction | Live | Yes | **Filled:** deployed standalone project | Maintain; use its own living `ToDo.md` for project refinements. |
 | Isaac Asimov | Live | Yes | **Filled but unfinished:** deployed standalone project | Finish the explicit priorities in `Readme_4_todo_decisions.md`; do not count integration work as content completion. |
 | Agatha Christie / Geography of Murder | `/christie/` consistently | Nav points `/christie/` | **Filled and reachable:** substantial timeline, Atlas and story work | Routing fixed in `28fe92a` and verified in an assembled strict build. Approximate location data can still receive a later editorial review. |
-| My Writings | **Present in Bookshelf's current working tree/site structure, but not publicly launched** | **Currently in Bookshelf MkDocs nav** | **Filled collection; clean migration to Cabinet planned** | Move the files and navigation to Cabinet, then remove them from Bookshelf entirely. Because this material is new and unlaunched, no redirect, breadcrumb, or doorway page is required. |
+| My Writings | **Migrated to Cabinet (2026-09-16)** | **Removed from Bookshelf MkDocs nav** | **Done:** now lives at Cabinet's `docs/writings/` | Moved 2026-09-16 — files, nav, and TSV rows now in Cabinet; removed from Bookshelf entirely. No redirect/breadcrumb was needed since the material was unlaunched. |
 | Favourite Poetry | **Custom landing card uncommitted** | **Already live in MkDocs nav** | **Filled, live collection:** large anthology + workshop archive | Do not classify the collection as unpublished. Verify and commit only its pending custom-landing integration. Its short collection/long-poem indexes can remain concise if their scope and routes are clear. |
 | History of Design | Inside My Writings | Indirect | **Filled:** existing essay | Surface through the collection; it is not a new P1 writing assignment. |
 | Graphic novels / comics essay | Inside My Writings | Indirect | **Filled text, presentation incomplete:** existing essay needs more images | It can seed Comics & Sequential Art, but activation is not a priority. Add the needed images during the eventual essay presentation pass. |
@@ -268,10 +268,12 @@ projects, a large poetry archive, and several pieces of personal writing.
 
 Bookshelf content order:
 
-- [ ] Split the current Bookshelf landing changes: verify/publish Favourite
+- [x] Split the current Bookshelf landing changes: verify/publish Favourite
   Poetry's card, but remove the pending My Writings card and migrate that content
   cleanly to Cabinet. Remove its Bookshelf nav/pages after verifying the Cabinet
   copies; no public redirect or breadcrumb is needed because it is unlaunched.
+  **Done 2026-09-16** — My Writings content, nav, and TSV rows moved to Cabinet;
+  Bookshelf's copy deleted.
 - [ ] Make Christie reachable, then separate “substantial and public” from
   “research complete”: its maps document approximate or placeholder positions
   for some fictional locations.
@@ -323,10 +325,13 @@ Bookshelf content order:
   substantial but needs its route fixed. History of Design, comics writing,
   and the British Poetry Workshop already exist inside the live collections—do
   not recreate them or describe them as unpublished.
-- [ ] **Develop Cabinet Writings as the canonical home for authored work.** Move
+- [x] **Develop Cabinet Writings as the canonical home for authored work.** Move
   My Writings here, then add Design, Food, Semantics, and future personal work.
   Bookshelf should retain Favourite Poetry/British Poetry Workshop but should
   not retain My Writings pages, redirects, or breadcrumbs after the move.
+  **Done 2026-09-16** — essays/miscellany/poems now live at Cabinet's
+  `docs/writings/`; Design/Food/Semantics remain future additions to the same
+  section.
 
 ## P2 — substantial but valuable
 

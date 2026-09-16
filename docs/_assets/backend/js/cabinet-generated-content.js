@@ -88,13 +88,13 @@ export const sections = [
     "id": "writings",
     "title": "Writings",
     "subtitle": "Poetry, Essays, and Miscellany",
-    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/",
+    "href": "writings/",
     "order": 40,
     "weight": 2,
     "status": true,
     "kind": "region",
     "tags": [],
-    "location": "subdomain",
+    "location": "mkdocs",
     "map": {
       "islandId": "",
       "mapForm": "",
@@ -103,7 +103,8 @@ export const sections = [
       "rx": 0,
       "ry": 0
     },
-    "extraCount": 3
+    "extraCount": 3,
+    "notes": "Migrated from Bookshelf's My Writings 2026-09-16 -- content and nav now live entirely in Cabinet, see documentation/toDo - content.md."
   },
   {
     "id": "teaching",
@@ -295,25 +296,27 @@ export const entries = [
     "id": "writings-poetry",
     "section": "writings",
     "title": "Poetry",
-    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/poems/",
+    "href": "writings/poems/",
     "order": 40,
     "weight": 2,
     "status": true,
     "kind": "writing-collection",
     "tags": [],
-    "location": ""
+    "location": "mkdocs",
+    "notes": "Migrated from Bookshelf's my-writings/poems/ 2026-09-16."
   },
   {
     "id": "writings-essays",
     "section": "writings",
     "title": "Essays",
-    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/essays/",
+    "href": "writings/essays/",
     "order": 50,
     "weight": 2,
     "status": true,
     "kind": "writing-collection",
     "tags": [],
-    "location": ""
+    "location": "mkdocs",
+    "notes": "Migrated from Bookshelf's my-writings/essays/ 2026-09-16."
   },
   {
     "id": "vera-molnar",
@@ -652,7 +655,7 @@ export const entries = [
     "id": "writings-misc",
     "section": "writings",
     "title": "Miscellany",
-    "href": "https://bookshelf.cabinetofcuriosities.in/my-writings/miscellany/",
+    "href": "writings/miscellany/",
     "order": 10,
     "weight": 2,
     "status": true,
@@ -662,7 +665,8 @@ export const entries = [
       "essays"
     ],
     "location": "mkdocs",
-    "subtitle": "Essays, notes, reflections, and digital texts."
+    "subtitle": "Essays, notes, reflections, and digital texts.",
+    "notes": "Migrated from Bookshelf's my-writings/miscellany/ 2026-09-16."
   },
   {
     "id": "dot-mandala-tool",
