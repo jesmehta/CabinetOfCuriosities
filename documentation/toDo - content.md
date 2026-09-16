@@ -380,6 +380,15 @@ Bookshelf content order:
 - [ ] **Lighting/optics simulator:** decide on Teaching, WebTech, or a canonical
   page with cross-links; prototype one optical element before breadboard/game
   scope.
+- [ ] **Rock Collection Gallery and Dupatta Gallery (WebTech domain):**
+  confirmed as real "someday" ideas in Project Atlas (`theAtlas/projects*.json`,
+  `p016`/`p017`, `status: seed`), not fabricated — both explicitly blocked
+  on source material never gathered ("photos/scans not yet done"), no build
+  work exists yet. A related third idea there, `Material Library — Sampler
+  Site` (`p015`), explicitly "parallels rock and dupatta galleries" and may
+  be worth scoping together rather than separately. Photograph/scan the
+  source material first; page design and build come after, same order as
+  every other stub-vs-source-material item in this file.
 - [ ] **Blog:** when ready, choose one first post from Vignettes, tiny tales,
   Everyday Events Writing, or “Where Are You Local?” rather than designing a
   taxonomy first.
