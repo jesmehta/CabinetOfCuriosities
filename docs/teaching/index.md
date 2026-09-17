@@ -10,8 +10,8 @@ Here are some of my students' works.
 - [Creative Coding - SSD 2025-26](ssd-creative-coding-2025-26/)
 - [Emergent Technologies - SSD 2026-27](https://jesmehta.github.io/SSD_Student_Work/ssd-emergent-tech-2026-27/)
 - Emergent Technologies - SSD 2024-25 _(gallery not yet published)_
-- Dragons of SSD - A papiermache menagerie _(gallery not yet published)_
-- Playing with Pulp - Best of Papiermache at SSD _(gallery not yet published)_
+- [Playing with Pulp - Best of Papier-mâché at SSD](papiermache/)
+- Dragons of SSD - A Papier-mâché Menagerie _(gallery not yet published)_
 
 Here are some of the resource pages and fun stuff I have created to send to my students
 

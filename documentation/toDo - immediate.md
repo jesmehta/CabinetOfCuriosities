@@ -22,13 +22,18 @@ Completion below means committed implementation, not a verified live deployment.
   - Emergent Technologies 2024-25: finish the existing Twine narratives and
     background images, then assemble/publish `ssd-emergent-tech-2024-25/`.
   - Dragons of SSD: curate a Dragons-only gallery from the photo archive and
-    student Drive submissions, then publish `dragons-of-ssd/`.
-  - Playing with Pulp: curate a separate best-of-papier-mache gallery from the
-    same sources, then publish `ssd-papiermache/`.
+    student Drive submissions, then publish as a flat `docs/teaching/dragons.md`
+    in Cabinet (not `SSD_Student_Work`, and not nested under a "Galleries"
+    subsection -- see `content/CONTENT-STRUCTURE.md`'s 2026-09-17 entry for
+    why curated image/video galleries live here now instead of there).
   - Done for now (2026-09-16): converted to plain, unlinked text on
     `docs/teaching/index.md` marked "gallery not yet published" -- the
     `#84` validator below would otherwise fail CI on these three dead links.
     Restore as real links once each destination exists.
+  - Done (2026-09-17): Playing with Pulp published as a flat
+    `docs/teaching/papiermache.md`, linked live from `docs/teaching/index.md`
+    directly (no subsection/hub page). Dragons of SSD above is the one
+    remaining dead-link risk here -- still plain text.
 - [x] **Close the deployment validator's remaining coverage gap (`#84`).**
   - `tools/validate-deployment.js` now checks four route sources instead of
     one: `status: true`/`wip` rows in both `cabinet-entries.tsv` and

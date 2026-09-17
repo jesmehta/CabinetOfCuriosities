@@ -447,6 +447,25 @@ export const entries = [
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2023-24/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2023-24/) -- see content/external-repos.tsv."
   },
   {
+    "id": "gallery-papiermache",
+    "section": "teaching",
+    "title": "Playing with Pulp",
+    "href": "teaching/papiermache/",
+    "order": 16,
+    "weight": 3,
+    "status": true,
+    "kind": "gallery",
+    "tags": [
+      "teaching",
+      "students",
+      "showcase",
+      "gallery"
+    ],
+    "location": "mkdocs",
+    "subtitle": "Best of papier-mâché at SSD, 2025-26 cohort.",
+    "notes": "Native Cabinet mkdocs page (not assembled from another repo) -- a curated image gallery, distinct from the Creative Coding rows above which host per-student code via multi-repo assembly. Sits flat alongside the other Teaching entries, no subsection. Dragons of SSD and further image/video galleries get their own row here the same way once curated -- see content/CONTENT-STRUCTURE.md."
+  },
+  {
     "id": "students-emergent-technology",
     "section": "teaching",
     "title": "Student Work - Emergent Technology",
