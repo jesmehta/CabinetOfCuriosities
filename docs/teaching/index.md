@@ -11,7 +11,7 @@ Here are some of my students' works.
 - [Emergent Technologies - SSD 2026-27](https://jesmehta.github.io/SSD_Student_Work/ssd-emergent-tech-2026-27/)
 - Emergent Technologies - SSD 2024-25 _(gallery not yet published)_
 - [Playing with Pulp - Best of Papier-mâché at SSD](papiermache/)
-- Dragons of SSD - A Papier-mâché Menagerie _(gallery not yet published)_
+- [Dragons of SSD - A Papier-mâché Menagerie](dragons/) _(curation in progress)_
 
 Here are some of the resource pages and fun stuff I have created to send to my students
 

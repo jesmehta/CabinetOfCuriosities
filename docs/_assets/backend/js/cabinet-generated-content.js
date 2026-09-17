@@ -466,6 +466,25 @@ export const entries = [
     "notes": "Native Cabinet mkdocs page (not assembled from another repo) -- a curated image gallery, distinct from the Creative Coding rows above which host per-student code via multi-repo assembly. Sits flat alongside the other Teaching entries, no subsection. Dragons of SSD and further image/video galleries get their own row here the same way once curated -- see content/CONTENT-STRUCTURE.md."
   },
   {
+    "id": "gallery-dragons",
+    "section": "teaching",
+    "title": "Dragons of SSD",
+    "href": "teaching/dragons/",
+    "order": 17,
+    "weight": 3,
+    "status": "wip",
+    "kind": "gallery",
+    "tags": [
+      "teaching",
+      "students",
+      "showcase",
+      "gallery"
+    ],
+    "location": "mkdocs",
+    "subtitle": "A papier-mâché menagerie -- curation in progress.",
+    "notes": "Stub page (docs/teaching/dragons.md) and empty docs/_images/dragons-of-ssd/ placeholder -- same shape as gallery-papiermache, wired live now that the page exists, but status wip until real photos are curated. See content/CONTENT-STRUCTURE.md."
+  },
+  {
     "id": "students-emergent-technology",
     "section": "teaching",
     "title": "Student Work - Emergent Technology",

@@ -182,11 +182,33 @@ reports no errors for the new TSV row, nav entry, or page — the only
 errors in a local run are pre-existing external-assembly routes that need
 the real "Assemble external projects" CI step (not run locally) to exist.
 
+### Dragons of SSD stub added (2026-09-17, same day)
+
+Same shape as Playing with Pulp, one step earlier in the curation
+pipeline: `docs/teaching/dragons.md` (a short "coming soon" stub, no
+photos yet) and an empty `docs/_images/dragons-of-ssd/` placeholder
+folder (tracked via `.gitkeep`, since git doesn't track empty
+directories). Wired live now rather than left as plain unlinked text,
+because the page genuinely exists and builds — unlike before this
+session's work, when linking `ssd-papiermache/`/`dragons-of-ssd/` in
+`SSD_Student_Work` would have 404'd (no rendering pipeline there at
+all). `cabinet-entries.tsv`'s `gallery-dragons` row uses `status: wip`
+(not `true`) — the status value this repo already uses elsewhere for
+"page exists and is built, content not finished" (see
+`tools/generate_sitemap.py`'s status legend); `tools/validate-deployment.js`
+treats `wip` the same as `true` for route-existence checking, so this
+doesn't reintroduce the dead-link risk the `#84` validator was added to
+catch. `docs/teaching/index.md`'s bullet is now a real link with a
+`_(curation in progress)_` qualifier rather than plain unlinked text.
+Verified the same way as Playing with Pulp: strict build + validator,
+zero errors tied to the new page/row/nav entry.
+
 ## Changelog
 
 ### 2026-09-17 — Curated image/video galleries join Teaching; moved out of SSD_Student_Work
 
 See above. First page: Playing with Pulp, flat under `docs/teaching/`.
+Dragons of SSD stub added same day, `status: wip`.
 
 ### 2026-09-08 — Teaching/Machines & Makings/Webtech nav headers become clickable
 
@@ -196,13 +218,19 @@ separately from backend/tooling ones.
 
 ## Todo / watch-out-for
 
-- **Dragons of SSD, further image galleries, and the 1-2 planned showreel
-  galleries are not yet built.** Add each as a flat `docs/teaching/<slug>.md`
-  (sibling of `papiermache.md`, no subfolder) plus a flat `cabinet-entries.tsv`
-  row (`gallery-<slug>`, same shape as `gallery-papiermache`) when curated.
-  If this list grows well past 2-3 and starts crowding the Teaching nav, a
-  subsection can be reconsidered then — deliberately not done now. Showreels
-  will need a YouTube `<iframe>` pattern decided (or reuse of the
+- **Dragons of SSD has a stub page (`status: wip`) but no photos yet.**
+  Curate from the photo archive and student Drive submissions, drop images
+  into `docs/_images/dragons-of-ssd/` (currently just `.gitkeep`), write
+  the real gallery content into `docs/teaching/dragons.md` replacing the
+  "coming soon" copy, and flip `cabinet-entries.tsv`'s `gallery-dragons`
+  row to `status: true`.
+- **Further image galleries and the 1-2 planned showreel galleries aren't
+  started.** Add each as a flat `docs/teaching/<slug>.md` (sibling of
+  `papiermache.md`/`dragons.md`, no subfolder) plus a flat
+  `cabinet-entries.tsv` row (`gallery-<slug>`) when curated. If this list
+  grows well past 2-3 and starts crowding the Teaching nav, a subsection
+  can be reconsidered then — deliberately not done now. Showreels will
+  need a YouTube `<iframe>` pattern decided (or reuse of the
   `mkdocs-video` plugin already in `requirements.txt`/`mkdocs.yml`, unused
   so far — check it actually supports YouTube before assuming it does).
 - **This folder now has two entries.** Revisit whether a per-topic
