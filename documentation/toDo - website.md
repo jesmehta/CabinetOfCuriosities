@@ -2,7 +2,8 @@
 
 Current website, tooling, build, deployment, and cross-world work for the
 Cabinet and its two sibling worlds. Cabinet was audited 2026-09-12 against the
-repository at `ec1f6df`, then reconciled again 2026-09-16 through `a241ca3`
+repository at `ec1f6df`, then reconciled again 2026-09-17 through fetched
+`origin/main` `6b9137e` (Bookshelf `117a2cc`, FFFX `d723f74`)
 (see "Do now"/"Next"/FFFX below for what that reconciliation found done),
 against the open
 items in
@@ -58,7 +59,7 @@ restructure has since been implemented.
 
 ## Do now — correctness and misleading state
 
-- [ ] **Complete publication of the three unfinished Teaching collections.**
+- [ ] **Finish Emergent 2024–25 and Dragons content; verify the new gallery release.**
   The two already-live destinations were corrected in `02757d6`: Emergent
   Technologies 2026–27 now points to its live `SSD_Student_Work` gallery, and
   Coding with AI points to its live nested page under Working with AI. The
@@ -66,13 +67,26 @@ restructure has since been implemented.
   **verified live 2026-09-16** — both routes return 200 with real
   content/assets. Emergent Technologies
   2024–25 is partially underway as Twine branching narratives blocked on
-  background images; and the two papier-mâché galleries need
-  curation from the image archive. Assemble and publish those three collections.
+  background images. Dragons now has a native Cabinet page wired as `wip`
+  (`6b9137e`), but it is still a stub with an empty image placeholder.
+  Playing with Pulp is implemented (`c590b82`): 22 images, native page,
+  Teaching hub/nav, and registry/generated data. Do not rebuild it in
+  SSD Student Work: instructor-curated galleries belong flat under Cabinet
+  Teaching. Verify its latest deployment, image rendering, and lightbox.
   **Interim fix, 2026-09-16 (`e3577bf`)**: the three unbuilt routes were dead
   links on the live Teaching hub until a new deploy-time validator (`#84`)
   caught them; softened to plain "gallery not yet published" text so the
   hub no longer misdescribes them as live. This item's actual publication
-  work remains open — the softening is a stopgap, not a substitute.
+  work remained open then. Superseded for Pulp/Dragons by the commits above;
+  only Emergent 2024–25 still uses unlinked text.
+- [x] **Add gallery lightbox support** (`3e3a627`): `mkdocs-glightbox` added
+  to requirements and MkDocs plugins. Hosted interaction verification remains open.
+- [x] **Add the Fab hub and RIIDL lab links** (`65ce285`): native Fab index
+  links the event pages, programme documentation, and RIIDL 2024/2025/2026 pages.
+- [ ] **Reconcile Fab registry metadata with current sources.** Fab23 has a
+  real captioned chronology (`e6f3275`, `966b81b`), but hidden `fab-23` still
+  describes coursework with a blank href; `fab-26` still misnames Fab25 Czechia.
+  Correct event records/routes and regenerate dependent outputs before promotion.
 - [x] **Fix stale source-of-truth notes.** **Done, 2026-09-16 (`47ab009`)** —
   all four corrected:
   - `content/cabinet-sections.tsv`'s `web-tech` note now says active/mapped,

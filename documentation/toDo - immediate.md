@@ -2,8 +2,9 @@
 
 Quick wins and urgent work selected from [Content](toDo%20-%20content.md) and
 [Website](toDo%20-%20website.md). Reconciled with local Git history and source
-on 2026-09-16, through Cabinet `1d320df`, Bookshelf `117a2cc`,
-and SSD Student Work `5b4188c`. The longlists retain broader scope.
+on 2026-09-17, through fetched Cabinet `origin/main` `6b9137e`, Bookshelf
+`117a2cc`, and FFFX `d723f74`. SSD Student Work's earlier check was at
+`5b4188c`. The longlists retain broader scope.
 Completion below means committed implementation, not a verified live deployment.
 
 ## Urgent - verify the latest release
@@ -18,7 +19,7 @@ Completion below means committed implementation, not a verified live deployment.
     `/teaching/ssd-creative-coding-2023-24/` (plus their `script.js`).
   - Removed the two obsolete "not yet pushed" notes in
     `content/external-repos.tsv` and `content/cabinet-entries.tsv`.
-- [ ] **Close the remaining Teaching hub route gaps.**
+- [ ] **Finish the remaining Teaching content, not already-fixed route gaps.**
   - Emergent Technologies 2024-25: finish the existing Twine narratives and
     background images, then assemble/publish `ssd-emergent-tech-2024-25/`.
   - Dragons of SSD: stub page exists (`docs/teaching/dragons.md`, linked
@@ -26,16 +27,16 @@ Completion below means committed implementation, not a verified live deployment.
     the photo archive and student Drive submissions into
     `docs/_images/dragons-of-ssd/` and real gallery content in place of the
     "coming soon" copy, then flip to `status: true`.
-  - Done for now (2026-09-16): converted to plain, unlinked text on
-    `docs/teaching/index.md` marked "gallery not yet published" -- the
-    `#84` validator below would otherwise fail CI on these three dead links.
-    Restore as real links once each destination exists.
-  - Done (2026-09-17): Playing with Pulp published as a flat
+  - Emergent 2024-25 remains honest, unlinked "gallery not yet published" text.
+    No current Teaching hub link points to its absent route.
+  - Done (`c590b82`, 2026-09-17): Playing with Pulp committed as a flat
     `docs/teaching/papiermache.md`, linked live from `docs/teaching/index.md`
     directly (no subsection/hub page).
-  - Done (2026-09-17, same day): Dragons of SSD stub added the same way
+    It contains 22 real images, not a stub. Verify hosted rendering/lightbox;
+    attribution and further editorial context can be a later presentation pass.
+  - Done (`6b9137e`, 2026-09-17): Dragons of SSD stub added the same way
     (`docs/teaching/dragons.md`, `status: wip`) -- no dead links remain
-    among the three above; only real curation work is left.
+    among the three above; Dragons curation and Emergent completion remain.
 - [x] **Close the deployment validator's remaining coverage gap (`#84`).**
   - `tools/validate-deployment.js` now checks four route sources instead of
     one: `status: true`/`wip` rows in both `cabinet-entries.tsv` and
@@ -77,17 +78,22 @@ Completion below means committed implementation, not a verified live deployment.
   Verified locally: build produces the redirect HTML at the right path with
   the right target, and the full pipeline (assemble/copy/validate) still
   passes clean.
-- [ ] **Correct the remaining source-of-truth notes.**
+- [x] **Correct the remaining source-of-truth notes** (`47ab009`, `cb40b16`).
   - WebTech section note: it is active and mapped, not waiting for `#69`.
   - Compass entry notes: use the current `docs/compass/` paths.
   - Fabricademy note: its 2026 external href is already present.
   - README: describe six source repositories and eight assembly destinations.
     The backend/deploy reference was already updated in `30c1de6`.
-- [ ] **Reconcile the historical ledger (`#69/#76/#80/#81/#82/#84/#126`).**
+- [x] **Reconcile the historical ledger (`#69/#76/#80/#81/#82/#84/#126`)**
+  (`442ff95`, `50eab7e`, `a241ca3`).
   Annotate completed work and remaining scope; replace its stale immediate
   priorities while preserving history. Do not repeat completed infrastructure.
-- [ ] **Remove FFFX's inherited `scifi asimov` deployment-copy loop.** It has
-  no corresponding FFFX projects and is misleading workflow residue.
+- [x] **Remove FFFX's inherited `scifi asimov` deployment-copy loop** (`d723f74`).
+- [ ] **Finish Fab metadata and presentation.** Fab23's captioned image
+  chronology and the Fab hub now exist (`e6f3275`, `65ce285`, `966b81b`).
+  Correct the hidden `fab-23`/`fab-26` TSV records to event identities/routes;
+  add Fab23's personal account and curate its image dump. Fab25 remains a stub.
+  RIIDL lab links are already present in the hub; do not re-add them.
 
 ## Next bounded content pass
 
@@ -138,9 +144,9 @@ Completion below means committed implementation, not a verified live deployment.
   assembly script, required-file/content checks, and collision rejection.
 - [x] **Deployment safeguards committed** (`30c1de6`): strict MkDocs build,
   generated-content drift check, and active local entry-route validation.
-  Remaining coverage and live-release checks are listed above.
+  Coverage expanded in `e3577bf`; latest hosted gallery/lightbox checks remain.
 - [x] **Creative Coding 2024-25 and 2023-24 built and wired** (SSD commits
-  above; Cabinet `30c1de6`). Deployment verification remains open.
+  above; Cabinet `30c1de6`). Deployment verified 2026-09-16, as recorded above.
 - [x] **FFFX Circle Packing paths/link repaired** (`351fb1f`).
 - [x] **Bookshelf Christie routing corrected** (`28fe92a`): `/christie/`
   is canonical with a standalone entry point.

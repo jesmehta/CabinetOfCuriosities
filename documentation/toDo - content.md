@@ -1,7 +1,8 @@
 # ToDo — Content
 
 Current Cabinet content and information-architecture work. Reconciled again
-2026-09-16 through Cabinet `b667bc2` and Bookshelf `117a2cc`. Original audit
+2026-09-17 through fetched Cabinet `origin/main` `6b9137e`, Bookshelf `117a2cc`,
+and FFFX `d723f74`. Original audit
 2026-09-12
 against:
 
@@ -88,8 +89,8 @@ observations, not a claim that every build or hosted page was rechecked today.
   `archived-landing-pages/v1/site_notes/index.html`. The MkDocs nav entry was
   removed, then `docs/compass/site_notes.md` itself deleted and
   `FILE-MANIFEST.md`/`CONTENT-INVENTORY.md` updated to match (2026-09-16).
-- [ ] **Repair Teaching publication according to actual readiness.** Three
-  unfinished hub routes remain; distinguish them from completed wiring:
+- [ ] **Finish Teaching content according to actual readiness.** Emergent
+  2024–25 and Dragons remain unfinished; distinguish them from completed wiring:
   - Creative Coding 2024–25 and 2023–24: built in SSD Student Work and wired
     into Cabinet's manifest/registry/nav in `30c1de6`; **deployment verified
     live 2026-09-16** — both routes return 200 with real gallery content and
@@ -104,11 +105,15 @@ observations, not a claim that every build or hosted page was rechecked today.
     enough to stand as a separate, interconnected project; its live destination
     is `/teaching/working-with-ai/coding-with-ai/index.html`; the hub link was
     corrected in `02757d6`;
-  - Dragons of SSD: a distinct Dragons-only gallery, collected from the image
-    archive across the maintainer's photo gallery and student Google Drive
-    submissions;
-  - Playing with Pulp: a separate best-of-papier-mâché gallery, also collected
-    from those two external image sources.
+  - Dragons of SSD: native Cabinet stub `docs/teaching/dragons.md`, hub/nav
+    linked and registered WIP (`6b9137e`); image folder has only `.gitkeep`.
+    Collect Dragons-only images from archive/Drive, add real content, then
+    promote status. Wiring completion is not content completion;
+  - Playing with Pulp: native `docs/teaching/papiermache.md`, 22 real images,
+    hub/nav and active registry/generated-data wiring (`c590b82`). Initial
+    implementation done; verify hosted rendering/lightbox. More context and
+    attribution can be a later presentation pass. Both curated galleries belong
+    in Cabinet, not SSD Student Work's per-student-code assembly model.
 
   Do not label the two live projects “forthcoming,” and do not describe the
   archive-curation jobs as absent ideas.
@@ -117,7 +122,8 @@ observations, not a claim that every build or hosted page was rechecked today.
     hub (routes never built) until a new deploy-time link validator (`#84`)
     caught them; softened to plain "gallery not yet published" text rather
     than left as 404s. Restore as real links once each destination exists —
-    this is a stopgap, not the content work itself.
+    this was a stopgap, not the content work itself. Pulp and Dragons now have
+    real native routes; only Emergent 2024–25 remains unlinked.
 
 ## Current surface matrix
 
@@ -128,7 +134,9 @@ observations, not a claim that every build or hosted page was rechecked today.
 | Colophon | `compass-s`, live | Yes | Yes | **Filled and publication-clean:** ~1,932 words plus archive links | **Complete:** link correction committed in `46160a0`; strict Cabinet build passes. |
 | Site map | `compass-w`, live | Yes | Yes | **Intentionally concise index:** generated cross-world routes | **Live:** refresh after sibling TSV changes; distinguish generated flags from editorial decisions. |
 | Site Notes | No TSV row | No compass direction | Removed | **Retired (2026-09-16):** useful material folded into Colophon, original preserved at `archived-landing-pages/v1/site_notes/index.html` | **Done.** Source file, nav entry, and manifest/inventory references all removed. |
-| Teaching hub | Section live | Yes | Clickable header | **Filled hub:** three unfinished routes (Emergent 2024–25, Dragons, Pulp) | **Partial publication/curation:** two live links repaired; Creative Coding 2024–25/2023–24 built, wired, and **verified live 2026-09-16**. The three unfinished routes are now honest unlinked text (`e3577bf`), not dead links. Retain useful hub copy; no padding required. |
+| Teaching hub | Section live | Yes | Clickable header | **Filled hub:** Pulp linked; Dragons linked WIP; Emergent 2024–25 unlinked | **Remaining content:** Dragons curation and Emergent completion. Creative Coding galleries verified live 2026-09-16; latest Pulp/Dragons deployment not reverified here. |
+| Playing with Pulp | Active native entry | Generated data | Yes | **Filled image gallery:** 22 images, brief cohort introduction (`c590b82`) | **Initial implementation done:** verify hosted rendering/lightbox; improve attribution/context later. Short prose does not make an image gallery a stub. |
+| Dragons of SSD | Native WIP entry | Generated data | Yes | **Stub:** coming-soon text, empty tracked image folder (`6b9137e`) | **Wiring done, content open:** collect images and add context before promoting to true. |
 | SSD Creative Coding 2024–25 / 2023–24 | Entries active | Generated data wired | Yes | **Built galleries:** SSD source committed; Cabinet assembly wired in `30c1de6` | **Live, verified 2026-09-16:** both routes return 200 with real content/assets; Actions green on both repos. |
 | SSD Creative Coding 2025–26 | Entry live | Yes | Yes | Assembled and validated | **Live.** |
 | Working with AI | Entry live | Yes | Yes | Assembled and validated | **Live.** |
@@ -149,9 +157,10 @@ observations, not a claim that every build or hosted page was rechecked today.
 | Bookshelf world | Section and entries live | Yes | World link only | External subdomain | **Live:** SciFi/Asimov/map-only entries are intentional doors into Bookshelf, not Cabinet nav omissions. |
 | Writings | Section and three entries live, internal | Yes | Three child links plus overview, all internal | **Filled:** essays, miscellany, and poems migrated in from Bookshelf | **Done (2026-09-16):** My Writings moved from Bookshelf into Cabinet's `docs/writings/`; TSVs and nav repointed internally; Bookshelf's copy deleted (unlaunched, no redirect needed). Design, Food, Semantics, and other personal writing can still be added here later. Bookshelf retains other people's writing—Favourite Poetry and the British Poetry Workshop—because its subject is reading, books, and literature. |
 | Fab Academy 2023 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from the Fab23 Bhutan event write-up. |
-| Fabricademy 2026 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from the Fab25 Czechia event write-up; correct the stale TSV note claiming the href is blank. |
-| Fab23 Bhutan | Hidden `fab-23` | No | Commented | **Stub:** event-write-up file exists | Gather event material and write the personal event account; correct metadata that conflates it with Fab Academy coursework. |
-| Fab25 Czechia | Incorrectly represented as hidden `fab-26` | No | Commented with correct Fab25 title | **Stub:** event-write-up file exists | Rename/correct the TSV record and develop the 2025 event write-up. |
+| Fabricademy 2026 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from Fab25 Czechia; stale href note already corrected in `47ab009`. |
+| Fab hub | Section visible | Yes | Yes | **Concise functional index:** events, programme sites, RIIDL lab links (`65ce285`) | **Implemented:** verify hosted routes; keep event/programme identities distinct. |
+| Fab23 Bhutan | Hidden `fab-23`, stale coursework metadata | No event card | Via Fab hub | **Substantial captioned photo chronology:** page/images committed (`e6f3275`, `966b81b`), not a stub | Correct TSV identity/href; curate image dump and add personal event account. |
+| Fab25 Czechia | Incorrectly represented as hidden `fab-26` | No | Via Fab hub | **Stub:** event-write-up file exists | Rename/correct TSV record and develop the 2025 event write-up. |
 | FFFX world | Section and two entries live | Yes | World link only | External subdomain | **Live externally; local legacy folder partially resolved.** Circle Packing/PackingShapes duplicate deleted 2026-09-16 (`b667bc2`), redirected to FFFX's canonical page. `docs/fffx/VeraMolnarRetrospective.md`, `100Gradients.md`, and `particleSystems.md` are still orphaned frozen copies awaiting the same disposition. |
 | Visual Field Notes | Section `wip`, entries hidden | Not rendered because it has no visible entries | No | **Assets complete, concept/page absent:** photography exists for Gujarati Type, Doors of Kutch, and Kochi | **Hub plus three collections:** sort the photographs, clarify the shared editorial approach, design the hub/layout system, then create separate Gujarati Type, Doors of Kutch, and Kochi pages. |
 | DataViz | Section/entry hidden | No | No | **Stub:** one-line file, viable future index role | **Deliberately hidden:** do not activate now, even though a concise curated cross-world index could eventually fulfil the role. |
@@ -196,7 +205,7 @@ observations, not a claim that every build or hosted page was rechecked today.
   world entries, and in-page anchors. This keeps the content report actionable.
 - [ ] **Correct and separate the four Fab records.** They are not competing
   names for the same chronology:
-  - Fab23 Bhutan: a future personal write-up of the 2023 Fab conference/event;
+  - Fab23 Bhutan: photo chronology now exists; personal account remains;
   - Fab25 Czechia: a future personal write-up of the 2025 Fab conference/event;
   - Fab Academy 2023: the already-live external programme documentation site;
   - Fabricademy 2026: the already-live external programme documentation site.
@@ -206,8 +215,8 @@ observations, not a claim that every build or hosted page was rechecked today.
   describes the event rather than Fab Academy coursework. Keep the two external
   programme links distinct. Update the Fab section description and regenerated
   sitemap at the same time.
-- [ ] **Add the requested FabLab riidl link(s)** in the Fab context rather than
-  duplicating the existing Fab Academy destination under an unexplained label.
+- [x] **Add the requested FabLab RIIDL links** (`65ce285`): Fab hub links
+  the 2024/2025/2026 lab pages separately from personal programme documentation.
 
 ## FFFX — verified content audit
 
@@ -319,17 +328,17 @@ Bookshelf content order:
   in `02757d6` (2026-09-16).
 - [x] **Teaching: assemble Creative Coding 2024–25 and 2023–24.** SSD galleries
   built and Cabinet manifest, entry TSV/generated data, and nav wired in
-  `30c1de6`. Verify deployed routes/assets separately; do not redo the integration.
+  `30c1de6`. Routes/assets verified live 2026-09-16; do not redo integration.
 - [ ] **Teaching: continue Emergent Technologies 2024–25.** Assemble the
   existing Twine branching narratives under
   `SSD_Student_Work/ssd-emergent-tech-2024-25/`; resolve their background-image
   treatment and add the images currently blocking progress.
-- [ ] **Teaching: collect Dragons of SSD and Playing with Pulp from the image
-  archive.** Keep their scopes distinct: Dragons is only the dragon works;
-  Playing with Pulp is the broader best-of-papier-mâché selection. Do not wait
-  for a universal gallery framework. Export and reconcile material from both
-  the maintainer's photo gallery and the students' Google Drive submissions;
-  preserve attribution and usage permission while deduplicating images.
+- [x] **Teaching: implement Playing with Pulp's initial gallery** (`c590b82`):
+  native Cabinet page, 22 images, registry/nav/hub wiring. Hosted release check
+  remains separate; further presentation work need not reopen initial assembly.
+- [ ] **Teaching: fill Dragons of SSD's native Cabinet stub.** Collect the
+  Dragons-only selection from archive/Drive; preserve attribution/permissions,
+  add context, and promote its WIP status once real gallery content exists.
 - [ ] **FFFX: reach five substantive entries.** Retain Vera Molnar and Circle
   Packing, then integrate the already-coded Dance of Planets and Island
   Generator with embeds, examples, and write-ups. Complete the nearly-coded
@@ -355,8 +364,9 @@ Bookshelf content order:
 
 - [ ] Warli explorer; worthwhile and distinctive, but a real project rather
   than a quick page.
-- [ ] Fab23 Bhutan and Fab25 Czechia event write-ups: selected images and a
-  personal account of each event. Link Fab Academy 2023/Fabricademy 2026 only
+- [ ] Finish Fab23 Bhutan's personal account and curate its existing photo
+  chronology; develop Fab25 Czechia's still-stub write-up. Fab23 images and the
+  Fab hub are already implemented. Link Fab Academy 2023/Fabricademy 2026 only
   where genuinely relevant; they are separate programme documentation sites,
   not substitutes for the event write-ups.
 
@@ -402,8 +412,9 @@ Bookshelf content order:
 - [ ] Do not activate empty Blog, PhysComp, or Travels sections merely because
   folders exist. Visual Field Notes has complete photo assets but remains hidden
   pending its editorial approach and layout. Keep DataViz deliberately hidden.
-- [ ] Do not expose the Fab23/Fab25 event write-ups until their pages are filled
-  and the incorrect `fab-26` metadata is corrected.
+- [ ] Do not promote hidden Fab event TSV cards until metadata and content
+  are ready. Fab23 is already reachable via the Fab hub, not an absent page;
+  Fab25 remains a stub and the incorrect `fab-26` metadata is still open.
 - [ ] Do not add `teaching-approach` or `teaching-research` to the map until the
   real About/Teaching prose is written; they would currently duplicate broad
   claims without destinations.
