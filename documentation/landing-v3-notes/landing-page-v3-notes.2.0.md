@@ -1586,6 +1586,28 @@ made in the v3-prototype phase.
 
 ## Changelog
 
+### v3.7.76 -- bottom-of-page text replaced with a real "about this" blurb
+
+`<p class="v3-footnote">` (`index.template.html`) was, until now, a
+dev-facing build note ("Static build -- see build-static.mjs... See
+documentation/landing-page-v3-notes.2.0.md for the design conversation
+behind this") -- visible on the live page (not `.sr-only`, just small/
+dimmed via CSS), not a placeholder. Direct request: replace it with an
+actual public-facing description of what a Cabinet of Curiosities is
+and why this site is one. Swapped in verbatim, same element/class (no
+new CSS): "Cabinets of Curiosities were personal collections that
+predated modern museums as collections of interesting, beautiful,
+unusual or rare objects from around the world. This is my Cabinet of
+Curiosities, a collection of interesting bits from around my world.
+You are welcome to browse it. I hope it brings delight and, ofcourse,
+ignites curiosity." The dev build-note content it replaced isn't
+preserved elsewhere on the page; it only ever duplicated context this
+changelog file itself already has. `dev-tool/islands-tool.html` has
+its own separate, unrelated `.v3-footnote` (tool documentation, not
+shared markup with `index.template.html`) -- untouched.
+
+Rebuilt (`build-static.mjs`).
+
 ### v3.7.75 -- three "Student Work - X" titles split into title+tagline
 
 `#37`'s tagline field (title above, smaller subtitle line below, same

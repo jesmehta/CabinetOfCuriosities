@@ -352,6 +352,11 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   amber glow also bumped, 2026-09-23**: 3.5px x2 → 5px x3 (stays below
   hover's 7px x4 so hover still reads as more prominent). Rebuilt via
   `build-static.mjs`.
+- [x] **Bottom-of-page text replaced, 2026-09-23**: `.v3-footnote` (visible,
+  not a dev-only placeholder) held a build note ("Static build -- see
+  build-static.mjs..."); replaced with a real public-facing "about this
+  Cabinet" blurb, direct text supplied. `index.template.html` updated,
+  rebuilt via `build-static.mjs`.
 - [ ] `#137` — finer coast-level entry tier. Keep speculative until it has a
   content use case and interaction design.
 - [ ] `#135/#136` — analytics rollout to sibling and assembled repos, after
