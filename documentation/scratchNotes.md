@@ -24,3 +24,7 @@ Lighting Teaching aid optics simulator one off optic, as well as optical breadbo
 
 link fablab riidl pages as well from the Fab section
 
+V Pleat visualiser and multiplier tool - spline to single strip fold to multi strip fold, and 3d?
+rest of paulJackson diagram generators
+
+Sync the repo down
