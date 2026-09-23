@@ -73,6 +73,25 @@ restructure has since been implemented.
   `landing-v3/index.html` regenerated (`node build-static.mjs`); not yet
   promoted to `docs/` (`node promote.mjs`, a separate manual "ship this"
   step).
+- [x] **`#144`/label-hover work promoted to production, 2026-09-23.** The
+  hover-highlight redesign, the three-entry title/tagline split, and the
+  bottom-of-page text replacement (all logged under `#144`/`#37`/below)
+  were built, then shipped via `node promote.mjs` — verified clean in
+  headless Chromium (zero console/request errors) by the promote script
+  itself. Split across 5 commits by logical concern (CSS, content,
+  copy, promote, new-todo-log); pushed to `origin/main`.
+- [x] **Archived the abandoned sea-serpent prototype, 2026-09-23.**
+  `landing-v3/cabinet-v3-seaserpent.js` + a `_test-serpent.html` harness
+  had been sitting untracked in the working tree — a v3-era serpent
+  redesign (coiled circular-arc "humps", distinct dome+snout head) that
+  predates and was superseded by the dragon(s) the current map actually
+  shipped with, never wired into the live map. Moved to
+  `archived-landing-pages/seaserpent-prototype/` (closest precedent:
+  `algorithm-bench/`, a standalone prototype never committed to
+  `landing-v3/`), verified it still renders correctly, and linked it
+  from `archived-landing-pages/README.md`, `index.html`, and
+  `docs/compass/colophon.md` — the same three places every other archive
+  entry is documented. Committed and pushed.
 
 ## Do now — correctness and misleading state
 
