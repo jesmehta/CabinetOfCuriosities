@@ -40,7 +40,20 @@
 // leftover lowercase values were cleared from the real data, not just
 // left orphaned next to a column that no longer explains them.
 const SECTIONS_COLS = ["id", "title", "subtitle", "href", "order", "weight", "status", "kind", "tags", "location", "mapForm", "islandId", "cx", "cy", "rx", "ry", "extraCount", "notes"];
-const ENTRIES_COLS = ["id", "section", "title", "subtitle", "href", "order", "weight", "status", "kind", "tags", "location", "thumbnail", "relatedLinks", "anchor", "notes"];
+// `tagline` (added 2026-09-23) is distinct from the long-dormant `subtitle`
+// below despite looking similar: it's a short second line rendered directly
+// under an entry's island label on the live map itself (cabinet-v3-layout.js's
+// buildIslandLabelEl()), while `subtitle` is unread anywhere and kept as a
+// longer just-in-case description. Deliberately its own column rather than
+// reusing `subtitle` -- 35 of 41 existing entries already have full-sentence
+// subtitle text ("Selected student work and showcases from..."), which would
+// be exactly the wrong length/tone if suddenly rendered on-map at label size.
+// Direct trigger: the Teaching cluster's "Student Work - Emergent Technology"
+// label ran into its "Working with AI" neighbour (#37) -- retitled to
+// "Emergent Technology" with tagline "Student Work" to shorten the label
+// without losing the "this is student work" context. Blank for every other
+// entry for now; only renders (as a second, smaller line) when set.
+const ENTRIES_COLS = ["id", "section", "title", "tagline", "subtitle", "href", "order", "weight", "status", "kind", "tags", "location", "thumbnail", "relatedLinks", "anchor", "notes"];
 
 // Columns the live v3 renderer (landing-v3/layout-engine/cabinet-v3-layout.js)
 // actually reads, vs. columns build-time-computed-over (sections' map

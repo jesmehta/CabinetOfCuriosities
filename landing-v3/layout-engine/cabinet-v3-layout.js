@@ -95,6 +95,24 @@ function el(tag, attrs = {}, text) {
   return node;
 }
 
+// An entry's optional `tagline` (content/cabinet-entries.tsv) is a second,
+// smaller line under its main title -- e.g. "Emergent Technology" / tagline
+// "Student Work", so a long compound title doesn't have to fight a crowded
+// cluster's neighbouring labels for horizontal room on one line. Absent for
+// most entries (falls back to the original single-line <text>, unchanged).
+// Two-line layout follows the compass rose's own label tspans (further
+// below, computeCompassLabels()): absolute per-tspan y (not dominant-
+// baseline centering across lines, which SVG doesn't do), block centred on
+// c.y by hand.
+const ISLAND_TAGLINE_LINE_GAP = 10;
+function buildIslandLabelEl(c) {
+  if (!c.tagline) return el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title);
+  const textEl = el("text", { x: c.x, y: c.y, class: "v3-island-label v3-island-label-with-tagline" });
+  textEl.appendChild(el("tspan", { x: c.x, y: c.y - ISLAND_TAGLINE_LINE_GAP / 2 }, c.title));
+  textEl.appendChild(el("tspan", { x: c.x, y: c.y + ISLAND_TAGLINE_LINE_GAP / 2, class: "v3-island-label-tagline" }, c.tagline));
+  return textEl;
+}
+
 // Step 1: fold entries into sections. A section's weight is the sum of
 // its own visible entries' weights (not an independently authored
 // number) -- see the "Section weight" decision in
@@ -546,6 +564,7 @@ function buildSeedsForSection(sectionMeta, packArea, allPlacedPoints) {
     weight: e.weight,
     kind: "entry",
     title: e.title,
+    tagline: e.tagline,
     href: e.href,
     status: e.status
   }));
@@ -1045,7 +1064,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
   // which have never had a link of their own either.
   circles.forEach(c => {
     if (c.kind === "entry" && c.status === "wip") {
-      group.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
+      group.appendChild(buildIslandLabelEl(c));
       return;
     }
 
@@ -1165,7 +1184,7 @@ function renderRegion(stage, region, band, label, sectionMeta, circles) {
       link.appendChild(el("path", { d: previewCoastlineD, class: "v3-island-theme-preview-coastline", "fill-rule": "evenodd" }));
 
       link.appendChild(el("path", { d: islandD, class: "v3-island-hit", "fill-rule": "evenodd" }));
-      link.appendChild(el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title));
+      link.appendChild(buildIslandLabelEl(c));
       group.appendChild(link);
       return;
     }

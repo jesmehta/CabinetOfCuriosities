@@ -1359,6 +1359,18 @@ body.v3-proto[data-theme="satellite"] .v3-topo-structural {
    filter per data-label-style and stay that way; this scale applies on
    top of whichever one is active, so it doesn't need a fourth
    label-style-specific copy to keep in sync. */
+/* An entry's optional tagline (content/cabinet-entries.tsv `tagline`
+   column, e.g. "Student Work" under the "Emergent Technology" title) --
+   smaller and slightly muted so it reads as a subtitle, not a second equal
+   line. Inherits .v3-island-label's fill/font/hover/data-label-style rules
+   (it's a tspan inside that same <text>, not a separate element) -- this
+   only overrides size/weight/opacity. */
+.v3-island-label-tagline {
+  font-size: 9px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
 .v3-island:hover .v3-island-label,
 .v3-island:focus-visible .v3-island-label {
   transform: scale(1.18);

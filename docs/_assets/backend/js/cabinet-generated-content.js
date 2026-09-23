@@ -487,7 +487,7 @@ export const entries = [
   {
     "id": "students-emergent-technology",
     "section": "teaching",
-    "title": "Student Work - Emergent Technology",
+    "title": "Emergent Technology",
     "href": "teaching/#emergent-technology",
     "order": 20,
     "weight": 2,
@@ -499,6 +499,7 @@ export const entries = [
       "emergent-technology"
     ],
     "location": "mkdocs",
+    "tagline": "Student Work",
     "subtitle": "Working with AI, Coding with AI, and class write-ups.",
     "notes": "Links to the Emergent Technology subheading on teaching/index.md."
   },

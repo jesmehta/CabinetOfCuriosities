@@ -68,6 +68,7 @@ function buildEntries(sections) {
     // in the live renderer -- see cabinet-tsv.js's schema comment.
     if (row.anchor) entry.visual = { anchor: row.anchor };
 
+    if (row.tagline) entry.tagline = row.tagline;
     if (row.thumbnail) entry.thumbnail = row.thumbnail;
     if (row.subtitle) entry.subtitle = row.subtitle;
 

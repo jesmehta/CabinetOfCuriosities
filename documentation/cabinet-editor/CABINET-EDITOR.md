@@ -375,6 +375,32 @@ write the same files, no separate state to keep in sync.
 
 ## Changelog
 
+### v1.7 — new entries column: `tagline` (2026-09-23)
+
+Direct trigger: a Playwright QA pass on the v3 map (`#37`/`#39`, `documentation/backend-and-deploy/three-world-launch-phases-ToDo.md`)
+found a real label collision in the Teaching cluster — "Student Work -
+Emergent Technology"'s island label ran directly into its "Working with
+AI" neighbour, since entry labels are plain single-line SVG `<text>` with
+no width-awareness or collision avoidance (unlike the compass rose's four
+labels, which already dodge).
+
+Added `tagline` to `ENTRIES_COLS` (`cabinet-tsv.js`), right after `title`
+— an optional short second line rendered smaller under an entry's main
+island label (`cabinet-v3-layout.js`'s `buildIslandLabelEl()`; new
+`.v3-island-label-tagline` CSS rule). Only that one entry has a value:
+title shortened to "Emergent Technology", tagline set to "Student Work",
+which resolved the collision without losing the "this is student work"
+context. Deliberately a new column, not a reuse of the existing (already
+present in the schema, never rendered) `subtitle` column — 35 of the 41
+current entries already carry full-sentence `subtitle` text meant for some
+future longer description, which is the wrong length and register to
+suddenly render at label size on the map; overloading it here would have
+coupled two different purposes onto one field. Every other entry's
+`tagline` cell is blank and renders nothing — single-line labels are
+otherwise unchanged. Schema-driven, so it appeared in the editor grid
+automatically with no `editor.js` changes needed, same as any other core
+(non-reserved) column.
+
 ### v1.6 — section `weight` is a live-computed display, not an editable field (2026-09-08)
 
 Direct correction after the user noticed the editor let you type a number
