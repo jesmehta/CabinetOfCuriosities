@@ -23,7 +23,18 @@
   <link rel="stylesheet" href="../docs/_assets/backend/css/cabinet-tokens.css" />
   <link rel="stylesheet" href="shared/cabinet-v3-style.css" />
 </head>
-<body class="v3-proto" data-theme="medieval-map" data-label-style="glow">
+<body class="v3-proto" data-theme="medieval-map" data-label-style="glow" style="--v3-sea-deep:#f4ebdd;--v3-sea-shallow:#ddbd82;--v3-veg:#fbf0ee;--v3-sand:#7d3a24;--v3-peak:#ffffff;--v3-ink:#1c1712;--v3-ring-ink:#1c1712;--v3-halo-ink:#faf3dc;--v3-label-outline:#ddbd82;--v3-font-heading:&quot;Cinzel&quot;;--v3-font-section-label:&quot;IM Fell English&quot;;--v3-font-island-label:&quot;EB Garamond&quot;">
+  <!-- The inline style= above is a literal copy of v3Config.colors["medieval-map"]
+       + v3Config.fonts["medieval-map"] (cabinet-v3-data.js), baked in here so the
+       browser paints the real theme on the very first frame instead of body.v3-proto's
+       placeholder blue (--v3-sea-deep etc. in cabinet-v3-style.css) while waiting for
+       the deferred module script's applyThemeStyle() to run. Once that script does run
+       it sets the exact same values via document.body.style.setProperty() -- a no-op
+       overwrite, not a second flash. CAVEAT: this is a duplicate, not derived -- if
+       medieval-map's colors/fonts are ever retuned via the dev panel + apply-config.mjs,
+       update this line to match, or the first frame will briefly show the stale (but
+       still warm-toned, not blue) values until JS corrects it. -->
+
   <!-- v3.6.12 -- header reverted to a normal top-of-flow row (v3.6.10
        had briefly overlaid it on the canvas's own corner -- see
        documentation/landing-page-v3-notes.2.0.md's changelog for why that was undone).
