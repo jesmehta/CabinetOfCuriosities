@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-09-16 04:04 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-09-23 09:02 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -29,18 +29,22 @@ _Web experiments, Generative bots, twine and other web ephemera._
 - 🟢 [Tracery Bots](https://cabinetofcuriosities.in/webtech/traceryBots/)
 - 🟢 [Swatch Fields](https://cabinetofcuriosities.in/swatch-fields/)
 
-### 🟢 [Writings](https://bookshelf.cabinetofcuriosities.in/my-writings/)
+### 🟢 [Writings](https://cabinetofcuriosities.in/writings/)
 _Poetry, Essays, and Miscellany_
 
-- 🟢 [Miscellany](https://bookshelf.cabinetofcuriosities.in/my-writings/miscellany/)
-- 🟢 [Poetry](https://bookshelf.cabinetofcuriosities.in/my-writings/poems/)
-- 🟢 [Essays](https://bookshelf.cabinetofcuriosities.in/my-writings/essays/)
+- 🟢 [Miscellany](https://cabinetofcuriosities.in/writings/miscellany/)
+- 🟢 [Poetry](https://cabinetofcuriosities.in/writings/poems/)
+- 🟢 [Essays](https://cabinetofcuriosities.in/writings/essays/)
 
 ### 🟢 [Teaching](https://cabinetofcuriosities.in/teaching/)
 _Teaching history, approach, and student work._
 
-- 🟢 [Student Work - Creative Coding](https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2025-26/)
-- 🟢 [Student Work - Emergent Technology](https://cabinetofcuriosities.in/teaching/#emergent-technology)
+- 🟢 [Creative Coding](https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2025-26/)
+- 🟢 [Creative Coding 2024-25](https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2024-25/)
+- 🟢 [Creative Coding 2023-24](https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2023-24/)
+- 🟢 [Playing with Pulp](https://cabinetofcuriosities.in/teaching/papiermache/)
+- 🟡 [Dragons of SSD](https://cabinetofcuriosities.in/teaching/dragons/)
+- 🟢 [Emergent Technology](https://cabinetofcuriosities.in/teaching/#emergent-technology)
 - 🔴 History & Approach _(no page yet)_
 - 🔴 Research & Interests _(no page yet)_
 - 🟢 [Working with AI](https://cabinetofcuriosities.in/teaching/working-with-ai/)

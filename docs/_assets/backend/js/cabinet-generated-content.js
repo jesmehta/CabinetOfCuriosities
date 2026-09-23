@@ -232,7 +232,7 @@ export const sections = [
   {
     "id": "fab",
     "title": "Fab",
-    "subtitle": "Fab Academy, Fabricademy, and reflections from Fab Academy cohorts.",
+    "subtitle": "Fab Academy, Fabricademy, and reflections from the Fab conferences -- Fab23 Bhutan and Fab25 Czechia.",
     "href": "",
     "order": 100,
     "weight": 2,
@@ -934,35 +934,38 @@ export const entries = [
     "id": "fab-23",
     "section": "fab",
     "title": "Fab 23 Bhutan",
-    "href": "",
+    "href": "fab/fab23-bhutan/",
     "order": 30,
     "weight": 3,
     "status": false,
     "kind": "reflection",
     "tags": [
-      "fabacademy",
+      "fab23",
+      "bhutan",
       "writeup",
       "2023"
     ],
-    "location": "external",
-    "subtitle": "Jesal's FabAcademy Chronicles -- write-up and reflections from Fab Academy 2023."
+    "location": "mkdocs",
+    "subtitle": "Photos and reflections from Fab23 -- the Fab Lab conference and 2023 cohort graduation in Bhutan.",
+    "notes": "Href now points at the real Fab23 photo chronology (docs/fab/fab23-bhutan.md); previously conflated this event with the general Fab Academy program link above."
   },
   {
-    "id": "fab-26",
+    "id": "fab-25",
     "section": "fab",
-    "title": "Fab 26 Czechia",
+    "title": "Fab 25 Czechia",
     "href": "",
     "order": 40,
     "weight": 3,
     "status": false,
     "kind": "reflection",
     "tags": [
-      "fabricademy",
+      "fab25",
+      "czechia",
       "writeup",
-      "2026"
+      "2025"
     ],
     "location": "external",
-    "subtitle": "Fabricademy 2026 coursework and journal.",
-    "notes": "Fabricademy, not Fab Academy -- sister program, different year cohort (2026) than fab-23 (2023)."
+    "subtitle": "Notes from Fab25 -- the Fab Lab conference in Czechia, August 2025.",
+    "notes": "Renamed from the misnamed fab-26/\"Fab 26 Czechia\". Href stays blank until docs/fab/fab25-czechia.md has a real write-up instead of its current \"coming soon\" stub; location should become mkdocs once it does."
   }
 ];
