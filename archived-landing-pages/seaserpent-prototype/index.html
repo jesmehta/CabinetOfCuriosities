@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  body { background: #b8c6bd; margin: 0; }
+  svg { display: block; }
+  .serpent-body { fill: #6d5a3f; stroke: #2e2418; stroke-width: 1.5; }
+  .serpent-head { fill: #6d5a3f; stroke: #2e2418; stroke-width: 1.5; }
+  .serpent-eye { fill: #f4ead0; stroke: none; }
+</style>
+</head>
+<body>
+<svg id="stage" width="900" height="400" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg"></svg>
+<script type="module">
+  import { buildSerpent } from "./cabinet-v3-seaserpent.js";
+
+  const { bodyD, headD, eye } = buildSerpent({
+    originX: 60,
+    originY: 260,
+    humpCount: 5,
+    radiusMin: 26,
+    radiusMax: 42,
+    sweepMinDeg: 210,
+    sweepMaxDeg: 300,
+    thicknessMin: 6,
+    thicknessMax: 16,
+    seed: "test-serpent-1"
+  });
+
+  const svg = document.querySelector("#stage");
+  const NS = "http://www.w3.org/2000/svg";
+  const body = document.createElementNS(NS, "path");
+  body.setAttribute("d", bodyD);
+  body.setAttribute("class", "serpent-body");
+  svg.appendChild(body);
+
+  const head = document.createElementNS(NS, "path");
+  head.setAttribute("d", headD);
+  head.setAttribute("class", "serpent-head");
+  svg.appendChild(head);
+
+  const eyeEl = document.createElementNS(NS, "circle");
+  eyeEl.setAttribute("cx", eye.cx);
+  eyeEl.setAttribute("cy", eye.cy);
+  eyeEl.setAttribute("r", eye.r);
+  eyeEl.setAttribute("class", "serpent-eye");
+  svg.appendChild(eyeEl);
+</script>
+</body>
+</html>

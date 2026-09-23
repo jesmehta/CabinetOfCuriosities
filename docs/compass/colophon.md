@@ -80,3 +80,4 @@ Earlier versions of this site are archived and still browsable:
     - [04 -- serpent redesign](../../archived-landing-pages/v2-history/04-serpent-redesign/)
 - [Archipelago Algorithm Bench -- the Perlin-noise/radial-gradient/threshold island-generation prototype explored during the v2 review, before v3's own warp/angular-noise + circle-packing approach](../../archived-landing-pages/algorithm-bench/)
 - [v3, pre-split -- the island-shape tuning page just before `islands-tool.html` was carved out as its own permanent copy](../../archived-landing-pages/v3-history/01-pre-islands-tool-split/)
+- [Sea-serpent prototype -- a v3-era serpent redesign (coiled circular-arc "humps", distinct dome+snout head) that predates and was superseded by the dragon(s) the current map actually shipped with](../../archived-landing-pages/seaserpent-prototype/)

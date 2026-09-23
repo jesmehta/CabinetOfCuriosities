@@ -61,6 +61,21 @@ generation per rebuild, rather than deleting them.
   `-extras-config.js`, `-islandshape.js`, plus `cabinet-v3-controls.js`,
   `cabinet-v3-style.css`, and the site's `cabinet-tokens.css` +
   `cabinet-generated-content.js` from that same commit).
+- `seaserpent-prototype/` — a standalone v3-era sea-serpent redesign (never
+  wired into `landing-v3/index.html` or committed there, found still sitting
+  untracked in the working tree well after the fact, 2026-09-23). Its own
+  header comment says it's an explicit redesign of the v2 map's sine-wave
+  ripple serpent ("I don't like this one") into a chain of circular-arc
+  "humps" each spanning more than 180 degrees for a real loop/coil
+  character, with a distinct head (dome + snout + eye) and a
+  thin-tail/thick-midbody/half-thick-head thickness profile — seeded
+  (`mulberry32`), not `Math.random`, matching this codebase's other
+  noise/scatter sources. Predates the dragon(s) the current map actually
+  shipped with (`cabinet-v3-dragon.js`, live since v3.7.47) — superseded
+  before ever landing, not after. `cabinet-v3-seaserpent.js` (pure
+  path-generation logic, no DOM) plus `index.html` (its own minimal test
+  harness, renamed from `_test-serpent.html`) — no other dependencies, so
+  it renders standalone same as `algorithm-bench/`.
 - `cabinet-index.md.bak` — the raw old `docs/index.md` source (superseded by
   `v1/`'s full build above, kept for reference).
 
