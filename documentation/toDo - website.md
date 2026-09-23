@@ -326,6 +326,21 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   questions (what "100%" means in the SVG's own coordinate space, whether
   the toggle persists, where the control sits relative to the compass
   rose).
+- [ ] `#145` — entry/island names that spill well beyond their island's
+  boundary (raised 2026-09-23: "especially say 50% or more of the text is
+  outside the island"). No design decided yet. Island labels are
+  single-line, fixed-size `<text>` with no width-aware sizing at all (see
+  `#37`'s own note: no label-vs-label collision-avoidance either, unlike
+  the compass rose's labels, which already dodge via `getBBox()`) — this
+  is the same underlying gap showing up as label-vs-*island* overflow
+  instead of label-vs-label collision. Open questions to resolve before
+  building anything: wrap long titles onto a second line (interacts with
+  the existing tagline second-line mechanism — a title that's already
+  two lines plus a tagline is a third), shrink font-size per-label based
+  on measured width vs. the island's radius, cap title length at content
+  authoring time instead, or accept overflow for small islands and only
+  fix it above some severity threshold. Needs a concrete technical plan,
+  same as `#143`, before implementation.
 - [ ] `#68` — make the MkDocs visual system feel like the landing map. Treat as
   a real design pass; the first pale-accent attempt was rejected.
 - [ ] `#139/#140` — scope dragon and boat management controls before building
