@@ -56,6 +56,23 @@ restructure has since been implemented.
 - [x] `documentation/admin-controls/ADMIN-CONTROLS.md` now exists, so the old
   AI Dependency Audit note saying Admin Controls lacks a tier-2 reference is
   stale.
+- [x] **Fixed the default-theme flash-of-blue, 2026-09-23.** Direct report:
+  "the first initial colours are the flat blues before the Medieval theme
+  snaps in." Confirmed root cause: `#32`'s rework moved every theme's colors
+  into `v3Config.colors` (`cabinet-v3-data.js`), applied only via JS
+  (`applyThemeStyle()`, a deferred `type="module"` script) — `body.v3-proto`'s
+  base CSS still carries the original placeholder blues with nothing
+  overriding them until that script runs, so production always painted blue
+  first regardless of `data-theme="medieval-map"` already being set in the
+  markup. Fixed by baking medieval-map's resolved colors/fonts as a literal
+  inline `style=` on `index.template.html`'s `<body>` — the browser now
+  paints the real theme on the first frame; `applyThemeStyle()` still runs
+  and re-sets the identical values, a no-op. Deliberately a literal copy,
+  not derived from `v3Config` at build time — see the template's own
+  comment for the drift caveat this trades for simplicity.
+  `landing-v3/index.html` regenerated (`node build-static.mjs`); not yet
+  promoted to `docs/` (`node promote.mjs`, a separate manual "ship this"
+  step).
 
 ## Do now — correctness and misleading state
 
@@ -272,14 +289,47 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
 
 - [ ] `#15` — decide whether the HTML title/tagline should scale with the SVG,
   use a clamped responsive size, or intentionally stay fixed.
-- [ ] `#22/#37/#39` — label/card overflow and desktop/mobile QA. Still
-  explicitly backburnered, but run before applying the final `launched` tag.
+- [x] `#22` — **resolved stale, 2026-09-22**: Playwright QA confirmed the
+  card/label overlap it describes doesn't reproduce on the current v3 map
+  (it described a pre-v3 card UI that no longer exists). Surfaced a
+  separate content-doc finding in passing: "Interfaces/Data/Texts" (the
+  section it names) doesn't exist in the current map at all, only in the
+  meta description — worth reconciling next time content docs are touched.
+- [x] `#37` — **fixed, 2026-09-23**: the Teaching-cluster collision
+  ("Student Work - Emergent Technology" running into "Working with AI")
+  is resolved — added an optional `tagline` field (new entries-schema
+  column, see `CABINET-EDITOR.md` v1.7) rendered as a smaller second line
+  under an island label; this entry is now "Emergent Technology" / tagline
+  "Student Work". Verified clear via Playwright
+  (`review/qa-2026-09-23/teaching-cluster-after-tagline-fix.png`). Scoped
+  fix, not a systemic one: island labels still have no general
+  collision-avoidance (unlike the compass rose's labels), so a *different*
+  future crowded cluster could still collide — not built here, on purpose.
+- [x] `#39` — **investigated, 2026-09-22**: structurally passes at every
+  width (1920 down to 360px) — no clipping, no edge cutoff, header reflows
+  correctly. One real concern, split out as its own item since it's a
+  distinct question: `#143` — mobile label legibility (labels shrink to
+  ~6px tall at phone widths; technically readable via pinch-zoom, but
+  nothing on-page signals that).
+- [ ] `#143` — mobile label legibility. **Direction decided, 2026-09-23, not
+  built**: keep the current shrink-to-fit view as default (still
+  pinch-zoomable), add an explicit "fullscreen"-type corner control that
+  switches to a fixed legible scale (100% or 75%, judged visually) inside a
+  pannable container. Needs a concrete technical plan before implementation
+  — see the item's own entry in the historical ledger for the open
+  questions (what "100%" means in the SVG's own coordinate space, whether
+  the toggle persists, where the control sits relative to the compass
+  rose).
 - [ ] `#68` — make the MkDocs visual system feel like the landing map. Treat as
   a real design pass; the first pale-accent attempt was rejected.
 - [ ] `#139/#140` — scope dragon and boat management controls before building
   more dev-panel surface.
 - [ ] `#2/#30/#63/#65` — reference/artwork-dependent wave, boat, and compass
   work. Keep blocked until the required visual direction or artwork exists.
+- [ ] `#144` — improve island/section label text background/highlighting on
+  hover. Raised alongside `#37`/`#143` — no design decided yet, just logged
+  (current hover treatment is the 3-variant `data-label-style` halo/glow/
+  plain system plus a flat scale; unclear if that's the right approach).
 - [ ] `#137` — finer coast-level entry tier. Keep speculative until it has a
   content use case and interaction design.
 - [ ] `#135/#136` — analytics rollout to sibling and assembled repos, after

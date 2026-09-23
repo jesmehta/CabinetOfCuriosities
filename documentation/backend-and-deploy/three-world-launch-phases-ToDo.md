@@ -476,8 +476,25 @@ Surfaced by reading `LANDING-PAGE-NOTES.md` (top-level, v2/production),
 v3-prototype) items, kept here since they're real open items on the same
 overall site.
 
-- [ ] **#22** Card/label overlap on Bookshelf, fffx, and Interfaces/Data/Texts
-      islands -- the widest cards clip the island name label.
+- [x] **#22** Card/label overlap on Bookshelf, fffx, and Interfaces/Data/Texts
+      islands -- the widest cards clip the island name label. **Confirmed
+      stale, 2026-09-22**: a Playwright screenshot QA pass (desktop
+      1920/1440, tablet 768, mobile 390/360) found no card-clips-label
+      overlap anywhere on the current v3 map -- static screenshots show no
+      hover cards at all (they're a desktop-only JS interaction not present
+      in the rendered DOM), and Bookshelf/fffx's own island labels sit
+      cleanly clear of their island shapes and each other at every width
+      tested. This was written against a pre-v3 production-page card/panel
+      UI that no longer exists in this architecture. Separately surfaced by
+      the same pass: **"Interfaces/Data/Texts" does not exist anywhere in
+      the current v3 map** (not in rendered SVG text, not in any
+      `v3-section-clip-*` DOM id) -- it survives only in `index.template.html`'s
+      meta description. Current sections are Bookshelf of Curiosities, Form
+      follows f(x), WebTech, Writings, Teaching, Machines & Makings, Fab.
+      Closest content analog is WebTech, but this hasn't been confirmed as
+      an intentional rename -- worth reconciling the meta description (and
+      checking for other stale references to "Interfaces/Data/Texts")
+      against the current content model next time content docs are touched.
 - [ ] **#23** Real thumbnails owed for entries still on generated placeholder
       tiles -- e.g. Circle Packing Library already has one sitting in
       the fffx repo, just never copied over.
@@ -993,8 +1010,32 @@ failures remain.*
   - [x] **#36** final colour/type choice -- **done, 2026-08-23**, per direct
         confirmation. Closes the caveat #10 (Phase 0) left open about the
         map's overall colour scheme.
-  - [ ] **#37** fix obvious label overflow on the map itself (distinct from the
-        doc-audit item above about production-page card/label overlap)
+  - [x] **#37** fix obvious label overflow on the map itself (distinct from the
+        doc-audit item above about production-page card/label overlap).
+        **Investigated, 2026-09-22**: a Playwright QA pass found exactly
+        one real collision, not a general problem -- in the Teaching
+        cluster, "Student Work - Emergent Technology"'s label runs directly
+        into "Working with AI"'s with no gap (reads as "...Emergent
+        TechnologWorking with AI"), reproducible at every viewport since the
+        whole map is one proportionally-scaled SVG with no per-viewport
+        relayout. Root cause: island-entry labels (`cabinet-v3-layout.js`,
+        the `.v3-island-label` `<text>` at each circle's own `c.x, c.y`) are
+        single-line, fixed-13px, full-title text with no width-aware sizing
+        and no label-vs-label collision check -- unlike the compass rose's 4
+        labels, which already get real `getBBox()`-based dodge/wrap
+        (`cabinet-v3-layout.js` ~L1324-1490). No other label anywhere else
+        on the map (any section, any viewport) showed clipping, cutoff, or
+        overlap. **Fixed, 2026-09-23**: direct decision, "make it 2 lines" --
+        added an optional `tagline` field (new entries-schema column,
+        `CABINET-EDITOR.md`'s v1.7 changelog entry has the full reasoning)
+        rendered as a smaller second line under an entry's main label
+        (`buildIslandLabelEl()`). This entry's title shortened to "Emergent
+        Technology" with tagline "Student Work" -- reproducibly clear of its
+        neighbour now (`review/qa-2026-09-23/teaching-cluster-after-tagline-fix.png`).
+        General collision-avoidance for island labels (porting the compass
+        rose's own dodge mechanism) was considered and explicitly NOT built
+        -- this fix is scoped to the one reported collision, not a systemic
+        guarantee against every future crowded cluster.
   - [x] **#38** decide whether flowfield/particle boats ship in the production
         build or are consciously deferred -- **decided, 2026-08-23:
         consciously deferred.** Confirmed via `build-static.mjs`/
@@ -1003,7 +1044,18 @@ failures remain.*
         particle system (an animation loop) has no path into it as
         currently architected. Boats stay `islands-tool.html`-only, a dev
         tool, unless the static-build approach itself changes later.
-  - [ ] **#39** desktop/mobile QA
+  - [ ] **#39** desktop/mobile QA. **Investigated, 2026-09-22**: structurally
+        passes -- header (title/subtitle/compass) reflows correctly and no
+        horizontal overflow/edge-cutoff at any of 1920/1440/768/390/360px.
+        One real concern found, not literal overflow: since the map is one
+        proportionally-scaled SVG (`viewBox`, no mobile-specific layout), at
+        390/360px it renders into roughly 358x191 CSS px and island labels
+        drop to ~6px tall -- technically un-clipped but not legible without
+        the viewer's own pinch-zoom (the page's viewport meta doesn't block
+        zooming, so this is already possible today, just unguided). Logged
+        as **#143** below rather than folded into this item, since it's a
+        distinct question (minimum legible text size at small viewports) from
+        both #37's collision bug and #22's now-stale card claim.
 
 <details>
 <summary>#40</summary>
@@ -2562,6 +2614,61 @@ specific but currently unnecessary or not executable")**
       material theme, whatever else `mkdocs.yml` depends on) is still an
       open question, not something this session resolved one way or the
       other.
+- [ ] **#143** Mobile label legibility -- surfaced 2026-09-22 during the
+      `#39` desktop/mobile QA pass. The v3 map is one `<svg viewBox="...">`
+      scaled uniformly to fit the viewport (`cabinet-v3-layout.js`); at
+      phone widths (390/360px tested) that puts the whole map at roughly
+      358x191 CSS px, with island labels rendering at ~6px tall. Nothing
+      clips or overlaps (distinct from `#37`), it's just too small to read
+      at a glance -- the page's viewport meta doesn't block pinch-zoom, so
+      it's not literally unreadable today, but there's no in-page
+      affordance (no zoom/pan UI, no "pinch to zoom" hint) telling a mobile
+      visitor that's the intended way to read it. Direct question raised
+      the same session: how to keep labels legible on a map that's designed
+      to uniformly shrink to fit any viewport. Options surfaced, not yet
+      decided between:
+      1. Do nothing structural, just add a small on-page hint for mobile
+         visitors that the map supports pinch-zoom (cheapest, leans on
+         behavior that already works).
+      2. Stop uniformly scaling-to-fit on narrow viewports -- render the map
+         at a fixed legible minimum size and let a scrollable/pannable
+         container handle the rest (the conventional "map" UX pattern:
+         Google Maps-style pan/zoom instead of shrink-to-fit), instead of
+         treating "the whole map must be visible on load" as fixed.
+      3. Decouple label font-size from the SVG's own viewBox scale (e.g. an
+         HTML overlay for labels instead of in-SVG `<text>`, or some other
+         mechanism to give text a size floor independent of geometry scale)
+         so the islands can keep shrinking to fit while their labels don't
+         shrink below a legible minimum -- the most invasive option, no
+         existing precedent in this codebase for un-coupling text scale from
+         its parent SVG's transform.
+      Related but distinct from `#15` (title/tagline scaling) -- that's
+      about the HTML header outside the SVG, this is about text INSIDE the
+      SVG's own coordinate space.
+      **Decided, 2026-09-23, not yet built**: direct design -- keep the
+      current shrink-to-fit view as the default (still pinch-zoomable, as
+      today), and add an explicit "fullscreen"-type control in a page
+      corner. Activating it switches the map to a fixed, legible scale
+      (100% or 75%, whichever actually reads clearly -- to be judged
+      visually, not assumed) inside a pannable/scrollable container, i.e.
+      option 2 above, but opt-in rather than the map's only mode. Closest
+      real-world analogue: a map app's default region view plus an explicit
+      zoom-in action, not Google Maps' always-zoomed default. Not yet
+      implemented -- needs a concrete technical plan (where "100%" resolves
+      to in the SVG's own coordinate space, whether the toggle state
+      persists, where the control sits relative to the compass rose) before
+      writing it.
+- [ ] **#144** Improve island/section label text background/highlighting on
+      hover -- direct request, 2026-09-23, raised alongside `#37`/`#143`
+      while looking at the map's text/background/fit-and-position handling
+      generally. Current hover treatment (`cabinet-v3-style.css`) is the
+      3-variant `data-label-style` system (halo/glow/plain, dev panel:
+      Visuals > Label style) plus a flat 1.18x scale -- no design work done
+      yet on whether that's the right hover treatment, just logged as an
+      open question. Not scoped: which of the three (or a new one) reads
+      best, whether it should vary by theme's own palette contrast, whether
+      this is about the ACTIVE label style or the underlying hover
+      mechanism itself.
 - [ ] **#137** Speculative, not on the drawing board yet: a finer tier of
       map entries on the island coast (or similar), a level below the
       existing section-level plaques -- planned very early on in v3's
