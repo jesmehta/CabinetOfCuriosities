@@ -1359,6 +1359,18 @@ body.v3-proto[data-theme="satellite"] .v3-topo-structural {
    filter per data-label-style and stay that way; this scale applies on
    top of whichever one is active, so it doesn't need a fourth
    label-style-specific copy to keep in sync. */
+/* An entry's optional tagline (content/cabinet-entries.tsv `tagline`
+   column, e.g. "Student Work" under the "Emergent Technology" title) --
+   smaller and slightly muted so it reads as a subtitle, not a second equal
+   line. Inherits .v3-island-label's fill/font/hover/data-label-style rules
+   (it's a tspan inside that same <text>, not a separate element) -- this
+   only overrides size/weight/opacity. */
+.v3-island-label-tagline {
+  font-size: 9px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
 .v3-island:hover .v3-island-label,
 .v3-island:focus-visible .v3-island-label {
   transform: scale(1.18);
@@ -1384,8 +1396,13 @@ body[data-label-style="halo"] .v3-island-label {
    remaining variants (halo/glow/plain) already span the range this one
    sat between. */
 
+/* v3.7.75 -- direct feedback: the ambient (non-hover) amber glow needed
+   to be "bigger/denser" too, not just the hover one. Same "radius AND an
+   extra stacked pass" bump as the hover glows in this file (3.5px x2 ->
+   5px x3) -- stays below the hover glow's own 7px x4 so hover still
+   reads as more prominent than ambient. */
 body[data-label-style="glow"] .v3-island-label {
-  filter: drop-shadow(0 0 3.5px var(--v3-label-outline)) drop-shadow(0 0 3.5px var(--v3-label-outline));
+  filter: drop-shadow(0 0 5px var(--v3-label-outline)) drop-shadow(0 0 5px var(--v3-label-outline)) drop-shadow(0 0 5px var(--v3-label-outline));
 }
 
 /* "plain" intentionally adds nothing -- a no-halo baseline to judge the
@@ -1402,18 +1419,33 @@ body[data-label-style="glow"] .v3-island-label {
    --v3-ink (both already themeable, see body.v3-proto above) so this
    inversion uses whatever a theme's own outline/ink colours are, not
    always the site-wide parchment/cab-ink pair. */
+/* v3.7.71 -- #144: hover halo/glow strengthened past their ambient value
+   (same "denser stroke/glow reads as more prominent" pattern v3.7.22 used
+   for the section glow bump), so the hover state reads as a distinct
+   highlight rather than just the ambient legibility treatment with an
+   inverted colour.
+   v3.7.72 -- direct feedback: entry names should "stay the same shade
+   they currently are" on hover (no more fill inversion to
+   --v3-label-outline) and get a "white halo cloud effect" instead --
+   --v3-halo-ink is already the themeable hover-halo token (see its own
+   comment above), reused here rather than a literal white so it stays
+   correct per-theme. Fill no longer overridden at all: it just falls
+   through to .v3-island-label's own ambient fill (--cab-ink). */
 body:not([data-label-style]) .v3-island:hover .v3-island-label,
 body:not([data-label-style]) .v3-island:focus-visible .v3-island-label,
 body[data-label-style="halo"] .v3-island:hover .v3-island-label,
 body[data-label-style="halo"] .v3-island:focus-visible .v3-island-label {
-  fill: var(--v3-label-outline);
-  stroke: var(--v3-ink);
+  stroke: var(--v3-halo-ink);
+  stroke-width: 4.5px;
 }
 
+/* v3.7.73 -- direct feedback: the white glow needed to read as "slightly
+   larger or denser." Bumped both -- radius 5px -> 7px AND a 4th stacked
+   pass (not radius alone), same "more overlapping passes reads as
+   brighter/denser" reasoning as the other glow bumps in this file. */
 body[data-label-style="glow"] .v3-island:hover .v3-island-label,
 body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
-  fill: var(--v3-label-outline);
-  filter: drop-shadow(0 0 3.5px var(--v3-ink)) drop-shadow(0 0 3.5px var(--v3-ink));
+  filter: drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink));
 }
 
 /* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-
@@ -1481,6 +1513,29 @@ body[data-label-style="glow"] .v3-section-label {
 .v3-section-link:hover .v3-section-label,
 .v3-section-link:focus-visible .v3-section-label {
   fill: var(--v3-halo-ink);
+}
+
+/* v3.7.71 -- #144: same hover strengthening as the island labels above --
+   halo/glow variants get a denser stroke/glow on hover than their ambient
+   value, on top of the fill-colour swap above (which stays the same for
+   all three variants, "plain" included).
+   v3.7.72 -- direct feedback: a white halo would be invisible against
+   the hover fill above (already white, --v3-halo-ink), unlike entries --
+   so sections get the DARK halo entries used to have instead (--v3-ink,
+   same token the pre-v3.7.72 entry hover used), overriding the ambient
+   --v3-label-outline (yellow-brown) colour rather than just adding
+   density on top of it. */
+body:not([data-label-style]) .v3-section-link:hover .v3-section-label,
+body:not([data-label-style]) .v3-section-link:focus-visible .v3-section-label,
+body[data-label-style="halo"] .v3-section-link:hover .v3-section-label,
+body[data-label-style="halo"] .v3-section-link:focus-visible .v3-section-label {
+  stroke: var(--v3-ink);
+  stroke-width: 4.5px;
+}
+
+body[data-label-style="glow"] .v3-section-link:hover .v3-section-label,
+body[data-label-style="glow"] .v3-section-link:focus-visible .v3-section-label {
+  filter: drop-shadow(0 0 8px var(--v3-ink)) drop-shadow(0 0 8px var(--v3-ink)) drop-shadow(0 0 8px var(--v3-ink)) drop-shadow(0 0 8px var(--v3-ink));
 }
 
 /* v3.6.13 -- the section's own landing-page link, covering the whole
