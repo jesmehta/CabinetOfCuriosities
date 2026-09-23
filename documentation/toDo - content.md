@@ -159,8 +159,8 @@ observations, not a claim that every build or hosted page was rechecked today.
 | Fab Academy 2023 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from the Fab23 Bhutan event write-up. |
 | Fabricademy 2026 | Entry live | Yes | External nav link | **Filled external programme documentation** | Keep distinct from Fab25 Czechia; stale href note already corrected in `47ab009`. |
 | Fab hub | Section visible | Yes | Yes | **Concise functional index:** events, programme sites, RIIDL lab links (`65ce285`) | **Implemented:** verify hosted routes; keep event/programme identities distinct. |
-| Fab23 Bhutan | Hidden `fab-23`, stale coursework metadata | No event card | Via Fab hub | **Substantial captioned photo chronology:** page/images committed (`e6f3275`, `966b81b`), not a stub | Correct TSV identity/href; curate image dump and add personal event account. |
-| Fab25 Czechia | Incorrectly represented as hidden `fab-26` | No | Via Fab hub | **Stub:** event-write-up file exists | Rename/correct TSV record and develop the 2025 event write-up. |
+| Fab23 Bhutan | Hidden `fab-23`, metadata corrected (`b3c3bc6`) | No event card | Via Fab hub | **Substantial captioned photo chronology:** page/images committed (`e6f3275`, `966b81b`), not a stub | TSV identity/href corrected; still curate image dump and add personal event account. |
+| Fab25 Czechia | Hidden `fab-25` (renamed from `fab-26`, `b3c3bc6`) | No | Via Fab hub | **Stub:** event-write-up file exists | TSV record renamed/corrected; still develop the 2025 event write-up. |
 | FFFX world | Section and two entries live | Yes | World link only | External subdomain | **Live externally; local legacy folder partially resolved.** Circle Packing/PackingShapes duplicate deleted 2026-09-16 (`b667bc2`), redirected to FFFX's canonical page. `docs/fffx/VeraMolnarRetrospective.md`, `100Gradients.md`, and `particleSystems.md` are still orphaned frozen copies awaiting the same disposition. |
 | Visual Field Notes | Section `wip`, entries hidden | Not rendered because it has no visible entries | No | **Assets complete, concept/page absent:** photography exists for Gujarati Type, Doors of Kutch, and Kochi | **Hub plus three collections:** sort the photographs, clarify the shared editorial approach, design the hub/layout system, then create separate Gujarati Type, Doors of Kutch, and Kochi pages. |
 | DataViz | Section/entry hidden | No | No | **Stub:** one-line file, viable future index role | **Deliberately hidden:** do not activate now, even though a concise curated cross-world index could eventually fulfil the role. |
@@ -203,18 +203,20 @@ observations, not a claim that every build or hosted page was rechecked today.
 - [ ] **Make the generated inventory distinguish intentional exceptions.** Add
   explicit annotations/allowlisting for nested bot pages, map-only external
   world entries, and in-page anchors. This keeps the content report actionable.
-- [ ] **Correct and separate the four Fab records.** They are not competing
-  names for the same chronology:
-  - Fab23 Bhutan: photo chronology now exists; personal account remains;
-  - Fab25 Czechia: a future personal write-up of the 2025 Fab conference/event;
-  - Fab Academy 2023: the already-live external programme documentation site;
-  - Fabricademy 2026: the already-live external programme documentation site.
+- [x] **Correct and separate the four Fab records.** **Done, 2026-09-23
+  (`b3c3bc6`)**: they are not competing names for the same chronology:
+  - Fab23 Bhutan: photo chronology now exists; TSV identity/href corrected;
+    personal account remains open;
+  - Fab25 Czechia: TSV record renamed `fab-26` -> `fab-25` and corrected to
+    describe the event; a future personal write-up of the 2025 Fab
+    conference/event remains open, href stays blank until it exists;
+  - Fab Academy 2023: the already-live external programme documentation site,
+    untouched;
+  - Fabricademy 2026: the already-live external programme documentation site,
+    untouched.
 
-  Replace the misleading hidden TSV `fab-26` reflection with `fab-25`, point it
-  eventually to `docs/fab/fab25-czechia.md`, and revise `fab-23` metadata so it
-  describes the event rather than Fab Academy coursework. Keep the two external
-  programme links distinct. Update the Fab section description and regenerated
-  sitemap at the same time.
+  The Fab section description and regenerated sitemap/content inventory were
+  updated in the same commit.
 - [x] **Add the requested FabLab RIIDL links** (`65ce285`): Fab hub links
   the 2024/2025/2026 lab pages separately from personal programme documentation.
 
@@ -414,7 +416,8 @@ Bookshelf content order:
   pending its editorial approach and layout. Keep DataViz deliberately hidden.
 - [ ] Do not promote hidden Fab event TSV cards until metadata and content
   are ready. Fab23 is already reachable via the Fab hub, not an absent page;
-  Fab25 remains a stub and the incorrect `fab-26` metadata is still open.
+  Fab25 remains a stub. TSV identity (`fab-23`/`fab-25`, formerly `fab-26`)
+  is now corrected (`b3c3bc6`) -- promotion is still a separate, later step.
 - [ ] Do not add `teaching-approach` or `teaching-research` to the map until the
   real About/Teaching prose is written; they would currently duplicate broad
   claims without destinations.

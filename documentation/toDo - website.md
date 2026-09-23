@@ -119,10 +119,17 @@ restructure has since been implemented.
   to requirements and MkDocs plugins. Hosted interaction verification remains open.
 - [x] **Add the Fab hub and RIIDL lab links** (`65ce285`): native Fab index
   links the event pages, programme documentation, and RIIDL 2024/2025/2026 pages.
-- [ ] **Reconcile Fab registry metadata with current sources.** Fab23 has a
-  real captioned chronology (`e6f3275`, `966b81b`), but hidden `fab-23` still
-  describes coursework with a blank href; `fab-26` still misnames Fab25 Czechia.
-  Correct event records/routes and regenerate dependent outputs before promotion.
+- [x] **Reconcile Fab registry metadata with current sources.** **Done,
+  2026-09-23 (`b3c3bc6`)**: hidden `fab-23` no longer describes Fab Academy
+  coursework with a blank href -- it now describes the Fab23 Bhutan event and
+  points at the real chronology (`fab/fab23-bhutan/`). `fab-26` renamed to
+  `fab-25` with metadata describing the Fab25 Czechia event instead of
+  Fabricademy coursework; href stays blank until `docs/fab/fab25-czechia.md`
+  has real content (still a "coming soon" stub). Dependent outputs
+  (`cabinet-generated-content.js`, sitemap, content inventory) regenerated;
+  `mkdocs build --strict` and `validate-deployment.js` reverified clean. Both
+  records remain hidden (`status: false`) -- this was identity/routing
+  correction, not promotion.
 - [x] **Fix stale source-of-truth notes.** **Done, 2026-09-16 (`47ab009`)** —
   all four corrected:
   - `content/cabinet-sections.tsv`'s `web-tech` note now says active/mapped,

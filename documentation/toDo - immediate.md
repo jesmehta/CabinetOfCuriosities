@@ -90,9 +90,10 @@ Completion below means committed implementation, not a verified live deployment.
   priorities while preserving history. Do not repeat completed infrastructure.
 - [x] **Remove FFFX's inherited `scifi asimov` deployment-copy loop** (`d723f74`).
 - [ ] **Finish Fab metadata and presentation.** Fab23's captioned image
-  chronology and the Fab hub now exist (`e6f3275`, `65ce285`, `966b81b`).
-  Correct the hidden `fab-23`/`fab-26` TSV records to event identities/routes;
-  add Fab23's personal account and curate its image dump. Fab25 remains a stub.
+  chronology and the Fab hub now exist (`e6f3275`, `65ce285`, `966b81b`). The
+  hidden `fab-23`/`fab-25` (formerly `fab-26`) TSV records are now corrected
+  to their event identities/routes (`b3c3bc6`); remaining: add Fab23's
+  personal account and curate its image dump. Fab25 remains a stub.
   RIIDL lab links are already present in the hub; do not re-add them.
 
 ## Next bounded content pass
