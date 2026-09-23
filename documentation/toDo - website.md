@@ -305,6 +305,12 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   fix, not a systemic one: island labels still have no general
   collision-avoidance (unlike the compass rose's labels), so a *different*
   future crowded cluster could still collide — not built here, on purpose.
+  **Follow-up, 2026-09-23**: the other three "Student Work - X" entries
+  (`students-creative-coding-2025-26/2024-25/2023-24`) had the same
+  pattern baked into a single-line title instead of using the tagline
+  field — split all three the same way (title = project name, tagline =
+  "Student Work"). `content/cabinet-entries.tsv` updated, regenerated
+  via `tools/build-cabinet-content.js` and `build-static.mjs`.
 - [x] `#39` — **investigated, 2026-09-22**: structurally passes at every
   width (1920 down to 360px) — no clipping, no edge cutoff, header reflows
   correctly. One real concern, split out as its own item since it's a

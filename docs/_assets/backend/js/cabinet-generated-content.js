@@ -395,7 +395,7 @@ export const entries = [
   {
     "id": "students-creative-coding-2025-26",
     "section": "teaching",
-    "title": "Student Work - Creative Coding",
+    "title": "Creative Coding",
     "href": "teaching/ssd-creative-coding-2025-26/",
     "order": 10,
     "weight": 3,
@@ -407,13 +407,14 @@ export const entries = [
       "showcase"
     ],
     "location": "assembly",
+    "tagline": "Student Work",
     "subtitle": "Selected student work and showcases from SSD Creative Coding.",
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2025-26/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2025-26/) -- was an external link before 2026-08-24; repo reorganised into a multi-gallery \"SSD Student Work\" repo and renamed to match, 2026-09-04, mount path updated accordingly."
   },
   {
     "id": "students-creative-coding-2024-25",
     "section": "teaching",
-    "title": "Student Work - Creative Coding 2024-25",
+    "title": "Creative Coding 2024-25",
     "href": "teaching/ssd-creative-coding-2024-25/",
     "order": 12,
     "weight": 3,
@@ -425,13 +426,14 @@ export const entries = [
       "showcase"
     ],
     "location": "assembly",
+    "tagline": "Student Work",
     "subtitle": "Selected student work and showcases from SSD Creative Coding, 2024-25 cohort.",
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2024-25/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2024-25/) -- see content/external-repos.tsv."
   },
   {
     "id": "students-creative-coding-2023-24",
     "section": "teaching",
-    "title": "Student Work - Creative Coding 2023-24",
+    "title": "Creative Coding 2023-24",
     "href": "teaching/ssd-creative-coding-2023-24/",
     "order": 14,
     "weight": 3,
@@ -443,6 +445,7 @@ export const entries = [
       "showcase"
     ],
     "location": "assembly",
+    "tagline": "Student Work",
     "subtitle": "Selected student work and showcases from SSD Creative Coding, 2023-24 cohort.",
     "notes": "Multi-repo assembly, mounted at /teaching/ssd-creative-coding-2023-24/ (jesmehta/SSD_Student_Work, subfolder ssd-creative-coding-2023-24/) -- see content/external-repos.tsv."
   },

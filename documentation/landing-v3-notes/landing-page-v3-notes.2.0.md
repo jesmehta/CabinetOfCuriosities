@@ -1586,6 +1586,26 @@ made in the v3-prototype phase.
 
 ## Changelog
 
+### v3.7.75 -- three "Student Work - X" titles split into title+tagline
+
+`#37`'s tagline field (title above, smaller subtitle line below, same
+`<text>`) had only been applied to one entry so far ("Emergent
+Technology" / "Student Work"). Three more entries had the same
+"Student Work - X" pattern baked into their title as a single line
+instead: `students-creative-coding-2025-26` ("Student Work - Creative
+Coding"), `students-creative-coding-2024-25` ("Student Work - Creative
+Coding 2024-25"), and `students-creative-coding-2023-24` ("Student
+Work - Creative Coding 2023-24"). All three split the same way: title
+becomes just the project name ("Creative Coding", "Creative Coding
+2024-25", "Creative Coding 2023-24"), tagline becomes "Student Work"
+(`content/cabinet-entries.tsv`). Descriptions/hrefs/everything else
+unchanged -- purely a title/tagline field split, not a content
+rewrite.
+
+Regenerated `docs/_assets/backend/js/cabinet-generated-content.js`
+(`tools/build-cabinet-content.js`) and `landing-v3/index.html`
+(`build-static.mjs`).
+
 ### v3.7.74 -- ambient entry glow also bumped denser
 
 Direct follow-up to v3.7.73's hover-glow bump: the *ambient*
