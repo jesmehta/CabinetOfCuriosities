@@ -1586,6 +1586,92 @@ made in the v3-prototype phase.
 
 ## Changelog
 
+### v3.7.74 -- ambient entry glow also bumped denser
+
+Direct follow-up to v3.7.73's hover-glow bump: the *ambient*
+(non-hover) amber glow on island labels (`body[data-label-style="glow"]
+.v3-island-label`) needed the same "bigger/denser" treatment, not just
+hover's. Bumped 3.5px x2 stacked `drop-shadow` passes -> 5px x3 --
+stays below hover's own 7px x4 (v3.7.73) so hover still reads as the
+more prominent state. Compass-label glow (separate rule, still 3.5px)
+untouched -- not in scope, only entries were named.
+
+Rebuilt (`build-static.mjs`).
+
+### v3.7.73 -- entry hover glow denser
+
+v3.7.72's white entry-hover glow read as too faint. Bumped
+`.v3-island:hover .v3-island-label`'s `glow` filter from 5px x3
+stacked `drop-shadow` passes to 7px x4 -- larger radius AND a 4th pass,
+not radius alone, same "more overlapping passes reads as
+brighter/denser" logic already used for the section glow bumps
+(v3.7.22, v3.7.71/72).
+
+Rebuilt (`build-static.mjs`).
+
+### v3.7.72 -- v3.7.71's hover colours corrected per direct review
+
+Direct review of v3.7.71 against the dev tool: v3.7.71 kept the
+pre-existing fill/glow-colour inversion (entries: fill -> amber
+`--v3-label-outline`, glow -> dark `--v3-ink`; sections: fill -> cream
+`--v3-halo-ink` via a pre-existing rule, glow left at ambient's amber)
+and just made the glow/stroke denser on top of it. Feedback: entries
+should keep their ambient fill shade on hover (no more inversion) and
+get a white halo/cloud instead; sections' hover fill already turns
+white (pre-existing, untouched), so a white halo there would have no
+contrast against it -- give sections the dark halo entries used to
+have instead.
+
+**Change**, `halo`/`glow` variants only (`plain` still untouched):
+- **Islands** -- hover no longer overrides `fill` at all (falls through
+  to `.v3-island-label`'s ambient `--cab-ink`). Halo stroke colour and
+  glow colour both switched from `--v3-ink` to `--v3-halo-ink` (the
+  same token already used as the generic themeable hover-halo colour,
+  reused here rather than a literal white so it stays correct
+  per-theme -- resolves to `#faf3dc` in medieval-map).
+- **Sections** -- fill-on-hover rule untouched (still `--v3-halo-ink`).
+  Halo stroke colour and glow colour both switched from
+  `--v3-label-outline` (ambient's amber, `#ddbd82` in medieval-map) to
+  `--v3-ink` (`#1c1712` in medieval-map) -- the same dark token entries
+  used before this pass.
+
+Taglines again needed no separate rule, same inheritance reasoning as
+v3.7.71. Rebuilt (`build-static.mjs`).
+
+### v3.7.71 -- island/section label hover halo & glow strengthened, closing #144
+
+`#144` had no design decided yet, just logged: "improve island/section
+label text background/highlighting on hover." Discussed direction with
+the user before touching anything (standing "cost before executing"
+preference) -- two open questions, both resolved in conversation: (1)
+a new background-plate/pill mechanism vs. strengthening the existing
+`data-label-style` halo/glow/plain system -- chose the latter, no new
+mechanism; (2) island labels, section labels, or both -- both.
+
+**Change.** Hover states for the `halo` and `glow` `data-label-style`
+variants (`cabinet-v3-style.css`) now push past their ambient value
+instead of only swapping colour: `halo` hover's stroke-width goes
+3px -> 4.5px (islands and, newly, sections -- sections previously had
+*no* stroke change on hover at all, just the existing fill-colour
+swap); `glow` hover gets an extra stacked `drop-shadow` pass at a
+larger radius (islands 3.5px x2 -> 5px x3; sections 6px x3 -> 8px x4),
+same "denser overlap reads as brighter" trick v3.7.22 used for the
+ambient section glow bump. `plain` is untouched by design -- it's the
+no-halo baseline the other two are judged against.
+
+An entry's optional `tagline` (`.v3-island-label-tagline`, today's
+`#37` collision fix's new tagline field) needed no separate rule: it's
+a `<tspan>`
+inside the same `<text class="v3-island-label">` element
+(`buildIslandLabelEl()`, `cabinet-v3-layout.js`), and only overrides
+`font-size`/`font-weight`/`opacity` -- `stroke`/`stroke-width` are
+inherited SVG properties and `filter` renders over the whole parent
+element's output, so both flow through to the tagline automatically.
+
+Rebuilt (`build-static.mjs`) -- values judged live via the dev panel's
+Visuals > Label style switcher (pure CSS, no rebuild needed to
+compare) before promoting.
+
 ### v3.7.70 bugfix -- production shipped with no theme colours at all since v3.7.69, base map read as flat blue
 
 Direct report, after a Teaching-content update and the routine

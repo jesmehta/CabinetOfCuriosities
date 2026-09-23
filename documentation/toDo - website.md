@@ -326,10 +326,26 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   more dev-panel surface.
 - [ ] `#2/#30/#63/#65` — reference/artwork-dependent wave, boat, and compass
   work. Keep blocked until the required visual direction or artwork exists.
-- [ ] `#144` — improve island/section label text background/highlighting on
-  hover. Raised alongside `#37`/`#143` — no design decided yet, just logged
-  (current hover treatment is the 3-variant `data-label-style` halo/glow/
-  plain system plus a flat scale; unclear if that's the right approach).
+- [x] `#144` — **fixed, 2026-09-23**: improved island/section label
+  hover highlighting. Discussed direction first (no design was decided):
+  chose to strengthen the existing `data-label-style` halo/glow system
+  rather than add a new background-plate mechanism, applied to both
+  island and section labels. `halo` hover's stroke-width now 3px → 4.5px
+  (sections previously had no stroke change on hover at all); `glow`
+  hover gets an extra stacked `drop-shadow` pass at a larger radius.
+  Entry taglines inherit it automatically (same `<text>` element).
+  `plain` untouched by design. **Colours corrected same day** after
+  reviewing live in the dev tool: entries now keep their ambient ink
+  fill on hover (no more inverting to amber) and get a white
+  `--v3-halo-ink` halo/glow instead; sections keep their existing
+  white hover fill but get a dark `--v3-ink` halo/glow (the treatment
+  entries used to have), since a white halo would've had no contrast
+  against their already-white hover text. **Glow density bumped again,
+  2026-09-23**: entry white glow still read as too faint — radius
+  5px → 7px plus a 4th stacked `drop-shadow` pass. **Ambient (non-hover)
+  amber glow also bumped, 2026-09-23**: 3.5px x2 → 5px x3 (stays below
+  hover's 7px x4 so hover still reads as more prominent). Rebuilt via
+  `build-static.mjs`.
 - [ ] `#137` — finer coast-level entry tier. Keep speculative until it has a
   content use case and interaction design.
 - [ ] `#135/#136` — analytics rollout to sibling and assembled repos, after
