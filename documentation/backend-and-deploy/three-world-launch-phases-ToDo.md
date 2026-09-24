@@ -2663,6 +2663,20 @@ specific but currently unnecessary or not executable")**
 
 </details>
 
+- [ ] **#146** Verify the Cloudflare Web Analytics beacon rollout (#135/
+      #136) is actually live -- confirm `beacon.min.js` loads and fires
+      on the deployed sites (Cabinet, Bookshelf, fffx, and the six
+      externally-assembled repos: Working with AI, Prompt Generator,
+      Oblique Strategies, SSD Student Work, Swatch Fields, Tracery Bots)
+      once GitHub Pages rebuilds from the 2026-09-24 pushes, and that
+      data starts appearing in the Cloudflare Web Analytics dashboard
+      under Cabinet's shared token. Also worth checking while there:
+      whether the dashboard's Top Paths table distinguishes Cabinet's/
+      Bookshelf's/fffx's homepage hits (all report path `/`) by hostname
+      or collapses them into one row -- see
+      `cloudflare-web-analytics-setup.md`'s "Known limitation" section.
+      Not urgent -- deliberately left out of the "Immediate priorities"
+      working set above, direct instruction 2026-09-24.
 - [ ] **#142** Investigate the actual state of MkDocs's maintenance/"MkDocs
       2.0" situation -- surfaced 2026-09-08 while debugging `mkdocs serve`
       not starting (root cause of that was unrelated: two 0-byte stub
