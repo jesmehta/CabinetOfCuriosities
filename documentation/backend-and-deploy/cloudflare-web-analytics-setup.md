@@ -137,18 +137,53 @@ instead). Pure addition, no visual/behavioural change to the archived
 pages themselves. Verified: 0 of 28 files missing the beacon after the
 script ran.
 
-Not yet done: Bookshelf (`TheBookshelfOfCuriosities`) and FFFX
-(`form-follows-fx`) each need the same two-part treatment in their own
-repos with their own Cloudflare Web Analytics tokens — tracked as
-`three-world-launch-phases-ToDo.md` (same directory)
-**#135**. The externally-assembled repos (Working with AI, Prompt
-Generator, Oblique Strategies, Swatch Fields, Tracery Bots — see that
-same file's `deploy.yml` multi-repo-assembly pattern, #43/#71/#128) each
-need it added to their own source, per-repo — tracked as **#136**.
-
 Verification performed: local `mkdocs build --site-dir` to a scratch
 directory, grepped three built pages (`about`, `now`, `sitemap`) for
 `cloudflareinsights` — present in all three. Live-site confirmation
 (beacon request actually firing, data appearing in the Cloudflare Web
 Analytics dashboard) not yet done from this session — see the setup
 steps above for how.
+
+## Rollout to Bookshelf, FFFX, and the externally-assembled repos (2026-09-24)
+
+`TheBookshelfOfCuriosities` and `form-follows-fx` each got the same
+two-part treatment (`overrides/main.html` for MkDocs pages,
+`docs/index.html` edited directly for the standalone landing page) —
+see `three-world-launch-phases-ToDo.md`'s `#135` entry for the full
+record, and each repo's own `documentation/backend-and-deploy/
+BACKEND-AND-DEPLOY.md` for that repo's specific verification.
+
+The six externally-assembled repos (Working with AI, Prompt Generator,
+Oblique Strategies, SSD Student Work, Swatch Fields, Tracery Bots — see
+`deploy.yml`'s multi-repo-assembly pattern, #43/#71/#128, and
+`content/external-repos.tsv`) each got the beacon added directly to
+every real HTML page in their own source, since none of them has a
+shared template/include to hook into once — see `#136`'s entry in the
+same ToDo file for the full per-repo page counts and reasoning.
+
+**Token decision for all of the above**: none got its own Cloudflare
+Web Analytics property. All reuse this doc's own Cabinet token
+(`16664b6ab6d449a799db2dbcfb97c6ce`) — direct decision, 2026-09-24,
+see `#135`'s entry for the full reasoning (personal site, one combined
+dashboard judged simpler than eight separate properties, and
+technically correct anyway for the six repos that land on Cabinet's own
+hostname via `assemble-external.js`).
+
+**Known limitation of the token-reuse choice**: Cloudflare Web
+Analytics' "Top Paths" dashboard table breaks out traffic per recorded
+page path. Since the six externally-assembled repos' pages all sit
+under distinct, already-prefixed paths (`/teaching/working-with-ai/`,
+`/swatch-fields`, etc.), and Bookshelf/FFFX's own content pages
+(`/favorite-poems/...`, `/recreating-the-past/vera-molnar/`, ...) are
+also distinct strings, per-site breakdown still works for almost
+everything just by reading the path. The one soft spot: Cabinet's,
+Bookshelf's, and FFFX's own homepages all report the same path, `/` —
+whether the dashboard distinguishes them by hostname when one token
+spans multiple hostnames, or collapses all three into a single `/` row,
+hasn't been confirmed (no live dashboard access from this session, and
+it isn't a documented edge case). Worth checking directly once real
+traffic exists; if the three homepage counts do turn out blended,
+that's a small, contained gap (three numbers merged, nothing else
+affected) rather than a reason to redo the token setup — splitting
+Bookshelf/FFFX onto their own tokens later remains an easy follow-up if
+wanted.

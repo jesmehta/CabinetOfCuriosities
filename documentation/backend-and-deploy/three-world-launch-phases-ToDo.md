@@ -30,8 +30,9 @@ the time -- a NEW
 item added later gets the next unused number appended wherever it's
 inserted in the list, it does NOT trigger a renumber of anything else,
 same "history matters" reasoning as the no-renumbering rule above.
-Phase 2/3A/3B+ were numbered later too (2026-08-24, #74-#123 so far),
-so the whole file now uses one continuous sequence, not just Phase 0/1.
+Phase 2/3A/3B+ were numbered later too (starting 2026-08-24 at #74), and
+subsequent surfaced work has continued the same sequence through #145, so the
+whole file uses one continuous sequence, not just Phase 0/1.
 
 Done items (`- [x]`) are individually wrapped in `<details><summary>#N</summary>`
 so the list stays scannable -- collapsed by default, showing just the
@@ -2507,7 +2508,10 @@ specific but currently unnecessary or not executable")**
 
 </details>
 
-- [ ] **#135** Roll out Cloudflare Web Analytics to Bookshelf and FFFX --
+<details>
+<summary>#135</summary>
+
+- [x] **#135** Roll out Cloudflare Web Analytics to Bookshelf and FFFX --
       Cabinet's own beacon is done, 2026-08-29 (see
       `cloudflare-web-analytics-setup.md` and
       `cloudflare-js-snippet.md` (same directory) for the token/snippet): `mkdocs.yml`
@@ -2539,7 +2543,56 @@ specific but currently unnecessary or not executable")**
       doesn't inject that script into pages that never load it. Each site
       genuinely needs its own beacon added, per the setup doc's own
       "apply independently to Cabinet, Bookshelf, FFFX" instruction.
-- [ ] **#136** Same beacon rollout for other external repos assembled into
+      **Done, 2026-09-24.** Both siblings got the exact same two-part
+      treatment as Cabinet: `mkdocs.yml` gained `theme.custom_dir:
+      overrides`, a new `overrides/main.html` extends `base.html`'s
+      `extrahead` block, and `docs/index.html` (the standalone,
+      non-MkDocs-templated landing page in both repos -- confirmed no
+      separate hand-edited template source exists like Cabinet's
+      `landing-v3/index.template.html`, `docs/index.html` itself is the
+      real hand-edited source in both siblings) got the script tag added
+      directly before `</body>`. **Token decision, direct discussion
+      2026-09-24**: neither sibling got its own Cloudflare Web Analytics
+      property -- both reuse Cabinet's existing token
+      (`16664b6ab6d449a799db2dbcfb97c6ce`) instead. Reasoning: this is a
+      personal site, and a single combined dashboard across all three
+      worlds (plus `#136` below) was judged simpler than registering and
+      juggling eight separate Cloudflare properties; reusing one token
+      across multiple hostnames is supported by how the beacon actually
+      works (it isn't hostname-enforced), it just means traffic isn't
+      broken out per-site in the dashboard. The beacon still had to be
+      hand-added to each repo regardless of token choice -- confirmed
+      again this session that Cloudflare doesn't auto-inject anything
+      across subdomains just because they share a zone. Verified via a
+      local `mkdocs build --site-dir` to a scratch directory for each
+      repo: Bookshelf clean build, beacon present in 159 of the built
+      HTML files (including `index.html` and `favorite-poems/index.html`);
+      fffx clean build (same 6 pre-existing nav warnings as before,
+      nothing new), beacon present in 17 of the built HTML files.
+      Documented in each repo's own `documentation/backend-and-deploy/
+      BACKEND-AND-DEPLOY.md` (new file for Bookshelf, appended section for
+      fffx). Live-site confirmation (beacon actually firing, data
+      reaching the Cloudflare dashboard) not yet done from this session --
+      see the setup doc's own verification steps.
+      **Known limitation of reusing one token, surfaced by direct
+      question 2026-09-24**: almost every page across all three worlds
+      has a distinct path string, so the dashboard's per-path breakdown
+      still separates them in practice -- except Cabinet's, Bookshelf's,
+      and FFFX's own homepages, which all report the same path (`/`).
+      Whether the dashboard shows hostname alongside path (keeping the
+      three homepages distinguishable) or collapses them into one `/`
+      row hasn't been confirmed -- not a documented Cloudflare edge case,
+      and no live dashboard access from this session. See
+      `cloudflare-web-analytics-setup.md`'s own "Known limitation"
+      section for the full writeup; worth checking directly once real
+      traffic exists.
+
+</details>
+
+<details>
+<summary>#136</summary>
+
+- [x] **#136** Same beacon rollout for other external repos assembled into
       Cabinet/Bookshelf/FFFX at deploy time (the `deploy.yml`
       checkout-and-copy pattern from #43/#71/#128: Working with AI,
       Prompt Generator, Oblique Strategies, Swatch Fields, Tracery Bots,
@@ -2560,6 +2613,56 @@ specific but currently unnecessary or not executable")**
       the beacon, confirming the assembly pipeline cannot carry it. The
       original note's reasoning was already correct; this just replaces
       "each needs..." with a live-confirmed fact rather than an inference.
+      **Done, 2026-09-24.** Six source repos, matching `external-repos.tsv`
+      (`#82`/`#84`): `working-with-ai`, `PromptGenerator`,
+      `ObliqueStrategies`, `SSD_Student_Work` (all three
+      `ssd-creative-coding-20{23-24,24-25,25-26}` galleries plus the two
+      `ssd-emergent-tech-*` trees, since they're the same repo/site even
+      though only the three creative-coding galleries are wired into
+      Cabinet's own assembly manifest today), `swatchFields`,
+      `TraceryBots`. None has a shared header/footer include or a build
+      step to hook into (confirmed by a dedicated read-only survey pass:
+      no `package.json`/bundler/template mechanism in any of the six), so
+      the beacon went into every real, git-tracked, publicly-linked HTML
+      page directly, scripted (a small idempotent Node script inserting
+      the snippet immediately before each file's `</body>`, skipping any
+      file that already had it): 34 pages (`working-with-ai`, both its
+      `coding-with-ai/`/`working-with-ai/` numbered-lesson subfolders plus
+      the top index), 1 (`PromptGenerator`), 1 (`ObliqueStrategies`), 84
+      (`SSD_Student_Work` -- direct decision, 2026-09-24: cover every
+      individual student project page, not just the 5 hub/index pages, for
+      full per-project traffic visibility), 3 (`swatchFields`), 8
+      (`TraceryBots`, including the linked-to `_TraceryTrials/` demo pages
+      the top index itself points to, not just the two bot pages). Same
+      token-reuse decision as `#135` above and same reasoning: Cabinet's
+      own token, not a separate property per repo -- doubly justified here
+      since `working-with-ai`/`PromptGenerator`/`ObliqueStrategies`/`SSD_
+      Student_Work`/`swatchFields`/`TraceryBots` all get copied onto
+      Cabinet's own hostname (`cabinetofcuriosities.in/teaching/...`,
+      `/swatch-fields`, `/tracery-bots`) by `assemble-external.js` at
+      deploy time, so reusing Cabinet's token there is the technically
+      correct choice, not just the simpler one -- it's genuinely the same
+      site. (Several of these repos also have their own independent
+      GitHub Pages deployments at a different hostname,
+      `jesmehta.github.io/<repo>/` -- linked directly from fffx's own
+      `mkdocs.yml` nav -- the same token was left in place there too,
+      folding that traffic into the same combined dashboard rather than
+      leaving it untracked.) Spot-verified insertion correctness directly
+      (not just trusting the script's own OK/SKIP/FAIL summary): tailed
+      several edited files across different repos, including two
+      `TraceryBots` pages that had no trailing newline before `</body>`
+      (`TrippyGourmetBot/index.html`, `MadSolutionistBot/index.html`) --
+      snippet landed correctly in all cases. `git status` checked across
+      all eight touched repos afterward to confirm each repo's diff is
+      scoped to exactly the intended files (plus, in Bookshelf/fffx/SSD/
+      SwatchFields, some pre-existing unrelated uncommitted work already
+      sitting in those working trees -- left untouched, not part of this
+      change). Not yet committed in any of the eight repos, and live-site
+      confirmation (beacon firing, data reaching the dashboard) not yet
+      done -- both pending the user's own review.
+
+</details>
+
 - [ ] **#142** Investigate the actual state of MkDocs's maintenance/"MkDocs
       2.0" situation -- surfaced 2026-09-08 while debugging `mkdocs serve`
       not starting (root cause of that was unrelated: two 0-byte stub
@@ -2658,17 +2761,33 @@ specific but currently unnecessary or not executable")**
       to in the SVG's own coordinate space, whether the toggle state
       persists, where the control sits relative to the compass rose) before
       writing it.
-- [ ] **#144** Improve island/section label text background/highlighting on
-      hover -- direct request, 2026-09-23, raised alongside `#37`/`#143`
-      while looking at the map's text/background/fit-and-position handling
-      generally. Current hover treatment (`cabinet-v3-style.css`) is the
-      3-variant `data-label-style` system (halo/glow/plain, dev panel:
-      Visuals > Label style) plus a flat 1.18x scale -- no design work done
-      yet on whether that's the right hover treatment, just logged as an
-      open question. Not scoped: which of the three (or a new one) reads
-      best, whether it should vary by theme's own palette contrast, whether
-      this is about the ACTIVE label style or the underlying hover
-      mechanism itself.
+<details>
+<summary>#144</summary>
+
+- [x] **#144** Improve island/section label text background/highlighting on
+      hover -- **done and promoted, 2026-09-23 (`8108b88`, `a6fbe48`)**.
+      Strengthened the existing `data-label-style` halo/glow system rather
+      than adding background plates: halo stroke grows on hover; glow gains
+      wider stacked shadow passes. Entry labels retain their ambient ink with
+      a white halo/glow, while section labels retain their white hover fill
+      with a dark halo/glow. `plain` remains deliberately unchanged, and
+      entry taglines inherit the treatment through their shared `<text>`.
+      The same production promotion also shipped the title/tagline cleanup
+      and public footer copy. `promote.mjs`'s headless verification completed
+      without console or request errors.
+
+</details>
+
+- [ ] **#145** Keep entry/island names from spilling excessively beyond their
+      island boundary -- surfaced 2026-09-23 after the scoped `#37` collision
+      fix. Long labels are currently single-line fixed-size SVG `<text>` with
+      no width-aware fit against island radius. This is label-vs-island
+      overflow, distinct from `#37`'s label-vs-label collision and `#143`'s
+      whole-map mobile scale. Decide before implementing whether to wrap titles
+      (and how that interacts with the existing tagline line), shrink per-label
+      from measured width/radius, constrain titles editorially, or tolerate
+      overflow below a defined severity threshold. Logged in `5012d45`; no
+      design or implementation has landed yet.
 - [ ] **#137** Speculative, not on the drawing board yet: a finer tier of
       map entries on the island coast (or similar), a level below the
       existing section-level plaques -- planned very early on in v3's
