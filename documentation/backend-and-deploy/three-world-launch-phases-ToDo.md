@@ -16,6 +16,7 @@
 - [Phase 2 -- Immediately After Launch](#phase-2----immediately-after-launch)
 - [Phase 3A -- Short-Term / Already Underway](#phase-3a----short-term--already-underway)
 - [Phase 3B+ -- Long-Term Development](#phase-3b----long-term-development)
+- [Private Repos / Public Deployment Migration](#private-repos--public-deployment-migration)
 - [Content Inventory -- Pages, Entries & Their Statuses](#content-inventory----pages-entries--their-statuses)
 
 Live checklist. Check items off as they land; don't renumber or reorder
@@ -31,7 +32,7 @@ item added later gets the next unused number appended wherever it's
 inserted in the list, it does NOT trigger a renumber of anything else,
 same "history matters" reasoning as the no-renumbering rule above.
 Phase 2/3A/3B+ were numbered later too (starting 2026-08-24 at #74), and
-subsequent surfaced work has continued the same sequence through #145, so the
+subsequent surfaced work has continued the same sequence through #147, so the
 whole file uses one continuous sequence, not just Phase 0/1.
 
 Done items (`- [x]`) are individually wrapped in `<details><summary>#N</summary>`
@@ -2836,6 +2837,60 @@ specific but currently unnecessary or not executable")**
       Once in-repo, update its link in `tools/admin-controls-ui/index.html`
       (currently points at the claude.ai artifact directly, tagged
       "diagram, Claude artifact") to point at the local copy instead.
+
+---
+
+## Private Repos / Public Deployment Migration
+
+- [ ] **#147** Plan and carry out the private-source deployment migration. Added 2026-09-26.
+
+Current-action tracking: [Website to-do migration plan](../toDo%20-%20website.md#private-repos--public-deployment-migration). Keep both checklists in sync as decisions and milestones are completed.
+
+Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pages to **private development repositories with selectively public/restricted deployed sites**.
+
+**Goals**
+
+- Keep source repos, development history, documentation, tooling and unfinished work private.
+- Keep Cabinet, Bookshelf, FFFX and selected teaching/project pages publicly accessible.
+- Allow selected tools (e.g. Origami/Kirigami) to be access-controlled.
+- Preserve existing domains, URLs and cross-repo links with minimal disruption.
+- Avoid unnecessary recurring costs or infrastructure complexity.
+
+**Investigation / Decisions**
+
+- Audit current GitHub Pages, custom-domain, cross-repo and deployment dependencies.
+- Compare viable hosting/deployment options, particularly:
+  - **GitHub Pro + GitHub Pages from private repos** ? assess whether this allows the existing architecture to continue with minimal changes.
+  - **Cloudflare Pages + private GitHub repos** ? assess deployment workflow, custom domains, integration with existing Cloudflare setup and access-control possibilities.
+  - Other alternatives only if they offer a meaningful advantage.
+- Compare **actual recurring costs**, free-tier limits, build/deployment limits, storage/bandwidth, custom-domain support and likely future costs.
+- Compare migration effort and ongoing maintenance complexity, not just price.
+- Determine private GitHub ? automated build/deploy workflow.
+- Determine authentication method for restricted projects (e.g. Cloudflare Access or equivalent).
+- Identify whether any client-side tools contain code worth moving server-side rather than merely restricting access.
+- Classify sites/repos as **private source ? public site**, **private source ? restricted site**, or intentionally public/open-source.
+
+**Decision Rule**
+
+- Prefer **GitHub Pro + GitHub Pages** if it can preserve the existing deployment architecture with private repos, public custom-domain sites and acceptable cost, without introducing significant limitations.
+- Prefer **Cloudflare Pages** if it is cheaper at the required scale, materially simplifies multi-repo/custom-domain deployment, or provides needed capabilities such as access-controlled projects.
+- A **hybrid setup is acceptable** if public sites are simplest on GitHub Pages while restricted tools are substantially easier through Cloudflare.
+- Do not migrate infrastructure merely for theoretical advantages: choose the **lowest-cost, lowest-maintenance option that satisfies the actual privacy, deployment and access-control requirements**.
+
+**Milestones**
+
+- [ ] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
+- [ ] 2. Compare GitHub Pro vs Cloudflare (and alternatives if warranted): **cost, capabilities, limitations, migration effort and maintenance**.
+- [ ] 3. Apply the decision rule and select the deployment/access-control architecture.
+- [ ] 4. Prototype private-repo deployment with one low-risk site/repo.
+- [ ] 5. Verify custom domain, SSL, analytics, build process and automatic deployment.
+- [ ] 6. Prototype/test access-controlled deployment with a non-public tool.
+- [ ] 7. Document deployment and recovery/rollback procedure.
+- [ ] 8. Migrate Cabinet and verify all internal/external links.
+- [ ] 9. Migrate Bookshelf, FFFX and other appropriate sites.
+- [ ] 10. Move Origami/Kirigami tools to restricted deployment as appropriate.
+- [ ] 11. Make source repositories private only after replacement deployments are verified.
+- [ ] 12. Final audit: domains, links, analytics, access control, deployment automation, costs and repo visibility.
 
 ---
 

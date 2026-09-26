@@ -2,23 +2,13 @@
 
 Quick wins and urgent work selected from [Content](toDo%20-%20content.md) and
 [Website](toDo%20-%20website.md). Reconciled with local Git history and source
-on 2026-09-17, through fetched Cabinet `origin/main` `6b9137e`, Bookshelf
-`117a2cc`, and FFFX `d723f74`. SSD Student Work's earlier check was at
+on 2026-09-24, through fetched Cabinet `origin/main` `9f8185d`, Bookshelf
+`eda5c8e`, and FFFX `a49c771`. SSD Student Work's earlier check was at
 `5b4188c`. The longlists retain broader scope.
 Completion below means committed implementation, not a verified live deployment.
 
 ## Urgent - verify the latest release
 
-- [x] **Verify the new Creative Coding galleries deploy in Cabinet.**
-  - Confirmed 2026-09-16: both `SSD_Student_Work` and Cabinet local `main`
-    match `origin/main` (`5b4188c` and `1d320df` respectively). Latest Actions
-    runs on both repos are `completed`/`success`, including Cabinet's run at
-    `30c1de6` (the manifest commit) and its current HEAD.
-  - Both assembled routes return HTTP 200 with correct titles and real gallery
-    content, assets included: `/teaching/ssd-creative-coding-2024-25/` and
-    `/teaching/ssd-creative-coding-2023-24/` (plus their `script.js`).
-  - Removed the two obsolete "not yet pushed" notes in
-    `content/external-repos.tsv` and `content/cabinet-entries.tsv`.
 - [ ] **Finish the remaining Teaching content, not already-fixed route gaps.**
   - Emergent Technologies 2024-25: finish the existing Twine narratives and
     background images, then assemble/publish `ssd-emergent-tech-2024-25/`.
@@ -29,66 +19,9 @@ Completion below means committed implementation, not a verified live deployment.
     "coming soon" copy, then flip to `status: true`.
   - Emergent 2024-25 remains honest, unlinked "gallery not yet published" text.
     No current Teaching hub link points to its absent route.
-  - Done (`c590b82`, 2026-09-17): Playing with Pulp committed as a flat
-    `docs/teaching/papiermache.md`, linked live from `docs/teaching/index.md`
-    directly (no subsection/hub page).
-    It contains 22 real images, not a stub. Verify hosted rendering/lightbox;
-    attribution and further editorial context can be a later presentation pass.
-  - Done (`6b9137e`, 2026-09-17): Dragons of SSD stub added the same way
-    (`docs/teaching/dragons.md`, `status: wip`) -- no dead links remain
-    among the three above; Dragons curation and Emergent completion remain.
-- [x] **Close the deployment validator's remaining coverage gap (`#84`).**
-  - `tools/validate-deployment.js` now checks four route sources instead of
-    one: `status: true`/`wip` rows in both `cabinet-entries.tsv` and
-    `cabinet-sections.tsv` (wip included because `generate_sitemap.py` links
-    it on `/sitemap/`), self-domain absolute targets in `mkdocs.yml`'s nav,
-    and docs/**/*.md body links -- the last sourced from `mkdocs build`'s own
-    "unrecognized relative link" log rather than a hand-rolled parser.
-    External links and pure `#anchor`s are explicitly skipped throughout.
-  - `deploy.yml` now tees the MkDocs build to `mkdocs-build.log` for the
-    validator to read, and runs "Copy archived landing pages" *before*
-    validation (was after) so colophon's archived-page links resolve against
-    the actually-assembled tree instead of false-failing on ordering.
-  - Verified with a real local run of the full pipeline (build, assemble,
-    copy, validate) rather than just reading the code.
-  - This surfaced two real, previously-uncaught bugs, both fixed alongside
-    the validator so CI stays green: the three dead Teaching links above,
-    and `docs/fffx/PackingShapes.md`'s malformed Circle Packing link (doubled
-    opening paren) -- only the syntax was fixed here; the larger
-    retire/redirect-to-FFFX decision below is still open.
-  - Also caught in the process: `427687c` (this same day) edited
-    `cabinet-entries.tsv`'s notes without regenerating
-    `cabinet-generated-content.js`, which had already failed that commit's
-    CI on the "generated content is current" gate -- regenerated and
-    included here.
 
-## Quick wins - small corrections with visible value
+## Quick win - small correction with visible value
 
-- [x] **Rewrite the WebTech hub.** Replace `docs/webtech/index.md`'s stale
-  "Creative Coding / this is moving" copy with a concise WebTech introduction.
-  Cross-link FFFX's canonical Circle Packing page.
-- [x] **Replace Cabinet's legacy Circle Packing duplicate with a canonical link.**
-  Done 2026-09-16: `docs/fffx/PackingShapes.md` and its six essay images
-  deleted; `docs/compass/about.md`'s stale raw-github.io link retargeted
-  straight to FFFX's canonical page instead. Added the `mkdocs-redirects`
-  plugin (pinned to `1.2.2` -- 1.2.3+ has the same undeclared `properdocs`
-  hard-dependency problem as `mkdocs-section-index`, same fix) so Cabinet's
-  old `/fffx/PackingShapes/` URL still serves a real meta-refresh redirect to
-  FFFX's page instead of 404ing, for anything external still pointing at it.
-  Verified locally: build produces the redirect HTML at the right path with
-  the right target, and the full pipeline (assemble/copy/validate) still
-  passes clean.
-- [x] **Correct the remaining source-of-truth notes** (`47ab009`, `cb40b16`).
-  - WebTech section note: it is active and mapped, not waiting for `#69`.
-  - Compass entry notes: use the current `docs/compass/` paths.
-  - Fabricademy note: its 2026 external href is already present.
-  - README: describe six source repositories and eight assembly destinations.
-    The backend/deploy reference was already updated in `30c1de6`.
-- [x] **Reconcile the historical ledger (`#69/#76/#80/#81/#82/#84/#126`)**
-  (`442ff95`, `50eab7e`, `a241ca3`).
-  Annotate completed work and remaining scope; replace its stale immediate
-  priorities while preserving history. Do not repeat completed infrastructure.
-- [x] **Remove FFFX's inherited `scifi asimov` deployment-copy loop** (`d723f74`).
 - [ ] **Finish Fab metadata and presentation.** Fab23's captioned image
   chronology and the Fab hub now exist (`e6f3275`, `65ce285`, `966b81b`). The
   hidden `fab-23`/`fab-25` (formerly `fab-26`) TSV records are now corrected
@@ -104,21 +37,42 @@ Completion below means committed implementation, not a verified live deployment.
   - Embed readable CV content and add a downloadable PDF.
   - Main About writing and imagery have already received substantial updates
     (`daf2c4b`, `9f2d646`, `4b7ef4e`); this is an asset/CV finish, not a rewrite.
-- [x] **Move My Writings from Bookshelf to Cabinet.**
-  Implemented in Cabinet `39a2adb` and Bookshelf `117a2cc`: essays, poems,
-  miscellany, registry, generated landing data, and navigation moved; Bookshelf
-  copies/nav removed. Favourite Poetry and British Poetry Workshop stay there.
-  No redirects or breadcrumbs are required for this unlaunched material.
-  Verify the deployed Cabinet pages/assets as part of release checks.
 - [ ] **Publish Dance of Planets and Island Generator in FFFX.** Integrate the
   existing implementations, select example images, and write explanatory pages.
   Dance of Planets has an untracked stub page; Island Generator still needs
   its canonical page/registry entry. Commit filled sources before promotion.
 - [ ] **Finish Lenticular next.** Complete remaining tool code and DOM controls,
   then add the embed, examples, and explanatory project page.
+- [ ] **Turn the Branching Narrative/Twine page from stub into a real entry.**
+  Confirm the experience still works, add a concise explanation and at least
+  one representative screenshot, then review its live metadata/navigation.
+- [ ] **Rewrite the Machines & Makings hub as a purposeful concise index.**
+  Replace its “under construction” framing with orientation around MiniLoom and
+  an honest indication of forthcoming groups; brevity is acceptable for a hub.
+- [ ] **Retire Cabinet's remaining Vera Molnar duplicate.** Move any unique
+  material from frozen `docs/fffx/VeraMolnarRetrospective.md` into FFFX's
+  canonical filled page, then remove/redirect the Cabinet copy using the proven
+  Circle Packing pattern.
+- [ ] **Add first real thumbnails where assets already exist (`#23/#86/#91`).**
+  Start with Dot Mandala, MiniLoom, and About; first confirm and document the
+  landing renderer's expected thumbnail path/format, then update source TSV and
+  regenerate/promote rather than editing generated output directly.
+- [ ] **Finish Favourite Poetry's Bookshelf landing integration.** Review and
+  commit the pending TSV/generated-card changes as one coherent set. The
+  collection is already filled and live in MkDocs; this is discoverability,
+  not a new writing project.
+- [ ] **Publish one intentionally growing FFFX collection as the next tranche.**
+  Choose Genuary (generated images already exist) or 100 Gradients (roughly a
+  dozen completed works), curate a coherent initial release, and design it to
+  accept later additions without waiting for a fictional final endpoint.
 
 ## Next website pass
 
+- [ ] **Connect Origami Tools to Cabinet and clean up its interface.** Audit the
+  sibling `origami-tools` repo, choose its canonical Cabinet route and assembly
+  method, simplify and polish the interface, check responsive behaviour and core
+  interactions, then add truthful registry/navigation wiring and validate the
+  deployed route before activating Origami & Paper.
 - [ ] **Complete sibling-world and project-home navigation (`#55/#92/#116`).**
   Make Cabinet, Bookshelf, and FFFX visibly link to both sibling worlds. Audit
   return links in Cabinet's eight assembled destinations and Bookshelf's SciFi,
@@ -131,9 +85,60 @@ Completion below means committed implementation, not a verified live deployment.
   contain changes: Bookshelf TSV/generated landing edits, and FFFX section,
   documentation, and untracked project-page edits. Review and commit coherent
   source/generated sets; do not assume untracked pages exist in a clean clone.
+- [ ] **Plan and implement mobile map inspection (`#143`).** Keep shrink-to-fit
+  as the default; add the decided opt-in corner control for a fixed-legible-scale,
+  pannable view. Resolve scale, placement, and persistence before coding.
+- [ ] **Resolve severe entry-name overflow (`#145`).** Choose a rule for labels
+  extending substantially beyond their island—wrapping, measured shrinking,
+  editorial limits, or a defined tolerance—without breaking taglines.
+- [ ] **Remove the manual Copy-config paste bottleneck (`#141`).** Within the
+  existing localhost-tool boundary, add a narrow confirmed write/apply path for
+  `landing-v3/pasted-config.json`; preserve preview and explicit confirmation.
+- [ ] **Bring the Data → Map → Page diagram into the repo (`#138`).** Add the
+  `promote.mjs` path-rewrite and headless-verification stage, retain editable
+  diagram source, and repoint Admin Controls from the external artifact.
+- [ ] **Make Content Inventory exceptions explicit.** Add annotations or an
+  allowlist for intentional nested bot pages, map-only world links, and in-page
+  anchors so true mismatches remain conspicuous instead of becoming flag noise.
+- [ ] **Cross-reference the two promotion rewrite sources.** Point
+  `landing-v3/promote.mjs` and `landing-v3/index.template.html` at one another
+  beside their fixed rewrite assumptions so future path edits stay synchronized.
+- [ ] **Decide and document sibling-triggered refresh behaviour (`#83/#117`).**
+  Cabinet's sitemap can go stale after Bookshelf/FFFX changes; choose between
+  automated repository dispatch/rebuilds and an explicit manual refresh contract.
+- [ ] **Resolve the three `WORLD-SYSTEMS.md` copies (`#28/#85`).** Synchronize
+  stale landing/asset descriptions while documenting genuine schema differences,
+  especially Cabinet's underscore-prefixed asset convention.
 
 ## Recently completed - keep out of the work queue
 
+- [x] **Creative Coding 2024-25/2023-24 deployment verified** (2026-09-16):
+  Actions succeeded and both assembled routes, titles, content, and assets
+  returned HTTP 200; obsolete “not yet pushed” notes were removed.
+- [x] **Playing with Pulp initial gallery published** (`c590b82`): native flat
+  Teaching page with 22 images. **Dragons route and WIP stub wired** (`6b9137e`);
+  only its real curation remains in the active Teaching task.
+- [x] **Deployment-validator coverage completed** (`e3577bf`; `#84`): active
+  and WIP entry/section routes, self-domain nav, Markdown links, archived-page
+  ordering, generated-content drift, and the full local pipeline are checked.
+- [x] **WebTech hub rewritten and canonical FFFX Circle Packing linked**
+  (`8e7e502`, `b667bc2`): Cabinet duplicate removed with a legacy redirect.
+- [x] **Source-of-truth notes corrected** (`47ab009`, `cb40b16`).
+- [x] **Historical ledger reconciled** (`442ff95`, `50eab7e`, `a241ca3`).
+- [x] **FFFX's inherited `scifi asimov` deploy loop removed** (`d723f74`).
+- [x] **My Writings moved from Bookshelf to Cabinet** (Cabinet `39a2adb`,
+  Bookshelf `117a2cc`); Favourite Poetry and British Poetry Workshop remain.
+- [x] **Cloudflare Web Analytics rolled out beyond Cabinet (`#135/#136`)**
+  (`f9102df`): Bookshelf, FFFX, and all six assembled source repositories use
+  Cabinet's shared token. Local source/build coverage is complete. Live firing,
+  dashboard ingestion, and shared-homepage-path behaviour remain the deliberately
+  non-urgent verification item `#146`, not rollout implementation.
+- [x] **Landing-map hover treatment shipped** (`8108b88`, `a6fbe48`; `#144`).
+- [x] **Default-theme first-frame flash fixed and production promoted**
+  (`a345970`, `a6fbe48`).
+- [x] **Abandoned sea-serpent prototype archived** (`b40750c`).
+- [x] **Fab23/Fab25 registry metadata corrected and outputs regenerated**
+  (`b3c3bc6`). The event write-ups remain content work above.
 - [x] **About and Colophon drafting substantially advanced** (2026-09-15-16).
   Colophon writing/publication cleanup is complete; About assets/CV remain above.
 - [x] **Colophon external link corrected** (`46160a0`).
@@ -151,9 +156,6 @@ Completion below means committed implementation, not a verified live deployment.
 - [x] **FFFX Circle Packing paths/link repaired** (`351fb1f`).
 - [x] **Bookshelf Christie routing corrected** (`28fe92a`): `/christie/`
   is canonical with a standalone entry point.
-
-## Cross-machine sync
-
 - [x] **Replicate CLAUDE.md additions on the home terminal.**
   - Done 2026-09-16 on the home terminal. Since that machine's working
     directories don't match `d:\FabWorld\CLAUDE.md`'s roots, the file was

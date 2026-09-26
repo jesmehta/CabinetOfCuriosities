@@ -2,8 +2,8 @@
 
 Current website, tooling, build, deployment, and cross-world work for the
 Cabinet and its two sibling worlds. Cabinet was audited 2026-09-12 against the
-repository at `ec1f6df`, then reconciled again 2026-09-17 through fetched
-`origin/main` `6b9137e` (Bookshelf `117a2cc`, FFFX `d723f74`)
+repository at `ec1f6df`, then reconciled again 2026-09-24 through fetched
+`origin/main` `9f8185d` (Bookshelf `eda5c8e`, FFFX `a49c771`)
 (see "Do now"/"Next"/FFFX below for what that reconciliation found done),
 against the open
 items in
@@ -203,8 +203,66 @@ content todo; take these on when they remove a real maintenance or release risk.
   `1.2.2` doesn't. Pinned to `1.2.2` before it was ever installed. The
   genuine MkDocs 2.0 migration-risk question itself is still unevaluated.
 
+## Private Repos / Public Deployment Migration
+
+- [ ] **Plan and carry out the private-source deployment migration (`#147`).** Added 2026-09-26.
+
+Backend deployment tracking: [`#147` in the launch-phase ledger](backend-and-deploy/three-world-launch-phases-ToDo.md#private-repos--public-deployment-migration). Keep both checklists in sync as decisions and milestones are completed.
+
+Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pages to **private development repositories with selectively public/restricted deployed sites**.
+
+**Goals**
+
+- Keep source repos, development history, documentation, tooling and unfinished work private.
+- Keep Cabinet, Bookshelf, FFFX and selected teaching/project pages publicly accessible.
+- Allow selected tools (e.g. Origami/Kirigami) to be access-controlled.
+- Preserve existing domains, URLs and cross-repo links with minimal disruption.
+- Avoid unnecessary recurring costs or infrastructure complexity.
+
+**Investigation / Decisions**
+
+- Audit current GitHub Pages, custom-domain, cross-repo and deployment dependencies.
+- Compare viable hosting/deployment options, particularly:
+  - **GitHub Pro + GitHub Pages from private repos** ? assess whether this allows the existing architecture to continue with minimal changes.
+  - **Cloudflare Pages + private GitHub repos** ? assess deployment workflow, custom domains, integration with existing Cloudflare setup and access-control possibilities.
+  - Other alternatives only if they offer a meaningful advantage.
+- Compare **actual recurring costs**, free-tier limits, build/deployment limits, storage/bandwidth, custom-domain support and likely future costs.
+- Compare migration effort and ongoing maintenance complexity, not just price.
+- Determine private GitHub ? automated build/deploy workflow.
+- Determine authentication method for restricted projects (e.g. Cloudflare Access or equivalent).
+- Identify whether any client-side tools contain code worth moving server-side rather than merely restricting access.
+- Classify sites/repos as **private source ? public site**, **private source ? restricted site**, or intentionally public/open-source.
+
+**Decision Rule**
+
+- Prefer **GitHub Pro + GitHub Pages** if it can preserve the existing deployment architecture with private repos, public custom-domain sites and acceptable cost, without introducing significant limitations.
+- Prefer **Cloudflare Pages** if it is cheaper at the required scale, materially simplifies multi-repo/custom-domain deployment, or provides needed capabilities such as access-controlled projects.
+- A **hybrid setup is acceptable** if public sites are simplest on GitHub Pages while restricted tools are substantially easier through Cloudflare.
+- Do not migrate infrastructure merely for theoretical advantages: choose the **lowest-cost, lowest-maintenance option that satisfies the actual privacy, deployment and access-control requirements**.
+
+**Milestones**
+
+- [ ] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
+- [ ] 2. Compare GitHub Pro vs Cloudflare (and alternatives if warranted): **cost, capabilities, limitations, migration effort and maintenance**.
+- [ ] 3. Apply the decision rule and select the deployment/access-control architecture.
+- [ ] 4. Prototype private-repo deployment with one low-risk site/repo.
+- [ ] 5. Verify custom domain, SSL, analytics, build process and automatic deployment.
+- [ ] 6. Prototype/test access-controlled deployment with a non-public tool.
+- [ ] 7. Document deployment and recovery/rollback procedure.
+- [ ] 8. Migrate Cabinet and verify all internal/external links.
+- [ ] 9. Migrate Bookshelf, FFFX and other appropriate sites.
+- [ ] 10. Move Origami/Kirigami tools to restricted deployment as appropriate.
+- [ ] 11. Make source repositories private only after replacement deployments are verified.
+- [ ] 12. Final audit: domains, links, analytics, access control, deployment automation, costs and repo visibility.
+
 ## High-value easy wins
 
+- [ ] **Connect Origami Tools to Cabinet and clean up its interface.** Audit the
+  existing sibling `origami-tools` repository, choose its canonical Cabinet
+  route and deployment/integration method, then add the appropriate registry
+  and navigation link. Simplify and polish the tool interface, check responsive
+  behaviour and core interactions, and validate the built/deployed route before
+  promoting Cabinet's currently hidden Origami & Paper entry.
 - [ ] **Update and bring the Data → Map → Page diagram into the repo (`#138`).**
   Add `promote.mjs` and its headless verification stage, then point Admin
   Controls at the local copy.
@@ -367,6 +425,8 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   authoring time instead, or accept overflow for small islands and only
   fix it above some severity threshold. Needs a concrete technical plan,
   same as `#143`, before implementation.
+  Now also recorded in the historical numbered ledger; it is no longer a
+  website-only todo (`5012d45`, ledger reconciliation 2026-09-24).
 - [ ] `#68` — make the MkDocs visual system feel like the landing map. Treat as
   a real design pass; the first pale-accent attempt was rejected.
 - [ ] `#139/#140` — scope dragon and boat management controls before building
@@ -400,17 +460,14 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   rebuilt via `build-static.mjs`.
 - [ ] `#137` — finer coast-level entry tier. Keep speculative until it has a
   content use case and interaction design.
-- [ ] `#135/#136` — analytics rollout to sibling and assembled repos, after
-  deciding whether they are separate Cloudflare properties and obtaining the
-  corresponding tokens.
-  **Confirmed live, 2026-09-16**: fetched all three sites directly — the
-  Cloudflare beacon is present only on `cabinetofcuriosities.in`; Bookshelf
-  and FFFX have neither the beacon nor any `overrides/`/`custom_dir` wiring
-  to carry it (subdomain proxying through the same Cloudflare zone doesn't
-  inject it). Also fetched two assembled pages (`/teaching/working-with-ai/`,
-  an SSD gallery) directly: the assembly pipeline (`tools/assemble-external.js`,
-  a raw file copy with no HTML transformation) cannot carry it either, so
-  `#136` genuinely needs per-repo work, not a deployment-system fix.
+- [x] `#135/#136` — **Cloudflare Web Analytics rollout complete, 2026-09-24**
+  (`f9102df`). Bookshelf and FFFX gained MkDocs overrides plus beacon-enabled
+  standalone landing pages; every public tracked HTML page in Working with AI,
+  Prompt Generator, Oblique Strategies, SSD Student Work, Swatch Fields, and
+  Tracery Bots gained the beacon directly. All reuse Cabinet's token by decision.
+  Local builds/source insertion were checked. The separate, non-urgent `#146`
+  remains for hosted beacon firing, dashboard ingestion, and whether the shared
+  token distinguishes the three `/` homepage paths by hostname.
 
 ## Definition of website-ready
 

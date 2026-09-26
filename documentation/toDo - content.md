@@ -1,8 +1,8 @@
 # ToDo — Content
 
 Current Cabinet content and information-architecture work. Reconciled again
-2026-09-17 through fetched Cabinet `origin/main` `6b9137e`, Bookshelf `117a2cc`,
-and FFFX `d723f74`. Original audit
+2026-09-24 through fetched Cabinet `origin/main` `9f8185d`, Bookshelf `eda5c8e`,
+and FFFX `a49c771`. Original audit
 2026-09-12
 against:
 
