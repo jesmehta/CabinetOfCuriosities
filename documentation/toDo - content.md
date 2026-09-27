@@ -161,7 +161,7 @@ observations, not a claim that every build or hosted page was rechecked today.
 | Fab hub | Section visible | Yes | Yes | **Concise functional index:** events, programme sites, RIIDL lab links (`65ce285`) | **Implemented:** verify hosted routes; keep event/programme identities distinct. |
 | Fab23 Bhutan | Hidden `fab-23`, metadata corrected (`b3c3bc6`) | No event card | Via Fab hub | **Substantial captioned photo chronology:** page/images committed (`e6f3275`, `966b81b`), not a stub | TSV identity/href corrected; still curate image dump and add personal event account. |
 | Fab25 Czechia | Hidden `fab-25` (renamed from `fab-26`, `b3c3bc6`) | No | Via Fab hub | **Stub:** event-write-up file exists | TSV record renamed/corrected; still develop the 2025 event write-up. |
-| FFFX world | Section and two entries live | Yes | World link only | External subdomain | **Live externally; local legacy folder partially resolved.** Circle Packing/PackingShapes duplicate deleted 2026-09-16 (`b667bc2`), redirected to FFFX's canonical page. `docs/fffx/VeraMolnarRetrospective.md`, `100Gradients.md`, and `particleSystems.md` are still orphaned frozen copies awaiting the same disposition. |
+| FFFX world | Section and two entries live | Yes | World link only | External subdomain | **Live externally; local legacy folder partially resolved.** Circle Packing/PackingShapes duplicate deleted 2026-09-16 (`b667bc2`), redirected to FFFX's canonical page. Vera Molnar duplicate retired the same way 2026-09-28 (identical to FFFX's copy). `docs/fffx/100Gradients.md` and `particleSystems.md` are still orphaned frozen copies awaiting the same disposition. |
 | Visual Field Notes | Section `wip`, entries hidden | Not rendered because it has no visible entries | No | **Assets complete, concept/page absent:** photography exists for Gujarati Type, Doors of Kutch, and Kochi | **Hub plus three collections:** sort the photographs, clarify the shared editorial approach, design the hub/layout system, then create separate Gujarati Type, Doors of Kutch, and Kochi pages. |
 | DataViz | Section/entry hidden | No | No | **Stub:** one-line file, viable future index role | **Deliberately hidden:** do not activate now, even though a concise curated cross-world index could eventually fulfil the role. |
 | Blog | No TSV | No | No | **Stub:** one-line file | **Reserved with a real concept:** seed from the Atlas writing cues listed in `scratchNotes.md`. |
@@ -177,11 +177,10 @@ observations, not a claim that every build or hosted page was rechecked today.
   Flexures, Polyhedra, and George Hart already have external source material.
   Use those links to gather text/images, then create real project treatments;
   add a concise 3D-printing index only to orient readers among the filled pages.
-- [ ] **Migrate the remaining legacy FFFX page.** Local
-  `fffx/VeraMolnarRetrospective.md` (~311 words) is orphaned from Cabinet nav
-  and the folder is declared frozen. Move any unique material to FFFX, then
-  delete the Cabinet copy and redirect, same pattern as Circle Packing below.
-  (Circle Packing/PackingShapes itself is done — see next item.)
+- [x] **Migrate the remaining legacy FFFX page.** Done 2026-09-28: local
+  `fffx/VeraMolnarRetrospective.md` was byte-for-byte identical to FFFX's
+  canonical `recreating-the-past/vera-molnar.md`, so there was no unique
+  material to move. Deleted and redirected, same pattern as Circle Packing.
 - [x] **FFFX Circle Packing links repaired, Cabinet duplicate retired.**
   Commit `351fb1f` fixed FFFX's six image paths and malformed YouTube link;
   FFFX strict build now passes. **2026-09-16 (`e3577bf`, `b667bc2`):** the two

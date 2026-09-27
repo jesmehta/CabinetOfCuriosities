@@ -49,10 +49,11 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Rewrite the Machines & Makings hub as a purposeful concise index.**
   Replace its “under construction” framing with orientation around MiniLoom and
   an honest indication of forthcoming groups; brevity is acceptable for a hub.
-- [ ] **Retire Cabinet's remaining Vera Molnar duplicate.** Move any unique
-  material from frozen `docs/fffx/VeraMolnarRetrospective.md` into FFFX's
-  canonical filled page, then remove/redirect the Cabinet copy using the proven
-  Circle Packing pattern.
+- [x] **Retire Cabinet's remaining Vera Molnar duplicate.** Done 2026-09-28:
+  `docs/fffx/VeraMolnarRetrospective.md` was byte-for-byte identical to FFFX's
+  `docs/recreating-the-past/vera-molnar.md`, so nothing needed migrating.
+  Deleted, and a `mkdocs-redirects` entry sends the old `/fffx/VeraMolnarRetrospective/`
+  URL to FFFX's canonical page, same pattern as Circle Packing.
 - [ ] **Add first real thumbnails where assets already exist (`#23/#86/#91`).**
   Start with Dot Mandala, MiniLoom, and About; first confirm and document the
   landing renderer's expected thumbnail path/format, then update source TSV and
