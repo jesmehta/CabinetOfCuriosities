@@ -1,6 +1,6 @@
 # Teaching
 
-Design, for me, is to be intentional - to bring your intelligence to bear down on something. Teaching design, then, is to teach intentionality - to question the why, to figure the how, to percieve the who. To follow your curiosity, and allow it to lead you places. To play, and in playing, discover. To make, and in the making, understand.  
+Design, for me, is to be intentional - to bring your intelligence to bear down on something. Teaching design, then, is to teach intentionality - to question the why, to figure the how, to perceive the who. To follow your curiosity, and allow it to lead you places. To play, and in playing, discover. To make, and in the making, understand.  
 
 Over the years, I have taught this through many aspects of design.
 

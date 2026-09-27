@@ -1,6 +1,6 @@
 # About me
 
-<!-- List my extensive list of wide ranging interests from geogrpahy and the tibetan plateau to behavioural economics to emerging technologies to object history and other such.
+<!-- List my extensive list of wide ranging interests from geography and the tibetan plateau to behavioural economics to emerging technologies to object history and other such.
 
 <!-- TODO: add cycling narrative — unsupported Kulu-Leh trips since 2013 with the 
 rag-tag 60-somethings, homestays, meeting Tibetan-Buddhist traditions and Nepali/

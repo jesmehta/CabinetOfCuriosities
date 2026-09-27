@@ -31,7 +31,7 @@ But I was clear on a few things
 - I wanted to explore some HTML  
 - I would use ChatGPT to help me do things  
 - not being a Mandala fan, this was more of a "let's see if I can" rather than "I want to see the end results and fast" kinds thing, so I was allowing myself to fail  
-- not being an HTML fan, I was also completly guilt-free of using ChatGPT to do the work  
+- not being an HTML fan, I was also completely guilt-free of using ChatGPT to do the work  
 - I wanted to see how far ChatGPT could actually do things  
 
 So I started off.  

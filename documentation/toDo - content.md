@@ -195,10 +195,12 @@ observations, not a claim that every build or hosted page was rechecked today.
   never a Cabinet TSV entry, and is now retired from Cabinet entirely — see
   above). Confirm the landing renderer's expected path/format before filling
   the TSV; do not merely populate a currently unused column.
-- [ ] **Clean small visible copy errors during the page pass.** Examples found
-  in live pages include “geogrpahy,” “percieve,” and “Olderpage.” Keep this
-  attached to substantive page edits rather than launching a broad stylistic
-  rewrite.
+- [x] **Clean small visible copy errors during the page pass.** Examples found
+  in live pages include “geogrpahy,” “percieve,” and “Olderpage.” Done
+  2026-09-28: “percieve” (Teaching intro), “completly” (Dot Mandala), and
+  “geogrpahy” (an HTML comment in About, not visitor-visible) fixed; “Olderpage”
+  was already gone from `docs/`. Further typos stay attached to substantive
+  page edits rather than a broad stylistic rewrite.
 - [ ] **Make the generated inventory distinguish intentional exceptions.** Add
   explicit annotations/allowlisting for nested bot pages, map-only external
   world entries, and in-page anchors. This keeps the content report actionable.
