@@ -35,7 +35,7 @@ Completion below means committed implementation, not a verified live deployment.
   `projects/*/` copy loop, point the `harmonics-dance-of-planets` entry at
   `dance-of-planets/` with the right `location`, wire FFFX's README and
   FILE-MANIFEST, then verify the live `/dance-of-planets/` route. Details:
-  FFFX `projects/dance-of-planets/TODO.md`.
+  FFFX `projects/dance-of-planets/documentation/TODO.md`.
 
 ## Next bounded content pass
 
