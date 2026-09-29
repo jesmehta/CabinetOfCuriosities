@@ -45,13 +45,15 @@ Completion below means committed implementation, not a verified live deployment.
   - Embed readable CV content and add a downloadable PDF.
   - Main About writing and imagery have already received substantial updates
     (`daf2c4b`, `9f2d646`, `4b7ef4e`); this is an asset/CV finish, not a rewrite.
-- [ ] **Write the Dance of Planets writeup; publish Island Generator in FFFX.**
-  Dance of Planets: the interactive tool is done (launch step above); what
-  remains is the writeup page (Dance of Venus, the code, captured visuals)
-  replacing the untracked stub `docs/tools-and-libraries/harmonics-dance-of-planets.md`.
-  Not urgent, but next in line after the launch. Island Generator still needs
-  its implementation integrated, example images, and a canonical
-  page/registry entry. Commit filled sources before promotion.
+- [ ] **Write the Dance of Planets writeup in FFFX.** The interactive tool is
+  done (launch step above); what remains is the writeup page (Dance of Venus,
+  the code, captured visuals) replacing the untracked stub
+  `docs/tools-and-libraries/harmonics-dance-of-planets.md`. Not urgent, but
+  next in line after the launch. Commit filled sources before promotion.
+- [ ] **Publish Island Generator in FFFX.** Integrate the existing
+  implementation, select example images, and write its explanatory page; it
+  still needs its canonical page/registry entry. Commit filled sources before
+  promotion.
 - [ ] **Finish Lenticular next.** Complete remaining tool code and DOM controls,
   then add the embed, examples, and explanatory project page.
 - [ ] **Turn the Branching Narrative/Twine page from stub into a real entry.**
