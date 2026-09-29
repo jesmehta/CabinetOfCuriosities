@@ -2,7 +2,7 @@
 
 Quick wins and urgent work selected from [Content](toDo%20-%20content.md) and
 [Website](toDo%20-%20website.md). Reconciled with local Git history and source
-on 2026-09-24, through fetched Cabinet `origin/main` `9f8185d`, Bookshelf
+on 2026-09-29, through Cabinet `5d603cc`, Bookshelf
 `eda5c8e`, and FFFX `a49c771`. SSD Student Work's earlier check was at
 `5b4188c`. The longlists retain broader scope.
 Completion below means committed implementation, not a verified live deployment.
@@ -28,6 +28,14 @@ Completion below means committed implementation, not a verified live deployment.
   to their event identities/routes (`b3c3bc6`); remaining: add Fab23's
   personal account and curate its image dump. Fab25 remains a stub.
   RIIDL lab links are already present in the hub; do not re-add them.
+- [ ] **Launch Dance of Planets v3.0 in FFFX.** The tool is built and pushed
+  at FFFX `projects/dance-of-planets/` (`8f993b0`..`0656c73`) but is not
+  deployed: FFFX's `deploy.yml` has no `projects/` copy step (the old
+  scifi/asimov one was removed in `d723f74`). Port Bookshelf's
+  `projects/*/` copy loop, point the `harmonics-dance-of-planets` entry at
+  `dance-of-planets/` with the right `location`, wire FFFX's README and
+  FILE-MANIFEST, then verify the live `/dance-of-planets/` route. Details:
+  FFFX `documentation/dance-of-planets/TODO.md`.
 
 ## Next bounded content pass
 
@@ -37,10 +45,13 @@ Completion below means committed implementation, not a verified live deployment.
   - Embed readable CV content and add a downloadable PDF.
   - Main About writing and imagery have already received substantial updates
     (`daf2c4b`, `9f2d646`, `4b7ef4e`); this is an asset/CV finish, not a rewrite.
-- [ ] **Publish Dance of Planets and Island Generator in FFFX.** Integrate the
-  existing implementations, select example images, and write explanatory pages.
-  Dance of Planets has an untracked stub page; Island Generator still needs
-  its canonical page/registry entry. Commit filled sources before promotion.
+- [ ] **Write the Dance of Planets writeup; publish Island Generator in FFFX.**
+  Dance of Planets: the interactive tool is done (launch step above); what
+  remains is the writeup page (Dance of Venus, the code, captured visuals)
+  replacing the untracked stub `docs/tools-and-libraries/harmonics-dance-of-planets.md`.
+  Not urgent, but next in line after the launch. Island Generator still needs
+  its implementation integrated, example images, and a canonical
+  page/registry entry. Commit filled sources before promotion.
 - [ ] **Finish Lenticular next.** Complete remaining tool code and DOM controls,
   then add the embed, examples, and explanatory project page.
 - [ ] **Turn the Branching Narrative/Twine page from stub into a real entry.**
@@ -49,11 +60,6 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Rewrite the Machines & Makings hub as a purposeful concise index.**
   Replace its “under construction” framing with orientation around MiniLoom and
   an honest indication of forthcoming groups; brevity is acceptable for a hub.
-- [x] **Retire Cabinet's remaining Vera Molnar duplicate.** Done 2026-09-28:
-  `docs/fffx/VeraMolnarRetrospective.md` was byte-for-byte identical to FFFX's
-  `docs/recreating-the-past/vera-molnar.md`, so nothing needed migrating.
-  Deleted, and a `mkdocs-redirects` entry sends the old `/fffx/VeraMolnarRetrospective/`
-  URL to FFFX's canonical page, same pattern as Circle Packing.
 - [ ] **Add first real thumbnails where assets already exist (`#23/#86/#91`).**
   Start with Dot Mandala, MiniLoom, and About; first confirm and document the
   landing renderer's expected thumbnail path/format, then update source TSV and
@@ -69,6 +75,33 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Next website pass
 
+- [ ] **Dualize the Cabinet boats and redraw them in side view.** Replace the
+  current boat treatment with the requested dual/side-view artwork while
+  preserving their flow-field motion, theme legibility, scale, and performance.
+- [ ] **Rework island-label overflow and background glow (`#145`).** Long entry
+  names still spill too far beyond their islands, and the background treatment
+  needs another visual pass. Test wrapping, measured scaling, or another
+  width-aware treatment without breaking the existing tagline line.
+- [ ] **Make the non-hover label glow match its section colour.** Keep hover
+  emphasis distinct, but derive each label's ambient/background glow from its
+  owning section rather than applying one generic non-hover colour.
+- [ ] **Restore colour and texture to the “Cabinet of Curiosities” top band.**
+  Check why the band reads colourless, define the intended theme-aware fill,
+  and add enough texture to belong with the illustrated map without harming
+  title contrast.
+- [ ] **Restore the dragon baseline.** Identify whether the missing baseline is
+  artwork, styling, clipping, or positioning; restore it consistently in the
+  editable landing source and promoted build.
+- [ ] **Tune the first offshore colour band.** It currently reads too dark and
+  too detached from the cream background. Bring its value and spacing closer
+  to the surrounding sea/background while retaining a readable coast edge.
+- [ ] **Create deliberate cellphone versions of all three worlds.** Audit
+  Cabinet, Bookshelf, and FFFX at representative phone widths and design their
+  mobile presentation rather than treating desktop shrinkage as sufficient.
+  For Cabinet, incorporate `#143`'s decided opt-in fixed-scale pannable map view.
+- [ ] **Give the compass moon a visual click cue.** Add a restrained hover,
+  affordance, or microcopy hint that communicates interactivity without
+  overloading the compass or revealing more than the easter egg needs.
 - [ ] **Connect Origami Tools to Cabinet and clean up its interface.** Audit the
   sibling `origami-tools` repo, choose its canonical Cabinet route and assembly
   method, simplify and polish the interface, check responsive behaviour and core
@@ -86,12 +119,6 @@ Completion below means committed implementation, not a verified live deployment.
   contain changes: Bookshelf TSV/generated landing edits, and FFFX section,
   documentation, and untracked project-page edits. Review and commit coherent
   source/generated sets; do not assume untracked pages exist in a clean clone.
-- [ ] **Plan and implement mobile map inspection (`#143`).** Keep shrink-to-fit
-  as the default; add the decided opt-in corner control for a fixed-legible-scale,
-  pannable view. Resolve scale, placement, and persistence before coding.
-- [ ] **Resolve severe entry-name overflow (`#145`).** Choose a rule for labels
-  extending substantially beyond their island—wrapping, measured shrinking,
-  editorial limits, or a defined tolerance—without breaking taglines.
 - [ ] **Remove the manual Copy-config paste bottleneck (`#141`).** Within the
   existing localhost-tool boundary, add a narrow confirmed write/apply path for
   `landing-v3/pasted-config.json`; preserve preview and explicit confirmation.
@@ -113,6 +140,11 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Recently completed - keep out of the work queue
 
+- [x] **Cabinet's duplicate Vera Molnar page retired** (`8681e7c`): confirmed
+  byte-identical to FFFX's canonical page, deleted, and its old URL redirected.
+- [x] **Small copy-error pass completed** (`5d603cc`): fixed “percieve” in
+  Teaching, “completly” in Dot Mandala, and “geogrpahy” in About; the previously
+  noted “Olderpage” text was no longer present.
 - [x] **Creative Coding 2024-25/2023-24 deployment verified** (2026-09-16):
   Actions succeeded and both assembled routes, titles, content, and assets
   returned HTTP 200; obsolete “not yet pushed” notes were removed.
