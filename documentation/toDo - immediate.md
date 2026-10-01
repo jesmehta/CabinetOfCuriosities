@@ -90,9 +90,6 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Restore the dragon baseline.** Identify whether the missing baseline is
   artwork, styling, clipping, or positioning; restore it consistently in the
   editable landing source and promoted build.
-- [ ] **Tune the first offshore colour band.** It currently reads too dark and
-  too detached from the cream background. Bring its value and spacing closer
-  to the surrounding sea/background while retaining a readable coast edge.
 - [ ] **Create deliberate cellphone versions of all three worlds.** Audit
   Cabinet, Bookshelf, and FFFX at representative phone widths and design their
   mobile presentation rather than treating desktop shrinkage as sufficient.
@@ -145,6 +142,9 @@ Completion below means committed implementation, not a verified live deployment.
 - [x] **Homepage top band: right-hand map hint** (`7eda448`, `b34f956`):
   *The Map is not the Territory* / hover to have a better look, / click to
   enter. Stacks under the subtitle on phones.
+- [x] **First offshore colour band lightened** (`b108835`, `8d0294e`): black
+  coast shadow -> light sepia tint; the dark rings that outlined it thinned
+  below the coastline weight. See `README.md`'s changelog.
 - [x] **Homepage compass recoloured** (`8bcb8d4`): navy -> light coast blue
   `#939fba`, dark silhouette outline kept. Stopgap geometry workaround; the
   layered-artwork replacement is open in `toDo - website.md`.

@@ -228,6 +228,24 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Homepage map: lighter first sea band, thinner coastal wave rings (2026-10-01)
+
+Medieval theme only; other themes unchanged.
+
+- **First sea band** (`b108835`) -- the coast shadow (`.v3-sea-shadow-radial`,
+  four stacked copies) was black at 16% each, building to ~50% black at the
+  coast: a sludgy brown-grey over the cream sea. Now the theme's sepia
+  (`--v3-sand`, `#7d3a24`) at 7% each, ~25% warm tint at peak.
+- **Wave rings** (`8d0294e`) -- the three contour rings off each coast were
+  1.4 / 1.0 / 0.7px near-black, the first two heavier than the 1.2px
+  coastline, so islands read as triple-outlined, and the 9.4px ring sat on
+  the shadow's 11px fade edge, reading as the band's own dark outline. Now
+  0.6 / 0.45 / 0.35px, ink and opacity unchanged. Chosen from a side-by-side
+  of four options (sepia recolour, moving the ring out, removing the inner
+  rings, thinning).
+
+Promoted to `docs/`.
+
 ### Homepage compass: navy -> light coast blue, dark outline kept (2026-10-01)
 
 The compass rose's navy ring and crescent (medieval theme) are now a light
