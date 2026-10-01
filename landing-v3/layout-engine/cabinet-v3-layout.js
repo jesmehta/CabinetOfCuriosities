@@ -151,6 +151,14 @@ const LABEL_REACH = 1.2;          // search area, in island radii
 // (of the share of ring samples), so a label settles in the middle of
 // its room, clear of the coast on every side it can be.
 const LABEL_MARGIN = 5;
+// Round 5: "prompt generator - why does it abut into the inter-island gap
+// instead of growing out to sea?" -- all water cost the same, so a strait
+// between islands was as good a place to overhang as open sea. Water
+// within LABEL_STRAIT px of another island now costs LABEL_STRAIT_COST
+// (between open sea and landing on that island), so overflow heads for
+// open water.
+const LABEL_STRAIT = 16;   // the visual gap includes both coasts' bands and rings
+const LABEL_STRAIT_COST = 1.2;
 const LABEL_MARGIN_COST = 0.25;
 let labelRunToken = 0;
 
@@ -275,6 +283,14 @@ function placeEntryLabels(stage, islandTrace, grown) {
       return out;
     };
     const reach = Math.max(6, c.radius * LABEL_REACH), step = Math.max(1.5, reach / 12);
+    // water close to ANOTHER island (a strait), checked at 8 points
+    const nearOther = (x, y) => {
+      for (let a = 0; a < 8; a++) {
+        const px = x + Math.cos(a * Math.PI / 4) * LABEL_STRAIT, py = y + Math.sin(a * Math.PI / 4) * LABEL_STRAIT;
+        if (!ownAt(px, py) && landAt(px, py)) return true;
+      }
+      return false;
+    };
     let best = null;
     for (const layout of job.layouts) {
       const boxes = boxesFor(layout);
@@ -288,7 +304,8 @@ function placeEntryLabels(stage, islandTrace, grown) {
                 n++;
                 if (onPlaced(x, y)) cost += LABEL_COST.label;
                 else if (ownAt(x, y)) cost += LABEL_COST.own;
-                else cost += landAt(x, y) ? LABEL_COST.other : LABEL_COST.sea;
+                else if (landAt(x, y)) cost += LABEL_COST.other;
+                else cost += nearOther(x, y) ? LABEL_STRAIT_COST : LABEL_COST.sea;
               }
             }
           }
