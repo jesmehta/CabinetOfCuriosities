@@ -477,11 +477,6 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
 - [x] **Coastal wave rings thinned, 2026-10-01** (`8d0294e`): medieval
   `.v3-wave-ring-1..3` 1.4/1.0/0.7px -> 0.6/0.45/0.35px, below the 1.2px
   coastline.
-- [ ] **Check for a coastline-outline gap where islands nearly fuse** (seen on
-  Looms' left side, Machines & Makings, while comparing ring options with the
-  inner rings hidden). Thinner rings make it easier to see. Confirm whether
-  `.v3-coastline-outline` genuinely breaks there or it's a near-fusion
-  rendering artefact.
 - [ ] **Replace the compass artwork with layered, merged shapes.** Supersedes
   the `8bcb8d4` outline workaround. Artwork (user to supply): one SVG with
   named layers in paint order -- e.g. `ring`, `star-diagonal`,
