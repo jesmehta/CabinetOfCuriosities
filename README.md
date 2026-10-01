@@ -249,6 +249,17 @@ Trade-off: the pastel glow is much lighter than the yellow-brown, so
 island outlines show through entry names again. Rebuilt and promoted to
 `docs/`.
 
+Follow-up (`347a57a`):
+
+- **Resting:** a tight white core (2px x2) under each label hides the
+  outlines. The section hue sits around it as a rim, mixed stronger (70%
+  over `--v3-veg`). The compass labels get the same treatment.
+- **Section hover:** the resting rule was overriding the dark hover glow
+  (equal specificity, later in the file). It is restated for
+  medieval-map.
+- **Entry hover:** the white stroke is gone. A 1.5px x3 solid white core
+  gives the cloud its body; the 7.5px x4 glow around it is at 80%.
+
 ### Homepage map: solid glow behind entry names (2026-10-01)
 
 Medieval theme only; other themes unchanged (`f1361ae`).
