@@ -133,10 +133,16 @@ const LABEL_SAMPLE = 2;           // px between score samples
 // request: "with the knockout coastline, the clarity is much more
 // improved... limit line wraps to 2 lines, not 3, and relax a little on
 // overflowing the island coast."
-const LABEL_COST = { own: 0, sea: 0.5, other: 3, label: 5 };
+// Round 3: "relax the wrapping condition further, and I am ok with
+// asymmetric labels, i.e. if the title extends onto the sea in one
+// direction but cannot extend in the other": sea 0.5 -> 0.3, extra line
+// 0.15 -> 0.3, and the search reaches 1.2 radii (was 0.7) at half the
+// distance cost (0.12 -> 0.06), so a label can sit off to one side.
+const LABEL_COST = { own: 0, sea: 0.3, other: 3, label: 5 };
 const LABEL_MAX_LINES = 2;
-const LABEL_EXTRA_LINE_COST = 0.15;
-const LABEL_DISTANCE_COST = 0.12; // at the edge of the search area
+const LABEL_EXTRA_LINE_COST = 0.3;
+const LABEL_DISTANCE_COST = 0.06; // at the edge of the search area
+const LABEL_REACH = 1.2;          // search area, in island radii
 let labelRunToken = 0;
 
 // 2026-10-02 -- where to break, before how balanced: direct request,
@@ -250,7 +256,7 @@ function placeEntryLabels(stage, islandTrace, grown) {
       if (tag) out.push({ dy: all[all.length - 1] - mid, w: tag.w, h: 6.5 });
       return out;
     };
-    const reach = Math.max(6, c.radius * 0.7), step = Math.max(1.5, reach / 8);
+    const reach = Math.max(6, c.radius * LABEL_REACH), step = Math.max(1.5, reach / 12);
     let best = null;
     for (const layout of job.layouts) {
       const boxes = boxesFor(layout);
