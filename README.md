@@ -259,6 +259,11 @@ Commit `c88e61d`. All themes.
   and a line ending on a joining word (of, with, and...) is avoided; line
   balance decides the rest. (A one-line-unless-it-collides trial was
   reverted.)
+- **Airier, paler** (`616baee`) -- two-line labels inside their islands
+  read as dense: the line gap is now 15.5px (was 13.5), and an extra line
+  costs 0.15 (was 0.04), so titles wrap only when one line would hang well
+  off the island. The label glow now matches the palest coastal band
+  (28%, was 48%), for more contrast with the black text.
 - **Not done** -- angled labels (declined). Island shapes from labels
   (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
   (undecided).
