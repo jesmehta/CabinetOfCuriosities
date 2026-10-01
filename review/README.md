@@ -12,3 +12,13 @@ git-tracked, established location (56+ screenshots already there,
 `vX.Y.Z-description.png` naming), not a new folder. (An earlier pass,
 2026-08-24, briefly created a redundant `dev-archive/` at the repo root
 without checking for this first -- removed the same day.)
+
+## archive/
+
+When a long run of review rounds is done, its screenshots can be bundled
+into `archive/<date>-<topic>/` (an `index.html` plus `images/`): the
+user's requests verbatim, the options shown, what was chosen, and the
+commits, with every screenshot embedded. Still gitignored: a record of
+how the look evolved, kept locally, not part of the repo. First one:
+`archive/2026-10-01-entry-labels/` (homepage label glows, placement,
+knockout; 13 rounds, 177 images).
