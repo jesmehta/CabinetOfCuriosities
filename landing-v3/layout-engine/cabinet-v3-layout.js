@@ -95,6 +95,203 @@ function el(tag, attrs = {}, text) {
   return node;
 }
 
+// ── Entry label placement + line knockout (2026-10-02) ──
+// Direct request, after measuring why labels sat off-centre (Poetry ~10px
+// left of its land, Oblique Strategies ~14px high): a label used to sit
+// on its seed circle's centre, but the coastline is that circle pushed
+// about by angular lobes and domain warp (cabinet-v3-islandshape.js), so
+// the land's own middle drifts away from it. Titles also never wrapped
+// ("Circle Packing Library" is ~112px on a ~55px island). The asks
+// adopted: place by best fit, wrap by fit, overflow toward open sea, and
+// cut the line work under the letters. (Angled labels were declined;
+// island shapes from labels left as a "maybe"; TSV overrides undecided.)
+//
+// Runs after render() has drawn every region, once the label font has
+// loaded (widths are measured on real glyphs), and again after every
+// retraceIslands(). build-static.mjs waits for data-labels-placed.
+//
+// For each entry (wip/dummy ones too), candidate layouts are the title on
+// 1-3 lines (word breaks only, balanced: the split with the narrowest
+// widest line), plus the tagline as a last, smaller line. Candidate
+// centres are a grid around the island's most-inland point (the maximum
+// of its own inland distance field -- its isolated shape, as
+// traceIsolatedShape() traces it). Each line's ink box is sampled every
+// LABEL_SAMPLE px and scored: own land 0, sea 1, another island's land
+// (dummy/filler islands included) 3, a label already placed 5. The mean,
+// plus a small cost per extra line and for distance from the inland point,
+// picks the layout. Labels are placed hardest-first (title width over
+// island width), so the tightest fits get first claim on the space.
+const LABEL_LINE_GAP = 13.5;      // between title lines (13px type)
+const LABEL_TAGLINE_GAP = 10.5;   // last title line -> tagline (9px type)
+const LABEL_SAMPLE = 2;           // px between score samples
+const LABEL_COST = { own: 0, sea: 1, other: 3, label: 5 };
+const LABEL_EXTRA_LINE_COST = 0.04;
+const LABEL_DISTANCE_COST = 0.12; // at the edge of the search area
+let labelRunToken = 0;
+
+function balancedLines(words, k, widthOf) {
+  // every way of cutting `words` into k runs, keep the narrowest widest line
+  let best = null;
+  const cut = (start, left, acc) => {
+    if (left === 1) {
+      const lines = [...acc, words.slice(start).join(" ")];
+      const widths = lines.map(widthOf);
+      const score = Math.max(...widths) * 1000 + widths.reduce((s, w) => s + w * w, 0) / 1000;
+      if (!best || score < best.score) best = { lines, widths, score };
+      return;
+    }
+    for (let i = start + 1; i <= words.length - left + 1; i++) cut(i, left - 1, [...acc, words.slice(start, i).join(" ")]);
+  };
+  cut(0, k, []);
+  return best;
+}
+
+function scheduleLabelPlacement(stage, islandTrace, grown) {
+  const token = ++labelRunToken;
+  delete stage.dataset.labelsPlaced;
+  const run = () => {
+    if (token !== labelRunToken) return;
+    placeEntryLabels(stage, islandTrace, grown);
+    stage.dataset.labelsPlaced = "1";
+  };
+  const sample = stage.querySelector(".v3-island-label");
+  if (!sample || !document.fonts) return run();
+  const cs = getComputedStyle(sample);
+  const loads = [document.fonts.load(`${cs.fontSize} ${cs.fontFamily}`), document.fonts.load(`9px ${cs.fontFamily}`)];
+  // never hang the page (or the static build) on a font that won't load
+  Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 4000))]).then(run, run);
+}
+
+function placeEntryLabels(stage, islandTrace, grown) {
+  const labels = [...stage.querySelectorAll(".v3-island-label[data-id]")];
+  if (!labels.length) return;
+  const cfg = v3Config.island, { cellSize, threshold } = cfg;
+  const byId = new Map(grown.map(c => [String(c.id), c]));
+
+  // Text widths from the real glyphs: a hidden probe with the label's own class.
+  const probe = el("text", { class: "v3-island-label", x: -99999, y: -99999, "aria-hidden": "true" });
+  stage.appendChild(probe);
+  const widths = new Map();
+  const widthOf = (str, tagline = false) => {
+    const key = (tagline ? "t:" : "m:") + str;
+    if (!widths.has(key)) {
+      probe.setAttribute("class", tagline ? "v3-island-label v3-island-label-tagline" : "v3-island-label");
+      probe.textContent = str;
+      widths.set(key, probe.getComputedTextLength());
+    }
+    return widths.get(key);
+  };
+
+  const { H, cols, rows, paddedBounds: pb } = islandTrace;
+  const landAt = (x, y) => {
+    const gx = Math.round((x - pb.x) / cellSize), gy = Math.round((y - pb.y) / cellSize);
+    return gx >= 0 && gy >= 0 && gx < cols && gy < rows && H[gy * cols + gx] > threshold;
+  };
+
+  const jobs = labels.map(label => {
+    const c = byId.get(label.dataset.id);
+    if (!c) return null;
+    const hm = buildIsolatedHeightmap([c], cfg);
+    const inland = buildInlandDistanceField(hm.H, hm.cols, hm.rows, cellSize, threshold);
+    let bi = 0;
+    for (let i = 1; i < inland.length; i++) if (inland[i] > inland[bi]) bi = i;
+    const pole = { x: hm.localBounds.x + (bi % hm.cols) * cellSize, y: hm.localBounds.y + Math.floor(bi / hm.cols) * cellSize };
+    const ownAt = (x, y) => {
+      const gx = Math.round((x - hm.localBounds.x) / cellSize), gy = Math.round((y - hm.localBounds.y) / cellSize);
+      return gx >= 0 && gy >= 0 && gx < hm.cols && gy < hm.rows && hm.H[gy * hm.cols + gx] > threshold;
+    };
+    const words = String(c.title).split(/\s+/).filter(Boolean);
+    const layouts = [];
+    for (let k = 1; k <= Math.min(3, words.length); k++) layouts.push({ k, ...balancedLines(words, k, s => widthOf(s)) });
+    const fit = widthOf(String(c.title)) / Math.max(1, inland[bi] * 2);
+    return { label, c, pole, ownAt, layouts, fit };
+  }).filter(Boolean);
+  probe.remove();
+
+  jobs.sort((a, b) => b.fit - a.fit);       // hardest fits first
+  const placed = [];                        // [{x0, y0, x1, y1}] of finished labels
+  const onPlaced = (x, y) => placed.some(b => x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1);
+
+  for (const job of jobs) {
+    const { c, pole, ownAt } = job;
+    const tag = c.tagline ? { text: String(c.tagline), w: widthOf(String(c.tagline), true) } : null;
+    // line boxes relative to the block's centre: [dy, width, ink height]
+    const boxesFor = layout => {
+      const ys = layout.lines.map((_, i) => i * LABEL_LINE_GAP);
+      const all = tag ? [...ys, ys[ys.length - 1] + LABEL_TAGLINE_GAP] : ys;
+      const mid = (all[0] + all[all.length - 1]) / 2;
+      const out = layout.lines.map((_, i) => ({ dy: ys[i] - mid, w: layout.widths[i], h: 9 }));
+      if (tag) out.push({ dy: all[all.length - 1] - mid, w: tag.w, h: 6.5 });
+      return out;
+    };
+    const reach = Math.max(6, c.radius * 0.7), step = Math.max(1.5, reach / 8);
+    let best = null;
+    for (const layout of job.layouts) {
+      const boxes = boxesFor(layout);
+      for (let oy = -reach; oy <= reach + 1e-6; oy += step) {
+        for (let ox = -reach; ox <= reach + 1e-6; ox += step) {
+          const cx = pole.x + ox, cy = pole.y + oy;
+          let cost = 0, n = 0;
+          for (const b of boxes) {
+            for (let y = cy + b.dy - b.h / 2; y <= cy + b.dy + b.h / 2 + 1e-6; y += LABEL_SAMPLE) {
+              for (let x = cx - b.w / 2; x <= cx + b.w / 2 + 1e-6; x += LABEL_SAMPLE) {
+                n++;
+                if (onPlaced(x, y)) cost += LABEL_COST.label;
+                else if (ownAt(x, y)) cost += LABEL_COST.own;
+                else cost += landAt(x, y) ? LABEL_COST.other : LABEL_COST.sea;
+              }
+            }
+          }
+          const d = Math.hypot(ox, oy) / reach;
+          const score = cost / Math.max(1, n) + (layout.k - 1) * LABEL_EXTRA_LINE_COST + d * d * LABEL_DISTANCE_COST;
+          if (!best || score < best.score) best = { score, cx, cy, layout, boxes };
+        }
+      }
+    }
+    applyLabelLayout(job.label, best, tag);
+    for (const b of best.boxes) {
+      placed.push({ x0: best.cx - b.w / 2 - 3, x1: best.cx + b.w / 2 + 3, y0: best.cy + b.dy - b.h / 2 - 3, y1: best.cy + b.dy + b.h / 2 + 3 });
+    }
+  }
+  drawLabelKnockout(stage, pb, jobs.map(j => j.label));
+}
+
+function applyLabelLayout(label, best, tag) {
+  const { cx, cy, layout, boxes } = best;
+  const x = cx.toFixed(1), y = cy.toFixed(1);
+  label.setAttribute("x", x);
+  label.setAttribute("y", y);
+  label.dataset.lines = String(layout.k);
+  label.textContent = "";
+  if (layout.k === 1 && !tag) { label.textContent = layout.lines[0]; return; }
+  layout.lines.forEach((line, i) => label.appendChild(el("tspan", { x, y: (cy + boxes[i].dy).toFixed(1) }, line)));
+  if (tag) label.appendChild(el("tspan", { x, y: (cy + boxes[boxes.length - 1].dy).toFixed(1), class: "v3-island-label-tagline" }, tag.text));
+}
+
+// Cartographic knockout: the coastline, wave rings and lat/long grid get
+// a gap wherever a label's letters cross them, so text no longer has to
+// fight the line work (the glow alone was carrying all of that). A mask
+// of white with each label redrawn in black, stroked a little wider than
+// its glyphs (.v3-label-knockout-text). Fills (land, sea, bands) are left
+// whole -- only lines are masked.
+function drawLabelKnockout(stage, pb, labels) {
+  stage.querySelectorAll(".v3-label-knockout-defs").forEach(n => n.remove());
+  const defs = el("defs", { class: "v3-label-knockout-defs" });
+  const mask = el("mask", { id: "v3-label-knockout", maskUnits: "userSpaceOnUse", x: pb.x, y: pb.y, width: pb.width, height: pb.height });
+  mask.appendChild(el("rect", { x: pb.x, y: pb.y, width: pb.width, height: pb.height, fill: "#fff" }));
+  labels.forEach(label => {
+    const k = label.cloneNode(true);
+    k.setAttribute("class", "v3-label-knockout-text");
+    k.removeAttribute("data-id");
+    k.removeAttribute("data-lines");
+    k.querySelectorAll(".v3-island-label-tagline").forEach(t => t.setAttribute("class", "v3-label-knockout-tagline"));
+    mask.appendChild(k);
+  });
+  defs.appendChild(mask);
+  stage.insertBefore(defs, stage.firstChild);
+  stage.querySelectorAll(".v3-coastline-outline, .v3-wave-ring, .v3-geo-grid").forEach(n => n.setAttribute("mask", "url(#v3-label-knockout)"));
+}
+
 // An entry's optional `tagline` (content/cabinet-entries.tsv) is a second,
 // smaller line under its main title -- e.g. "Emergent Technology" / tagline
 // "Student Work", so a long compound title doesn't have to fight a crowded
@@ -105,9 +302,11 @@ function el(tag, attrs = {}, text) {
 // baseline centering across lines, which SVG doesn't do), block centred on
 // c.y by hand.
 const ISLAND_TAGLINE_LINE_GAP = 10;
+// 2026-10-02 -- data-id ties the label to its circle for
+// placeEntryLabels() (below), which then moves and wraps it.
 function buildIslandLabelEl(c) {
-  if (!c.tagline) return el("text", { x: c.x, y: c.y, class: "v3-island-label" }, c.title);
-  const textEl = el("text", { x: c.x, y: c.y, class: "v3-island-label v3-island-label-with-tagline" });
+  if (!c.tagline) return el("text", { x: c.x, y: c.y, class: "v3-island-label", "data-id": c.id }, c.title);
+  const textEl = el("text", { x: c.x, y: c.y, class: "v3-island-label v3-island-label-with-tagline", "data-id": c.id });
   textEl.appendChild(el("tspan", { x: c.x, y: c.y - ISLAND_TAGLINE_LINE_GAP / 2 }, c.title));
   textEl.appendChild(el("tspan", { x: c.x, y: c.y + ISLAND_TAGLINE_LINE_GAP / 2, class: "v3-island-label-tagline" }, c.tagline));
   return textEl;
@@ -3024,6 +3223,10 @@ export function retraceIslands() {
   // fraction of the full-canvas retrace this function already pays for
   // on every tick regardless.
   retraceThemePreviews();
+
+  // 2026-10-02 -- the coastline just moved: re-fit the labels to it
+  // (fonts are loaded by now, so straight away) and redo the knockout.
+  placeEntryLabels(stage, islandTrace, islandLayoutState.grown);
 }
 // v3.7.34 -- also keeps the sand/veg/peak preview bands in sync, not
 // just the halo wash (they were added alongside this function, so
@@ -3370,6 +3573,9 @@ export function render() {
   if (compassMeta && compassRegion) {
     renderCompassRegion(stage, compassRegion, compassMeta, compassHue(layout.map(l => hashHue(l.sectionMeta.id))));
   }
+
+  // 2026-10-02 -- labels last: fit each entry label to its island
+  scheduleLabelPlacement(stage, islandTrace, grown);
 }
 
 // 2026-10-01 -- a hue for the compass, generated from the sections' own

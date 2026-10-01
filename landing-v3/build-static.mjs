@@ -89,6 +89,10 @@ try {
     // presence means the whole pipeline (treemap, packing, tracing) has
     // already completed, not just that the page loaded.
     await page.waitForSelector(".v3-coastline-outline", { timeout: 10000 });
+    // 2026-10-02 -- entry labels are fitted to their islands after the
+    // label font loads (cabinet-v3-layout.js, scheduleLabelPlacement()),
+    // which sets data-labels-placed when done.
+    await page.waitForSelector("#v3-stage[data-labels-placed]", { timeout: 15000 });
 
     if (consoleErrors.length) {
       throw new Error("build-render.html produced console errors:\n" + consoleErrors.join("\n"));
