@@ -228,6 +228,27 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Homepage map: label glows in section colours, compass hue (2026-10-01)
+
+Medieval theme only (`cd886cf`); supersedes the solid core below.
+
+- **Resting** -- the solid yellow-brown core read as "too much, and very
+  prominent on the map". Entry names and section titles now glow in their
+  own section's colour: its coastal band's `hashHue()`, mixed 48% over
+  `--v3-veg` (how the band reads at the coast). `renderRegion()` sets
+  `--v3-section-hue` on each section group. No stroke, same spread (5px x3
+  entries, 6px x3 section titles). `--v3-label-glow-alpha` is a knob for
+  thinning it; 70% was tried and nearly vanished, so it sits at 100%.
+- **Hover** -- white stroke dropped; same 7.5px x4 white glow at 80%.
+- **Compass** -- `compassHue()` takes the middle of the widest gap between
+  the section hues (146, a green-teal, with today's seven sections). Its
+  fill (`--v3-compass-accent`, `#939fba` before) and its N/E/S/W label glow
+  use that hue's coast pastel.
+
+Trade-off: the pastel glow is much lighter than the yellow-brown, so
+island outlines show through entry names again. Rebuilt and promoted to
+`docs/`.
+
 ### Homepage map: solid glow behind entry names (2026-10-01)
 
 Medieval theme only; other themes unchanged (`f1361ae`).
