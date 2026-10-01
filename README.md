@@ -254,6 +254,9 @@ Commit `c88e61d`. All themes.
   `build-static.mjs` waits for `data-labels-placed` before capturing.
 - **Relaxed** (`ada9e63`) -- with the knockout carrying clarity, titles cap
   at 2 lines (was 3) and sea under a label costs 0.5 (was 1).
+- **One line unless it collides** (`e5bf9d8`) -- a title wraps only when its
+  best one-line spot would touch another island or a placed label;
+  overflowing into the sea alone no longer wraps it.
 - **Not done** -- angled labels (declined). Island shapes from labels
   (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
   (undecided).
