@@ -135,20 +135,36 @@ const LABEL_EXTRA_LINE_COST = 0.04;
 const LABEL_DISTANCE_COST = 0.12; // at the edge of the search area
 let labelRunToken = 0;
 
+// 2026-10-02 -- where to break, before how balanced: direct request,
+// "Creative Coding | 2024-25 and not Creative | Coding 2024-25". A break
+// just before a token with a digit in it (a year, an edition) earns
+// LABEL_BREAK_BEFORE_NUMBER px; a line ending on a short joining word
+// ("of", "with"...) costs LABEL_BREAK_AFTER_JOINER px. Both count against
+// the widest line, so they outweigh balance unless the balanced split is
+// much narrower.
+const LABEL_BREAK_BEFORE_NUMBER = 40;
+const LABEL_BREAK_AFTER_JOINER = 40;
+const LABEL_JOINERS = new Set(["a", "an", "the", "of", "with", "and", "for", "in", "on", "to", "at", "by", "&"]);
 function balancedLines(words, k, widthOf) {
-  // every way of cutting `words` into k runs, keep the narrowest widest line
+  // every way of cutting `words` into k runs: narrowest widest line,
+  // adjusted for where the breaks fall (above)
   let best = null;
-  const cut = (start, left, acc) => {
+  const cut = (start, left, acc, breaks) => {
     if (left === 1) {
       const lines = [...acc, words.slice(start).join(" ")];
       const widths = lines.map(widthOf);
-      const score = Math.max(...widths) * 1000 + widths.reduce((s, w) => s + w * w, 0) / 1000;
+      let adjust = 0;
+      for (const i of breaks) {
+        if (/\d/.test(words[i])) adjust -= LABEL_BREAK_BEFORE_NUMBER;
+        if (LABEL_JOINERS.has(words[i - 1].toLowerCase())) adjust += LABEL_BREAK_AFTER_JOINER;
+      }
+      const score = (Math.max(...widths) + adjust) * 1000 + widths.reduce((s, w) => s + w * w, 0) / 1000;
       if (!best || score < best.score) best = { lines, widths, score };
       return;
     }
-    for (let i = start + 1; i <= words.length - left + 1; i++) cut(i, left - 1, [...acc, words.slice(start, i).join(" ")]);
+    for (let i = start + 1; i <= words.length - left + 1; i++) cut(i, left - 1, [...acc, words.slice(start, i).join(" ")], [...breaks, i]);
   };
-  cut(0, k, []);
+  cut(0, k, [], []);
   return best;
 }
 
