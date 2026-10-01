@@ -260,6 +260,16 @@ Follow-up (`347a57a`):
 - **Entry hover:** the white stroke is gone. A 1.5px x3 solid white core
   gives the cloud its body; the 7.5px x4 glow around it is at 80%.
 
+Second follow-up (`9bf4df6`):
+
+- **Resting:** lighter. The core is 1.5px x2 at 50% white, and the rim is
+  back to the plain coast pastel. Compass labels match.
+- **Section hover:** the entries in a hovered section now get the
+  entry-hover white glow, instead of keeping their section-colour glow
+  over the colour preview.
+- **Open:** on compass hover, the compass labels merge into the sea
+  colour. Not decided yet.
+
 ### Homepage map: solid glow behind entry names (2026-10-01)
 
 Medieval theme only; other themes unchanged (`f1361ae`).
