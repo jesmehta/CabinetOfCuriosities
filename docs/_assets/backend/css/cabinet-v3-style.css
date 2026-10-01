@@ -1558,6 +1558,33 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
   filter: drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink));
 }
 
+/* 2026-10-01 -- medieval-map only: entry names sit on top of island
+   outlines, and the 5px x3 yellow-brown glow was too soft to keep the
+   ink lines from showing through the letters. Direct request: make the
+   glow "more solid so the island outline does not interfere with the
+   text", distance about the same. A solid 3px stroke of the same colour
+   (paint-order: stroke, under the fill) gives the dense core; the
+   existing 5px x3 glow still supplies the fade-off around it. Chosen
+   over denser drop-shadow cores alone (1.5px x2 + 5 or 6px x3), which
+   left faint lines through the letters, in a side-by-side comparison. */
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island-label {
+  paint-order: stroke;
+  stroke: var(--v3-label-outline);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+/* ...and on hover: the white glow "only slightly outward and somewhat
+   denser" -- 7px -> 7.5px, plus a dense core: the same 3px stroke
+   turned white (it has to change colour anyway, or the ambient
+   yellow-brown stroke above would show through the white cloud). An
+   extra 2px drop-shadow pass on top of that was tried and was more than
+   "somewhat" denser. */
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:hover .v3-island-label,
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
+  stroke: var(--v3-halo-ink);
+  filter: drop-shadow(0 0 7.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-halo-ink));
+}
+
 /* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-
    layout.js no longer draws .v3-status-ring at all) -- wip/dummy entries
    now have no hover-styled identity of their own, so there's nothing
