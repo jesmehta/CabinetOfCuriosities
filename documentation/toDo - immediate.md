@@ -87,10 +87,6 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Make the non-hover label glow match its section colour.** Keep hover
   emphasis distinct, but derive each label's ambient/background glow from its
   owning section rather than applying one generic non-hover colour.
-- [ ] **Restore colour and texture to the “Cabinet of Curiosities” top band.**
-  Check why the band reads colourless, define the intended theme-aware fill,
-  and add enough texture to belong with the illustrated map without harming
-  title contrast.
 - [ ] **Restore the dragon baseline.** Identify whether the missing baseline is
   artwork, styling, clipping, or positioning; restore it consistently in the
   editable landing source and promoted build.
@@ -142,6 +138,10 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Recently completed - keep out of the work queue
 
+- [x] **Homepage top band given colour and texture** (`7eda448`, `b34f956`,
+  `eca9c91`): was hardcoded white; now fixed light cream (not theme-driven --
+  non-medieval seas are dark) with a seeded sepia ripple-dash tile, plus a
+  right-aligned map hint and a larger footnote. See `README.md`'s changelog.
 - [x] **Cabinet's duplicate Vera Molnar page retired** (`8681e7c`): confirmed
   byte-identical to FFFX's canonical page, deleted, and its old URL redirected.
 - [x] **Small copy-error pass completed** (`5d603cc`): fixed “percieve” in

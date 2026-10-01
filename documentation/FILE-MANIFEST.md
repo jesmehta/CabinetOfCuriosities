@@ -270,6 +270,7 @@ day (see above) — this folder is code/build only now.
 | File | Role |
 |---|---|
 | `islands-tool.html` | Live tuning tool — loads the layout engine directly, recomputes on every change. |
+| `gen-header-texture.mjs` | Added 2026-10-01 -- one-off generator for the homepage header band's ripple-dash background tile. Seeded, run by hand only when re-tuning (`node dev-tool/gen-header-texture.mjs` from `landing-v3/`); rewrites the inlined `url()` in `shared/cabinet-v3-style.css`. Never runs at build or page load. |
 | `cabinet-v3-controls.js` | The tuning panel UI (sliders, theme picker, reroll button) for `islands-tool.html`. Only file that's purely dev tooling with zero production role. |
 
 ## `archived-landing-pages/` — frozen historical snapshots, not rewritten

@@ -228,6 +228,32 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Homepage header band: cream ripple texture, map hint, larger footnote (2026-10-01)
+
+The sticky title band on the homepage map (`docs/index.html`) was plain
+white, reading as colourless against the parchment map. Now:
+
+- **Fill** -- light cream `#fbf6ec`, deliberately a fixed colour rather
+  than the theme's sea colour (only the medieval theme has a cream sea;
+  the others are dark blue and would put the dark title text on a dark
+  band).
+- **Texture** -- a pre-generated, seeded SVG tile (720x146, inlined in
+  `cabinet-v3-style.css`) of faint sepia dashes, each cut into 8px slots
+  that are randomly flat or a small ripple crest (two quarter circles).
+  Rows loop exactly around the tile width so no blank column shows at
+  tile seams; occasional long gaps scatter the whitespace instead.
+  Generated once by `landing-v3/dev-tool/gen-header-texture.mjs` (run by
+  hand only to re-tune -- it rewrites the CSS `url()`), not at build or
+  page load.
+- **Hint** -- right-aligned: *The Map is not the Territory* / hover to
+  have a better look, / click to enter. Stacks under the subtitle below
+  700px.
+- **Footnote** ("Cabinets of Curiosities were personal collections...")
+  0.85rem -> 1.05rem.
+
+Commits `7eda448`, `b34f956`, `eca9c91`. Edited in `landing-v3/`, then
+built and promoted to `docs/` via `build-static.mjs` / `promote.mjs`.
+
 ### Click-to-zoom images via `mkdocs-glightbox` (2026-09-16)
 
 Photo-heavy pages (Fab23-Bhutan and others like it) can now expand images
