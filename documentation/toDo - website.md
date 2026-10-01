@@ -458,6 +458,15 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   build-static.mjs..."); replaced with a real public-facing "about this
   Cabinet" blurb, direct text supplied. `index.template.html` updated,
   rebuilt via `build-static.mjs`.
+- [x] **Homepage top band given colour and texture, 2026-10-01** (`7eda448`,
+  `eca9c91`): `.v3-header` was hardcoded white; now light cream `#fbf6ec`
+  (fixed, not theme-driven) with a seeded sepia ripple-dash SVG tile from
+  `landing-v3/dev-tool/gen-header-texture.mjs`. See `README.md`'s changelog.
+- [x] **Homepage top band: right-hand map hint, 2026-10-01** (`7eda448`,
+  `b34f956`): `.v3-header-hint` -- *The Map is not the Territory* / hover to
+  have a better look, / click to enter.
+- [x] **Homepage footnote text enlarged, 2026-10-01** (`7eda448`):
+  `.v3-footnote` 0.85rem -> 1.05rem.
 - [ ] `#137` — finer coast-level entry tier. Keep speculative until it has a
   content use case and interaction design.
 - [x] `#135/#136` — **Cloudflare Web Analytics rollout complete, 2026-09-24**

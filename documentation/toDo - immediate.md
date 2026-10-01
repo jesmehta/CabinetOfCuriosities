@@ -138,10 +138,15 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Recently completed - keep out of the work queue
 
-- [x] **Homepage top band given colour and texture** (`7eda448`, `b34f956`,
-  `eca9c91`): was hardcoded white; now fixed light cream (not theme-driven --
-  non-medieval seas are dark) with a seeded sepia ripple-dash tile, plus a
-  right-aligned map hint and a larger footnote. See `README.md`'s changelog.
+- [x] **Homepage top band given colour and texture** (`7eda448`, `eca9c91`):
+  was hardcoded white; now fixed light cream (not theme-driven -- non-medieval
+  seas are dark) with a seeded sepia ripple-dash tile. See `README.md`'s
+  changelog.
+- [x] **Homepage top band: right-hand map hint** (`7eda448`, `b34f956`):
+  *The Map is not the Territory* / hover to have a better look, / click to
+  enter. Stacks under the subtitle on phones.
+- [x] **Homepage footnote text enlarged** (`7eda448`): the "Cabinets of
+  Curiosities were personal collections..." blurb, 0.85rem -> 1.05rem.
 - [x] **Cabinet's duplicate Vera Molnar page retired** (`8681e7c`): confirmed
   byte-identical to FFFX's canonical page, deleted, and its old URL redirected.
 - [x] **Small copy-error pass completed** (`5d603cc`): fixed “percieve” in
