@@ -228,6 +228,22 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Homepage map: solid glow behind entry names (2026-10-01)
+
+Medieval theme only; other themes unchanged (`f1361ae`).
+
+- **Resting** -- entry names sit on the island outlines, and the soft
+  yellow-brown glow (`--v3-label-outline`, 5px drop-shadow x3) let the ink
+  lines show through the letters. A solid 3px stroke of the same colour now
+  sits under each label (`paint-order: stroke`), with the 5px glow kept for
+  the fade-off. Chosen over denser drop-shadow cores alone, which still let
+  faint lines through, in a side-by-side.
+- **Hover** -- the white glow (`--v3-halo-ink`) goes 7px -> 7.5px x4, and the
+  3px stroke turns white as a dense core, so the white cloud is slightly
+  wider and denser. An extra 2px pass was tried and was too heavy.
+
+Promoted to `docs/`.
+
 ### Homepage map: lighter first sea band, thinner coastal wave rings (2026-10-01)
 
 Medieval theme only; other themes unchanged.
