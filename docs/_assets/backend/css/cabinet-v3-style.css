@@ -1558,31 +1558,54 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
   filter: drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink)) drop-shadow(0 0 7px var(--v3-halo-ink));
 }
 
-/* 2026-10-01 -- medieval-map only: entry names sit on top of island
-   outlines, and the 5px x3 yellow-brown glow was too soft to keep the
-   ink lines from showing through the letters. Direct request: make the
-   glow "more solid so the island outline does not interfere with the
-   text", distance about the same. A solid 3px stroke of the same colour
-   (paint-order: stroke, under the fill) gives the dense core; the
-   existing 5px x3 glow still supplies the fade-off around it. Chosen
-   over denser drop-shadow cores alone (1.5px x2 + 5 or 6px x3), which
-   left faint lines through the letters, in a side-by-side comparison. */
+/* 2026-10-01 -- medieval-map only: label glows in each SECTION's own
+   colour. History, same day: the soft 5px x3 yellow-brown glow
+   (--v3-label-outline) let island outlines show through entry names; a
+   solid 3px stroke under the text fixed that (f1361ae) but read as "too
+   much, and very prominent on the map." Direct request: "try having the
+   section colour itself as the text background for the entries as well
+   as the section titles... reduce the opacity compared to this while
+   keeping the spread of the glow the same distance."
+   --v3-section-hue is set per section by renderRegion()
+   (cabinet-v3-layout.js) from the same hashHue() as its coastal band.
+   --v3-section-pastel is that band colour as it actually renders at the
+   coast (the band's hsl at ~48% over --v3-veg, the same mix the compass
+   blue was matched to), so a label's glow is the colour its own coast
+   reads as. --v3-label-glow-alpha thins it: no stroke, same spread
+   (entries 5px x3, section titles 6px x3). */
+body.v3-proto[data-theme="medieval-map"] {
+  --v3-label-glow-alpha: 100%;
+  --v3-hover-glow: color-mix(in srgb, var(--v3-halo-ink) 80%, transparent);
+}
+body.v3-proto[data-theme="medieval-map"] .v3-region {
+  --v3-section-pastel: color-mix(in srgb, hsl(var(--v3-section-hue, 40) 58% 32%) 48%, var(--v3-veg));
+  --v3-section-glow: color-mix(in srgb, var(--v3-section-pastel) var(--v3-label-glow-alpha), transparent);
+}
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island-label {
-  paint-order: stroke;
-  stroke: var(--v3-label-outline);
-  stroke-width: 3px;
-  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px var(--v3-section-glow)) drop-shadow(0 0 5px var(--v3-section-glow)) drop-shadow(0 0 5px var(--v3-section-glow));
+}
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-section-label {
+  filter: drop-shadow(0 0 6px var(--v3-section-glow)) drop-shadow(0 0 6px var(--v3-section-glow)) drop-shadow(0 0 6px var(--v3-section-glow));
 }
 /* ...and on hover: the white glow "only slightly outward and somewhat
-   denser" -- 7px -> 7.5px, plus a dense core: the same 3px stroke
-   turned white (it has to change colour anyway, or the ambient
-   yellow-brown stroke above would show through the white cloud). An
-   extra 2px drop-shadow pass on top of that was tried and was more than
-   "somewhat" denser. */
+   denser" (7px -> 7.5px x4), then, after a white 3px stroke core read as
+   too much: "the white stroke is not needed - keep glow distance the
+   same but reduce opacity slightly". 7.5px x4 at 80% of --v3-halo-ink. */
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:hover .v3-island-label,
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
-  stroke: var(--v3-halo-ink);
-  filter: drop-shadow(0 0 7.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-halo-ink));
+  filter: drop-shadow(0 0 7.5px var(--v3-hover-glow)) drop-shadow(0 0 7.5px var(--v3-hover-glow)) drop-shadow(0 0 7.5px var(--v3-hover-glow)) drop-shadow(0 0 7.5px var(--v3-hover-glow));
+}
+/* The compass gets the same scheme in a hue of its own: compassHue()
+   (cabinet-v3-layout.js) picks the middle of the widest gap between the
+   section hues. Its fill (--v3-compass-accent, #939fba until now) is that
+   hue's coast pastel, and its N/E/S/W labels glow in it at the same
+   alpha, same 3.5px x2 spread. */
+body.v3-proto[data-theme="medieval-map"] .v3-compass {
+  --v3-compass-pastel: color-mix(in srgb, hsl(var(--v3-compass-hue, 145) 58% 32%) 48%, var(--v3-veg));
+  --v3-compass-accent: var(--v3-compass-pastel);
+}
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-compass-direction-label {
+  filter: drop-shadow(0 0 3.5px color-mix(in srgb, var(--v3-compass-pastel) var(--v3-label-glow-alpha), transparent)) drop-shadow(0 0 3.5px color-mix(in srgb, var(--v3-compass-pastel) var(--v3-label-glow-alpha), transparent));
 }
 
 /* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-

@@ -815,7 +815,12 @@ function buildIsolatedShadowTaper(circles, islandConfig, previewHM, angleDeg) {
 }
 
 function renderRegion(stage, region, band, label, sectionMeta, circles) {
-  const group = el("g", { class: "v3-region", "data-section": sectionMeta.id });
+  // 2026-10-01 -- the section's hue (the same hashHue() its coastal
+  // inward band is coloured with) as a custom property, so the stylesheet
+  // can colour this section's own labels from it. Direct request: "having
+  // the section colour itself as the text background for the entries as
+  // well as the section titles." Inherited by every label in the group.
+  const group = el("g", { class: "v3-region", "data-section": sectionMeta.id, style: `--v3-section-hue: ${hashHue(sectionMeta.id)}` });
 
   group.appendChild(
     el("rect", {
@@ -1409,11 +1414,12 @@ function computeCompassShift(square, sectionMeta) {
   };
 }
 
-function renderCompassRegion(stage, region, sectionMeta) {
+function renderCompassRegion(stage, region, sectionMeta, hue) {
   const square = region.compassSquare;
   if (!square || square.width <= 0) return;
 
-  const group = el("g", { class: "v3-compass" });
+  // 2026-10-01 -- --v3-compass-hue: see compassHue() (render()).
+  const group = el("g", { class: "v3-compass", style: `--v3-compass-hue: ${hue}` });
 
   const rose = computeCompassLayout(square);
   const nominal = computeCompassNominalLabels(rose, sectionMeta);
@@ -3362,8 +3368,25 @@ export function render() {
   });
 
   if (compassMeta && compassRegion) {
-    renderCompassRegion(stage, compassRegion, compassMeta);
+    renderCompassRegion(stage, compassRegion, compassMeta, compassHue(layout.map(l => hashHue(l.sectionMeta.id))));
   }
+}
+
+// 2026-10-01 -- a hue for the compass, generated from the sections' own
+// hues: the middle of the widest gap between them around the wheel, so
+// it reads as its own colour and stays clear of every section's however
+// many sections there are. Direct request: "generate a new hue for the
+// compass and it's text labels as well." (7 sections at the time: lands
+// ~145, a green-teal, between 101 and 189.)
+function compassHue(hues) {
+  const h = [...new Set(hues)].sort((a, b) => a - b);
+  if (!h.length) return 145;
+  let best = 0, at = h[0] + 180;
+  h.forEach((a, i) => {
+    const b = i + 1 < h.length ? h[i + 1] : h[0] + 360;
+    if (b - a > best) { best = b - a; at = a + (b - a) / 2; }
+  });
+  return Math.round(at) % 360;
 }
 
 // v3.6.8 -- reroll: pick a new nonce, re-run the whole pipeline. A fresh
