@@ -275,6 +275,10 @@ Commit `c88e61d`. All themes.
   most-inland point (Tracery Bots sat at the top of its room). Titles
   with a year always split before it (Creative Coding / 2024-25).
   Knockout gap 1.75px.
+- **Open sea over straits** (`27b39a0`) -- water within 16px of another
+  island costs 1.2 (open sea 0.3), so an overflowing label heads out to
+  sea instead of into the gap between islands (Prompt Generator hung into
+  the strait toward Essays).
 - **Not done** -- angled labels (declined). Island shapes from labels
   (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
   (undecided).
