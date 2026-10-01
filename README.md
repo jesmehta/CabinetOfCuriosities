@@ -228,6 +228,36 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Homepage map: entry labels fitted to their islands, line knockout (2026-10-02)
+
+Commit `c88e61d`. All themes.
+
+- **Why labels sat off-centre** -- each label sat on its island's seed
+  circle centre, but the coastline is that circle pushed out of round
+  (angular lobes, domain warp), so the land's middle drifts away from it:
+  Poetry sat ~10px left of its land, Oblique Strategies ~14px high.
+  Titles never wrapped either (Circle Packing Library ~112px on a ~55px
+  island).
+- **Placement** (`placeEntryLabels()`, `cabinet-v3-layout.js`) -- runs
+  after `render()` once the label font has loaded, and after every
+  `retraceIslands()`. Tries the title on 1-3 balanced lines (word breaks
+  only) at a grid of centres around the island's most-inland point.
+  Each option is scored by sampling the text's ink boxes: own island
+  free, sea 1, other islands (dummy ones included) 3, labels already
+  placed 5, plus small costs for extra lines and distance. The hardest
+  fits are placed first.
+- **Knockout** (`drawLabelKnockout()`) -- the coastline, wave rings and
+  lat/long grid are masked by black copies of the labels, so those lines
+  stop ~1.5px short of the letters. Fills are untouched.
+- **Build** -- `build-render.html` now loads the same Google Fonts as the
+  shipped page (labels are measured on real glyphs), and
+  `build-static.mjs` waits for `data-labels-placed` before capturing.
+- **Not done** -- angled labels (declined). Island shapes from labels
+  (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
+  (undecided).
+
+Rebuilt and promoted to `docs/`.
+
 ### Homepage map: label glows in section colours, compass hue (2026-10-01)
 
 Medieval theme only (`cd886cf`); supersedes the solid core below.
