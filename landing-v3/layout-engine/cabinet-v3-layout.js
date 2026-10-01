@@ -143,6 +143,15 @@ const LABEL_MAX_LINES = 2;
 const LABEL_EXTRA_LINE_COST = 0.3;
 const LABEL_DISTANCE_COST = 0.06; // at the edge of the search area
 const LABEL_REACH = 1.2;          // search area, in island radii
+// Round 4: a label that fits sat wherever it was nearest the island's
+// most-inland point, which isn't its visual middle -- Tracery Bots fits
+// anywhere from y 171 to 197 but sat at 173 ("sitting higher than what
+// could be better", Prompt Generator too). A margin ring LABEL_MARGIN px
+// around each line is also sampled: sea there costs LABEL_MARGIN_COST
+// (of the share of ring samples), so a label settles in the middle of
+// its room, clear of the coast on every side it can be.
+const LABEL_MARGIN = 5;
+const LABEL_MARGIN_COST = 0.25;
 let labelRunToken = 0;
 
 // 2026-10-02 -- where to break, before how balanced: direct request,
@@ -234,7 +243,16 @@ function placeEntryLabels(stage, islandTrace, grown) {
     };
     const words = String(c.title).split(/\s+/).filter(Boolean);
     const layouts = [];
-    for (let k = 1; k <= Math.min(LABEL_MAX_LINES, words.length); k++) layouts.push({ k, ...balancedLines(words, k, s => widthOf(s)) });
+    // A title with a year or edition in it always splits just before it
+    // ("Creative Coding | 2024-25"): direct request, "split the Creative
+    // coding | year titles though".
+    const yearAt = words.findIndex((w, i) => i > 0 && /\d/.test(w));
+    if (yearAt > 0) {
+      const lines = [words.slice(0, yearAt).join(" "), words.slice(yearAt).join(" ")];
+      layouts.push({ k: 2, lines, widths: lines.map(s => widthOf(s)) });
+    } else {
+      for (let k = 1; k <= Math.min(LABEL_MAX_LINES, words.length); k++) layouts.push({ k, ...balancedLines(words, k, s => widthOf(s)) });
+    }
     const fit = widthOf(String(c.title)) / Math.max(1, inland[bi] * 2);
     return { label, c, pole, ownAt, layouts, fit };
   }).filter(Boolean);
@@ -274,8 +292,21 @@ function placeEntryLabels(stage, islandTrace, grown) {
               }
             }
           }
+          let ringSea = 0, ringN = 0;
+          for (const b of boxes) {
+            const x0 = cx - b.w / 2 - LABEL_MARGIN, x1 = cx + b.w / 2 + LABEL_MARGIN;
+            const y0 = cy + b.dy - b.h / 2 - LABEL_MARGIN, y1 = cy + b.dy + b.h / 2 + LABEL_MARGIN;
+            for (let y = y0; y <= y1 + 1e-6; y += LABEL_SAMPLE) {
+              const edgeRow = y < y0 + LABEL_MARGIN || y > y1 - LABEL_MARGIN;
+              for (let x = x0; x <= x1 + 1e-6; x += edgeRow ? LABEL_SAMPLE : x1 - x0) {
+                ringN++;
+                if (!ownAt(x, y)) ringSea++;
+              }
+            }
+          }
           const d = Math.hypot(ox, oy) / reach;
-          const score = cost / Math.max(1, n) + (layout.k - 1) * LABEL_EXTRA_LINE_COST + d * d * LABEL_DISTANCE_COST;
+          const score = cost / Math.max(1, n) + LABEL_MARGIN_COST * ringSea / Math.max(1, ringN)
+            + (layout.k - 1) * LABEL_EXTRA_LINE_COST + d * d * LABEL_DISTANCE_COST;
           if (!best || score < best.score) best = { score, cx, cy, layout, boxes };
         }
       }

@@ -1485,7 +1485,7 @@ body.v3-proto[data-theme="medieval-map"] .v3-wave-ring-3 { stroke-width: 0.35; }
    drawLabelKnockout(), cabinet-v3-layout.js): same type as
    .v3-island-label, drawn solid black and stroked a little wider than
    the glyphs, so masked line work (coastline, wave rings, lat/long grid)
-   stops ~1.65px short of the letters. Kept apart from .v3-island-label so
+   stops ~1.75px short of the letters. Kept apart from .v3-island-label so
    none of its glow filters, hover transforms or tagline opacity reach the
    mask. */
 .v3-label-knockout-text {
@@ -1495,14 +1495,14 @@ body.v3-proto[data-theme="medieval-map"] .v3-wave-ring-3 { stroke-width: 0.35; }
   dominant-baseline: middle;
   fill: #000;
   stroke: #000;
-  /* gap = half the stroke: 1.65px past the glyphs (was 3px / 1.5px;
-     "increase it by 10% or so") */
-  stroke-width: 3.3px;
+  /* gap = half the stroke: 1.75px past the glyphs (was 3px / 1.5px,
+     then 3.3px / 1.65px; "make it 1.75 px") */
+  stroke-width: 3.5px;
   stroke-linejoin: round;
 }
 .v3-label-knockout-tagline {
   font-size: 9px;
-  stroke-width: 2.75px;
+  stroke-width: 2.9px;
 }
 
 .v3-island:hover .v3-island-label,
