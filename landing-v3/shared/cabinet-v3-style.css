@@ -1076,6 +1076,17 @@ body.v3-proto[data-theme="medieval-map"] .v3-compass:has(.v3-compass-hit[data-di
   fill-opacity: 0.16;
 }
 
+/* 2026-10-01 -- medieval-map only: the 4 stacked black copies built up to
+   ~50% black at the coast, which over the cream sea read as "a very
+   sludgy brown-grey" (direct feedback: "needs to be lighter/more
+   transparent"). Swapped for the theme's own sepia (--v3-sand, #7d3a24)
+   at under half the per-copy opacity -- a light warm tint (~25% at
+   peak) instead of a grey one. Other themes keep the black. */
+body.v3-proto[data-theme="medieval-map"] .v3-sea-shadow-radial {
+  fill: var(--v3-sand);
+  fill-opacity: 0.07;
+}
+
 /* v3.7.24 -- directional TAPERED cast shadow, Topology theme only
    (seaShadowStyle: "directional", THEME_PRESETS in cabinet-v3-controls.js)
    -- supersedes the old single-shape v3.7.9 directional block (translated
