@@ -214,8 +214,15 @@ body.v3-proto[data-theme="medieval-map"] {
      v3.7.23 -- direct feedback, "Violet is too out of place, try Navy":
      swapped for a deep navy -- still the same "cool contrast against an
      all-warm palette" logic the violet was chosen for, just a hue the
-     user actually wants to see here. */
-  --v3-compass-accent: #1f2c52;
+     user actually wants to see here.
+     2026-10-01 -- direct request: "the navy blue colour in the compass
+     should be replaced by a lighter hue like the map island coasts."
+     #939fba = Bookshelf's coast hue (rgb(34,71,129), the generated
+     per-section .v3-coast-inward-band fill) at ~48% over --v3-veg -- i.e.
+     what two of those 0.28-opacity bands stacked actually render as at the
+     coast, so the compass reads as the same dusty blue, not a new colour.
+     Navy #1f2c52 was the previous value. */
+  --v3-compass-accent: #939fba;
   /* #32 rework, 2026-08-30 -- --v3-label-outline (COLOR_TOKENS, so it's
      live-panel-editable -- a truncated grep earlier in that rework missed
      it entirely, caught before it shipped) moved into v3Config.colors as
@@ -701,6 +708,20 @@ body.v3-proto[data-theme="medieRiso"] .v3-header h1 {
 
 .v3-compass-blue {
   fill: var(--v3-compass-accent);
+}
+
+/* 2026-10-01 -- dark outline for the blue ring/crescent: navy's own
+   darkness used to supply the edge; once medieval-map's accent went light
+   (#939fba) they lost definition. Direct request: "still need the dark
+   outline." Stroke-only copies of the blue pieces drawn beneath the rose
+   (renderCompassRegion(), cabinet-v3-layout.js), so the fills on top hide
+   the internal cut lines and only the silhouette edge shows. Width 3 =
+   1.5px visible outside the fill, matching .v3-compass-outline. */
+.v3-compass-blue-edge {
+  fill: none;
+  stroke: var(--v3-ink);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
 }
 
 .v3-compass-outline {

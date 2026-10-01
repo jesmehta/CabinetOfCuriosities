@@ -1437,11 +1437,46 @@ function renderCompassRegion(stage, region, sectionMeta) {
   // fill-box (that stylesheet) centres the spin on this group's own
   // bounding box automatically, so no origin math is needed here.
   const spinGroup = el("g", { class: "v3-compass-rose-spin" });
-  COMPASS_ROSE_SHAPES.forEach(shape => {
-    const attrs = { class: shape.cls };
+  // 2026-10-01 -- dark outline for the blue ring/crescent as silhouettes.
+  // The blue pieces abut along straight cuts (where the diagonal arms
+  // pass); stroking each piece outlined those cuts too, visible once
+  // medieval-map's accent went from navy to a light coast blue. So each
+  // RUN of consecutive blue pieces (the artwork has two: one under the
+  // cardinal arms, one over them) gets stroke-only copies of its pieces
+  // (.v3-compass-blue-edge) drawn just before the run -- above whatever
+  // the run sits on, below the run's own fills, which then cover the
+  // shared cut lines and leave only the outer edge outlined. The second
+  // run is patches laid OVER the first run's crescent (so the crescent
+  // reads in front of the cardinal arms); unclipped, their edges drew the
+  // patch boundaries across the crescent. So a run that follows an
+  // earlier blue run has its edges clipped to the star outline polygon
+  // it's drawn over -- the edge only matters where an arm would
+  // otherwise hide the first run's outline.
+  const shapeAttrs = (shape, cls) => {
+    const attrs = { class: cls };
     if (shape.tag === "polygon") attrs.points = shape.points;
     else attrs.d = shape.d;
-    spinGroup.appendChild(el(shape.tag, attrs));
+    return attrs;
+  };
+  COMPASS_ROSE_SHAPES.forEach((shape, i) => {
+    const isBlue = shape.cls === "v3-compass-blue";
+    if (isBlue && COMPASS_ROSE_SHAPES[i - 1]?.cls !== "v3-compass-blue") {
+      let edgeParent = spinGroup;
+      const earlier = COMPASS_ROSE_SHAPES.slice(0, i);
+      if (earlier.some(sh => sh.cls === "v3-compass-blue")) {
+        const under = earlier.filter(sh => sh.cls === "v3-compass-outline").pop();
+        const clipId = `v3-compass-blue-edge-clip-${i}`;
+        const clip = el("clipPath", { id: clipId });
+        clip.appendChild(el(under.tag, shapeAttrs(under, "")));
+        spinGroup.appendChild(clip);
+        edgeParent = el("g", { "clip-path": `url(#${clipId})` });
+        spinGroup.appendChild(edgeParent);
+      }
+      for (let j = i; COMPASS_ROSE_SHAPES[j]?.cls === "v3-compass-blue"; j++) {
+        edgeParent.appendChild(el(COMPASS_ROSE_SHAPES[j].tag, shapeAttrs(COMPASS_ROSE_SHAPES[j], "v3-compass-blue-edge")));
+      }
+    }
+    spinGroup.appendChild(el(shape.tag, shapeAttrs(shape, shape.cls)));
   });
   Object.entries(COMPASS_ARM_HULLS).forEach(([dir, points]) => {
     spinGroup.appendChild(el("polygon", { class: "v3-compass-arm-glow", "data-direction": dir, points }));
