@@ -111,12 +111,12 @@ function el(tag, attrs = {}, text) {
 // retraceIslands(). build-static.mjs waits for data-labels-placed.
 //
 // For each entry (wip/dummy ones too), candidate layouts are the title on
-// 1-3 lines (word breaks only, balanced: the split with the narrowest
+// 1-LABEL_MAX_LINES lines (word breaks only, balanced: the split with the narrowest
 // widest line), plus the tagline as a last, smaller line. Candidate
 // centres are a grid around the island's most-inland point (the maximum
 // of its own inland distance field -- its isolated shape, as
 // traceIsolatedShape() traces it). Each line's ink box is sampled every
-// LABEL_SAMPLE px and scored: own land 0, sea 1, another island's land
+// LABEL_SAMPLE px and scored: own land 0, sea 0.5, another island's land
 // (dummy/filler islands included) 3, a label already placed 5. The mean,
 // plus a small cost per extra line and for distance from the inland point,
 // picks the layout. Labels are placed hardest-first (title width over
@@ -124,7 +124,13 @@ function el(tag, attrs = {}, text) {
 const LABEL_LINE_GAP = 13.5;      // between title lines (13px type)
 const LABEL_TAGLINE_GAP = 10.5;   // last title line -> tagline (9px type)
 const LABEL_SAMPLE = 2;           // px between score samples
-const LABEL_COST = { own: 0, sea: 1, other: 3, label: 5 };
+// 2026-10-02, same day -- with the knockout in, labels can overflow
+// more: sea 1 -> 0.5 and titles capped at 2 lines (was 3). Direct
+// request: "with the knockout coastline, the clarity is much more
+// improved... limit line wraps to 2 lines, not 3, and relax a little on
+// overflowing the island coast."
+const LABEL_COST = { own: 0, sea: 0.5, other: 3, label: 5 };
+const LABEL_MAX_LINES = 2;
 const LABEL_EXTRA_LINE_COST = 0.04;
 const LABEL_DISTANCE_COST = 0.12; // at the edge of the search area
 let labelRunToken = 0;
@@ -202,7 +208,7 @@ function placeEntryLabels(stage, islandTrace, grown) {
     };
     const words = String(c.title).split(/\s+/).filter(Boolean);
     const layouts = [];
-    for (let k = 1; k <= Math.min(3, words.length); k++) layouts.push({ k, ...balancedLines(words, k, s => widthOf(s)) });
+    for (let k = 1; k <= Math.min(LABEL_MAX_LINES, words.length); k++) layouts.push({ k, ...balancedLines(words, k, s => widthOf(s)) });
     const fit = widthOf(String(c.title)) / Math.max(1, inland[bi] * 2);
     return { label, c, pole, ownAt, layouts, fit };
   }).filter(Boolean);
