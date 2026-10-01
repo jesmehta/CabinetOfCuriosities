@@ -254,6 +254,11 @@ Commit `c88e61d`. All themes.
   `build-static.mjs` waits for `data-labels-placed` before capturing.
 - **Relaxed** (`ada9e63`) -- with the knockout carrying clarity, titles cap
   at 2 lines (was 3) and sea under a label costs 0.5 (was 1).
+- **Break rules** (`c262bb1`) -- a break just before a token with a digit is
+  preferred (Creative Coding / 2024-25, not Creative / Coding 2024-25),
+  and a line ending on a joining word (of, with, and...) is avoided; line
+  balance decides the rest. (A one-line-unless-it-collides trial was
+  reverted.)
 - **Not done** -- angled labels (declined). Island shapes from labels
   (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
   (undecided).
