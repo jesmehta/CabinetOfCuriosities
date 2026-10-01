@@ -1584,17 +1584,24 @@ body[data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
    the result so far, so the core goes first. The rim's radius drops by
    0.5px (entries 4.5px x3, section titles 5.5px x3) to keep the overall
    spread where it was. */
+/* Round 3: that read as "too thick and dense", "the rim is too
+   prominent", "the white is visible behind the text". The core is now
+   1.5px x2 at half strength, and the rim is back to the plain coast
+   pastel (48%). Lighter cores (1.5px x1 at 70%, 1px x2 at 60%) let the
+   outlines through the letters again; this is the middle of the three
+   compared. */
 body.v3-proto[data-theme="medieval-map"] {
   --v3-hover-glow: color-mix(in srgb, var(--v3-halo-ink) 80%, transparent);
+  --v3-label-core: color-mix(in srgb, var(--v3-halo-ink) 50%, transparent);
 }
 body.v3-proto[data-theme="medieval-map"] .v3-region {
-  --v3-section-glow: color-mix(in srgb, hsl(var(--v3-section-hue, 40) 58% 32%) 70%, var(--v3-veg));
+  --v3-section-glow: color-mix(in srgb, hsl(var(--v3-section-hue, 40) 58% 32%) 48%, var(--v3-veg));
 }
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island-label {
-  filter: drop-shadow(0 0 2px var(--v3-halo-ink)) drop-shadow(0 0 2px var(--v3-halo-ink)) drop-shadow(0 0 4.5px var(--v3-section-glow)) drop-shadow(0 0 4.5px var(--v3-section-glow)) drop-shadow(0 0 4.5px var(--v3-section-glow));
+  filter: drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 4.5px var(--v3-section-glow)) drop-shadow(0 0 4.5px var(--v3-section-glow)) drop-shadow(0 0 4.5px var(--v3-section-glow));
 }
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-section-label {
-  filter: drop-shadow(0 0 2px var(--v3-halo-ink)) drop-shadow(0 0 2px var(--v3-halo-ink)) drop-shadow(0 0 5.5px var(--v3-section-glow)) drop-shadow(0 0 5.5px var(--v3-section-glow)) drop-shadow(0 0 5.5px var(--v3-section-glow));
+  filter: drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 5.5px var(--v3-section-glow)) drop-shadow(0 0 5.5px var(--v3-section-glow)) drop-shadow(0 0 5.5px var(--v3-section-glow));
 }
 /* The rule above is exactly as specific as the shared section-hover
    glow (body[data-label-style="glow"] .v3-section-link:hover
@@ -1615,23 +1622,29 @@ body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-section-li
    7.5px x4 alone, even solid, read as barely there). A tight white core
    (1.5px x3, solid) now gives it that body without an outlined edge;
    the 7.5px x4 cloud around it is at 80%. Compared against 7.5px x4
-   alone, the stroked version, and a 2px x2 core. */
+   alone, the stroked version, and a 2px x2 core.
+   The same white glow goes on every entry in a hovered SECTION (the
+   :has() lines): they kept their resting section-colour glow over the
+   section's colour preview. Direct report: "section hover: still
+   leaking - the coloured glow is very visible and white glow is not." */
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:hover .v3-island-label,
-body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:focus-visible .v3-island-label {
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island:focus-visible .v3-island-label,
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-region:has(.v3-section-link:hover) .v3-island-label,
+body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-region:has(.v3-section-link:focus-visible) .v3-island-label {
   filter: drop-shadow(0 0 1.5px var(--v3-halo-ink)) drop-shadow(0 0 1.5px var(--v3-halo-ink)) drop-shadow(0 0 1.5px var(--v3-halo-ink)) drop-shadow(0 0 7.5px var(--v3-hover-glow)) drop-shadow(0 0 7.5px var(--v3-hover-glow)) drop-shadow(0 0 7.5px var(--v3-hover-glow)) drop-shadow(0 0 7.5px var(--v3-hover-glow));
 }
 /* The compass gets the same scheme in a hue of its own: compassHue()
    (cabinet-v3-layout.js) picks the middle of the widest gap between the
    section hues. Its fill (--v3-compass-accent, #939fba until now) is that
-   hue's coast pastel (48%), and its N/E/S/W labels get the same white
-   core + stronger (70%) hue rim as the section labels, within their own
-   3.5px spread (core 2px x2, rim 3px x2). */
+   hue's coast pastel (48%), and its N/E/S/W labels get the same
+   half-strength white core + pastel rim as the section labels, within
+   their own 3.5px spread (core 1.5px x2, rim 3px x2). */
 body.v3-proto[data-theme="medieval-map"] .v3-compass {
   --v3-compass-accent: color-mix(in srgb, hsl(var(--v3-compass-hue, 145) 58% 32%) 48%, var(--v3-veg));
-  --v3-compass-glow: color-mix(in srgb, hsl(var(--v3-compass-hue, 145) 58% 32%) 70%, var(--v3-veg));
+  --v3-compass-glow: color-mix(in srgb, hsl(var(--v3-compass-hue, 145) 58% 32%) 48%, var(--v3-veg));
 }
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-compass-direction-label {
-  filter: drop-shadow(0 0 2px var(--v3-halo-ink)) drop-shadow(0 0 2px var(--v3-halo-ink)) drop-shadow(0 0 3px var(--v3-compass-glow)) drop-shadow(0 0 3px var(--v3-compass-glow));
+  filter: drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 3px var(--v3-compass-glow)) drop-shadow(0 0 3px var(--v3-compass-glow));
 }
 
 /* v3.7 -- dashed "not fully live" status ring removed (cabinet-v3-
