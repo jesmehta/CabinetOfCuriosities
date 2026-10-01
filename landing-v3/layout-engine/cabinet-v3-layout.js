@@ -231,38 +231,29 @@ function placeEntryLabels(stage, islandTrace, grown) {
       return out;
     };
     const reach = Math.max(6, c.radius * 0.7), step = Math.max(1.5, reach / 8);
-    // 2026-10-02 -- one line unless it collides. Direct request: "what if
-    // we opt for single lines only unless there is a collision". Each
-    // layout keeps its own best spot; the 1-line one wins outright when
-    // that spot touches no other island and no placed label (hanging out
-    // over the sea is fine), otherwise every layout competes on score.
-    const bests = [];
+    let best = null;
     for (const layout of job.layouts) {
       const boxes = boxesFor(layout);
-      let best = null;
       for (let oy = -reach; oy <= reach + 1e-6; oy += step) {
         for (let ox = -reach; ox <= reach + 1e-6; ox += step) {
           const cx = pole.x + ox, cy = pole.y + oy;
-          let cost = 0, n = 0, hits = 0;
+          let cost = 0, n = 0;
           for (const b of boxes) {
             for (let y = cy + b.dy - b.h / 2; y <= cy + b.dy + b.h / 2 + 1e-6; y += LABEL_SAMPLE) {
               for (let x = cx - b.w / 2; x <= cx + b.w / 2 + 1e-6; x += LABEL_SAMPLE) {
                 n++;
-                if (onPlaced(x, y)) { cost += LABEL_COST.label; hits++; }
+                if (onPlaced(x, y)) cost += LABEL_COST.label;
                 else if (ownAt(x, y)) cost += LABEL_COST.own;
-                else if (landAt(x, y)) { cost += LABEL_COST.other; hits++; }
-                else cost += LABEL_COST.sea;
+                else cost += landAt(x, y) ? LABEL_COST.other : LABEL_COST.sea;
               }
             }
           }
           const d = Math.hypot(ox, oy) / reach;
           const score = cost / Math.max(1, n) + (layout.k - 1) * LABEL_EXTRA_LINE_COST + d * d * LABEL_DISTANCE_COST;
-          if (!best || score < best.score) best = { score, hits, cx, cy, layout, boxes };
+          if (!best || score < best.score) best = { score, cx, cy, layout, boxes };
         }
       }
-      bests.push(best);
     }
-    const best = bests[0].hits === 0 ? bests[0] : bests.reduce((a, b) => (b.score < a.score ? b : a));
     applyLabelLayout(job.label, best, tag);
     for (const b of best.boxes) {
       placed.push({ x0: best.cx - b.w / 2 - 3, x1: best.cx + b.w / 2 + 3, y0: best.cy + b.dy - b.h / 2 - 3, y1: best.cy + b.dy + b.h / 2 + 3 });
