@@ -1234,6 +1234,19 @@ body.v3-proto[data-theme="satellite"] .v3-topo-structural {
   opacity: 0.3;
 }
 
+/* 2026-10-01 -- medieval-map only: rings thinned, not recoloured. At
+   1.4/1.0px the first two near-black rings were heavier than the 1.2px
+   .v3-coastline-outline itself, so each island read as triple-outlined,
+   and ring 2 (9.4px) sat right on the sea shadow's fade-out edge (11px),
+   reading as that band's outline. Direct request: "soften by decreasing
+   the line weight -- the inner lines should not look thicker or as thick
+   as the coast outline." Sepia recolouring was tried in comparison and
+   not chosen. All three now sit clearly below the coastline, tapering
+   outward. Ink and opacity unchanged. */
+body.v3-proto[data-theme="medieval-map"] .v3-wave-ring-1 { stroke-width: 0.6; }
+body.v3-proto[data-theme="medieval-map"] .v3-wave-ring-2 { stroke-width: 0.45; }
+body.v3-proto[data-theme="medieval-map"] .v3-wave-ring-3 { stroke-width: 0.35; }
+
 /* Crisp ink boundary at the true coastline, drawn last (on top of every
    fill band) so the edge reads clearly regardless of which fill happens
    to sit under it. */
