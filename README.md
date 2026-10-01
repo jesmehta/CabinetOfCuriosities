@@ -228,6 +228,23 @@ serves the site, see `WORLD-SYSTEMS.md`'s note on `href` safety.
 
 ## Changelog
 
+### Homepage compass: navy -> light coast blue, dark outline kept (2026-10-01)
+
+The compass rose's navy ring and crescent (medieval theme) are now a light
+dusty blue, `#939fba` -- Bookshelf's coast hue as it actually renders at the
+island coastlines -- so the compass sits in the map's pastel coast range.
+
+The dark outline is kept, as a silhouette only. The compass artwork builds
+its blue from eight abutting pieces plus patches laid over the cardinal arms,
+so outlining each piece drew the cut lines across the crescent (navy had
+hidden them). `renderCompassRegion()` (`landing-v3/layout-engine/
+cabinet-v3-layout.js`) now draws stroke-only copies of each run of blue
+pieces just beneath that run's fills, with the patch run's outline clipped to
+the cardinal arms. **Stopgap:** to be replaced by layered compass artwork
+with one merged shape per colour region (see `toDo - website.md`).
+
+Commit `8bcb8d4`. Rebuilt and promoted to `docs/`.
+
 ### Homepage header band: cream ripple texture, map hint, larger footnote (2026-10-01)
 
 The sticky title band on the homepage map (`docs/index.html`) was plain

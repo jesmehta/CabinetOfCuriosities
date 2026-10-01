@@ -467,6 +467,20 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   have a better look, / click to enter.
 - [x] **Homepage footnote text enlarged, 2026-10-01** (`7eda448`):
   `.v3-footnote` 0.85rem -> 1.05rem.
+- [x] **Homepage compass recoloured, 2026-10-01** (`8bcb8d4`): medieval-map
+  `--v3-compass-accent` navy `#1f2c52` -> light coast blue `#939fba`; dark
+  outline kept via stroke-only `.v3-compass-blue-edge` copies drawn under each
+  run of blue pieces (patch run clipped to the cardinal arms) so the
+  artwork's internal cut lines stay hidden. See `README.md`'s changelog.
+- [ ] **Replace the compass artwork with layered, merged shapes.** Supersedes
+  the `8bcb8d4` outline workaround. Artwork (user to supply): one SVG with
+  named layers in paint order -- e.g. `ring`, `star-diagonal`,
+  `star-cardinal`, `crescent` -- each colour region a single merged shape
+  (Pathfinder -> Unite), all on the existing 827.72 square artboard, no
+  transforms, fills only (colours/outlines come from theme CSS). Then swap
+  `COMPASS_ROSE_SHAPES` in `cabinet-v3-layout.js`, delete the
+  `.v3-compass-blue-edge` mechanism, and keep spin, the per-arm hover glow
+  (`COMPASS_ARM_HULLS`), and the inner theme-swap click circle working.
 - [ ] `#137` — finer coast-level entry tier. Keep speculative until it has a
   content use case and interaction design.
 - [x] `#135/#136` — **Cloudflare Web Analytics rollout complete, 2026-09-24**

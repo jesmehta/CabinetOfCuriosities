@@ -145,6 +145,9 @@ Completion below means committed implementation, not a verified live deployment.
 - [x] **Homepage top band: right-hand map hint** (`7eda448`, `b34f956`):
   *The Map is not the Territory* / hover to have a better look, / click to
   enter. Stacks under the subtitle on phones.
+- [x] **Homepage compass recoloured** (`8bcb8d4`): navy -> light coast blue
+  `#939fba`, dark silhouette outline kept. Stopgap geometry workaround; the
+  layered-artwork replacement is open in `toDo - website.md`.
 - [x] **Homepage footnote text enlarged** (`7eda448`): the "Cabinets of
   Curiosities were personal collections..." blurb, 0.85rem -> 1.05rem.
 - [x] **Cabinet's duplicate Vera Molnar page retired** (`8681e7c`): confirmed
