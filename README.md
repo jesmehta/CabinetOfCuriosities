@@ -264,6 +264,11 @@ Commit `c88e61d`. All themes.
   costs 0.15 (was 0.04), so titles wrap only when one line would hang well
   off the island. The label glow now matches the palest coastal band
   (28%, was 48%), for more contrast with the black text.
+- **Off-centre allowed** (`5bcdb99`) -- sea 0.3, extra line 0.3, and the
+  search reaches 1.2 island radii at half the distance cost, so a title
+  can sit to one side and run out over open sea ("asymmetric labels").
+  Every label lands on one line with today's content; wrapping now only
+  happens when one line would collide.
 - **Not done** -- angled labels (declined). Island shapes from labels
   (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
   (undecided).
