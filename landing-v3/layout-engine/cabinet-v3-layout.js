@@ -121,7 +121,11 @@ function el(tag, attrs = {}, text) {
 // plus a small cost per extra line and for distance from the inland point,
 // picks the layout. Labels are placed hardest-first (title width over
 // island width), so the tightest fits get first claim on the space.
-const LABEL_LINE_GAP = 13.5;      // between title lines (13px type)
+// 2026-10-02 -- 13.5 -> 15.5, and an extra line 0.04 -> 0.15: "the 2 line
+// split is staying within the island and that looks dense and difficult
+// to read". Lines get more air, and a title wraps only when one line
+// would hang well off its island (with sea at 0.5, roughly a third of it).
+const LABEL_LINE_GAP = 15.5;      // between title lines (13px type)
 const LABEL_TAGLINE_GAP = 10.5;   // last title line -> tagline (9px type)
 const LABEL_SAMPLE = 2;           // px between score samples
 // 2026-10-02, same day -- with the knockout in, labels can overflow
@@ -131,7 +135,7 @@ const LABEL_SAMPLE = 2;           // px between score samples
 // overflowing the island coast."
 const LABEL_COST = { own: 0, sea: 0.5, other: 3, label: 5 };
 const LABEL_MAX_LINES = 2;
-const LABEL_EXTRA_LINE_COST = 0.04;
+const LABEL_EXTRA_LINE_COST = 0.15;
 const LABEL_DISTANCE_COST = 0.12; // at the edge of the search area
 let labelRunToken = 0;
 

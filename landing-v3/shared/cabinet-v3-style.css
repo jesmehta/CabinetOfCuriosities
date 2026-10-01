@@ -1616,8 +1616,13 @@ body.v3-proto[data-theme="medieval-map"] {
   --v3-hover-glow: color-mix(in srgb, var(--v3-halo-ink) 80%, transparent);
   --v3-label-core: color-mix(in srgb, var(--v3-halo-ink) 50%, transparent);
 }
+/* Round 4: "lighten up or increase transparency in the text glow
+   colour... the glow colour is reducing the contrast with the black
+   text". The three coastal inward bands (0.28 each, reaching 2/4/7px in)
+   stack to ~63% / 48% / 28% from the coast inward; the glow had matched
+   the middle one (48%) and now matches the palest, innermost one (28%). */
 body.v3-proto[data-theme="medieval-map"] .v3-region {
-  --v3-section-glow: color-mix(in srgb, hsl(var(--v3-section-hue, 40) 58% 32%) 48%, var(--v3-veg));
+  --v3-section-glow: color-mix(in srgb, hsl(var(--v3-section-hue, 40) 58% 32%) 28%, var(--v3-veg));
 }
 body.v3-proto[data-theme="medieval-map"][data-label-style="glow"] .v3-island-label {
   filter: drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 1.5px var(--v3-label-core)) drop-shadow(0 0 4.5px var(--v3-section-glow)) drop-shadow(0 0 4.5px var(--v3-section-glow)) drop-shadow(0 0 4.5px var(--v3-section-glow));
