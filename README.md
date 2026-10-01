@@ -269,6 +269,12 @@ Commit `c88e61d`. All themes.
   can sit to one side and run out over open sea ("asymmetric labels").
   Every label lands on one line with today's content; wrapping now only
   happens when one line would collide.
+- **Centred in their room** (`0c10bc6`) -- a 5px margin ring around each
+  line is sampled too (sea there costs a little), so a label that fits
+  settles in the middle of the space it fits in, not at the island's
+  most-inland point (Tracery Bots sat at the top of its room). Titles
+  with a year always split before it (Creative Coding / 2024-25).
+  Knockout gap 1.75px.
 - **Not done** -- angled labels (declined). Island shapes from labels
   (a "maybe"). Per-entry TSV overrides, forced breaks or nudges
   (undecided).
