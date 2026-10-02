@@ -2793,16 +2793,20 @@ specific but currently unnecessary or not executable")**
 
 </details>
 
-- [ ] **#145** Keep entry/island names from spilling excessively beyond their
-      island boundary -- surfaced 2026-09-23 after the scoped `#37` collision
-      fix. Long labels are currently single-line fixed-size SVG `<text>` with
-      no width-aware fit against island radius. This is label-vs-island
-      overflow, distinct from `#37`'s label-vs-label collision and `#143`'s
-      whole-map mobile scale. Decide before implementing whether to wrap titles
-      (and how that interacts with the existing tagline line), shrink per-label
-      from measured width/radius, constrain titles editorially, or tolerate
-      overflow below a defined severity threshold. Logged in `5012d45`; no
-      design or implementation has landed yet.
+<details>
+<summary>#145</summary>
+
+- [x] **#145** Keep entry/island names from spilling excessively beyond their
+      island boundary -- **done, 2026-10-01** (`c88e61d`..`27b39a0`, documented
+      through `1fd454b`). The final treatment measures available island room,
+      wraps to at most two lines, knocks line work out beneath text, permits
+      useful off-centre placement, splits year titles consistently, and avoids
+      placing overflow in narrow straits when open sea is available. Resting
+      label glows now use their owning section's colour (`cd886cf`), with the
+      white-core and paler-glow refinements in `347a57a`, `9bf4df6`, and
+      `616baee`.
+
+</details>
 - [ ] **#137** Speculative, not on the drawing board yet: a finer tier of
       map entries on the island coast (or similar), a level below the
       existing section-level plaques -- planned very early on in v3's
@@ -2879,7 +2883,10 @@ Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pag
 
 **Milestones**
 
-- [ ] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
+- [x] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
+  Completed 2026-09-26 in
+  `documentation/backend-and-deploy/private-repository-migration-audit.md`;
+  recheck before execution if repository topology changes.
 - [ ] 2. Compare GitHub Pro vs Cloudflare (and alternatives if warranted): **cost, capabilities, limitations, migration effort and maintenance**.
 - [ ] 3. Apply the decision rule and select the deployment/access-control architecture.
 - [ ] 4. Prototype private-repo deployment with one low-risk site/repo.

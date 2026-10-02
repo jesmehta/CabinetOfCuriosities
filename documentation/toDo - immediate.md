@@ -2,8 +2,8 @@
 
 Quick wins and urgent work selected from [Content](toDo%20-%20content.md) and
 [Website](toDo%20-%20website.md). Reconciled with local Git history and source
-on 2026-09-29, through Cabinet `5d603cc`, Bookshelf
-`eda5c8e`, and FFFX `a49c771`. SSD Student Work's earlier check was at
+on 2026-10-01, through Cabinet `acb5d16`, Bookshelf
+`bdddbe9`, and FFFX `6ac3e3a`. SSD Student Work's earlier check was at
 `5b4188c`. The longlists retain broader scope.
 Completion below means committed implementation, not a verified live deployment.
 
@@ -20,6 +20,15 @@ Completion below means committed implementation, not a verified live deployment.
   - Emergent 2024-25 remains honest, unlinked "gallery not yet published" text.
     No current Teaching hub link points to its absent route.
 
+- [ ] **Choose the private-source deployment architecture before changing any
+  repository visibility (`#147`).** The dependency audit is complete
+  (`documentation/backend-and-deploy/private-repository-migration-audit.md`):
+  Cabinet anonymously clones six repositories during deployment, and the
+  sitemap tool anonymously reads Cabinet, Bookshelf, and FFFX TSVs. Compare the
+  remaining GitHub Pro/Cloudflare costs and access-control needs, choose the
+  architecture, then prototype one low-risk repo. Do not make an assembled
+  source private before authenticated checkout exists.
+
 ## Quick win - small correction with visible value
 
 - [ ] **Finish Fab metadata and presentation.** Fab23's captioned image
@@ -28,14 +37,14 @@ Completion below means committed implementation, not a verified live deployment.
   to their event identities/routes (`b3c3bc6`); remaining: add Fab23's
   personal account and curate its image dump. Fab25 remains a stub.
   RIIDL lab links are already present in the hub; do not re-add them.
-- [ ] **Launch Dance of Planets v3.0 in FFFX.** The tool is built and pushed
-  at FFFX `projects/dance-of-planets/` (`8f993b0`..`0656c73`) but is not
-  deployed: FFFX's `deploy.yml` has no `projects/` copy step (the old
-  scifi/asimov one was removed in `d723f74`). Port Bookshelf's
-  `projects/*/` copy loop, point the `harmonics-dance-of-planets` entry at
-  `dance-of-planets/` with the right `location`, wire FFFX's README and
-  FILE-MANIFEST, then verify the live `/dance-of-planets/` route. Details:
-  FFFX `projects/dance-of-planets/documentation/TODO.md`.
+- [ ] **Finish publishing Dance of Planets v3.0 in FFFX.** The tool is built,
+  pushed, and included by FFFX's new `projects/*/` deployment loop (`e0226a8`).
+  README/FILE-MANIFEST wiring done (FFFX `5f27d3d`). **Landing/TSV and nav
+  wiring on hold until `#147`** (GitHub Pro/Cloudflare Workers privacy); the
+  route stays live but unlinked meanwhile. Then point the
+  `harmonics-dance-of-planets` entry/writeup at `/dance-of-planets/` with the
+  right `location`, and verify the live route and a real phone. The writeup itself remains the next content
+  pass. Details: FFFX `projects/dance-of-planets/documentation/TODO.md`.
 
 ## Next bounded content pass
 
@@ -47,13 +56,17 @@ Completion below means committed implementation, not a verified live deployment.
     (`daf2c4b`, `9f2d646`, `4b7ef4e`); this is an asset/CV finish, not a rewrite.
 - [ ] **Write the Dance of Planets writeup in FFFX.** The interactive tool is
   done (launch step above); what remains is the writeup page (Dance of Venus,
-  the code, captured visuals) replacing the untracked stub
-  `docs/tools-and-libraries/harmonics-dance-of-planets.md`. Not urgent, but
+  the code, captured visuals) replacing the placeholder stub
+  `docs/tools-and-libraries/harmonics-dance-of-planets.md` (now tracked,
+  FFFX `4ae8755`). Not urgent, but
   next in line after the launch. Commit filled sources before promotion.
-- [ ] **Publish Island Generator in FFFX.** Integrate the existing
-  implementation, select example images, and write its explanatory page; it
-  still needs its canonical page/registry entry. Commit filled sources before
-  promotion.
+- [ ] **Finish publishing Island Generator in FFFX.** The implementation is now
+  a substantial v5.8.1 project under `projects/island-generator/`, with captures,
+  documentation, and deployment through the shared project-copy step.
+  README/FILE-MANIFEST wiring done (FFFX `5f27d3d`); its registry/landing entry
+  is **on hold until `#147`**, same as Dance of Planets. Then decide
+  whether it gets a separate narrative page, select examples, and verify the
+  live route plus phone/HiDPI/export behaviour.
 - [ ] **Finish Lenticular next.** Complete remaining tool code and DOM controls,
   then add the embed, examples, and explanatory project page.
 - [ ] **Turn the Branching Narrative/Twine page from stub into a real entry.**
@@ -80,13 +93,6 @@ Completion below means committed implementation, not a verified live deployment.
 - [ ] **Dualize the Cabinet boats and redraw them in side view.** Replace the
   current boat treatment with the requested dual/side-view artwork while
   preserving their flow-field motion, theme legibility, scale, and performance.
-- [ ] **Rework island-label overflow and background glow (`#145`).** Long entry
-  names still spill too far beyond their islands, and the background treatment
-  needs another visual pass. Test wrapping, measured scaling, or another
-  width-aware treatment without breaking the existing tagline line.
-- [ ] **Make the non-hover label glow match its section colour.** Keep hover
-  emphasis distinct, but derive each label's ambient/background glow from its
-  owning section rather than applying one generic non-hover colour.
 - [ ] **Restore the dragon baseline.** Identify whether the missing baseline is
   artwork, styling, clipping, or positioning; restore it consistently in the
   editable landing source and promoted build.
@@ -106,14 +112,14 @@ Completion below means committed implementation, not a verified live deployment.
   Make Cabinet, Bookshelf, and FFFX visibly link to both sibling worlds. Audit
   return links in Cabinet's eight assembled destinations and Bookshelf's SciFi,
   Asimov, and Christie projects, which do not inherit MkDocs navigation.
-- [ ] **Bring sibling deployment checks up to parity.** Require Bookshelf
-  standalone entry points, reject assembly collisions, and validate both
-  siblings' active destinations and generated data before upload.
-  Several FFFX WIP page sources are untracked and absent from a clean clone;
-  resolve those before public promotion. Both sibling working trees currently
-  contain changes: Bookshelf TSV/generated landing edits, and FFFX section,
-  documentation, and untracked project-page edits. Review and commit coherent
-  source/generated sets; do not assume untracked pages exist in a clean clone.
+- [x] **Sibling deployment checks brought up to parity** (2026-10-02;
+  Bookshelf `2aaff79`, FFFX `2a16cb7`): strict build, generated-content drift
+  check, `projects/*/` entry-point and MkDocs-collision rejection, and a ported
+  `tools/validate-deployment.js` in both. FFFX's seven untracked placeholder
+  pages (live 404s from wip landing cards) committed first (`4ae8755`).
+  Bookshelf's uncommitted TSV/generated set is left for the Bookshelf
+  maintenance pass. Note: its re-added `my-writings` row would now fail
+  deployment, since `/my-writings/` no longer exists there.
 - [ ] **Remove the manual Copy-config paste bottleneck (`#141`).** Within the
   existing localhost-tool boundary, add a narrow confirmed write/apply path for
   `landing-v3/pasted-config.json`; preserve preview and explicit confirmation.
@@ -135,6 +141,11 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Recently completed - keep out of the work queue
 
+- [x] **Island-label overflow and resting glow completed** (`cd886cf` through
+  `27b39a0`, documented through `1fd454b`): non-hover glows now use each
+  section's colour, with later white-core/paler-glow refinements. Entry labels
+  fit and wrap within available island room, can settle off-centre when useful,
+  split year titles predictably, and prefer open sea rather than nearby straits.
 - [x] **Homepage top band given colour and texture** (`7eda448`, `eca9c91`):
   was hardcoded white; now fixed light cream (not theme-driven -- non-medieval
   seas are dark) with a seeded sepia ripple-dash tile. See `README.md`'s
@@ -169,6 +180,10 @@ Completion below means committed implementation, not a verified live deployment.
 - [x] **Source-of-truth notes corrected** (`47ab009`, `cb40b16`).
 - [x] **Historical ledger reconciled** (`442ff95`, `50eab7e`, `a241ca3`).
 - [x] **FFFX's inherited `scifi asimov` deploy loop removed** (`d723f74`).
+- [x] **FFFX static-project deployment generalized** (`e0226a8`): the
+  `projects/*/` copy loop now publishes Dance of Planets and Island Generator
+  while excluding project documentation. Public registry/writeup integration
+  remains active above.
 - [x] **My Writings moved from Bookshelf to Cabinet** (Cabinet `39a2adb`,
   Bookshelf `117a2cc`); Favourite Poetry and British Poetry Workshop remain.
 - [x] **Cloudflare Web Analytics rolled out beyond Cabinet (`#135/#136`)**

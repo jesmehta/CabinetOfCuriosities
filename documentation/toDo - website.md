@@ -242,7 +242,11 @@ Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pag
 
 **Milestones**
 
-- [ ] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
+- [x] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
+  Completed 2026-09-26 in
+  `documentation/backend-and-deploy/private-repository-migration-audit.md`;
+  it identifies the six anonymous clone dependencies and the three-world raw
+  TSV/sitemap dependency. Recheck immediately before migration if repos change.
 - [ ] 2. Compare GitHub Pro vs Cloudflare (and alternatives if warranted): **cost, capabilities, limitations, migration effort and maintenance**.
 - [ ] 3. Apply the decision rule and select the deployment/access-control architecture.
 - [ ] 4. Prototype private-repo deployment with one low-risk site/repo.
@@ -294,13 +298,15 @@ Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pag
 
 ## FFFX — structure and deployment
 
-Audited again 2026-09-16 against `form-follows-fx` at committed HEAD `351fb1f`,
+Audited again 2026-10-01 against `form-follows-fx` at committed HEAD `6ac3e3a`,
 while preserving its existing modified and untracked files.
 
 - [x] **FFFX strict build passes.** Commit `351fb1f` fixed Circle Packing's six
   image paths and malformed YouTube link. Reverified with
   `mkdocs build --strict` on 2026-09-16.
-- [ ] **Commit the in-progress content set coherently.** The tracked generated
+- [x] **Commit the in-progress content set coherently.** **Done, 2026-10-02
+  (`4ae8755`)**: the seven untracked placeholder pages committed; a clean
+  clone now builds every route the landing page advertises. The tracked generated
   landing data already names the new portal routes, while several matching
   Markdown files/folders are untracked. Commit source TSV, generated output,
   pages, and documentation together after review so a clean clone contains
@@ -311,7 +317,13 @@ while preserving its existing modified and untracked files.
   manifest and validation (Cabinet's `content/external-repos.tsv` +
   `tools/assemble-external.js` is a ready template) rather than
   reintroducing hand-written per-repo steps.
-- [ ] **Add deployment/content validation.** Check that each `status: true` or
+- [x] **Add a generic static-project copy step.** **Done, 2026-09-30
+  (`e0226a8`)**: FFFX now copies every `projects/*/` directory to the public
+  root while excluding its Markdown/documentation. Dance of Planets and Island
+  Generator therefore have a deployment path; registry, writing, validation,
+  and live-route checks remain separate open work.
+- [x] **Add deployment/content validation.** **Done, 2026-10-02 (`2a16cb7`)**:
+  Cabinet's checks ported (see Bookshelf's CI parity item). Check that each `status: true` or
   `wip` internal TSV href has a source page, generated TSV output is current,
   the strict MkDocs build passes, and required landing assets exist before the
   Pages artifact is uploaded. Cabinet's `tools/validate-deployment.js` (`#84`,
@@ -344,11 +356,15 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   TSV/generated landing data, and retained MkDocs nav on `/christie/`.
   Reverified with a strict Bookshelf build and assembled entry-point check on
   2026-09-16.
-- [ ] **Validate assembled project entry points.** The workflow copies every
+- [x] **Validate assembled project entry points.** **Done, 2026-10-02
+  (`2aaff79`)**: the copy loop now rejects a missing `index.html` and a
+  MkDocs-path collision. The workflow copied every
   `projects/*/` directory without checking for `index.html`; this allowed the
   Christie mismatch. Require an entry point and any essential assets for every
   copied project, and reject destination collisions with MkDocs output.
-- [ ] **Avoid deploying project-internal research files by default.** The broad
+- [x] **Avoid deploying project-internal research files by default.** **Done,
+  2026-09-30 (`bdddbe9`)**: each project's `documentation/` and any `.md` file
+  are dropped at copy time. The broad
   recursive copy publishes project documentation, conversations, source data,
   and superseded prototypes along with runtime assets. Define a publishable
   subtree or per-project manifest instead.
@@ -362,7 +378,9 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   not inherit MkDocs navigation.
   **Confirmed still missing, 2026-09-16**: direct grep of this repo found
   zero links back to `cabinetofcuriosities.in` anywhere, same as FFFX.
-- [ ] **Add CI parity checks.** Run strict MkDocs, regenerate/compare landing
+- [x] **Add CI parity checks.** **Done, 2026-10-02 (`2aaff79`)**, with
+  `tools/validate-deployment.js` covering the `/scifi/`, `/asimov/`, and
+  `/christie/` routes via their TSV/nav hrefs. Run strict MkDocs, regenerate/compare landing
   data, validate active hrefs, and smoke-test `/scifi/`, `/asimov/`, and the
   chosen Christie route in the assembled artifact.
 - [ ] **Recover the original SciFi and Asimov conversation records if still
@@ -410,23 +428,13 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   questions (what "100%" means in the SVG's own coordinate space, whether
   the toggle persists, where the control sits relative to the compass
   rose).
-- [ ] `#145` — entry/island names that spill well beyond their island's
-  boundary (raised 2026-09-23: "especially say 50% or more of the text is
-  outside the island"). No design decided yet. Island labels are
-  single-line, fixed-size `<text>` with no width-aware sizing at all (see
-  `#37`'s own note: no label-vs-label collision-avoidance either, unlike
-  the compass rose's labels, which already dodge via `getBBox()`) — this
-  is the same underlying gap showing up as label-vs-*island* overflow
-  instead of label-vs-label collision. Open questions to resolve before
-  building anything: wrap long titles onto a second line (interacts with
-  the existing tagline second-line mechanism — a title that's already
-  two lines plus a tagline is a third), shrink font-size per-label based
-  on measured width vs. the island's radius, cap title length at content
-  authoring time instead, or accept overflow for small islands and only
-  fix it above some severity threshold. Needs a concrete technical plan,
-  same as `#143`, before implementation.
-  Now also recorded in the historical numbered ledger; it is no longer a
-  website-only todo (`5012d45`, ledger reconciliation 2026-09-24).
+- [x] `#145` — **entry/island overflow and background treatment completed,
+  2026-10-01** (`c88e61d`..`27b39a0`, documentation through `1fd454b`).
+  Labels now use measured room, restrained two-line wrapping, line-work
+  knockout, optional off-centre placement, predictable year splitting, and
+  strait avoidance that prefers open sea. The resting glow was also changed
+  to each section's colour (`cd886cf`) and refined with a white core and paler
+  ambient treatment (`347a57a`, `9bf4df6`, `616baee`).
 - [ ] `#68` — make the MkDocs visual system feel like the landing map. Treat as
   a real design pass; the first pale-accent attempt was rejected.
 - [ ] `#139/#140` — scope dragon and boat management controls before building

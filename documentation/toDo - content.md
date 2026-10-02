@@ -1,8 +1,8 @@
 # ToDo — Content
 
 Current Cabinet content and information-architecture work. Reconciled again
-2026-09-24 through fetched Cabinet `origin/main` `9f8185d`, Bookshelf `eda5c8e`,
-and FFFX `a49c771`. Original audit
+2026-10-01 through Cabinet `acb5d16`, Bookshelf `bdddbe9`,
+and FFFX `6ac3e3a`. Original audit
 2026-09-12
 against:
 
@@ -236,8 +236,8 @@ published yet.
 | Oblique Strategies | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
 | SSD Creative Coding 2025–26 | Live external | Yes | **External:** year-specific gallery present; content maturity not re-audited here | Verified current destination. |
 | 100 Gradients | WIP | Hidden | **Growing collection, stub page:** roughly twelve gradients already exist | Gather and present the existing set as a coherent first release, then grow it in later spurts without treating “100” as a prerequisite for publication. |
-| Dance of Planets | WIP | Hidden | **Implemented project, stub page:** code exists; page is ~47 words and untracked | Embed the working project, collect example images, and add the explanatory write-up before publication. |
-| Island Generator | Absent | No | **Implemented project, not integrated:** code exists outside the current FFFX registry/tree | Add TSV metadata and a canonical page, embed it, collect example images, and write the surrounding explanation. |
+| Dance of Planets | WIP | Hidden | **Implemented and deployable project, stub page:** v3.0 lives under `projects/dance-of-planets/`; FFFX's project-copy workflow publishes it, but the ~47-word page remains untracked and the public registry is not wired to the tool | Add registry/tool wiring, collect example images, write the explanatory page, and verify the live route/device behaviour. |
+| Island Generator | Absent | No | **Substantive implemented and deployable project, not publicly integrated:** v5.8.1, captures, and project documentation live under `projects/island-generator/`; the shared deploy step copies it, but no FFFX registry/page points to it | Add TSV/landing metadata and repo documentation, decide on the surrounding narrative page, select examples, and verify the live route/device/export behaviour. |
 | Lenticular Image Generator | WIP | Hidden | **Nearly implemented tool, stub page:** code is almost done; page is ~38 words and untracked | Finish the tool, add DOM controls, then create the surrounding page with an embed, examples, and explanatory copy. |
 | Mandala Generator | WIP | Hidden | **Duplicate stub:** same underlying project as Cabinet's filled Dot Mandala Tool | Cabinet/WebTech is canonical because this is a web tool rather than generative artwork. Remove the FFFX portal or make it an explicit cross-link; do not create a duplicate FFFX write-up. |
 | Windows of Berlin | WIP | Hidden | **Existing project, stub page:** substantial work exists | Keep canonical in FFFX; create better exports and animated GIFs, select examples, and write the project page around them. |
@@ -252,8 +252,11 @@ FFFX content order:
 
 - [x] Circle Packing repaired and verified under a strict FFFX build (`351fb1f`);
   now the sole copy, Cabinet's duplicate retired with a redirect (`b667bc2`).
-- [ ] Then publish Dance of Planets and Island Generator: both are already
-  coded and need embedding, image examples, and write-ups rather than invention.
+- [ ] Then finish public integration for Dance of Planets and Island Generator.
+  Both project folders are now copied into the deployed artifact (`e0226a8`),
+  but their FFFX registry/landing wiring, visitor-facing writing/examples, and
+  live/device checks remain. Island Generator has advanced to v5.8.1; do not
+  describe it as merely an external or early implementation.
 - [ ] Complete Lenticular next when its remaining code and DOM controls are
   ready; treat the surrounding page as part of finishing the tool.
 - [ ] Build Genuary as an intentionally growing collection: publish a coherent
@@ -346,8 +349,9 @@ Bookshelf content order:
   Packing, then integrate the already-coded Dance of Planets and Island
   Generator with embeds, examples, and write-ups. Complete the nearly-coded
   Lenticular Generator—with DOM controls and its surrounding page—as the fifth.
-  Island Generator is absent from the current repo/TSV but is confirmed existing
-  work, not a speculative proposal. Particle Systems remains a placeholder.
+  Island Generator is present in the repo at v5.8.1 and deployable, but remains
+  absent from the TSV/landing and visitor-facing docs. Particle Systems remains
+  a placeholder.
 - [ ] **Bookshelf: expose its appropriate live density on the custom landing.**
   Golden Age SF, Asimov, and Favourite Poetry belong there; Favourite Poetry is
   awaiting review/commit of its pending custom-landing card. My Writings has
