@@ -346,48 +346,20 @@ while preserving its existing modified and untracked files.
   Admin Dash retain separate parsing paths; share validation logic so editor
   acceptance and production generation cannot drift.
 
-## Bookshelf — structure and deployment
+## Bookshelf — structure and deployment (summary)
 
-Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
-`117a2cc`, plus modified TSVs and generated landing data.
+Detail: Bookshelf's [`documentation/toDo - website.md`](../../TheBookshelfOfCuriosities/documentation/toDo%20-%20website.md).
+Done so far: Christie routing, CI parity checks and entry-point validation,
+project research files kept out of deploys, Favourite Poetry card.
 
-- [x] **Christie publication routing fixed.** Commit `28fe92a` made
-  `/christie/` canonical, created `projects/christie/index.html`, updated the
-  TSV/generated landing data, and retained MkDocs nav on `/christie/`.
-  Reverified with a strict Bookshelf build and assembled entry-point check on
-  2026-09-16.
-- [x] **Validate assembled project entry points.** **Done, 2026-10-02
-  (`2aaff79`)**: the copy loop now rejects a missing `index.html` and a
-  MkDocs-path collision. The workflow copied every
-  `projects/*/` directory without checking for `index.html`; this allowed the
-  Christie mismatch. Require an entry point and any essential assets for every
-  copied project, and reject destination collisions with MkDocs output.
-- [x] **Avoid deploying project-internal research files by default.** **Done,
-  2026-09-30 (`bdddbe9`)**: each project's `documentation/` and any `.md` file
-  are dropped at copy time. The broad
-  recursive copy publishes project documentation, conversations, source data,
-  and superseded prototypes along with runtime assets. Define a publishable
-  subtree or per-project manifest instead.
-- [x] **Finish Bookshelf's pending custom-landing integration.** Review and
-  commit the Favourite Poetry TSV/generated-data changes coherently. My Writings
-  has already moved to Cabinet (`39a2adb`, Bookshelf `117a2cc`); do not restore
-  its Bookshelf pages, nav, or card. No redirect/breadcrumb is required.
-  **Done 2026-10-02 (Bookshelf `1880cc9`)**: Favourite Poetry card live, stray
-  `my-writings` row removed; strict build and assembled `validate-deployment.js` pass.
-- [ ] **Add explicit return links to Cabinet and FFFX.** No cross-world links
-  were found in Bookshelf's `docs/` or content registries. Also add a Bookshelf
-  home link inside the standalone SciFi, Asimov, and Christie projects, which do
-  not inherit MkDocs navigation.
-  **Confirmed still missing, 2026-09-16**: direct grep of this repo found
-  zero links back to `cabinetofcuriosities.in` anywhere, same as FFFX.
-- [x] **Add CI parity checks.** **Done, 2026-10-02 (`2aaff79`)**, with
-  `tools/validate-deployment.js` covering the `/scifi/`, `/asimov/`, and
-  `/christie/` routes via their TSV/nav hrefs. Run strict MkDocs, regenerate/compare landing
-  data, validate active hrefs, and smoke-test `/scifi/`, `/asimov/`, and the
-  chosen Christie route in the assembled artifact.
-- [ ] **Recover the original SciFi and Asimov conversation records if still
-  available.** README flags both as archival gaps; keep them inside their own
-  project folders, not top-level documentation.
+- [ ] Decide how landing-page blocks (ticker, text band, quotes, feature
+  blocks) are managed — order and wording; re-anchor the blocks pinned to
+  hidden sections (the Empire text band is currently invisible).
+- [ ] Return links to Cabinet/FFFX, including inside SciFi/Asimov/Christie.
+- [ ] Footer links (Cabinet / About / Index) are dead `#` links.
+- [ ] Regenerate Cabinet's sitemap after Bookshelf TSV changes.
+- [ ] Hygiene: `site/` in `.gitignore`, stale My Writings link, LF/CRLF.
+- [ ] Recover the original SciFi and Asimov conversation records.
 
 ## Later — visual and optional development
 

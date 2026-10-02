@@ -280,49 +280,21 @@ FFFX content order:
 - [ ] Add thumbnails/stills to new entries as part of publication, not as a
   later cleanup wave.
 
-## Bookshelf — verified content audit
+## Bookshelf — content (summary)
 
-The repo is materially richer than Cabinet's registry and the older shared
-conversation suggested. Bookshelf already has three standalone interactive
-projects, a large poetry archive, and several pieces of personal writing.
+Detail, plus a registry of every Bookshelf card, chip and ticker term with its
+meaning and origin: Bookshelf's [`documentation/toDo - content.md`](../../TheBookshelfOfCuriosities/documentation/toDo%20-%20content.md).
+Project fine-tuning stays in each project's own `projects/*/documentation/`.
 
-| Content | TSV / landing | MkDocs nav | Source state | Next action |
-|---|---|---|---|---|
-| Golden Age Science Fiction | Live | Yes | **Filled:** deployed standalone project | Maintain; use its own living `ToDo.md` for project refinements. |
-| Isaac Asimov | Live | Yes | **Filled but unfinished:** deployed standalone project | Finish the explicit priorities in `Readme_4_todo_decisions.md`; do not count integration work as content completion. |
-| Agatha Christie / Geography of Murder | `/christie/` consistently | Nav points `/christie/` | **Filled and reachable:** substantial timeline, Atlas and story work | Routing fixed in `28fe92a` and verified in an assembled strict build. Approximate location data can still receive a later editorial review. |
-| My Writings | **Migrated to Cabinet (2026-09-16)** | **Removed from Bookshelf MkDocs nav** | **Done:** now lives at Cabinet's `docs/writings/` | Moved 2026-09-16 — files, nav, and TSV rows now in Cabinet; removed from Bookshelf entirely. No redirect/breadcrumb was needed since the material was unlaunched. |
-| Favourite Poetry | **Live card (`1880cc9`)** | **Already live in MkDocs nav** | **Filled, live collection:** large anthology + workshop archive | Do not classify the collection as unpublished. Verify and commit only its pending custom-landing integration. Its short collection/long-poem indexes can remain concise if their scope and routes are clear. |
-| History of Design | Moved to Cabinet Writings | Cabinet nav | **Filled:** existing essay | Maintain in Cabinet, not Bookshelf; it is not a new P1 writing assignment. |
-| Graphic novels / comics essay | Moved to Cabinet Writings | Cabinet nav | **Filled text, presentation incomplete:** existing essay needs more images | Add images in Cabinet during its eventual presentation pass. A Bookshelf Comics collection is separate and non-priority. |
-| British Poetry Workshop | Inside Favourite Poetry | Yes | **Filled:** large existing archive | Improve discovery and framing rather than creating a replacement “British Canon Poetry” project. |
-| Clarke / More Authors | WIP, no href | No | **Absent:** no public destination established | Keep dormant until one bounded author treatment is ready. |
-| Kipling / Hamzanama | WIP, no href | No | **Concept only:** public-data cards, no destination | Valuable but research-heavy; do not use for quick density. |
-| Brief History of Comics / Indrajal | WIP, section hidden | No | **Concept only:** related filled essay exists elsewhere | Inventory reusable material, then choose one pilot before activating the section. |
-| Foundation Universe / Authors vs Books | WIP, no href | No | **Concept only:** no destination | Foundation can build on Asimov data; Authors vs Books waits for a defensible dataset. |
-
-Bookshelf content order:
-
-- [x] Migrate My Writings cleanly to Cabinet (`39a2adb`, Bookshelf `117a2cc`).
-  Bookshelf nav/pages removed; no redirects/breadcrumbs needed for unlaunched work.
-- [x] Verify and commit Favourite Poetry's pending custom-landing integration.
-  This is separate from the completed My Writings migration. **Done 2026-10-02
-  (Bookshelf `1880cc9`).**
-- [x] Make Christie reachable (`28fe92a`).
-- [ ] Review Christie's approximate/placeholder fictional-location positions
-  when undertaking its next editorial pass; routing completion is not research completion.
-- [ ] Finish Asimov's project-level next priorities after checking its existing
-  open questions; preserve the curated rather than exhaustive bibliography
-  decision.
-- [ ] Give Golden Age Science Fiction its documented publication pass: mobile
-  layout, table readability, public-facing language, list-source values,
-  `type_path` consistency, and link/date review. Keep author/work isolation and
-  radial same-year expansion as separate experiments, not release blockers.
-- [ ] Later, add more images to the existing graphic-novels essay. It can seed
-  Comics & Sequential Art, but keep the section non-priority until that
-  presentation pass or another dedicated comics entry is ready.
-- [ ] Improve collection-level framing and navigation for the poetry archive;
-  the problem is discoverability, not lack of poems.
+- Live: Golden Age SF, Asimov, Christie, Favourite Poetry (new Poetry section).
+  WIP: Clarke, My Reading Journey, Mapping the Hamzanama. Restructured
+  2026-10-02 (Bookshelf `022dda1`, `4662557`).
+- [ ] Bring two of Clarke / My Reading Journey / Hamzanama to live.
+- [ ] Resolve stale and unexplained ticker terms and dataviz chips.
+- [ ] Christie: editorial review of approximate fictional-location positions.
+- [ ] Asimov and Golden Age SF project passes (their own project todos).
+- [ ] Favourite Poetry: collection-level framing and navigation.
+- [ ] Later: Comics section, seeded by Cabinet's graphic-novels essay.
 
 ## P1 — maximum visible gain
 
