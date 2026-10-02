@@ -66,25 +66,37 @@ Next up -
 Kutch trip - Kirigami Workout
 Kutch Trip - Doors and Guj Type more data
 FFFX - clean up look and feel
+Add more Author pages to Bookshelf
+Bookshelf TLC ?
+Goodreads data analysis 
+
+Before Kutch :
+Cloudflare workers etc, or not to take the risk ?
+
 
 Change the boats of Cabinet - dualize them, side view
 
-Text island overflow/background glow needs more work
-Non hover Background glow to match the section colour
+~~Text island overflow/background glow needs more work~~
+~~Non hover Background glow to match the section colour~~
 
-Cabinet Of Curiosities top band - colour missing ? Needs texture
+~~Cabinet Of Curiosities top band - colour missing ? Needs texture~~
 
 Dragon base line missing ?
 
-first colour band off coast - too dark and too far from the bkg cream
+~~first colour band off coast - too dark and too far from the bkg cream~~
 
 Cellphone versions of all 3 worlds
 
 Compass moon - some visual hint to click there
 
-Need helper text on the rhs top - Hover over the islands or sections, click to enter and go from map to territory. Find the easter eggs.
+~~Need helper text on the rhs top - Hover over the islands or sections, click to enter and go from map to territory. Find the easter eggs.~~
 
 Dragons stay too long in one place - ? check if feel is true in data/code
 
 Write Fab23 and Fab25
 
+FFFX Galleries todo
+- Genuary
+
+FFFX projects
+- lenticular
