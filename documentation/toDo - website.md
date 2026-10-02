@@ -338,7 +338,11 @@ while preserving its existing modified and untracked files.
 - [ ] **Reconcile the three `WORLD-SYSTEMS.md` copies.** FFFX's copy still
   describes old asset paths and says Bookshelf uses `docs/index.md`; both repos
   now use standalone `docs/index.html`. Update all worlds in one synchronized
-  pass, preserving genuine schema differences.
+  pass, preserving genuine schema differences. Cover every recent update,
+  common or world-specific. **Input, 2026-10-02:** Bookshelf's copy was
+  updated ahead of the others for its blocks TSV (`bookshelf-data.js`
+  retired, `beforeSection` replaced by shared `order`) and carries a note
+  saying so — fold it in during this pass.
 - [ ] **Decide whether `mkdocs-section-index` is needed yet.** It is installed
   and pinned, but no FFFX nav section currently has an index page that uses it.
   Keep it only if near-term section hubs justify the dependency.
