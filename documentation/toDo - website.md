@@ -322,7 +322,8 @@ project research files kept out of deploys, Favourite Poetry card.
 - [ ] Footer links (Cabinet / About / Index) are dead `#` links.
 - [x] Regenerate Cabinet's sitemap after Bookshelf TSV changes (done
   2026-10-02; re-run after future pushed Bookshelf TSV changes).
-- [ ] Hygiene: `site/` in `.gitignore`, stale My Writings link, LF/CRLF.
+- [x] Hygiene: `site/` in `.gitignore`, stale My Writings link, LF/CRLF
+  `.gitattributes` (Bookshelf `cf3907f`, `031f2d8`, `197e2e1`, 2026-10-02).
 - [ ] Recover the original SciFi and Asimov conversation records.
 
 ## Later — visual and optional development
