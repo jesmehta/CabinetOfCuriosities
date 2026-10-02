@@ -245,6 +245,7 @@ Project fine-tuning stays in each project's own `projects/*/documentation/`.
   (pull out of Student Work; gated).
 - [ ] Legacy Processing Archive: clean-up project, out of the showcase.
 - [ ] Inventory Flow Fields, Perlin Noise, Plotter Work, Code to Fabrication.
+- [ ] Mine old notebooks and sketchbooks for FFFX ideas.
 - [ ] After `#147`: Dance of Planets and Island Generator pages and wiring.
 
 ## Bookshelf — content (summary)
