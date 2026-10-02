@@ -230,14 +230,19 @@ Project fine-tuning stays in each project's own `projects/*/documentation/`.
 - Live: Vera Molnar, Circle Packing Library, plus three external SSD entries
   (Prompt Generator, Oblique Strategies, Student Work 2025–26). WIP: 13
   placeholder cards (72% of the page); eight of eleven sections hold only WIP.
-- **Gated on `#147` (protect code):** Mandala Generator, Lenticular, Dance of
-  Planets, Island Generator — no new landing/TSV/nav wiring until the
-  private-source decision.
+- **Gated on `#147` (protect code):** Mandala Generator (Cabinet's Dot
+  Mandala Tool too, once the gate exists), Lenticular, Dance of Planets,
+  Island Generator, Live Webcam Filters — no new landing/TSV/nav wiring until
+  the private-source decision.
 - [ ] Rebalance WIP: keep the *Next up* cards (Genuary, Windows of Berlin,
   Image Filters), hide the rest and any emptied sections.
 - [ ] Next up: Genuary, Windows of Berlin, Image Filters (mid); Lenticular
   code (publication gated).
-- [ ] Mandala: does the gate cover Cabinet's already-public Dot Mandala Tool?
+- [ ] Vera Molnar: add images (only the writeup is up).
+- [ ] Ideas confirmed 2026-10-02 (gallery/writeup forms in FFFX's registry):
+  4-Bar Fringe, Photopixels, Type Transitions, Truchet Tiles, Crystal
+  Deposition (BioMimicry × Code), circle-packing plays, Live Webcam Filters
+  (pull out of Student Work; gated).
 - [ ] Legacy Processing Archive: clean-up project, out of the showcase.
 - [ ] Inventory Flow Fields, Perlin Noise, Plotter Work, Code to Fabrication.
 - [ ] After `#147`: Dance of Planets and Island Generator pages and wiring.
