@@ -292,7 +292,7 @@ projects, a large poetry archive, and several pieces of personal writing.
 | Isaac Asimov | Live | Yes | **Filled but unfinished:** deployed standalone project | Finish the explicit priorities in `Readme_4_todo_decisions.md`; do not count integration work as content completion. |
 | Agatha Christie / Geography of Murder | `/christie/` consistently | Nav points `/christie/` | **Filled and reachable:** substantial timeline, Atlas and story work | Routing fixed in `28fe92a` and verified in an assembled strict build. Approximate location data can still receive a later editorial review. |
 | My Writings | **Migrated to Cabinet (2026-09-16)** | **Removed from Bookshelf MkDocs nav** | **Done:** now lives at Cabinet's `docs/writings/` | Moved 2026-09-16 — files, nav, and TSV rows now in Cabinet; removed from Bookshelf entirely. No redirect/breadcrumb was needed since the material was unlaunched. |
-| Favourite Poetry | **Custom landing card uncommitted** | **Already live in MkDocs nav** | **Filled, live collection:** large anthology + workshop archive | Do not classify the collection as unpublished. Verify and commit only its pending custom-landing integration. Its short collection/long-poem indexes can remain concise if their scope and routes are clear. |
+| Favourite Poetry | **Live card (`1880cc9`)** | **Already live in MkDocs nav** | **Filled, live collection:** large anthology + workshop archive | Do not classify the collection as unpublished. Verify and commit only its pending custom-landing integration. Its short collection/long-poem indexes can remain concise if their scope and routes are clear. |
 | History of Design | Moved to Cabinet Writings | Cabinet nav | **Filled:** existing essay | Maintain in Cabinet, not Bookshelf; it is not a new P1 writing assignment. |
 | Graphic novels / comics essay | Moved to Cabinet Writings | Cabinet nav | **Filled text, presentation incomplete:** existing essay needs more images | Add images in Cabinet during its eventual presentation pass. A Bookshelf Comics collection is separate and non-priority. |
 | British Poetry Workshop | Inside Favourite Poetry | Yes | **Filled:** large existing archive | Improve discovery and framing rather than creating a replacement “British Canon Poetry” project. |
@@ -305,8 +305,9 @@ Bookshelf content order:
 
 - [x] Migrate My Writings cleanly to Cabinet (`39a2adb`, Bookshelf `117a2cc`).
   Bookshelf nav/pages removed; no redirects/breadcrumbs needed for unlaunched work.
-- [ ] Verify and commit Favourite Poetry's pending custom-landing integration.
-  This is separate from the completed My Writings migration.
+- [x] Verify and commit Favourite Poetry's pending custom-landing integration.
+  This is separate from the completed My Writings migration. **Done 2026-10-02
+  (Bookshelf `1880cc9`).**
 - [x] Make Christie reachable (`28fe92a`).
 - [ ] Review Christie's approximate/placeholder fictional-location positions
   when undertaking its next editorial pass; routing completion is not research completion.

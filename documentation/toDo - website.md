@@ -368,10 +368,12 @@ Rechecked 2026-09-16 against `TheBookshelfOfCuriosities` at committed HEAD
   recursive copy publishes project documentation, conversations, source data,
   and superseded prototypes along with runtime assets. Define a publishable
   subtree or per-project manifest instead.
-- [ ] **Finish Bookshelf's pending custom-landing integration.** Review and
+- [x] **Finish Bookshelf's pending custom-landing integration.** Review and
   commit the Favourite Poetry TSV/generated-data changes coherently. My Writings
   has already moved to Cabinet (`39a2adb`, Bookshelf `117a2cc`); do not restore
   its Bookshelf pages, nav, or card. No redirect/breadcrumb is required.
+  **Done 2026-10-02 (Bookshelf `1880cc9`)**: Favourite Poetry card live, stray
+  `my-writings` row removed; strict build and assembled `validate-deployment.js` pass.
 - [ ] **Add explicit return links to Cabinet and FFFX.** No cross-world links
   were found in Bookshelf's `docs/` or content registries. Also add a Bookshelf
   home link inside the standalone SciFi, Asimov, and Christie projects, which do

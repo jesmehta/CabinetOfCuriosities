@@ -79,10 +79,11 @@ Completion below means committed implementation, not a verified live deployment.
   Start with Dot Mandala, MiniLoom, and About; first confirm and document the
   landing renderer's expected thumbnail path/format, then update source TSV and
   regenerate/promote rather than editing generated output directly.
-- [ ] **Finish Favourite Poetry's Bookshelf landing integration.** Review and
+- [x] **Finish Favourite Poetry's Bookshelf landing integration.** Review and
   commit the pending TSV/generated-card changes as one coherent set. The
   collection is already filled and live in MkDocs; this is discoverability,
-  not a new writing project.
+  not a new writing project. **Done 2026-10-02 (Bookshelf `1880cc9`)** — stray
+  `my-writings` row dropped; strict build + assembled validation pass.
 - [ ] **Publish one intentionally growing FFFX collection as the next tranche.**
   Choose Genuary (generated images already exist) or 100 Gradients (roughly a
   dozen completed works), curate a coherent initial release, and design it to
