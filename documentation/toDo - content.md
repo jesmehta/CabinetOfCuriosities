@@ -221,64 +221,26 @@ observations, not a claim that every build or hosted page was rechecked today.
 - [x] **Add the requested FabLab RIIDL links** (`65ce285`): Fab hub links
   the 2024/2025/2026 lab pages separately from personal programme documentation.
 
-## FFFX — verified content audit
+## FFFX — content (summary)
 
-Direct repo inspection found two substantive native pages, three live external
-entries, and thirteen short internal placeholders. Several of those placeholders
-are part of an uncommitted maintainer expansion and must not be described as
-published yet.
+Detail, plus a registry of every FFFX section and card with its meaning,
+origin and your call: FFFX's [`documentation/toDo - content.md`](../../form-follows-fx/documentation/toDo%20-%20content.md).
+Project fine-tuning stays in each project's own `projects/*/documentation/`.
 
-| Content | TSV / landing | MkDocs nav | Source state | Next action |
-|---|---|---|---|---|
-| Vera Molnar | Live | Yes | **Filled:** ~322 words | Keep live; add stronger imagery/context only if it improves the study. |
-| Circle Packing Library | Live | Yes | **Filled and technically clean:** ~941 words | Six image paths and the malformed YouTube link were fixed in `351fb1f`; strict FFFX build passes. **Done 2026-09-16:** Cabinet WebTech now cross-links here (`8e7e502`), and Cabinet's own frozen duplicate page is deleted with a redirect to this page (`b667bc2`) — this is now the single maintained copy. |
-| Prompt Generator | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
-| Oblique Strategies | Live external | Yes | **External:** destination present; content maturity not re-audited here | Verified structural entry; add cross-world context only if useful. |
-| SSD Creative Coding 2025–26 | Live external | Yes | **External:** year-specific gallery present; content maturity not re-audited here | Verified current destination. |
-| 100 Gradients | WIP | Hidden | **Growing collection, stub page:** roughly twelve gradients already exist | Gather and present the existing set as a coherent first release, then grow it in later spurts without treating “100” as a prerequisite for publication. |
-| Dance of Planets | WIP | Hidden | **Implemented and deployable project, stub page:** v3.0 lives under `projects/dance-of-planets/`; FFFX's project-copy workflow publishes it, but the ~47-word page remains untracked and the public registry is not wired to the tool | Add registry/tool wiring, collect example images, write the explanatory page, and verify the live route/device behaviour. |
-| Island Generator | Absent | No | **Substantive implemented and deployable project, not publicly integrated:** v5.8.1, captures, and project documentation live under `projects/island-generator/`; the shared deploy step copies it, but no FFFX registry/page points to it | Add TSV/landing metadata and repo documentation, decide on the surrounding narrative page, select examples, and verify the live route/device/export behaviour. |
-| Lenticular Image Generator | WIP | Hidden | **Nearly implemented tool, stub page:** code is almost done; page is ~38 words and untracked | Finish the tool, add DOM controls, then create the surrounding page with an embed, examples, and explanatory copy. |
-| Mandala Generator | WIP | Hidden | **Duplicate stub:** same underlying project as Cabinet's filled Dot Mandala Tool | Cabinet/WebTech is canonical because this is a web tool rather than generative artwork. Remove the FFFX portal or make it an explicit cross-link; do not create a duplicate FFFX write-up. |
-| Windows of Berlin | WIP | Hidden | **Existing project, stub page:** substantial work exists | Keep canonical in FFFX; create better exports and animated GIFs, select examples, and write the project page around them. |
-| Genuary | WIP | Hidden | **Growing collection, stub page:** some work and generated images already exist | Gather the images, publish a curated initial collection, and design the page for later additions without implying it will ever be finally closed. |
-| Flow Fields / Perlin Noise | WIP | Hidden | **Uncollected existing work, stub pages:** ~51 words each, untracked | Locate and curate the completed experiments, then articulate what connects each family before nav promotion. |
-| Plotter Work / Code to Fabrication | WIP | Hidden | **Uncollected existing work, stub pages:** ~43/~62 words, untracked | Collect outputs, choose representative examples, and explain the relationship between code, process, and physical result. |
-| Image Filters | WIP | Hidden | **Existing, growing project; stub page:** substantial work exists and more will be added over time | Gather the present outputs into a strong initial selection, document the filter approaches, and publish it as an extensible collection rather than waiting for a final endpoint. |
-| Particle Systems | WIP | Hidden | **Stub:** ~42 words | Parked: planning explicitly says no real work yet. |
-| Legacy Processing Archive | WIP | Hidden | **Stub:** ~64 words | Keep parked and do not turn archive archaeology into current-launch scope. |
-
-FFFX content order:
-
-- [x] Circle Packing repaired and verified under a strict FFFX build (`351fb1f`);
-  now the sole copy, Cabinet's duplicate retired with a redirect (`b667bc2`).
-- [ ] Then finish public integration for Dance of Planets and Island Generator.
-  Both project folders are now copied into the deployed artifact (`e0226a8`),
-  but their FFFX registry/landing wiring, visitor-facing writing/examples, and
-  live/device checks remain. Island Generator has advanced to v5.8.1; do not
-  describe it as merely an external or early implementation.
-- [ ] Complete Lenticular next when its remaining code and DOM controls are
-  ready; treat the surrounding page as part of finishing the tool.
-- [ ] Build Genuary as an intentionally growing collection: publish a coherent
-  initial selection from the images already generated, then extend it over time.
-- [ ] Treat 100 Gradients similarly: publish the roughly twelve completed works
-  as the first deliberate tranche, then add future spurts without leaving the
-  page hidden until all one hundred exist.
-- [ ] Keep Dot Mandala canonical in Cabinet/WebTech. Remove or redirect FFFX's
-  Mandala Generator placeholder instead of maintaining two project pages.
-- [ ] Finish Windows of Berlin's presentation layer: better exports, animated
-  GIFs, a selected sequence, and explanatory text around the existing work.
-- [ ] Build Image Filters as another intentionally growing project: curate what
-  already exists into a useful initial page, then allow future filters and
-  examples to accumulate without withholding the current work.
-- [ ] Inventory Flow Fields, Perlin Noise, Plotter Work, and Code to Fabrication.
-  These are not empty ideas; their work exists but is not yet collected or
-  articulated into pages.
-- [ ] Give the first promoted family a short section hub only when it helps
-  orientation; do not activate ten thin categories merely because TSV rows and
-  folders exist.
-- [ ] Add thumbnails/stills to new entries as part of publication, not as a
-  later cleanup wave.
+- Live: Vera Molnar, Circle Packing Library, plus three external SSD entries
+  (Prompt Generator, Oblique Strategies, Student Work 2025–26). WIP: 13
+  placeholder cards (72% of the page); eight of eleven sections hold only WIP.
+- **Gated on `#147` (protect code):** Mandala Generator, Lenticular, Dance of
+  Planets, Island Generator — no new landing/TSV/nav wiring until the
+  private-source decision.
+- [ ] Rebalance WIP: keep the *Next up* cards (Genuary, Windows of Berlin,
+  Image Filters), hide the rest and any emptied sections.
+- [ ] Next up: Genuary, Windows of Berlin, Image Filters (mid); Lenticular
+  code (publication gated).
+- [ ] Mandala: does the gate cover Cabinet's already-public Dot Mandala Tool?
+- [ ] Legacy Processing Archive: clean-up project, out of the showcase.
+- [ ] Inventory Flow Fields, Perlin Noise, Plotter Work, Code to Fabrication.
+- [ ] After `#147`: Dance of Planets and Island Generator pages and wiring.
 
 ## Bookshelf — content (summary)
 
@@ -319,12 +281,10 @@ Project fine-tuning stays in each project's own `projects/*/documentation/`.
   Dragons-only selection from archive/Drive; preserve attribution/permissions,
   add context, and promote its WIP status once real gallery content exists.
 - [ ] **FFFX: reach five substantive entries.** Retain Vera Molnar and Circle
-  Packing, then integrate the already-coded Dance of Planets and Island
-  Generator with embeds, examples, and write-ups. Complete the nearly-coded
-  Lenticular Generator—with DOM controls and its surrounding page—as the fifth.
-  Island Generator is present in the repo at v5.8.1 and deployable, but remains
-  absent from the TSV/landing and visitor-facing docs. Particle Systems remains
-  a placeholder.
+  Packing, then add the *Next up* three: Genuary, Windows of Berlin, Image
+  Filters. **Revised 2026-10-02:** Dance of Planets, Island Generator and
+  Lenticular are gated on `#147` (protect code), so they follow once the
+  private-source decision lands. Detail: FFFX's `toDo - content.md`.
 - [ ] **Bookshelf: expose its appropriate live density on the custom landing.**
   Golden Age SF, Asimov, and Favourite Poetry belong there; Favourite Poetry is
   awaiting review/commit of its pending custom-landing card. My Writings has

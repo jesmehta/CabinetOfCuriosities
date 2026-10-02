@@ -68,7 +68,8 @@ Completion below means committed implementation, not a verified live deployment.
   whether it gets a separate narrative page, select examples, and verify the
   live route plus phone/HiDPI/export behaviour.
 - [ ] **Finish Lenticular next.** Complete remaining tool code and DOM controls,
-  then add the embed, examples, and explanatory project page.
+  then add the embed, examples, and explanatory project page. Publication is
+  gated on `#147` (protect code), same as Dance of Planets.
 - [ ] **Turn the Branching Narrative/Twine page from stub into a real entry.**
   Confirm the experience still works, add a concise explanation and at least
   one representative screenshot, then review its live metadata/navigation.
@@ -85,9 +86,10 @@ Completion below means committed implementation, not a verified live deployment.
   not a new writing project. **Done 2026-10-02 (Bookshelf `1880cc9`)** — stray
   `my-writings` row dropped; strict build + assembled validation pass.
 - [ ] **Publish one intentionally growing FFFX collection as the next tranche.**
-  Choose Genuary (generated images already exist) or 100 Gradients (roughly a
-  dozen completed works), curate a coherent initial release, and design it to
-  accept later additions without waiting for a fictional final endpoint.
+  **Genuary** (your call 2026-10-02: Genuary next up, 100 Gradients later;
+  generated images already exist): curate a coherent initial release, and
+  design it to accept later additions without waiting for a fictional final
+  endpoint.
 
 ## Next website pass
 

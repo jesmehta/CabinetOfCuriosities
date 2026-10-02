@@ -296,59 +296,18 @@ Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pag
   underscore-prefixed Cabinet asset convention should be adopted by Bookshelf
   and FFFX or documented as a permanent Cabinet-only exception.
 
-## FFFX — structure and deployment
+## FFFX — structure and deployment (summary)
 
-Audited again 2026-10-01 against `form-follows-fx` at committed HEAD `6ac3e3a`,
-while preserving its existing modified and untracked files.
+Detail: FFFX's [`documentation/toDo - website.md`](../../form-follows-fx/documentation/toDo%20-%20website.md).
+Done so far: strict build, `projects/*/` copy step, placeholder pages
+tracked, CI parity checks (`2a16cb7`), `projects/` documented.
 
-- [x] **FFFX strict build passes.** Commit `351fb1f` fixed Circle Packing's six
-  image paths and malformed YouTube link. Reverified with
-  `mkdocs build --strict` on 2026-09-16.
-- [x] **Commit the in-progress content set coherently.** **Done, 2026-10-02
-  (`4ae8755`)**: the seven untracked placeholder pages committed; a clean
-  clone now builds every route the landing page advertises. The tracked generated
-  landing data already names the new portal routes, while several matching
-  Markdown files/folders are untracked. Commit source TSV, generated output,
-  pages, and documentation together after review so a clean clone contains
-  every route the landing page advertises.
-- [x] **Remove the inherited `scifi asimov` deploy-copy loop.** **Done,
-  2026-09-16 (`d723f74`)**: step removed entirely from FFFX's `deploy.yml`.
-  If FFFX later assembles standalone projects, introduce an explicit
-  manifest and validation (Cabinet's `content/external-repos.tsv` +
-  `tools/assemble-external.js` is a ready template) rather than
-  reintroducing hand-written per-repo steps.
-- [x] **Add a generic static-project copy step.** **Done, 2026-09-30
-  (`e0226a8`)**: FFFX now copies every `projects/*/` directory to the public
-  root while excluding its Markdown/documentation. Dance of Planets and Island
-  Generator therefore have a deployment path; registry, writing, validation,
-  and live-route checks remain separate open work.
-- [x] **Add deployment/content validation.** **Done, 2026-10-02 (`2a16cb7`)**:
-  Cabinet's checks ported (see Bookshelf's CI parity item). Check that each `status: true` or
-  `wip` internal TSV href has a source page, generated TSV output is current,
-  the strict MkDocs build passes, and required landing assets exist before the
-  Pages artifact is uploaded. Cabinet's `tools/validate-deployment.js` (`#84`,
-  substantially extended 2026-09-16) is a ready template for the same
-  checks here — not yet ported to FFFX.
-- [ ] **Add explicit return links to Cabinet and Bookshelf.** No cross-world
-  destination was found in FFFX's `docs/` or content data. Make sibling-world
-  navigation visible on the FFFX world page and add FFFX-home links to any
-  standalone projects that do not inherit MkDocs navigation.
-  **Confirmed still missing, 2026-09-16**: direct grep of this repo found
-  zero links back to `cabinetofcuriosities.in` anywhere.
-- [ ] **Reconcile the three `WORLD-SYSTEMS.md` copies.** FFFX's copy still
-  describes old asset paths and says Bookshelf uses `docs/index.md`; both repos
-  now use standalone `docs/index.html`. Update all worlds in one synchronized
-  pass, preserving genuine schema differences. Cover every recent update,
-  common or world-specific. **Input, 2026-10-02:** Bookshelf's copy was
-  updated ahead of the others for its blocks TSV (`bookshelf-data.js`
-  retired, `beforeSection` replaced by shared `order`) and carries a note
-  saying so — fold it in during this pass.
-- [ ] **Decide whether `mkdocs-section-index` is needed yet.** It is installed
-  and pinned, but no FFFX nav section currently has an index page that uses it.
-  Keep it only if near-term section hubs justify the dependency.
-- [ ] **Unify TSV parsing when next touching the editor.** The CLI generator and
-  Admin Dash retain separate parsing paths; share validation logic so editor
-  acceptance and production generation cannot drift.
+- [ ] Clean up FFFX's look and feel (your "Next up" note); deliberate phone
+  version.
+- [ ] Return links to Cabinet/Bookshelf.
+- [ ] Decide on `mkdocs-section-index`; unify the editor/generator TSV parsing.
+- [ ] Hygiene: missing favicon, LF/CRLF.
+- [ ] `WORLD-SYSTEMS.md` reconcile — tracked in *High-value easy wins* above (`#28/#85`), all three repos.
 
 ## Bookshelf — structure and deployment (summary)
 
