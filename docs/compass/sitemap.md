@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-09-23 09:02 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-10-02 02:46 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
@@ -80,12 +80,12 @@ _Data Visualisations_
 - 🟢 [Site map](https://cabinetofcuriosities.in/compass/sitemap/)
 
 ### 🟢 Fab _(section, no standalone page)_
-_Fab Academy, Fabricademy, and reflections from Fab Academy cohorts._
+_Fab Academy, Fabricademy, and reflections from the Fab conferences -- Fab23 Bhutan and Fab25 Czechia._
 
 - 🟢 [Fabacademy](https://fabacademy.org/2023/labs/riidl/students/jesal-mehta/)
 - 🟢 [Fabricademy](https://class.textile-academy.org/2026/jesal-mehta/)
-- 🔴 Fab 23 Bhutan _(no page yet)_
-- 🔴 Fab 26 Czechia _(no page yet)_
+- 🔴 [Fab 23 Bhutan](https://cabinetofcuriosities.in/fab/fab23-bhutan/)
+- 🔴 Fab 25 Czechia _(no page yet)_
 
 ## fffx (Form follows f(x))
 Live site: https://fffx.cabinetofcuriosities.in/
@@ -148,14 +148,12 @@ Live site: https://bookshelf.cabinetofcuriosities.in/
 
 - 🟢 [Golden Age Science Fiction](https://bookshelf.cabinetofcuriosities.in/scifi/)
 - 🟢 [Isaac Asimov](https://bookshelf.cabinetofcuriosities.in/asimov/)
+- 🟢 [Agatha Christie](https://bookshelf.cabinetofcuriosities.in/christie/)
 - 🟡 Arthur C. Clarke _(no page yet)_
-- 🟡 Agatha Christie _(no page yet)_
-- 🟡 More Authors _(no page yet)_
 
-### 🟢 Empire, Adventure & The Great Game _(section, no standalone page)_
+### 🔴 Empire, Adventure & The Great Game _(section, no standalone page)_
 
-- 🟡 Kipling, Kim & The Great Game _(no page yet)_
-- 🟡 Mapping the Hamzanama _(no page yet)_
+- 🔴 Kipling, Kim & The Great Game _(no page yet)_
 
 ### 🔴 Comics & Sequential Art _(section, no standalone page)_
 
@@ -164,9 +162,12 @@ Live site: https://bookshelf.cabinetofcuriosities.in/
 
 ### 🟢 Book Data & Visualisation _(section, no standalone page)_
 
-- 🟡 Foundation Universe _(no page yet)_
-- 🟢 [Geography of Murder](https://bookshelf.cabinetofcuriosities.in/christie/)
-- 🟡 Authors vs Books _(no page yet)_
+- 🟡 My Reading Journey _(no page yet)_
+- 🟡 Mapping the Hamzanama _(no page yet)_
+
+### 🟢 Poetry _(section, no standalone page)_
+
+- 🟢 [Favourite Poetry](https://bookshelf.cabinetofcuriosities.in/favorite-poems/)
 
 ### 🔴 Writings on Reading _(section, no standalone page)_
 
