@@ -61,19 +61,44 @@ Also a better origami engine incorporating all the flatfold theoremsn etc
 
 Why - Easy tool to quickly generate origami geometry, atleast the recurring basic ones, also understand the actual math and apply it -->
 
-Next up - 
+Next up Projects/do some in Kutch - 
 
-Kutch trip - Kirigami Workout
-Kutch Trip - Doors and Guj Type more data
 FFFX - clean up look and feel
-Add more Author pages to Bookshelf
-Bookshelf TLC ?
-Goodreads data analysis 
+~~Bookshelf TLC ?~~
+
+Add more Author pages to Bookshelf  
+
+- clarke biblio,  
+- check agatha biblio
+- check asimov biblio
+- do asimov biblio round 2 - deeper, all books ?
+  
+Kirigami Workout
+Goodreads data analysis - needs goodreads data export
+Photography data selfie - needs photos data export
+Lenticular tool page
+Windows of Berlin workout + gather pics and notes
+Plan Biomimicry section for fffx
+Warli explorer - complete - needs my 6 orig images + design language close
+lighting optics simulator
+
+
+FFFX Galleries - upload images then writeup
+Vera Molnar
+Genuary
+
+Pull Video filters out of ssd coding page and onto its own tool page
+
+
+
+Reviews
+Kutch Trip - Doors and Guj Type more data
 
 Before Kutch :
 Cloudflare workers etc, or not to take the risk ?
+dupatta pics before kutch
 
-
+Small tasks :
 Change the boats of Cabinet - dualize them, side view
 
 ~~Text island overflow/background glow needs more work~~
@@ -94,9 +119,3 @@ Compass moon - some visual hint to click there
 Dragons stay too long in one place - ? check if feel is true in data/code
 
 Write Fab23 and Fab25
-
-FFFX Galleries todo
-- Genuary
-
-FFFX projects
-- lenticular
