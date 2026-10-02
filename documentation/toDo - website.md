@@ -352,12 +352,13 @@ Detail: Bookshelf's [`documentation/toDo - website.md`](../../TheBookshelfOfCuri
 Done so far: Christie routing, CI parity checks and entry-point validation,
 project research files kept out of deploys, Favourite Poetry card.
 
-- [ ] Decide how landing-page blocks (ticker, text band, quotes, feature
-  blocks) are managed — order and wording; re-anchor the blocks pinned to
-  hidden sections (the Empire text band is currently invisible).
+- [x] Landing-page blocks (ticker, bands, quotes, feature blocks) now in
+  `content/bookshelf-blocks.tsv` with an Admin Dash Blocks tab; own `order`
+  replaces section pinning (Bookshelf `307e162`, `4fa8f29`, 2026-10-02).
 - [ ] Return links to Cabinet/FFFX, including inside SciFi/Asimov/Christie.
 - [ ] Footer links (Cabinet / About / Index) are dead `#` links.
-- [ ] Regenerate Cabinet's sitemap after Bookshelf TSV changes.
+- [x] Regenerate Cabinet's sitemap after Bookshelf TSV changes (done
+  2026-10-02; re-run after future pushed Bookshelf TSV changes).
 - [ ] Hygiene: `site/` in `.gitignore`, stale My Writings link, LF/CRLF.
 - [ ] Recover the original SciFi and Asimov conversation records.
 
