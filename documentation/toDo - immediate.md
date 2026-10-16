@@ -31,6 +31,14 @@ Completion below means committed implementation, not a verified live deployment.
 
 ## Quick win - small correction with visible value
 
+- [ ] **Replicate the new `D:\FabWorld\CLAUDE.md` additions on the home
+  terminal.** Three new sections added 2026-10-14: commit in logical hunks
+  (one coherent change per commit), a standard documentation shape (intent /
+  design decisions / changelog / bolded conversation snippets) for "document
+  this project" requests, and always ask clarifying questions rather than
+  guess. Same pattern as the earlier no-coauthor sync below: copy into
+  `F:\__SnowCrash\CLAUDE.md`, adjusted for that machine's roots if needed.
+
 - [ ] **Finish Fab metadata and presentation.** Fab23's captioned image
   chronology and the Fab hub now exist (`e6f3275`, `65ce285`, `966b81b`). The
   hidden `fab-23`/`fab-25` (formerly `fab-26`) TSV records are now corrected
