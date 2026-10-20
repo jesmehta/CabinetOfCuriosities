@@ -240,6 +240,13 @@ Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pag
 - A **hybrid setup is acceptable** if public sites are simplest on GitHub Pages while restricted tools are substantially easier through Cloudflare.
 - Do not migrate infrastructure merely for theoretical advantages: choose the **lowest-cost, lowest-maintenance option that satisfies the actual privacy, deployment and access-control requirements**.
 
+**Progress (2026-10-20):** Dot Mandala pilot complete: private source repo, public site on Cloudflare
+**Workers with Static Assets** (`https://dot-mandala-generator.jesmehta.workers.dev`), automatic deploy on push,
+owner-tested rollback and saved-artifact restore, Cabinet links switched. Hosting choice for plain static sites:
+Workers with Static Assets rather than Cloudflare Pages (Cloudflare's recommended starting point for new projects;
+same Git integration). Details: the `DotMandalaGenerator` repo (`DEPLOYMENT.md`, `cloudflare migration/migration-log.md`).
+Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-repo assembly).
+
 **Milestones**
 
 - [x] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
@@ -248,15 +255,24 @@ Migrate the Cabinet ecosystem from public GitHub repositories serving GitHub Pag
   it identifies the six anonymous clone dependencies and the three-world raw
   TSV/sitemap dependency. Recheck immediately before migration if repos change.
 - [ ] 2. Compare GitHub Pro vs Cloudflare (and alternatives if warranted): **cost, capabilities, limitations, migration effort and maintenance**.
+  *2026-10-20: compared qualitatively; Cloudflare (GitHub Free + Workers) chosen to pilot; cost treated as secondary.
+  Free-tier limits at full scale not yet checked.*
 - [ ] 3. Apply the decision rule and select the deployment/access-control architecture.
-- [ ] 4. Prototype private-repo deployment with one low-risk site/repo.
+  *2026-10-20: deployment chosen for static sites (Workers with Static Assets, Git integration).
+  Still open: Cabinet build location (Cloudflare build vs GitHub Actions artifact), access control.*
+- [x] 4. Prototype private-repo deployment with one low-risk site/repo.
+  *Done 2026-10-20: Dot Mandala (see Progress above).*
 - [ ] 5. Verify custom domain, SSL, analytics, build process and automatic deployment.
+  *2026-10-20, Dot Mandala: build, automatic deploy (also from the private repo) and HTTPS on workers.dev verified.
+  Custom domain and analytics not exercised (none used).*
 - [ ] 6. Prototype/test access-controlled deployment with a non-public tool.
 - [ ] 7. Document deployment and recovery/rollback procedure.
+  *2026-10-20: done and owner-tested for Dot Mandala (`DEPLOYMENT.md` in that repo); template for the other sites.*
 - [ ] 8. Migrate Cabinet and verify all internal/external links.
 - [ ] 9. Migrate Bookshelf, FFFX and other appropriate sites.
 - [ ] 10. Move Origami/Kirigami tools to restricted deployment as appropriate.
 - [ ] 11. Make source repositories private only after replacement deployments are verified.
+  *2026-10-20: `DotMandalaGenerator` made private after verification (1 repository so far).*
 - [ ] 12. Final audit: domains, links, analytics, access control, deployment automation, costs and repo visibility.
 
 ## High-value easy wins
