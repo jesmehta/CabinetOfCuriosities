@@ -234,6 +234,8 @@ Project fine-tuning stays in each project's own `projects/*/documentation/`.
   Mandala Tool too, once the gate exists), Lenticular, Dance of Planets,
   Island Generator, Live Webcam Filters — no new landing/TSV/nav wiring until
   the private-source decision.
+  - Dot Mandala: frontend/algorithm split (protected-tool pattern) written up
+    as a to-do, 2026-10-20 — see `DotMandalaGenerator/documentation/toDo.md`.
 - [ ] Rebalance WIP: keep the *Next up* cards (Genuary, Windows of Berlin,
   Image Filters), hide the rest and any emptied sections.
 - [ ] Next up: Genuary, Windows of Berlin, Image Filters (mid); Lenticular
