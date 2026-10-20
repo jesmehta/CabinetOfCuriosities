@@ -1,0 +1,44 @@
+Tue Oct 20 21:00:59 UTC 2026
+https://cloudflare-dns.com/dns-query cabinetofcuriosities.in NS: "may.ns.cloudflare.com." "west.ns.cloudflare.com." 
+https://cloudflare-dns.com/dns-query cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" 
+https://cloudflare-dns.com/dns-query www.cabinetofcuriosities.in NS: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query www.cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query www.cabinetofcuriosities.in CNAME: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query www.cabinetofcuriosities.in DS: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query bookshelf.cabinetofcuriosities.in NS: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query bookshelf.cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query bookshelf.cabinetofcuriosities.in CNAME: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query bookshelf.cabinetofcuriosities.in DS: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query fffx.cabinetofcuriosities.in NS: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query fffx.cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query fffx.cabinetofcuriosities.in CNAME: "jesmehta.github.io." 
+https://cloudflare-dns.com/dns-query fffx.cabinetofcuriosities.in DS: "jesmehta.github.io." 
+https://dns.google/resolve cabinetofcuriosities.in NS: "ns33.domaincontrol.com." "ns34.domaincontrol.com." 
+https://dns.google/resolve cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" 
+https://dns.google/resolve www.cabinetofcuriosities.in NS: "jesmehta.github.io." 
+https://dns.google/resolve www.cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" "jesmehta.github.io." 
+https://dns.google/resolve www.cabinetofcuriosities.in CNAME: "jesmehta.github.io." 
+https://dns.google/resolve www.cabinetofcuriosities.in DS: "jesmehta.github.io." 
+https://dns.google/resolve bookshelf.cabinetofcuriosities.in NS: "jesmehta.github.io." 
+https://dns.google/resolve bookshelf.cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" "jesmehta.github.io." 
+https://dns.google/resolve bookshelf.cabinetofcuriosities.in CNAME: "jesmehta.github.io." 
+https://dns.google/resolve bookshelf.cabinetofcuriosities.in DS: "jesmehta.github.io." 
+https://dns.google/resolve fffx.cabinetofcuriosities.in NS: "jesmehta.github.io." 
+https://dns.google/resolve fffx.cabinetofcuriosities.in A: "185.199.108.153" "185.199.109.153" "185.199.110.153" "185.199.111.153" "jesmehta.github.io." 
+https://dns.google/resolve fffx.cabinetofcuriosities.in CNAME: "jesmehta.github.io." 
+https://dns.google/resolve fffx.cabinetofcuriosities.in DS: "jesmehta.github.io." 
+--- HTTPS
+200 ip=185.199.111.153 ssl=0 redirect= https://cabinetofcuriosities.in/
+200 ip=185.199.111.153 ssl=0 redirect= https://cabinetofcuriosities.in/teaching/
+200 ip=185.199.111.153 ssl=0 redirect= https://cabinetofcuriosities.in/writings/
+200 ip=185.199.111.153 ssl=0 redirect= https://cabinetofcuriosities.in/sitemap.xml
+301 ip=185.199.111.153 ssl=0 redirect=https://cabinetofcuriosities.in/ https://www.cabinetofcuriosities.in/
+301 ip=185.199.111.153 ssl=0 redirect=https://cabinetofcuriosities.in/teaching/ https://www.cabinetofcuriosities.in/teaching/
+200 ip=185.199.109.153 ssl=0 redirect= https://bookshelf.cabinetofcuriosities.in/
+200 ip=185.199.109.153 ssl=0 redirect= https://bookshelf.cabinetofcuriosities.in/favorite-poems/general/kipling--if/
+200 ip=185.199.109.153 ssl=0 redirect= https://bookshelf.cabinetofcuriosities.in/scifi/
+200 ip=185.199.109.153 ssl=0 redirect= https://bookshelf.cabinetofcuriosities.in/asimov/
+404 ip=185.199.109.153 ssl=0 redirect= https://bookshelf.cabinetofcuriosities.in/no-such-page-xyz/
+200 ip=185.199.108.153 ssl=0 redirect= https://fffx.cabinetofcuriosities.in/
+200 ip=185.199.108.153 ssl=0 redirect= https://fffx.cabinetofcuriosities.in/deep-studies/100-gradients/
+200 ip=185.199.108.153 ssl=0 redirect= https://fffx.cabinetofcuriosities.in/genuary/genuary-2024/

@@ -119,6 +119,22 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
   - Zone acceptance must include Cloudflare *Active*, resolver convergence, HTTPS **and deep paths**, all before
     Phase C.
   - The v2 introduction's "no step executed" line must be marked superseded. Done, in the same commit as this entry.
+- **2026-10-20 21:00 UTC (02:30 IST) — zone acceptance (step 8): PASS, except Cloudflare *Active*, which the owner
+  still has to confirm.** Evidence: `evidence/zone-acceptance-20261020T2100Z.txt`, produced by
+  `evidence/zone-acceptance.sh`.
+  - **Resolvers:** at 21:00:34 the resolver watch saw both Cloudflare DoH and Google DNS return
+    `may`/`west.ns.cloudflare.com` (Google answered from `173.245.59.247`, a Cloudflare nameserver).
+  - **Google cache:** a Google query 25 s later still returned the cached `ns33`/`ns34`. Google's cache nodes differ,
+    so this is expected for up to the old 3600 s NS TTL. It is harmless, because both authorities hold identical
+    records.
+  - **Records** at both resolvers are unchanged: apex A ×4 `185.199.108–111.153`; `www`, `bookshelf`, `fffx` CNAME →
+    `jesmehta.github.io`. **No apex DS.** The script's NS/DS lines for subdomains just echo the CNAME chain; they are
+    not delegations.
+  - **HTTPS** (all `ssl_verify_result=0`, all served by GitHub Pages `185.199.x`):
+    - apex `/`, `/teaching/`, `/writings/`, `/sitemap.xml`: 200
+    - `www` `/` and `/teaching/`: 301 to the same path on the apex (as before)
+    - Bookshelf `/`, `/favorite-poems/general/kipling--if/`, `/scifi/`, `/asimov/`: 200; an unknown path: 404
+    - FFFX `/`, `/deep-studies/100-gradients/`, `/genuary/genuary-2024/`: 200
 
 ## Execution runbook v2 (2026-10-21 01:45 IST) — with the Codex DNS review safeguards
 
