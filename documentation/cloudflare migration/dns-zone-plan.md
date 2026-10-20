@@ -64,3 +64,14 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
 2. Complete record list from GoDaddy (step 1). Anything used outside these three sites (email forwarding, other
    services, verification records)?
 3. Approval to start steps 2–5 (the zone move) as a separate change before step 6.
+
+## Progress
+
+- **2026-10-21 01:35 IST — step 1 done.** The owner exported the zone from GoDaddy (export dated 2026-10-20 20:03:13):
+  [`dns-export-godaddy-20261020.txt`](dns-export-godaddy-20261020.txt), kept here as the rollback record. It contains
+  **exactly** the records found by public lookup and nothing else: apex A ×4 (TTL 600), CNAME `bookshelf`, `fffx`, `www`
+  → `jesmehta.github.io` and `_domainconnect` → `_domainconnect.gd.domaincontrol.com` (TTL 3600), NS
+  `ns33`/`ns34.domaincontrol.com`. No email, TXT or other records. Open question 2 is answered: the domain serves only
+  the three sites.
+- **Step 0 (renewal): in progress** (owner, 2026-10-21). Must be complete before 2026-11-03.
+- Steps 2–8: not started; awaiting owner approval (open question 3).
