@@ -47,7 +47,7 @@ My interests, personal as well as teaching, range or intersect across the shifti
 
 ![](../_images/about/MaterialHz.jpg)  
 
-- **Digital play** - [**procedural generation**](https://www.behance.net/jesmehta#), [**quirky webpages**](https://jesmehta.github.io/DotMandalaGenerator/), [**bots**](https://jesmehta.github.io/CabinetOfCuriosities/traceryBots/), [**data art**](https://www.jesalmehta.com/explorations/coding-a-population-density-visual/), new media
+- **Digital play** - [**procedural generation**](https://www.behance.net/jesmehta#), [**quirky webpages**](https://dot-mandala-generator.jesmehta.workers.dev/), [**bots**](https://jesmehta.github.io/CabinetOfCuriosities/traceryBots/), [**data art**](https://www.jesalmehta.com/explorations/coding-a-population-density-visual/), new media
 
 ![](../_images/about/p5CollageHz.jpg)  
 

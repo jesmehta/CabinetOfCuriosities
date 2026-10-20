@@ -7,11 +7,11 @@ I also allows you to save the image, export the data and reload the data at a la
 Have fun !
 
 <!-- <div class="radial-embed-wrapper">
-  <iframe src="https://jesmehta.github.io/DotMandalaGenerator/"
+  <iframe src="https://dot-mandala-generator.jesmehta.workers.dev/"
           title="Radial Symmetry Canvas"></iframe>
 </div> -->
 
-# [🔗 Open Fullscreen](https://jesmehta.github.io/DotMandalaGenerator/)
+# [🔗 Open Fullscreen](https://dot-mandala-generator.jesmehta.workers.dev/)
 
 
 ## About the Dot Mandala Generator
