@@ -104,6 +104,16 @@ Before implementing Cabinet, re-audit the **current** workflow and dependencies 
 
 ## 8. Sign-ups, access and secrets
 
+### Existing domains and GoDaddy (owner context, 20 October 2026)
+
+The owner reports the worlds use existing custom domains configured through GoDaddy. Preserve public hostnames during hosting migration. The documented addresses are `cabinetofcuriosities.in` (apex), `bookshelf.cabinetofcuriosities.in` and `fffx.cabinetofcuriosities.in` (subdomains of that same domain). Verify live DNS and dashboard configuration; repository domain references do not prove the authoritative DNS provider or current routing.
+
+Domain registration can remain with GoDaddy: transferring the registrar is not required. For the proposed Workers Custom Domains approach, the parent domain needs an active Cloudflare DNS zone. If nameservers already point to Cloudflare, change only the relevant site's routing at cutover. If GoDaddy currently hosts DNS, plan a separate owner-approved nameserver migration to Cloudflare first: inventory/export and reproduce existing records, including GitHub site records, email/MX, SPF/DKIM/DMARC, verification and other services; handle DNSSEC correctly; verify the zone before changing individual site destinations. Moving DNS for the shared zone affects all its subdomains, even while their sites remain on GitHub Pages.
+
+Once a site's temporary `workers.dev` deployment passes tests, attach its existing hostname as a Worker Custom Domain and replace conflicting old site records through the approved cutover process. Do not assume adding a GoDaddy CNAME to a `workers.dev` address is equivalent to configuring a Worker Custom Domain. Confirm HTTPS, redirects, deep links and other services. Keep a record of previous DNS settings and recoverable artifacts. No DNS, nameserver or registrar change is authorized by this note.
+
+References: [Workers Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/), [Cloudflare DNS full setup](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/).
+
 - Use the existing Cloudflare account where possible; no second Cloudflare account is inherently necessary.
 - Authorise Cloudflare's GitHub integration for **selected repositories**, not blanket access unless genuinely required.
 - Cloudflare Pages/Workers configuration and custom-domain DNS changes require account access and deliberate approval.
