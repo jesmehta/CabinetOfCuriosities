@@ -91,11 +91,40 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
   Public DNS at 20:42 UTC: delegation still `ns33`/`ns34.domaincontrol.com`; **no DS** (Cloudflare DoH and Google DNS).
   Cloudflare's prompt to replace GoDaddy's two nameservers is Phase B step 6, which is **not done** and waits for owner
   approval.
+- **2026-10-21 ~02:17 IST — Phase B approved and step 6 done.** The owner approved Phase B ("Codex approves") and
+  changed the domain's *Nameservers* setting at GoDaddy to `may`/`west.ns.cloudflare.com`. GoDaddy's own DNS records
+  (including its SOA and NS entries) were left untouched as the rollback copy. At 20:47 UTC the registry (RDAP) still
+  listed `ns33`/`ns34` (last changed 20:08 UTC, the renewal), and public resolvers still returned the cached NS (TTL
+  3600). Waiting for the registry update and Cloudflare's *Active* status (step 7). Phase A record pushed as `ccb7856`.
+  Codex's approval of runbook v2 was relayed by the owner verbally. It is not yet in `dns-zone-codex-review.md`, which
+  is unchanged since `37ed3be`.
+- **~02:25 IST — both authorities answer identically (Codex gate 3, gate 5 partial).** Direct non-recursive queries
+  (PowerShell `Resolve-DnsName -NoRecursion`) for the apex, `www`, `bookshelf` and `fffx`:
+  - `ns33.domaincontrol.com` still serves the saved zone (A ×4 TTL 600; CNAMEs TTL 3600), so the GoDaddy rollback
+    copy is intact.
+  - `may` and `west.ns.cloudflare.com` both return the same A ×4 and CNAME → `jesmehta.github.io`, at TTL 300
+    (Cloudflare "Auto").
+  - The records are therefore unchanged across the switch. Previous TTLs: A 600 s, CNAME 3600 s; new TTLs 300 s.
+- **Registry delegation switched at 2026-10-20 20:49:57 UTC (02:19:57 IST)**, per the RDAP "last changed" event. RDAP
+  nameservers are now `may` and `west.ns.cloudflare.com`. Checks at 20:50 UTC:
+  - **DS still absent** (Cloudflare DoH and Google DNS).
+  - Public resolvers still return the cached `ns33`/`ns34` (NS TTL 3600), so up to about 1 h of mixed answers is
+    expected. Both authorities hold identical records, so either answer is correct.
+  - HTTPS, certificates valid (`ssl_verify_result=0`), all served by GitHub Pages `185.199.x`: apex **200**, `www`
+    **301** (GitHub's `www` → apex redirect, as before), `bookshelf` **200**, `fffx` **200**.
+  - A direct query to `ns3`/`ns4.registry.in` with `Resolve-DnsName` returned SERVFAIL (the tool cannot follow a TLD
+    referral), so RDAP is the registry evidence. Zone acceptance (step 8) is completed after the resolvers switch.
+- **Codex follow-up recorded 02:23:13 IST** in `dns-zone-codex-review.md`: **GO**, v2 meets the Phase B planning
+  gates. This supersedes the "not yet in the review file" note above. Codex asked for two things:
+  - Zone acceptance must include Cloudflare *Active*, resolver convergence, HTTPS **and deep paths**, all before
+    Phase C.
+  - The v2 introduction's "no step executed" line must be marked superseded. Done, in the same commit as this entry.
 
 ## Execution runbook v2 (2026-10-21 01:45 IST) — with the Codex DNS review safeguards
 
 Responds to [dns-zone-codex-review.md](dns-zone-codex-review.md) (gates 1–5 and the evidence list). Each phase needs owner
-approval; Claude Code records the evidence listed under "Record". **No step below has been executed.**
+approval; Claude Code records the evidence listed under "Record". *(At writing, 01:45 IST, no step below had been executed. Superseded: for current status see Progress above. Phase A and
+step 6 are done; acceptance is pending.)*
 
 **Pre-checks done 2026-10-21 01:43 IST (public):** renewal **confirmed**, registry expiry now **2031-11-03** (last changed
 2026-10-20 20:08 UTC); **no DS record** (DNSSEC off) at both Cloudflare's and Google's resolvers; delegation still
