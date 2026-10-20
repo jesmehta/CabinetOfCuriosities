@@ -152,10 +152,13 @@ def git_fetch(local_dir, branch, timeout):
     out its own connection timeout (~20s on Windows) despite the limit."""
     import tempfile
     env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GCM_INTERACTIVE="never")
+    # On Unix, give git its own process group (start_new_session) so a
+    # timeout can kill git *and* its helpers, as taskkill /T does on Windows.
     with tempfile.TemporaryFile(mode="w+") as err:
         proc = subprocess.Popen(
             ["git", "-C", local_dir, "fetch", "--quiet", "origin", branch],
             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=err, env=env,
+            start_new_session=(os.name != "nt"),
         )
         try:
             proc.wait(timeout=timeout)
@@ -164,7 +167,11 @@ def git_fetch(local_dir, branch, timeout):
                 subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             else:
-                proc.kill()
+                import signal
+                try:
+                    os.killpg(proc.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
             proc.wait()
             return f"timed out after {timeout:g}s"
         if proc.returncode == 0:

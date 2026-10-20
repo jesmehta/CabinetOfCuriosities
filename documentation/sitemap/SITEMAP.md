@@ -232,6 +232,16 @@ above), so reading it is the actual review step, not optional.
 
 ## Changelog
 
+### v2.1 — fetch timeout also bounded on Unix (2026-10-20)
+
+Codex review of v2.0: the timeout killed git's whole process tree on Windows (`taskkill /T`) but only the
+parent `git` on Unix, so network helpers (`git-remote-https`) could survive. `git_fetch()` now starts git
+in its own process group on Unix (`start_new_session`) and kills the group (`os.killpg`, SIGKILL) on timeout.
+**Verified on Unix** (WSL2 Ubuntu, Python 3.14.4, git 2.53): three clones with a blackhole remote and a 3 s
+timeout → 9.1 s total, three timeout warnings, sitemap written, no git/`git-remote-https` processes left.
+The Windows failure suite was rerun on the edited script: all pass. Evidence:
+`TheBookshelfOfCuriosities/cloudflare migration/evidence/c1-sitemap-unix-timeout-wsl-20261020.txt`.
+
 ### v2.0 — read sibling local clones instead of GitHub raw; freshness report (2026-10-20)
 
 **Need:** Bookshelf and FFFX are becoming private repositories (Cloudflare
