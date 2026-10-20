@@ -29,6 +29,7 @@ Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare mi
 - [ ] **10.** Audit MkDocs and the static gallery build. **Codex:** identify output directory, gallery assets, exhibits, navigation and absolute/relative paths.
 - [ ] **11.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement only required build changes; verify galleries, Markdown pages, thumbnails, static exhibits and unchanged AI-independent CMS operation.
 - [ ] **12.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a subsequent push and deployment.
+  - *Prerequisite before 13 (unnumbered; shared with FFFX 17 and Cabinet 23):* confirm whether GoDaddy is registrar only or also authoritative DNS for `cabinetofcuriosities.in`. Workers Custom Domains need an active Cloudflare DNS zone, so a separate, owner-approved move of the whole zone (all subdomains, email and verification records, DNSSEC) may be needed first. See notes §8, "Existing domains and GoDaddy". Not exercised by the Dot Mandala pilot (no custom domain).
 - [ ] **13.** Switch the Bookshelf subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, deep links and rollback.
 
 ## 4. FFFX (4)
