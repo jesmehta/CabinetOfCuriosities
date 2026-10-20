@@ -135,6 +135,14 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
     - `www` `/` and `/teaching/`: 301 to the same path on the apex (as before)
     - Bookshelf `/`, `/favorite-poems/general/kipling--if/`, `/scifi/`, `/asimov/`: 200; an unknown path: 404
     - FFFX `/`, `/deep-studies/100-gradients/`, `/genuary/genuary-2024/`: 200
+- **2026-10-21 02:42–03:03 IST — owner confirms the zone is Active; Phase C (Bookshelf) cut over.**
+  - Steps 11–12: the owner deleted the `bookshelf` CNAME, then added the Custom Domain on Worker
+    `bookshelf-of-curiosities` (Production only). A "No zones match" error cleared after a page reload.
+  - Gap of at most about 5 min (NXDOMAIN at 21:17:26 UTC; Cloudflare addresses at 21:22:37 UTC).
+  - Step 14 hostname acceptance: PASS, 220/220 byte-identical, TLS verified. Evidence and details are in Bookshelf
+    `cloudflare migration/migration-log.md` ("Custom domain cutover") and `evidence/custom-domain-cutover-20261020T2125Z.txt`.
+  - Apex, `www` and `fffx` are unchanged on GitHub Pages.
+  - Step 15 hold: runs until **2026-10-22 02:52 IST** at the earliest.
 
 ## Execution runbook v2 (2026-10-21 01:45 IST) — with the Codex DNS review safeguards
 
