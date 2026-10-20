@@ -74,4 +74,6 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
   `ns33`/`ns34.domaincontrol.com`. No email, TXT or other records. Open question 2 is answered: the domain serves only
   the three sites.
 - **Step 0 (renewal): in progress** (owner, 2026-10-21). Must be complete before 2026-11-03.
+  *Update 2026-10-21 01:38 IST: the owner reports the renewal is **done**. Public RDAP at 01:37 still showed expiry
+  2026-11-03 (registry data usually lags); re-check that the expiry has moved.*
 - Steps 2–8: not started; awaiting owner approval (open question 3).

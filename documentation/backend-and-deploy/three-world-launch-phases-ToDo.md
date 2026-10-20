@@ -2887,6 +2887,7 @@ owner-tested rollback and saved-artifact restore, Cabinet links switched. Hostin
 Workers with Static Assets rather than Cloudflare Pages (Cloudflare's recommended starting point for new projects;
 same Git integration). Details: the `DotMandalaGenerator` repo (`DEPLOYMENT.md`, `cloudflare migration/migration-log.md`).
 Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-repo assembly).
+**Bookshelf (2026-10-21):** shared build script, publication allowlists, Cloudflare preview `bookshelf-of-curiosities.jesmehta.workers.dev` live and byte-identical to local builds, automatic deploys, interaction and recovery tests done. Cabinet sitemap reads local clones (prerequisite done). Next: move the `cabinetofcuriosities.in` DNS zone from GoDaddy to Cloudflare (`documentation/cloudflare migration/dns-zone-plan.md`), then Bookshelf domain switch, then privatization. Detail: `TheBookshelfOfCuriosities/cloudflare migration/migration-log.md`.
 
 **Milestones**
 
