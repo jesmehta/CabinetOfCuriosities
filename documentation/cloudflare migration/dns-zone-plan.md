@@ -157,3 +157,18 @@ health.
 5. **Build-token scope** (Codex C6/C7): the dedicated "bookshelf-of-curiosities build token" has a dedicated name, but its
    permissions have not been inspected. Where it appears (*My Profile → API Tokens*, or the Worker's build settings),
    note its permissions. A narrower token is a separate, optional decision.
+
+### Owner answers (2026-10-21 ~01:55 IST)
+
+- **Q4 email:** the owner confirms **no email or other service** on `cabinetofcuriosities.in`. Combined with the export,
+  the zone serves only the three sites.
+- **Q5 build token:** the owner finds **nothing listed** under *My Profile → API Tokens* (nor under *Account API Tokens*).
+  Cloudflare's Workers Builds documentation (*Workers → CI/CD → Builds → Configuration*, read 2026-10-21) says an
+  automatically created build token is a **user token** with default permissions: Account Settings read, **Workers
+  Scripts edit, Workers KV Storage edit, Workers R2 Storage edit** (account-wide), **Workers Routes edit for all zones**,
+  User Details and Memberships read; managed under *My Profile → API Tokens*. So the dedicated
+  "bookshelf-of-curiosities build token" gives **separate revocation, not per-Worker isolation**. Once the zone is on
+  Cloudflare, these tokens can also edit Workers routes on it. The dashboard not listing the token contradicts the docs;
+  it is unexplained (possibly hidden as system-managed). Residual risk accepted for now: the tokens are held by
+  Cloudflare's build system and never stored in a repository. A narrower custom token remains an optional later
+  hardening step.
