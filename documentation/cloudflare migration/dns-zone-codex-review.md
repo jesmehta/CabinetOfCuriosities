@@ -41,3 +41,17 @@ Read-only local inspection of the plan, export, commits and Bookshelf R7–R11; 
 - [GitHub Pages custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site): hostname binding, DNS and propagation.
 
 No account mutation, DNS query, application execution, installation, commit, push or deployment was performed. This review and the companion Bookshelf entry are the only writes.
+
+## Follow-up — runbook v2 satisfies the Phase B planning gates
+
+**Recorded 2026-10-21 02:23:13 IST.** Reviewed runbook v2 (Cabinet `16fd540`), owner-answer update `a867692`, Phase A record `ccb7856`, and the current plan's additional switch/progress notes. This is a new written assessment now, not a claim that Codex had already reviewed v2 at 01:37 or independently approved the switch before it happened.
+
+**GO: v2 meets the earlier review's planning/preflight requirements for Phase B, the nameserver-only switch with unchanged application records.** The original hold was conditional on making those safeguards explicit; v2 does so. The recorded execution evidence supports that condition being met: application A/CNAME records only, no old GoDaddy SOA/apex NS copied, DNS-only status, DS rechecked, GoDaddy's saved zone still answering, and both assigned Cloudflare nameservers answering consistently. These results are recorded implementer/owner observations, not live DNS checks independently repeated by Codex in this follow-up.
+
+V2 also addresses the subsequent gates: explicit zone acceptance across resolvers/hostnames, Custom Domain and certificate preflight, a 24-hour Pages/binding retention period, and the post-privatization rollback boundary. Renewal is recorded as confirmed through 2031; the owner reports no other services. Dedicated build-token naming is correctly distinguished from per-Worker permissions.
+
+**Phase B execution is recorded as owner-performed; Phase B acceptance is still pending in the latest notes read.** Complete zone Active/delegation convergence and resolver/HTTPS/deep-path checks before Phase C. Cached GoDaddy answers are expected during the transition; identical application records at both providers support continuity. This note does not declare convergence complete, approve immediate hostname cutover/privatization, or replace the owner's authority for account actions.
+
+Minor record correction for Claude: the v2 introduction still says "No step below has been executed" although Progress records Phase A and the switch. Mark that sentence as the original runbook state or superseded. Preserve historical observations without presenting them as current status.
+
+Only this review file was changed. No DNS/account settings, commits or pushes were performed.
