@@ -1,7 +1,7 @@
 # Cloudflare Migration — 27-Step Checklist
 
 **Project:** Cabinet of Curiosities website ecosystem  
-**Status:** Dot Mandala pilot in progress (04–07 and 09 done; 08 pending). Tick items only after completion.  
+**Status:** Dot Mandala pilot complete (steps 04–09 complete 2026-10-20). Tick items only after completion.  
 Dot Mandala evidence: `DotMandalaGenerator` repo, local-only branch `migration-docs`, `cloudflare migration/migration-log.md`.  
 **Reference:** `cloudflare-migration-notes.md`  
 **Roles:** Codex audits and independently reviews; Claude Code implements and tests; owner approves account access, repository visibility, DNS and production changes.
@@ -20,7 +20,7 @@ Dot Mandala evidence: `DotMandalaGenerator` repo, local-only branch `migration-d
 - [x] **05.** Configure a Cloudflare deployment. **Claude Code:** prepare minimal required build/config changes and documentation; **owner:** approve GitHub integration and Cloudflare project creation. *Done 2026-10-20: Worker `dot-mandala-generator` via dashboard Git integration, GitHub app limited to this repo.*
 - [x] **06.** Test the temporary Cloudflare URL **and local preview**. Check controls, rendering, exports, asset paths and browser errors; confirm the generated output can be served independently; do not change live links. *Done 2026-10-20: https://dot-mandala-generator.jesmehta.workers.dev; HTTP + 36 browser checks pass; artifact byte-identical to local and live Pages.*
 - [x] **07.** Test automatic deployment from GitHub. Make a harmless change and verify a fresh build; push only with approval. *Done 2026-10-20: push `c16b3b9` auto-deployed version `737b8257`.*
-- [ ] **08.** Make the repository private and test another deployment. **Owner:** change visibility only after the Cloudflare pilot works; note that GitHub Free may stop the original GitHub Pages publication.
+- [x] **08.** Make the repository private and test another deployment. **Owner:** change visibility only after the Cloudflare pilot works; note that GitHub Free may stop the original GitHub Pages publication. *Done 2026-10-20: repo private; old Pages URL 404; empty-commit push built version `bae8ee5a` from the private repo; site checks pass.*
 - [x] **09.** Switch any live links only after verification. Check Cabinet embeds/links; demonstrate a manual redeploy/rollback and record a host-independent static artifact recovery route. *Done 2026-10-20: Cabinet links switched (commit `41a171f`, live verified); owner-run dashboard rollback and saved-artifact CLI redeploy on Cloudflare; host-independent route in DEPLOYMENT.md §7 (tested on local static servers).*
 
 ## 3. Bookshelf (4)
