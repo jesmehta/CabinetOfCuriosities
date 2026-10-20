@@ -1,7 +1,7 @@
 # Cloudflare Migration — 27-Step Checklist
 
 **Project:** Cabinet of Curiosities website ecosystem  
-**Status:** Dot Mandala pilot complete (steps 04–09 complete 2026-10-20). Tick items only after completion.  
+**Status:** Dot Mandala pilot complete (steps 04–09, 2026-10-20). Bookshelf: steps 10–11 complete (2026-10-21); DNS question, then 13 and 12, next. Tick items only after completion.  
 Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare migration/migration-log.md`; `migration-docs` was merged and deleted. Independent final review: `56b607ab7cfc5d943c20d17614c836cd6cf989c9`.  
 **Reference:** `cloudflare-migration-notes.md`  
 **Project policies:** [Transition register](transition-register.md). Algorithm/image/data protection has separate gates and does not expand these 27 hosting steps. Next: Bookshelf audit (10).
@@ -26,8 +26,8 @@ Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare mi
 
 ## 3. Bookshelf (4)
 
-- [ ] **10.** Audit MkDocs and the static gallery build. **Codex:** identify output directory, gallery assets, exhibits, navigation and absolute/relative paths.
-- [ ] **11.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement only required build changes; verify galleries, Markdown pages, thumbnails, static exhibits and unchanged AI-independent CMS operation.
+- [x] **10.** Audit MkDocs and the static gallery build. **Codex:** identify output directory, gallery assets, exhibits, navigation and absolute/relative paths. *Done 2026-10-20: Codex `TheBookshelfOfCuriosities/cloudflare migration/audit.md` (at `296a88f`).*
+- [x] **11.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement only required build changes; verify galleries, Markdown pages, thumbnails, static exhibits and unchanged AI-independent CMS operation. *Done 2026-10-21: preview `bookshelf-of-curiosities.jesmehta.workers.dev`, byte-identical to local builds (220/220) across 3 automatic deploys; interaction tests 86/86; editor (CMS) tested unchanged; owner-run rollback and saved-artifact restore verified. Evidence: Bookshelf `cloudflare migration/migration-log.md`.*
 - [ ] **12.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a subsequent push and deployment.
   - *Prerequisite before 13 (unnumbered; shared with FFFX 17 and Cabinet 23):* confirm whether GoDaddy is registrar only or also authoritative DNS for `cabinetofcuriosities.in`. Workers Custom Domains need an active Cloudflare DNS zone, so a separate, owner-approved move of the whole zone (all subdomains, email and verification records, DNSSEC) may be needed first. See notes §8, "Existing domains and GoDaddy". Not exercised by the Dot Mandala pilot (no custom domain).
 - [ ] **13.** Switch the Bookshelf subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, deep links and rollback.
