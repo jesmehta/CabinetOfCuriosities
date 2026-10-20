@@ -29,6 +29,8 @@ Records visible from outside:
 TXT. Public lookups cannot list every name in a zone: **the owner must confirm the full list in GoDaddy's DNS panel**
 (screenshot or export) before anything changes.
 
+*Wording note 2026-10-21 (Codex DNS review): "no email" above means **no email-related records in the confirmed export**; whether any mail service exists is for the owner to confirm (open question 4).*
+
 **Assessment:** a very small zone with no email, so moving DNS to Cloudflare is low-risk, provided the record list is
 confirmed and every existing record is reproduced first.
 
@@ -40,6 +42,8 @@ zone to be **active on Cloudflare** (per Cloudflare's Workers Custom Domains doc
 other hostnames. (Partial/CNAME zone setups are a paid-plan feature.) **INFERRED from documentation; not tested.**
 
 ## Proposed sequence (each step needs owner approval; nothing done yet)
+
+*Superseded 2026-10-21 01:45 IST by "Execution runbook v2" below, which adds the Codex DNS review safeguards. Kept as the first draft.*
 
 | # | Step | Who | Effect on the live sites |
 | --- | --- | --- | --- |
@@ -77,3 +81,79 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
   *Update 2026-10-21 01:38 IST: the owner reports the renewal is **done**. Public RDAP at 01:37 still showed expiry
   2026-11-03 (registry data usually lags); re-check that the expiry has moved.*
 - Steps 2–8: not started; awaiting owner approval (open question 3).
+- **2026-10-21 01:43 IST — step 0 confirmed:** registry (RDAP) expiry now **2031-11-03** (last changed 2026-10-20 20:08 UTC). DS still absent. Codex DNS review received (01:37); runbook v2 added (01:45).
+
+## Execution runbook v2 (2026-10-21 01:45 IST) — with the Codex DNS review safeguards
+
+Responds to [dns-zone-codex-review.md](dns-zone-codex-review.md) (gates 1–5 and the evidence list). Each phase needs owner
+approval; Claude Code records the evidence listed under "Record". **No step below has been executed.**
+
+**Pre-checks done 2026-10-21 01:43 IST (public):** renewal **confirmed**, registry expiry now **2031-11-03** (last changed
+2026-10-20 20:08 UTC); **no DS record** (DNSSEC off) at both Cloudflare's and Google's resolvers; delegation still
+`ns33`/`ns34.domaincontrol.com` (TTL 3600); `bookshelf` CNAME → `jesmehta.github.io` (TTL 3600).
+
+### Phase A — prepare the Cloudflare zone (no effect on the live sites)
+
+1. Cloudflare → *Add a domain* → `cabinetofcuriosities.in`, Free plan. Do **not** change nameservers yet; the zone stays
+   *pending*.
+2. Review the imported records. **Keep only the application records** (gate 1): apex A ×4 (`185.199.108–111.153`), CNAME
+   `www`, `bookshelf`, `fffx` → `jesmehta.github.io`; `_domainconnect` optional. **Do not** add GoDaddy's SOA or the
+   `ns33`/`ns34` NS records; Cloudflare manages its own authority records.
+3. Set the A and CNAME records to **DNS only (grey cloud)**. (Only A/AAAA/CNAME records have the proxy toggle.) Leave
+   automatic HTTPS rewrites, redirects and proxy features **off** for this phase.
+4. Note the **two nameservers Cloudflare assigns**.
+5. Record: the approved record list (screenshot), the assigned nameservers, DS still absent.
+
+### Phase B — switch the nameservers (zone-only; same records, new DNS host)
+
+6. GoDaddy → domain → *Nameservers* → custom → enter Cloudflare's two. Do **not** delete the zone at GoDaddy; keep it
+   untouched as the rollback copy (gate 3).
+7. Wait for Cloudflare to show the zone **Active**.
+8. **Zone acceptance** (gate 5), by Claude Code: registry delegation shows Cloudflare's nameservers; both Cloudflare
+   nameservers answer identically; independent resolvers (Cloudflare, Google, a third) return the same records; **HTTPS
+   and representative deep paths** work on the apex, `www`, `bookshelf`, `fffx` (still GitHub Pages); records unchanged.
+   Repeat after a few hours.
+9. **Rollback for this phase:** put `ns33`/`ns34.domaincontrol.com` back at GoDaddy. It is slow (delegation caches), not
+   instant. Before relying on it, check that GoDaddy still serves the saved zone.
+
+### Phase C — Bookshelf hostname to Cloudflare (checklist step 13)
+
+10. Optional but recommended: lower the `bookshelf` record's TTL to 300 s in Cloudflare, then **wait at least 1 h**
+    (the old TTL) before cutover (gate 2).
+11. **Preflight** (gate 4): Worker `bookshelf-of-curiosities` → *Settings → Domains & Routes → Add → Custom Domain* open with
+    `bookshelf.cabinetofcuriosities.in` typed in; the restore value written down (CNAME `bookshelf` →
+    `jesmehta.github.io`, DNS only). GitHub Pages for Bookshelf **stays enabled** with its custom domain.
+12. Delete the `bookshelf` CNAME in Cloudflare DNS, then **immediately** add the Custom Domain. Wait for the certificate;
+    this can take minutes, so no zero-downtime promise.
+13. **If attachment or the certificate fails:** remove the Custom Domain and restore the CNAME (works while Pages still
+    serves Bookshelf).
+14. **Hostname acceptance**, by Claude Code: real HTTPS certificate on `bookshelf.cabinetofcuriosities.in`; byte check
+    against a local build of the deployed commit; routes, deep links, sitemap (canonical hostname), 404, interaction
+    tests; analytics beacon now accepted (production hostname); Cabinet's links to Bookshelf; apex, `www`, `fffx`
+    re-checked.
+
+### Phase D — cache drain, then retire Bookshelf's GitHub Pages and privatize (checklist step 12)
+
+15. **Hold** (gate 2): keep Bookshelf's GitHub Pages and its custom-domain binding for **at least 24 h** after cutover
+    (well beyond the 3600 s TTL and delegation caches), monitoring the site. Cached old answers still reach GitHub
+    Pages during this time, which is why Pages must keep serving.
+16. Then remove the custom domain from Bookshelf's GitHub Pages settings, make the repository private, push a commit,
+    and verify a **private-source Cloudflare build** and signed-out public access on the custom hostname.
+17. **Rollback boundary** (gate 3): after step 16, neither GoDaddy DNS nor GitHub Pages is a fallback for Bookshelf.
+    Recovery = Cloudflare version rollback or saved-artifact redeploy (both tested 2026-10-21). Keep both DNS
+    configurations recorded through the overlap.
+
+### Record (Codex's handoff evidence list)
+
+Approved application-record list; Cloudflare-assigned nameservers; active-zone and DS checks; current and previous TTLs;
+HTTPS checks on all four hostnames after Phase B; records unchanged in Phase B; Bookshelf certificate and cutover result;
+the drain wait; the rollback boundary; after privatization, a successful private-source build and public custom-domain
+health.
+
+### Open owner questions (added 2026-10-21)
+
+4. Is there **any email or other service** on `cabinetofcuriosities.in` (for example GoDaddy email forwarding, which can
+   work without visible records)? The export shows no mail records.
+5. **Build-token scope** (Codex C6/C7): the dedicated "bookshelf-of-curiosities build token" has a dedicated name, but its
+   permissions have not been inspected. Where it appears (*My Profile → API Tokens*, or the Worker's build settings),
+   note its permissions. A narrower token is a separate, optional decision.
