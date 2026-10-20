@@ -4,9 +4,23 @@ generate_sitemap.py
 
 Builds a single sitemap across all three Cabinet of Curiosities worlds
 (Cabinet, fffx, Bookshelf) by reading each repo's own TSV content files
-directly from GitHub -- the same files each site's build script
+from its local clone, sitting next to this repo (../form-follows-fx,
+../TheBookshelfOfCuriosities) -- the same files each site's build script
 (build-cabinet-content.js / build-fffx-content.js / build-bookshelf-content.js)
 already treats as the source of truth for nav/map/shelf structure.
+
+Local clones, not GitHub: the sibling repos are being made private
+(Cloudflare migration, #147), and anonymous raw.githubusercontent.com
+reads stop working for private repos. Reading needs no network.
+
+Freshness: before reading, each clone gets a short `git fetch` (skip with
+--offline) and a report -- up to date / behind / ahead / diverged from
+origin, uncommitted TSV edits, not on the expected branch. These are
+warnings only: the script never prompts, pulls or discards anything, and
+a failed or timed-out fetch does not stop it (Cabinet's admin dashboard
+runs it as a non-interactive subprocess). A missing clone or TSV is an
+error. The sitemap reflects the clones' working copies, so pull first if
+a clone is reported behind.
 
 No manual page list to maintain: add a row to a TSV in any of the three
 repos, re-run this script, and the sitemap picks it up automatically.
@@ -30,19 +44,26 @@ exceptions.
 
 Usage:
     python3 tools/generate_sitemap.py
+    python3 tools/generate_sitemap.py --offline          # skip git fetch
+    python3 tools/generate_sitemap.py --clone fffx=D:/elsewhere/form-follows-fx
+    python3 tools/generate_sitemap.py --fetch-timeout 5  # seconds per clone (default 10)
 
-Requires: only the standard library (urllib, csv, re). No pip installs
-needed -- mkdocs.yml's nav is read with a small regex-based line scanner
-rather than a YAML parser, since its own shape (a flat list of "- Label :
-target" leaves under one top-level `nav:` key) doesn't need one.
+--clone keys: cabinet, fffx, bookshelf.
+
+Requires: only the standard library (csv, re, subprocess) and git on PATH
+(for the freshness check only). No pip installs needed -- mkdocs.yml's nav
+is read with a small regex-based line scanner rather than a YAML parser,
+since its own shape (a flat list of "- Label : target" leaves under one
+top-level `nav:` key) doesn't need one.
 """
 
+import argparse
 import csv
 import html
-import io
 import os
 import re
-import urllib.request
+import subprocess
+import sys
 from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -52,17 +73,21 @@ MKDOCS_YML_PATH = os.path.join(ROOT, "mkdocs.yml")
 CABINET_SECTIONS_TSV = os.path.join(ROOT, "content", "cabinet-sections.tsv")
 CABINET_ENTRIES_TSV = os.path.join(ROOT, "content", "cabinet-entries.tsv")
 
-RAW = "https://raw.githubusercontent.com/{repo}/{branch}/{path}"
+PARENT = os.path.dirname(ROOT)
 
 # ---------------------------------------------------------------------------
 # One entry per world. base_url is where relative hrefs in that world's own
 # TSVs resolve against (each world's TSV was written assuming it's hosted at
-# its own domain -- see each repo's WORLD-SYSTEMS.md).
+# its own domain -- see each repo's WORLD-SYSTEMS.md). local_dir is the
+# clone the TSVs are read from (override with --clone KEY=PATH); repo is
+# only used in messages.
 # ---------------------------------------------------------------------------
 WORLDS = [
     {
+        "key": "cabinet",
         "name": "Cabinet of Curiosities",
         "repo": "jesmehta/CabinetOfCuriosities",
+        "local_dir": ROOT,
         "branch": "main",
         "base_url": "https://cabinetofcuriosities.in/",
         "sections_tsv": "content/cabinet-sections.tsv",
@@ -70,8 +95,10 @@ WORLDS = [
         "entry_section_key": "section",
     },
     {
+        "key": "fffx",
         "name": "fffx (Form follows f(x))",
         "repo": "jesmehta/form-follows-fx",
+        "local_dir": os.path.join(PARENT, "form-follows-fx"),
         "branch": "main",
         "base_url": "https://fffx.cabinetofcuriosities.in/",
         "sections_tsv": "content/fffx-sections.tsv",
@@ -79,8 +106,10 @@ WORLDS = [
         "entry_section_key": "section",
     },
     {
+        "key": "bookshelf",
         "name": "Bookshelf of Curiosities",
         "repo": "jesmehta/TheBookshelfOfCuriosities",
+        "local_dir": os.path.join(PARENT, "TheBookshelfOfCuriosities"),
         "branch": "main",
         "base_url": "https://bookshelf.cabinetofcuriosities.in/",
         "sections_tsv": "content/bookshelf-sections.tsv",
@@ -96,11 +125,107 @@ WORLDS = [
 CABINET_BASE_URL = WORLDS[0]["base_url"]
 
 
-def fetch_tsv(repo, branch, path):
-    url = RAW.format(repo=repo, branch=branch, path=path)
-    with urllib.request.urlopen(url, timeout=20) as resp:
-        text = resp.read().decode("utf-8")
-    return list(csv.DictReader(io.StringIO(text), delimiter="\t"))
+class SitemapError(Exception):
+    pass
+
+
+def world_tsv_path(world, which):
+    return os.path.join(world["local_dir"], world[which])
+
+
+def git(local_dir, args, timeout=None):
+    """Run git non-interactively: never prompt for credentials (a prompt
+    would hang the admin dashboard's subprocess call)."""
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GCM_INTERACTIVE="never")
+    return subprocess.run(
+        ["git", "-C", local_dir] + args,
+        stdin=subprocess.DEVNULL, capture_output=True, text=True,
+        timeout=timeout, env=env,
+    )
+
+
+def git_fetch(local_dir, branch, timeout):
+    """`git fetch` bounded by `timeout` seconds. Returns None on success or a
+    short reason string. Output goes to a temp file, not a pipe, and on
+    timeout the whole process tree is killed: git's network helper
+    (git-remote-https) otherwise keeps a pipe open and makes the caller wait
+    out its own connection timeout (~20s on Windows) despite the limit."""
+    import tempfile
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GCM_INTERACTIVE="never")
+    with tempfile.TemporaryFile(mode="w+") as err:
+        proc = subprocess.Popen(
+            ["git", "-C", local_dir, "fetch", "--quiet", "origin", branch],
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=err, env=env,
+        )
+        try:
+            proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            else:
+                proc.kill()
+            proc.wait()
+            return f"timed out after {timeout:g}s"
+        if proc.returncode == 0:
+            return None
+        err.seek(0)
+        lines = [l.strip() for l in err.read().splitlines() if l.strip()]
+        first = next((l for l in lines if l.startswith("fatal:")), lines[0] if lines else "unknown error")
+        return f"failed: {first}"
+
+
+def check_clone(world, offline, fetch_timeout):
+    """Validate a world's clone and print its freshness. Raises
+    SitemapError only for problems that make the sitemap impossible
+    (missing clone or TSV); everything else is a printed warning."""
+    name, local_dir, branch = world["name"], world["local_dir"], world["branch"]
+    for which in ("sections_tsv", "entries_tsv"):
+        if not os.path.isfile(world_tsv_path(world, which)):
+            raise SitemapError(
+                f"{name}: {world[which]} not found under {local_dir} -- clone "
+                f"{world['repo']} there, or pass --clone {world['key']}=PATH"
+            )
+
+    prefix = f"[{world['key']}]"
+    try:
+        if git(local_dir, ["rev-parse", "--is-inside-work-tree"]).returncode != 0:
+            print(f"{prefix} WARNING: {local_dir} is not a git clone -- freshness unknown")
+            return
+    except FileNotFoundError:
+        print(f"{prefix} WARNING: git not found on PATH -- freshness unknown")
+        return
+
+    if offline:
+        print(f"{prefix} offline: not fetching; comparing with the last-fetched origin/{branch}")
+    else:
+        problem = git_fetch(local_dir, branch, fetch_timeout)
+        if problem:
+            print(f"{prefix} WARNING: git fetch {problem} -- comparing with the last-fetched origin/{branch}")
+
+    current = git(local_dir, ["branch", "--show-current"]).stdout.strip()
+    if current != branch:
+        print(f"{prefix} WARNING: clone is on '{current or 'detached HEAD'}', not '{branch}' -- reading that working copy")
+
+    counts = git(local_dir, ["rev-list", "--left-right", "--count", f"origin/{branch}...HEAD"])
+    if counts.returncode != 0:
+        print(f"{prefix} WARNING: no origin/{branch} to compare with -- freshness unknown")
+    else:
+        behind, ahead = (int(n) for n in counts.stdout.split())
+        if behind and ahead:
+            print(f"{prefix} WARNING: diverged from origin/{branch} ({behind} behind, {ahead} ahead) -- reconcile before relying on the sitemap")
+        elif behind:
+            print(f"{prefix} WARNING: {behind} commit(s) behind origin/{branch} -- pull, then re-run")
+        elif ahead:
+            print(f"{prefix} note: {ahead} commit(s) ahead of origin/{branch} (unpushed local work is included)")
+        else:
+            print(f"{prefix} up to date with origin/{branch}")
+
+    dirty = git(local_dir, ["status", "--porcelain", "--", world["sections_tsv"], world["entries_tsv"]]).stdout.strip()
+    if dirty:
+        print(f"{prefix} WARNING: uncommitted TSV changes are included in the sitemap:")
+        for line in dirty.splitlines():
+            print(f"{prefix}   {line}")
 
 
 def resolve_href(href, base_url):
@@ -127,8 +252,8 @@ def normalize_status(raw_status):
 
 
 def build_world(world):
-    sections = fetch_tsv(world["repo"], world["branch"], world["sections_tsv"])
-    entries = fetch_tsv(world["repo"], world["branch"], world["entries_tsv"])
+    sections = read_local_tsv(world_tsv_path(world, "sections_tsv"))
+    entries = read_local_tsv(world_tsv_path(world, "entries_tsv"))
 
     # order sections by their own 'order' column when present
     def sec_order(s):
@@ -431,7 +556,36 @@ def build_content_inventory():
     return "\n".join(out)
 
 
-def main():
+def parse_args(argv):
+    p = argparse.ArgumentParser(description="Generate Cabinet's cross-world sitemap and content inventory from local clones.")
+    p.add_argument("--offline", action="store_true", help="skip git fetch; compare with the last-fetched origin")
+    p.add_argument("--fetch-timeout", type=float, default=10.0, help="seconds allowed per git fetch (default 10)")
+    p.add_argument("--clone", action="append", default=[], metavar="KEY=PATH",
+                   help="use another clone for a world (keys: cabinet, fffx, bookshelf)")
+    args = p.parse_args(argv)
+    overrides = {}
+    for item in args.clone:
+        key, sep, path = item.partition("=")
+        keys = [w["key"] for w in WORLDS]
+        if not sep or key not in keys:
+            p.error(f"--clone expects KEY=PATH with KEY one of {', '.join(keys)}")
+        overrides[key] = os.path.abspath(path)
+    return args, overrides
+
+
+def main(argv=None):
+    args, overrides = parse_args(argv)
+    for world in WORLDS:
+        if world["key"] in overrides:
+            world["local_dir"] = overrides[world["key"]]
+
+    try:
+        for world in WORLDS:
+            check_clone(world, args.offline, args.fetch_timeout)
+    except SitemapError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 1
+
     all_worlds_data = {}
     for world in WORLDS:
         all_worlds_data[world["name"]] = (world, build_world(world))
@@ -446,7 +600,8 @@ def main():
     with open(INVENTORY_OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(inventory)
     print(f"Wrote {os.path.relpath(INVENTORY_OUTPUT_PATH, ROOT)}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

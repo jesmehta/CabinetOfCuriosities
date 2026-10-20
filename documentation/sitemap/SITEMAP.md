@@ -12,7 +12,8 @@ happen to share a run:
 
 1. **`docs/compass/sitemap.md`** — a single, cross-world sitemap across Cabinet,
    fffx, and Bookshelf, built by reading each repo's own TSV content
-   files live over GitHub raw. This is the real `/sitemap/` page, linked
+   files from its local clone (since v2.0; before that, live over GitHub
+   raw). This is the real `/sitemap/` page, linked
    from the compass rose's W point (`content/cabinet-entries.tsv`'s
    `compass-w` row).
 2. **`documentation/CONTENT-INVENTORY.md`** — Cabinet-only, cross-
@@ -29,13 +30,28 @@ re-run the script, get fresh output, never hand-edit either file.
 
 ## Mechanism
 
-### Sitemap generation (cross-world, network)
+### Sitemap generation (cross-world, local clones)
 
 `WORLDS` is a small list of dicts, one per Level 1 world (Cabinet,
 fffx, Bookshelf), each naming its own `sections_tsv`/`entries_tsv`
-paths and `base_url`. `fetch_tsv()` pulls each file over
-`raw.githubusercontent.com` (`urllib.request`, stdlib only) and parses
-it with `csv.DictReader`. `build_world()` sorts sections/entries by
+paths, `base_url` and `local_dir`: the clone to read, by default this
+repo itself and its siblings `../form-follows-fx` and
+`../TheBookshelfOfCuriosities` (override with `--clone KEY=PATH`).
+`read_local_tsv()` parses each file with `csv.DictReader`; no network
+is needed to read.
+
+Before reading, `check_clone()` reports each clone's freshness:
+`git_fetch()` runs a time-bounded `git fetch` (default 10 s, `--offline`
+to skip; a timeout kills the whole git process tree so the run really is
+bounded), then the clone is compared with `origin/main` and reported as
+up to date / behind (pull, then re-run) / ahead / diverged, plus any
+uncommitted TSV edits and a clone on another branch. All of these are
+**warnings only**: the script never prompts, pulls or discards changes
+(git runs with `GIT_TERMINAL_PROMPT=0`, `GCM_INTERACTIVE=never`, stdin
+closed), because Cabinet's admin dashboard runs it as a non-interactive
+subprocess. A failed or timed-out fetch is also just a warning. Only a
+missing clone or TSV is an error (exit 1, nothing written).
+`build_world()` sorts sections/entries by
 their own `order` column and groups entries under their section.
 `render_markdown()` walks that structure and writes one `##` heading
 per world, one `###` per section, one bullet per entry, each tagged
@@ -49,10 +65,10 @@ full URL against that world's `base_url`; an already-absolute
 ### Content Inventory generation (Cabinet-only, local, no network)
 
 `read_local_tsv()` reads `content/cabinet-sections.tsv` and
-`content/cabinet-entries.tsv` straight off disk — deliberately not the
-same GitHub-raw-fetch path the sitemap side uses for Cabinet's own
-files, so this half of the script works offline and reflects
-uncommitted local edits, not just what's already pushed.
+`content/cabinet-entries.tsv` straight off disk, so this half of the
+script works offline and reflects uncommitted local edits, not just
+what's already pushed. (Since v2.0 the sitemap half reads locally too;
+before that it fetched Cabinet's own TSVs from GitHub.)
 
 `parse_mkdocs_nav()` reads `mkdocs.yml` and extracts every nav leaf
 (`label`, `target`) as a flat list — deliberately flat, not a real tree,
@@ -156,19 +172,23 @@ content/cabinet-entries.tsv                -- read locally for the Content Inven
 mkdocs.yml                                  -- read locally for its nav tree
 ```
 
-Cross-world inputs (fetched, not local): each world's own
-`content/{cabinet,fffx,bookshelf}-{sections,entries}.tsv`, over GitHub
-raw, from `jesmehta/CabinetOfCuriosities`, `jesmehta/form-follows-fx`,
-and `jesmehta/TheBookshelfOfCuriosities` respectively (see `WORLDS` in
-the script).
+Cross-world inputs (local clones): each world's own
+`content/{cabinet,fffx,bookshelf}-{sections,entries}.tsv`, read from this
+repo and its sibling clones `../form-follows-fx` and
+`../TheBookshelfOfCuriosities` (see `WORLDS` in the script; override with
+`--clone cabinet|fffx|bookshelf=PATH`). Git is used only for the
+freshness report.
 
 ## Update workflow
 
 ```bash
-python tools/generate_sitemap.py
+python tools/generate_sitemap.py            # or the admin dashboard's Sitemap button
+python tools/generate_sitemap.py --offline  # no git fetch (no internet)
 ```
 
-Regenerates both `docs/compass/sitemap.md` and `documentation/CONTENT-INVENTORY.md`
+Read the `[cabinet]`/`[fffx]`/`[bookshelf]` lines it prints first: if a
+clone is **behind**, pull it and re-run, since the sitemap reflects your
+local working copies. Then: it regenerates both `docs/compass/sitemap.md` and `documentation/CONTENT-INVENTORY.md`
 in one run — there's no way to build just one half. Commit whichever
 outputs actually changed. No admin UI, no local server, no watch mode —
 run it by hand whenever a TSV or `mkdocs.yml`'s nav changes and the
@@ -191,10 +211,11 @@ above), so reading it is the actual review step, not optional.
   reused by Bookshelf or fffx for their own nav/TSV cross-checks, since
   each would need its own output path, its own `mkdocs.yml`, and its
   own TSV file names.
-- **Cross-world data is fetched, not cached** — every sitemap run makes
-  six live HTTP requests (two TSVs x three worlds); no offline mode for
-  that half. The Content Inventory half has no such limitation, since it
-  reads everything locally.
+- **The sitemap reflects local clones, not GitHub** (since v2.0) — so it
+  is only as current as your clones. The freshness report warns when a
+  clone is behind, ahead, diverged, dirty or on another branch, but never
+  fixes it; pulling is up to you. All three repos must be cloned side by
+  side (or passed with `--clone`).
 - **The nav scanner still fails silently on a genuinely malformed leaf
   line**, not visibly — narrowed in scope by `v1.6`, not eliminated. The
   three known real shapes (`Label : target`, `Label :` group header,
@@ -210,6 +231,43 @@ above), so reading it is the actual review step, not optional.
   `mkdocs.yml`.
 
 ## Changelog
+
+### v2.0 — read sibling local clones instead of GitHub raw; freshness report (2026-10-20)
+
+**Need:** Bookshelf and FFFX are becoming private repositories (Cloudflare
+migration, `#147`). Anonymous `raw.githubusercontent.com` reads fail for
+private repos, so regenerating the sitemap would have broken, even though
+both live sites keep working. Flagged as **blocking** for Bookshelf's
+privatization by the Codex Bookshelf audit.
+
+**Decision (owner, 2026-10-20):** read local clones (option A). The owner
+works from one or two machines with all repos cloned, so a clone being
+behind GitHub is unlikely, and the script checks and reminds. Rejected:
+Bookshelf publishing its own page list for Cabinet to fetch (option B;
+makes the page list a public file for bots and scrapers), separate
+per-world sitemaps (option C; wanted later in addition to, not instead
+of, Cabinet's complete one), and authenticated GitHub API reads (a
+credential to manage). Codex's plan review added: non-interactive, works
+offline, time-bounded optional fetch, never pulls.
+
+**Changes:** `WORLDS` entries gain `key` and `local_dir`; `fetch_tsv()`
+(urllib) removed, sitemap TSVs now read with `read_local_tsv()`; new
+`git()`, `git_fetch()`, `check_clone()`; CLI flags `--offline`,
+`--fetch-timeout`, `--clone KEY=PATH` (argparse); `main()` returns an
+exit code (1 for a missing clone/TSV, 2 for bad arguments).
+
+**Verified:** with all three clones' TSVs identical to `origin/main`, the
+old (GitHub) and new (local) versions produce **byte-identical**
+`sitemap.md` and `CONTENT-INVENTORY.md` apart from the timestamp line.
+Failure tests (scratch clones): missing clone → error, exit 1;
+`--offline`; unreachable remote → warning; a remote that hangs → warning
+after the 3 s test timeout, whole run 6 s. A first version took 24 s here
+because git's network helper held the output pipe open; fixed by writing
+fetch output to a temp file and killing the process tree. Also uncommitted
+TSV edit, behind, diverged and other-branch → warnings; bad `--clone` key
+→ exit 2; run through Node `execFileSync` with stdin closed (as the admin
+dashboard does) → completes in about 2 s. Evidence:
+`TheBookshelfOfCuriosities/cloudflare migration/evidence/c1-sitemap-*.txt`.
 
 ### v1.6 — bare-target nav leaves (`teaching`/`webtech`) recognized; `NAV_GROUP_RE` wired in (2026-09-08)
 
