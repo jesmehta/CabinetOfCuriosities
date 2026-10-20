@@ -1,9 +1,11 @@
 # Website Hosting Migration — Intent, Decisions and Scope
 
 **Project:** Cabinet of Curiosities website ecosystem  
-**Status:** Planned; pilot not yet verified  
+**Status:** Dot Mandala hosting/privacy pilot complete and reviewed; Bookshelf audit next  
 **Last updated:** 20 October 2026  
 **Purpose of this note:** Preserve the reasoning, scope, decisions and constraints behind a possible migration from GitHub Pages to Cloudflare hosting. This is a project brief, not a deployment procedure.
+
+**Current project decisions:** [Transition register](transition-register.md) records the hosting/private-source list, selected algorithm-protection targets, local-first Interactive Installations exception, intentionally open projects and unresolved image/data policies. It supersedes earlier provisional examples where they differ. Dot Mandala evidence and runbook now live on its private repository's `main`, under `cloudflare migration/` and `DEPLOYMENT.md`; the local-only `migration-docs` branch was merged and deleted.
 
 ## 1. Context
 
@@ -59,7 +61,7 @@ Technically possible but duplicates hosting conventions while retaining the subs
 **Private source → no published application:**
 - Origami/Kirigami tools may remain entirely private. A public article explaining the work and showing generated physical pieces or results is sufficient; publishing a live tool is **not** a requirement.
 
-This is a **provisional classification**, not permission to change visibility in bulk. Review each repository before acting.
+Bookshelf, FFFX and Cabinet are selected for privatization with public websites; this is not permission to change visibility in bulk. Review each repository before acting. Circle Packing stays open. SwatchFields, Warli Art Explorer and DataSelfies remain unresolved as detailed in the [transition register](transition-register.md). Interactive Installations remains local-first/browser-based without algorithm protection; its source visibility is a separate unresolved decision.
 
 ## 5. What migrates — and what does not
 
@@ -168,7 +170,7 @@ Browser
 
 **Trade-offs:** existing browser algorithms must be refactored into frontend/backend boundaries; network round trips can make interactive sliders and live previews less responsive; offline use is lost for server-dependent operations; compute limits, invocation counts, API errors and maintenance become relevant. Some animation-heavy or per-frame p5.js sketches are poor candidates. Computation-heavy geometry or discrete SVG generation may be better candidates, subject to benchmarking.
 
-**Decisions:** This is an **available selective protection technique, not a requirement for the initial migration**. Assess tools individually. Dot Mandala and Origami/Kirigami were discussed as possible examples, **not approved Worker conversions**. Origami may remain unpublished altogether. No commitment has been made to refactor all generators.
+**Decisions:** Algorithm protection is a separate workstream for Dance of Planets and Island Generator within FFFX, Dot Mandala, and Origami Tools. These targets require individual audits/designs before implementation; selection is not approval of a particular Worker conversion. Origami may remain unpublished altogether. Keep FFFX's existing publication gates until protection is verified, including exclusion of source files from public output. Live Video Filter and Gesture Kaleidoscope are excluded from protection for now and stay local-first/browser-based. See the [transition register](transition-register.md).
 
 Workers APIs can also be used with **GitHub Pages + GitHub Pro**; they do **not** require moving frontend hosting to Cloudflare. A GitHub-hosted frontend can call a Worker at a `workers.dev` URL or a configured API domain, subject to CORS and normal API configuration.
 
@@ -192,7 +194,7 @@ This is what was meant by the earlier remark that Workers might **supersede the 
 
 Choose based on **current** Cloudflare documentation, free-tier constraints, Git integration/deployment ergonomics, build output, custom domains and operational simplicity. Do not assume Workers with Static Assets requires private computation, or that Pages prevents adding a separate Worker API later.
 
-**Status:** The platform choice (Pages versus Workers with Static Assets) is **open**, pending the pilot audit. The goal is one straightforward hosting mechanism for ordinary sites, with server-side computation only where justified.
+**Status:** Dot Mandala uses Workers with Static Assets and its hosting/privacy pilot is complete. Reassess the simplest host/build configuration for each remaining site against its actual requirements. The goal is straightforward hosting for ordinary sites, with server-side computation treated separately.
 
 ## 12. Portability, local use, and AI independence (agreed requirements)
 

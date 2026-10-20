@@ -2,8 +2,9 @@
 
 **Project:** Cabinet of Curiosities website ecosystem  
 **Status:** Dot Mandala pilot complete (steps 04–09 complete 2026-10-20). Tick items only after completion.  
-Dot Mandala evidence: `DotMandalaGenerator` repo, local-only branch `migration-docs`, `cloudflare migration/migration-log.md`.  
+Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare migration/migration-log.md`; `migration-docs` was merged and deleted. Independent final review: `56b607ab7cfc5d943c20d17614c836cd6cf989c9`.  
 **Reference:** `cloudflare-migration-notes.md`  
+**Project policies:** [Transition register](transition-register.md). Algorithm/image/data protection has separate gates and does not expand these 27 hosting steps. Next: Bookshelf audit (10).
 **Roles:** Codex audits and independently reviews; Claude Code implements and tests; owner approves account access, repository visibility, DNS and production changes.
 
 **Sequence:** Dot Mandala pilot → Bookshelf → FFFX → Cabinet → finalisation. Maintain existing live deployments until replacements have been tested. Cloudflare Pages versus Workers with Static Assets is an implementation choice to assess during the pilot; server-side algorithm protection is a separate, deferred project.
@@ -32,7 +33,7 @@ Dot Mandala evidence: `DotMandalaGenerator` repo, local-only branch `migration-d
 
 ## 4. FFFX (4)
 
-- [ ] **14.** Audit build and static project routes. **Codex:** inspect data-driven landing, scripts, assets, project links and deployment assumptions.
+- [ ] **14.** Audit build and static project routes. **Codex:** inspect data-driven landing, scripts, assets, project links and deployment assumptions. Preserve Dance of Planets / Island Generator publication gates; confirm their sensitive source is excluded from public output until separate protection work passes review (hidden links alone are insufficient).
 - [ ] **15.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement minimal changes; verify subdivision landing, links, assets, interactive projects and unchanged AI-independent CMS operation.
 - [ ] **16.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a fresh deployment.
 - [ ] **17.** Switch the FFFX subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, direct URLs and rollback.

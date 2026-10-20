@@ -2,6 +2,10 @@
 
 **Status:** Design guidance for new tools and separately approved conversions; **not** part of the present website migration. **Examples:** Origami/Kirigami generators and selected original tools. Publishing Origami live is optional; a public write-up and outputs may suffice.
 
+**Selected targets (20 October 2026):** FFFX's Dance of Planets and Island Generator, Dot Mandala, and Origami Tools. Selection requires per-tool design/audit before implementation; it does not make a specific API architecture approved. Dot Mandala's completed hosting migration leaves its current browser algorithm public. Keep FFFX project publication gates until the protected boundary and artifact exclusions are verified. These projects may remain inside their existing private repository.
+
+**Excluded for now:** Interactive Installations' Live Video Filter and Gesture Kaleidoscope remain browser-based and local-first, supporting laptop/projected use and public screen-toy variants. Do not move camera feeds server-side for this migration. Revisit latency/protection only when needed. Repository visibility is a separate decision. SwatchFields, Warli imagery and DataSelfies data remain unresolved; see the [transition register](transition-register.md).
+
 ## Intent
 
 Protect algorithm **source** from visitors to a public tool, while retaining full local/offline use, repeatable headless batch generation and portability away from Cloudflare. Do not introduce server-side processing for ordinary open-source teaching sketches or tools with no meaningful algorithm-protection requirement.
