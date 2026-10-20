@@ -82,6 +82,15 @@ GoDaddy, because nothing is deleted there). After step 6, remove the Custom Doma
   2026-11-03 (registry data usually lags); re-check that the expiry has moved.*
 - Steps 2–8: not started; awaiting owner approval (open question 3).
 - **2026-10-21 01:43 IST — step 0 confirmed:** registry (RDAP) expiry now **2031-11-03** (last changed 2026-10-20 20:08 UTC). DS still absent. Codex DNS review received (01:37); runbook v2 added (01:45).
+- **2026-10-21 ~02:12 IST (tool UTC 20:42 + 5:30) — Phase A (runbook v2 steps 1–5) done.** The owner added the zone on
+  the Free plan. Records shown in the owner's dashboard screenshot (not saved to the repo): apex A ×4
+  (`185.199.108/109/110/111.153`), CNAME `www`, `bookshelf`, `fffx` → `jesmehta.github.io`, CNAME `_domainconnect` →
+  `_domainconnect.gd…` (kept). All eight records are **DNS only**, TTL Auto. No NS/SOA copied. This matches the GoDaddy
+  export exactly. Cloudflare's "all records DNS only, proxy for protection" banner was ignored deliberately: everything
+  is still served by GitHub Pages. **Assigned nameservers: `may.ns.cloudflare.com`, `west.ns.cloudflare.com`.**
+  Public DNS at 20:42 UTC: delegation still `ns33`/`ns34.domaincontrol.com`; **no DS** (Cloudflare DoH and Google DNS).
+  Cloudflare's prompt to replace GoDaddy's two nameservers is Phase B step 6, which is **not done** and waits for owner
+  approval.
 
 ## Execution runbook v2 (2026-10-21 01:45 IST) — with the Codex DNS review safeguards
 
