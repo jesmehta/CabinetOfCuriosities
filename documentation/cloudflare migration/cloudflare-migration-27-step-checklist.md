@@ -41,6 +41,12 @@ Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare mi
 
 ## 5. Cabinet (6)
 
+*Pre-check for any new Worker's Git connection (learned on FFFX, 2026-10-22):* add the repository to the GitHub App's
+*Repository access* on **GitHub's** side (Installed GitHub Apps → Cloudflare Workers and Pages), not only by picking
+it in Cloudflare's search. Then confirm there is no "disconnected from your Git account" banner on the Builds
+settings page, and that a test push creates a new version. A public repository picked only in Cloudflare builds once,
+then ignores pushes, and would fail after privatization. See `form-follows-fx/cloudflare migration/migration-log.md`.
+
 - [ ] **18.** Audit the *actual* deployment workflow and external mounts. **Codex:** inspect `.github/workflows/deploy.yml`, MkDocs, `tools/assemble-external.js`, `content/external-repos.tsv`, validators and sitemap dependencies. Distinguish required build operations from authoring and GitHub Pages-only operations.
 - [ ] **19.** Adapt the build for Cloudflare without changing site content. **Claude Code:** compare direct Cloudflare builds against retaining GitHub Actions for host-neutral artifact generation; document credential, maintenance, manual recovery and portability trade-offs; implement the approved option.
 - [ ] **20.** Test the complete generated artifact **locally and on preview**. Verify mounted repositories, navigation, generated content, archived pages, routes, CMS independence, host-neutral output and exclusion of unintended development files.
