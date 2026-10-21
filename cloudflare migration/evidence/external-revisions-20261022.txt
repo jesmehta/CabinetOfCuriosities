@@ -1,0 +1,8 @@
+oblique-strategies bb5ca3be3fedb2006de3d0cea3f268f771c57aa3
+prompt-generator 5532f3063d924288b8f898879f105299eea1235e
+ssd-creative-coding-2023-24 45be517c6ffff2d3ff3b53b3f66cc31579de08b1
+ssd-creative-coding-2024-25 45be517c6ffff2d3ff3b53b3f66cc31579de08b1
+ssd-creative-coding-2025-26 45be517c6ffff2d3ff3b53b3f66cc31579de08b1
+swatch-fields 4c891843989e25841eee02c1b0cd548cc0e0ca4b
+tracery-bots 2e18cd6ee075b1403cd2bea0dff6a66f8e3ede12
+working-with-ai 58f5ac37855f35bd9f12a44ba04cb735b265eeda

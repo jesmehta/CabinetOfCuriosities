@@ -1,0 +1,64 @@
+== Cabinet baseline scratch build  2026-10-21T19:27:02Z  source 6300dfaef7eefdaaa0fd3cfdff3ded6b1572d9ed
+python: Python 3.14.6; node: v24.18.0; mkdocs: python -m mkdocs,
+guard: no docs/index.md
+Generated docs\_assets\backend\js\cabinet-generated-content.js (10 sections, 41 entries)
+Generated docs\compass\now.md (25 entries, 10 sections configured)
+generated content: current
+mkdocs exit 0
+INFO    -  Doc file 'webtech/index.md' contains an unrecognized relative link '../swatch-fields/', it was left as is.
+INFO    -  Documentation built in 0.69 seconds
+Assembled:
+  Working with AI -> teaching/working-with-ai/
+  Prompt Generator -> teaching/prompt-generator/
+  Oblique Strategies -> teaching/oblique-strategies/
+  SSD Creative Coding 2025-26 -> teaching/ssd-creative-coding-2025-26/
+  SSD Creative Coding 2024-25 -> teaching/ssd-creative-coding-2024-25/
+  SSD Creative Coding 2023-24 -> teaching/ssd-creative-coding-2023-24/
+  Swatch Fields -> swatch-fields/
+  Tracery Bots -> tracery-bots/
+assemble exit 0
+Checked 21 entr(ies), 4 section(s), 10 nav target(s), and 18 doc-body link(s) against public/
+--- external revisions (resolved at build time)
+oblique-strategies: bb5ca3be3fedb2006de3d0cea3f268f771c57aa3
+prompt-generator: 5532f3063d924288b8f898879f105299eea1235e
+ssd-creative-coding-2023-24: 45be517c6ffff2d3ff3b53b3f66cc31579de08b1
+ssd-creative-coding-2024-25: 45be517c6ffff2d3ff3b53b3f66cc31579de08b1
+ssd-creative-coding-2025-26: 45be517c6ffff2d3ff3b53b3f66cc31579de08b1
+swatch-fields: 4c891843989e25841eee02c1b0cd548cc0e0ca4b
+tracery-bots: 2e18cd6ee075b1403cd2bea0dff6a66f8e3ede12
+working-with-ai: 58f5ac37855f35bd9f12a44ba04cb735b265eeda
+--- public/: 1117 files, 165911077 bytes
+--- per top-level folder (files, bytes)
+3dp/                                               4       112585
+_assets/                                          15       330001
+_downloads/                                        2          756
+_images/                                         118     19655759
+archived-landing-pages/                          168     10255475
+assets/                                           45      2579131
+blog/                                              1        28126
+compass/                                           4       192885
+dataviz/                                           1        28200
+fab/                                               3        96681
+fffx/                                              5        85784
+makings/                                           5       152016
+physComp/                                          1        28213
+swatch-fields/                                   316     18517779
+teaching/                                        351     92970738
+tracery-bots/                                     56     13576888
+travels/                                           1        28160
+visual-field-notes/                                1        28206
+webtech/                                           5       155948
+writings/                                         10       341023
+--- largest 12 files
+2431076 public/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/crumbledpaper.png
+2457780 public/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/rotlime.png
+2767725 public/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/victory.mp3
+3110455 public/teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/space2.jpg
+3122991 public/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/gaming.mp3
+3686039 public/tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/p5.js
+3686039 public/tracery-bots/_TraceryTrials/TrippyG/p5.js
+5035008 public/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/90s.bg.mp3
+5385678 public/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js
+5385678 public/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js
+5385678 public/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js
+6719901 public/index.html

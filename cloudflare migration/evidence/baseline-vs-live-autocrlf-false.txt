@@ -1,0 +1,9 @@
+== local C:/Users/Jesal/AppData/Local/Temp/claude/f----SnowCrash---WebPages/8281b7f5-f147-4863-a11a-889af3f32825/scratchpad/cab-base/public vs https://cabinetofcuriosities.in  2026-10-21T19:33:24.744Z
+1117 files: 1113 identical, 4 differ, 0 not served (non-200), 0 errors
+-- differ
+compass/about/index.html (live 43517 B, local 43512 B)
+fffx/PackingShapes/index.html (live 702 B, local 716 B)
+fffx/VeraMolnarRetrospective/index.html (live 658 B, local 672 B)
+sitemap.xml.gz (live 127 B, local 127 B)
+-- not served
+-- errors
