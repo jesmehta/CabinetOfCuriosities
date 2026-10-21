@@ -248,6 +248,34 @@ same Git integration). Details: the `DotMandalaGenerator` repo (`DEPLOYMENT.md`,
 Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-repo assembly).
 **Bookshelf (2026-10-21):** shared build script, publication allowlists, Cloudflare preview `bookshelf-of-curiosities.jesmehta.workers.dev` live and byte-identical to local builds, automatic deploys, interaction and recovery tests done. Cabinet sitemap reads local clones (prerequisite done). Next: move the `cabinetofcuriosities.in` DNS zone from GoDaddy to Cloudflare (`documentation/cloudflare migration/dns-zone-plan.md`), then Bookshelf domain switch, then privatization. Detail: `TheBookshelfOfCuriosities/cloudflare migration/migration-log.md`.
 
+**Progress, 2026-10-22:**
+- **DNS:** the zone is on Cloudflare (nameservers `may`/`west`).
+- **Bookshelf:** `bookshelf.cabinetofcuriosities.in` is served by its Worker (24 h hold, then privatization).
+- **FFFX:** Worker `form-follows-fx.jesmehta.workers.dev` live and recovery-tested; Dance of Planets and Island
+  Generator withheld from the public build. The domain switch waits for Bookshelf to close.
+- **Cabinet:** plan v1 (`CabinetOfCuriosities/cloudflare migration/plan.md`).
+
+**Post-migration optimisation pass (Cabinet; owner decision 2026-10-22: after migration, not during).** Measured on the
+2026-10-22 baseline build (157.5 MiB, 1,117 files; evidence `cloudflare migration/evidence/`):
+- [ ] **Oversized images:** 36 images over 500 KB, 51 MB in total, mostly SSD student-game PNGs/JPGs (2–3 MB each,
+  shown small) and `_images/`. Resize and recompress (about 1600 px, or WebP); estimated saving 35–45 MB. SSD/Swatch
+  images live in their own repositories, so they reach Cabinet by updating the pins.
+- [ ] **p5.js duplicates:** `SSD_Student_Work` ships the full unminified `p5.js` (5 MB) once per year folder (3×), plus
+  `p5.sound` copies. Use `p5.min.js`, one shared copy or the CDN (about 14 MB saved). Tracery's `_TraceryTrials`
+  carries two more p5 copies.
+- [ ] **Tracery `_TraceryTrials`:** not needed on Cloudflare (owner); GitHub keeps it as the archive. Excluded by the
+  mount allowlist. Note: the Tracery Bots index page links three trial folders, so remove or replace those links
+  in the TraceryBots repository.
+- [ ] **Landing page `index.html` (6.4 MB; 6.1 MB is SVG path data for 1,168 shapes):** round the coordinates in
+  `landing-v3`'s build so the file is roughly halved. Every visitor downloads it (1.5 MB compressed).
+- [x] Paper 2025–26 gallery photos (owner's uncommitted page): compacted 2026-10-22 to 600 px max, metadata
+  stripped, 7.2 MB → 1.7 MB. Originals in `review/paper2025_26-originals/` (gitignored). Still uncommitted.
+
+**Admin tooling for external mounts (round after migration):** `npm run update-externals` (pins and allowlist
+candidates) starts as a script. Add admin-page buttons and review tools as needed: running it, showing new and
+removed files per mount, approving allowlist additions. The format is still to decide: a CSV opened in a spreadsheet,
+or a page that loads the TSV with a fuller interface.
+
 **Milestones**
 
 - [x] 1. Map current repos, domains, GitHub Pages deployments and dependencies.

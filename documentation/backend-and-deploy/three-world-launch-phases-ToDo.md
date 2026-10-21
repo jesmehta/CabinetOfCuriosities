@@ -2889,6 +2889,14 @@ same Git integration). Details: the `DotMandalaGenerator` repo (`DEPLOYMENT.md`,
 Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-repo assembly).
 **Bookshelf (2026-10-21):** shared build script, publication allowlists, Cloudflare preview `bookshelf-of-curiosities.jesmehta.workers.dev` live and byte-identical to local builds, automatic deploys, interaction and recovery tests done. Cabinet sitemap reads local clones (prerequisite done). Next: move the `cabinetofcuriosities.in` DNS zone from GoDaddy to Cloudflare (`documentation/cloudflare migration/dns-zone-plan.md`), then Bookshelf domain switch, then privatization. Detail: `TheBookshelfOfCuriosities/cloudflare migration/migration-log.md`.
 
+**Progress, 2026-10-22:**
+- **DNS:** the zone is on Cloudflare (nameservers `may`/`west`).
+- **Bookshelf:** `bookshelf.cabinetofcuriosities.in` is served by its Worker (24 h hold, then privatization).
+- **FFFX:** Worker `form-follows-fx.jesmehta.workers.dev` live and recovery-tested; Dance of Planets and Island
+  Generator withheld from the public build. The domain switch waits for Bookshelf to close.
+- **Cabinet:** plan v1 (`CabinetOfCuriosities/cloudflare migration/plan.md`).
+Optimisation pass and admin tooling for external mounts: see `toDo - website.md` (Private Repos section).
+
 **Milestones**
 
 - [x] 1. Map current repos, domains, GitHub Pages deployments and dependencies.
