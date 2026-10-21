@@ -73,6 +73,8 @@ Bookshelf, FFFX and Cabinet are selected for privatization with public websites;
 
 ## 6. Known architectural dependencies
 
+**Shared future capability:** all three worlds may assemble internal projects and selected external repositories under their own paths, into one deployment per world. Bookshelf/FFFX need not gain unused clone infrastructure immediately. Current baseline, owner questions and the FFFX deferred-tool publication boundary are recorded in [World assembly and deferred tools](world-assembly-decisions.md).
+
 - **Cabinet:** builds MkDocs content and assembles several external repositories into its public output. Its current assembly process clones configured repos and copies source trees/subtrees into the published artifact. A repo made private will require authenticated build access if it is still cloned this way.
 - **Publication risk:** any files copied into the publicly served output are publicly retrievable by URL, even if the source repository is private. A private repo does **not** make deployed HTML, CSS, JS, README files or experiments secret.
 - **Bookshelf and FFFX:** independently published; Cabinet links to them rather than cloning them into its own build.

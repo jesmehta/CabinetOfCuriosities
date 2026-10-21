@@ -55,6 +55,8 @@ Live Video Filter and Gesture Kaleidoscope remain browser-based with **no fronte
 
 ## Sequence and next actions
 
+Discussion and architectural clarification: [World assembly and deferred tools](world-assembly-decisions.md). Each world can assemble MkDocs pages, internal projects and selected external repositories into one artifact/deployment. FFFX can defer algorithm separation while excluding the two protected tools from hosting output; capture the exclusion in its reviewed implementation plan. Do not hardcode external assembly as a Cabinet-only capability.
+
 1. Hosting: Dot Mandala complete → Bookshelf audit/implementation/review → FFFX → Cabinet. Reuse the pilot's process, not assumed build commands or output directories.
 2. Keep algorithm protection as separately scoped per-tool work. FFFX hosting can proceed while gated tools remain unpublished; audit the actual output because hiding links alone does not protect files.
 3. Resolve SwatchFields, Warli and DataSelfies individually before source visibility or publication changes.
