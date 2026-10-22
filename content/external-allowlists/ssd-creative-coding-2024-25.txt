@@ -1,0 +1,129 @@
+# Allowlist for external mount "ssd-creative-coding-2024-25" (jesmehta/SSD_Student_Work, ssd-creative-coding-2024-25/) -- tools/allowlist.mjs.
+# Only the files listed here are published; anything else in the repository is left out and reported.
+# Paths are relative to the mount folder; one file per line; a line starting with '#' is a comment.
+#
+# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
+# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
+# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+Aadit_Vanjari.png
+Aadit_Vanjari/Morally Serif.otf
+Aadit_Vanjari/Roboto-Thin.ttf
+Aadit_Vanjari/index.html
+Aadit_Vanjari/sketch.js
+Aadit_Vanjari/style.css
+Aadit_Vanjari/waves.webp
+Ananya_Adsul.png
+Ananya_Adsul/index.html
+Ananya_Adsul/sketch.js
+Ananya_Adsul/style.css
+Arpita_Dhanawade.png
+Arpita_Dhanawade/Baby shark - Xylophone Cover.mp3
+Arpita_Dhanawade/index.html
+Arpita_Dhanawade/sketch.js
+Arpita_Dhanawade/style.css
+Arya_Ghagare.png
+Arya_Ghagare/duckie.mp3
+Arya_Ghagare/explosion-fx-343683.mp3
+Arya_Ghagare/index.html
+Arya_Ghagare/sketch.js
+Arya_Ghagare/style.css
+Atharva_Aware.png
+Atharva_Aware/index.html
+Atharva_Aware/sketch.js
+Atharva_Aware/style.css
+Atharva_Aware/wave.jpg
+Avaneesh_Chavan.png
+Avaneesh_Chavan/index.html
+Avaneesh_Chavan/sketch.js
+Avaneesh_Chavan/style.css
+Bhakti_Sharma.png
+Bhakti_Sharma/crum2.jpeg
+Bhakti_Sharma/index.html
+Bhakti_Sharma/sketch.js
+Bhakti_Sharma/sm duo 5.jpg
+Bhakti_Sharma/sm logo.jpg
+Bhakti_Sharma/style.css
+Gloria_Mathew.png
+Gloria_Mathew/90s.bg.mp3
+Gloria_Mathew/corona.mp3
+Gloria_Mathew/death.mp3
+Gloria_Mathew/index.html
+Gloria_Mathew/retro.mp3
+Gloria_Mathew/sketch.js
+Gloria_Mathew/soap.mp3
+Gloria_Mathew/style.css
+Gloria_Mathew/tic.mp3
+Gloria_Mathew/victory.mp3
+Madhav_Kansara.png
+Madhav_Kansara/PixelifySans-VariableFont_wght.ttf
+Madhav_Kansara/blaster-2-81267.mp3
+Madhav_Kansara/gun-firing-117043.mp3
+Madhav_Kansara/index.html
+Madhav_Kansara/sketch.js
+Madhav_Kansara/spaceship.png
+Madhav_Kansara/style.css
+Navneet_Krishnan.png
+Navneet_Krishnan/battlefeild.jpg
+Navneet_Krishnan/chibideino-left.png
+Navneet_Krishnan/chibideino-right.png
+Navneet_Krishnan/chibihydreigon-left.png
+Navneet_Krishnan/chibihydreigon-right.png
+Navneet_Krishnan/chibizweilous-left.png
+Navneet_Krishnan/chibizweilous-right.png
+Navneet_Krishnan/gible-left.png
+Navneet_Krishnan/gible-right.png
+Navneet_Krishnan/index.html
+Navneet_Krishnan/sketch.js
+Navneet_Krishnan/style.css
+Parikshit.png
+Parikshit/index.html
+Parikshit/sketch.js
+Parikshit/style.css
+Prachi_Khobragade.png
+Prachi_Khobragade/Kawaii Ringtones #6.mp3
+Prachi_Khobragade/index.html
+Prachi_Khobragade/sketch.js
+Prachi_Khobragade/style.css
+Pratyush_Girap.png
+Pratyush_Girap/Background.js
+Pratyush_Girap/Battery.js
+Pratyush_Girap/Fly.js
+Pratyush_Girap/PixelifySans-Regular.ttf
+Pratyush_Girap/index.html
+Pratyush_Girap/night8bit.mp3
+Pratyush_Girap/sketch.js
+Pratyush_Girap/style.css
+Rhea_Pillai.png
+Rhea_Pillai/index.html
+Rhea_Pillai/sketch.js
+Rhea_Pillai/style.css
+Sara_Khan.png
+Sara_Khan/Sound.mp3
+Sara_Khan/bird3.jpg
+Sara_Khan/index.html
+Sara_Khan/sketch.js
+Sara_Khan/style.css
+Sharvari_Joshi.png
+Sharvari_Joshi/Game Over Sound Effect.mp3
+Sharvari_Joshi/index.html
+Sharvari_Joshi/sketch.js
+Sharvari_Joshi/style.css
+Swayam_Kadam.png
+Swayam_Kadam/Particle.js
+Swayam_Kadam/index.html
+Swayam_Kadam/sim.png
+Swayam_Kadam/sketch.js
+Swayam_Kadam/starry 2.jpg
+Swayam_Kadam/style.css
+_shared/libs/p5.dom.min.js
+_shared/libs/p5.js
+_shared/libs/p5.min.js
+_shared/libs/p5.sound.min.js
+_shared/libs/p5.svg.js
+anaya_raul.png
+anaya_raul/index.html
+anaya_raul/sketch.js
+anaya_raul/style.css
+index.html
+script.js
+style.css

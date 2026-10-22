@@ -1,0 +1,111 @@
+# Allowlist for external mount "ssd-creative-coding-2025-26" (jesmehta/SSD_Student_Work, ssd-creative-coding-2025-26/) -- tools/allowlist.mjs.
+# Only the files listed here are published; anything else in the repository is left out and reported.
+# Paths are relative to the mount folder; one file per line; a line starting with '#' is a comment.
+#
+# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
+# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
+# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+Aarya.png
+Aarya_TOSSBIN/Dustbin.png
+Aarya_TOSSBIN/classroom.jpg
+Aarya_TOSSBIN/crumbledpaper.png
+Aarya_TOSSBIN/index.html
+Aarya_TOSSBIN/sketch.js
+Aarya_TOSSBIN/style.css
+Aarya_TOSSBIN/throw.mp3
+Arnav.png
+Arnav/Orbitron-VariableFont_wght.ttf
+Arnav/index.html
+Arnav/sketch.js
+Arnav/style.css
+Deepika.png
+Deepika_Pest_Control/beige.jpeg
+Deepika_Pest_Control/blue.jpeg
+Deepika_Pest_Control/gamesong.mp3
+Deepika_Pest_Control/grass.jpeg
+Deepika_Pest_Control/index.html
+Deepika_Pest_Control/kitchentile.jpeg
+Deepika_Pest_Control/sketch.js
+Deepika_Pest_Control/style.css
+Dhruvi.png
+Dhruvi_Assignment_2/FrederickatheGreat-Regular.ttf
+Dhruvi_Assignment_2/bow.png
+Dhruvi_Assignment_2/butterfly.png
+Dhruvi_Assignment_2/cat.jpg
+Dhruvi_Assignment_2/cherry.jpg
+Dhruvi_Assignment_2/eye.jpg
+Dhruvi_Assignment_2/girl.jpg
+Dhruvi_Assignment_2/girll.jpg
+Dhruvi_Assignment_2/index.html
+Dhruvi_Assignment_2/nishu.JPG
+Dhruvi_Assignment_2/nutella.JPG
+Dhruvi_Assignment_2/paw.png
+Dhruvi_Assignment_2/sketch.js
+Dhruvi_Assignment_2/stars.png
+Dhruvi_Assignment_2/style.css
+Dhruvi_Assignment_2/zeal.JPG
+Harshdeep.png
+Harshdeep_YE_hai_JURRY_WALLA_copy/index.html
+Harshdeep_YE_hai_JURRY_WALLA_copy/sketch.js
+Harshdeep_YE_hai_JURRY_WALLA_copy/style.css
+Ishan.png
+Ishan/index.html
+Ishan/sketch.js
+Ishan/style.css
+Ishan/texas02.png
+Jiya.png
+Jiya_my_name_fliesss/index.html
+Jiya_my_name_fliesss/jiya name.jpg
+Jiya_my_name_fliesss/sketch.js
+Jiya_my_name_fliesss/style.css
+Kamlesh.png
+Kamlesh_guitar_1_final_ver1/guitar.png
+Kamlesh_guitar_1_final_ver1/index.html
+Kamlesh_guitar_1_final_ver1/sketch.js
+Kamlesh_guitar_1_final_ver1/style.css
+Parth.png
+Parth/Road.jpg
+Parth/index.html
+Parth/p5.sound.min.js
+Parth/sketch.js
+Parth/style.css
+Pushti_DINOEATS/black bg.jpg
+Pushti_DINOEATS/blurry forest.jpg
+Pushti_DINOEATS/dark forest.jpg
+Pushti_DINOEATS/forest.jpg
+Pushti_DINOEATS/gaming.mp3
+Pushti_DINOEATS/grass.jpg
+Pushti_DINOEATS/index.html
+Pushti_DINOEATS/sketch.js
+Pushti_DINOEATS/style.css
+Pushti_DinoEats.png
+Sharvani.png
+Sharvani_assignment2.v7/index.html
+Sharvani_assignment2.v7/sketch.js
+Sharvani_assignment2.v7/space2.jpg
+Sharvani_assignment2.v7/style.css
+Sharvil.png
+Sharvil_i_like_ball_final_copy/index.html
+Sharvil_i_like_ball_final_copy/sketch.js
+Sharvil_i_like_ball_final_copy/style.css
+Siah.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/blender.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/collectsound.mp3
+Siah_FINAL_GAME_NEON_JUICE_CENTER/happy.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/index.html
+Siah_FINAL_GAME_NEON_JUICE_CENTER/lemon.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/orangee.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/retro.ttf
+Siah_FINAL_GAME_NEON_JUICE_CENTER/rotapple.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/rotlime.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/sick.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/sketch.js
+Siah_FINAL_GAME_NEON_JUICE_CENTER/strawberryy.png
+Siah_FINAL_GAME_NEON_JUICE_CENTER/style.css
+Siah_FINAL_GAME_NEON_JUICE_CENTER/successful.mp3
+Siah_FINAL_GAME_NEON_JUICE_CENTER/tryagain.mp3
+_shared/libs/p5.js
+_shared/libs/p5.sound.min.js
+index.html
+script.js
+style.css

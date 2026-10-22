@@ -1,0 +1,50 @@
+# Allowlist for external mount "working-with-ai" (jesmehta/working-with-ai) -- tools/allowlist.mjs.
+# Only the files listed here are published; anything else in the repository is left out and reported.
+# Paths are relative to the mount folder; one file per line; a line starting with '#' is a comment.
+#
+# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 58f5ac37: every
+# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
+# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+coding-with-ai/01.html
+coding-with-ai/02.html
+coding-with-ai/03.html
+coding-with-ai/04.html
+coding-with-ai/05.html
+coding-with-ai/06.html
+coding-with-ai/07.html
+coding-with-ai/08.html
+coding-with-ai/09.html
+coding-with-ai/10.html
+coding-with-ai/11.html
+coding-with-ai/12.html
+coding-with-ai/13.html
+coding-with-ai/14.html
+coding-with-ai/15.html
+coding-with-ai/16.html
+coding-with-ai/background.js
+coding-with-ai/connectors.js
+coding-with-ai/index.html
+coding-with-ai/motif.js
+coding-with-ai/sidebar.js
+coding-with-ai/style.css
+index.html
+working-with-ai/01.html
+working-with-ai/02.html
+working-with-ai/03.html
+working-with-ai/04.html
+working-with-ai/05.html
+working-with-ai/06.html
+working-with-ai/07.html
+working-with-ai/08.html
+working-with-ai/09.html
+working-with-ai/10.html
+working-with-ai/11.html
+working-with-ai/12.html
+working-with-ai/13.html
+working-with-ai/14.html
+working-with-ai/15.html
+working-with-ai/16.html
+working-with-ai/background.js
+working-with-ai/motif.js
+working-with-ai/sidebar.js
+working-with-ai/style.css

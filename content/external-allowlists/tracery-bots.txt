@@ -1,0 +1,21 @@
+# Allowlist for external mount "tracery-bots" (jesmehta/TraceryBots) -- tools/allowlist.mjs.
+# Only the files listed here are published; anything else in the repository is left out and reported.
+# Paths are relative to the mount folder; one file per line; a line starting with '#' is a comment.
+#
+# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 2e18cd6e: every
+# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers,
+# and _TraceryTrials/ (owner decision D3b+).
+# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+LICENSE
+MadSolutionistBot/index.html
+MadSolutionistBot/postItBanner.jpeg
+MadSolutionistBot/sketch.js
+MadSolutionistBot/style.css
+MadSolutionistBot/tracery.js
+TrippyGourmetBot/bananaDog_v2_TripLite.jpg
+TrippyGourmetBot/index.html
+TrippyGourmetBot/jquery-3.1.1.min.js
+TrippyGourmetBot/sketch.js
+TrippyGourmetBot/style.css
+TrippyGourmetBot/tracery.js
+index.html

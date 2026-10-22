@@ -1,0 +1,77 @@
+# Allowlist for external mount "ssd-creative-coding-2023-24" (jesmehta/SSD_Student_Work, ssd-creative-coding-2023-24/) -- tools/allowlist.mjs.
+# Only the files listed here are published; anything else in the repository is left out and reported.
+# Paths are relative to the mount folder; one file per line; a line starting with '#' is a comment.
+#
+# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
+# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
+# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+Dhruv_Belekar_code.png
+Dhruv_Belekar_code/index.html
+Dhruv_Belekar_code/sketch.js
+Dhruv_Belekar_code/style.css
+Dhruv_Belekar_project1.png
+Dhruv_Belekar_project1/fireworks-29629.mp3
+Dhruv_Belekar_project1/index.html
+Dhruv_Belekar_project1/sketch.js
+Dhruv_Belekar_project1/style.css
+Kashvi_Shah.png
+Kashvi_Shah/index.html
+Kashvi_Shah/sketch.js
+Kashvi_Shah/style.css
+Mitali_Yeole.png
+Mitali_Yeole/index.html
+Mitali_Yeole/sketch.js
+Mitali_Yeole/style.css
+Reet_singh.png
+Reet_singh/index.html
+Reet_singh/sketch.js
+Reet_singh/style.css
+Scarlett_Dsouza.png
+Scarlett_Dsouza/index.html
+Scarlett_Dsouza/sketch.js
+Scarlett_Dsouza/style.css
+Sia_Jariwala.png
+Sia_Jariwala/index.html
+Sia_Jariwala/sketch.js
+Sia_Jariwala/style.css
+Siddhi_Shethia.png
+Siddhi_Shethia/index.html
+Siddhi_Shethia/sketch.js
+Siddhi_Shethia/style.css
+Tanay_Shetty.png
+Tanay_Shetty/index.html
+Tanay_Shetty/iron-man-repulsor-157371.mp3
+Tanay_Shetty/main-qimg-2923dd2eeae5c94bda4cdfd85996f9c5-lq.jpg
+Tanay_Shetty/sketch.js
+Tanay_Shetty/style.css
+Vaishnavi_Shetty.png
+Vaishnavi_Shetty/index.html
+Vaishnavi_Shetty/sketch.js
+Vaishnavi_Shetty/style.css
+Vivan_gupta.png
+Vivan_gupta/ARNIM.jpg
+Vivan_gupta/Facee.jpg
+Vivan_gupta/index.html
+Vivan_gupta/sketch.js
+Vivan_gupta/style.css
+_shared/libs/p5.js
+_shared/libs/p5.sound.min.js
+index.html
+kaushik.png
+kaushik/index.html
+kaushik/sketch.js
+kaushik/style.css
+kumkum_bharambe.png
+kumkum_bharambe/index.html
+kumkum_bharambe/sketch.js
+kumkum_bharambe/style.css
+script.js
+soham_G.png
+soham_G/index.html
+soham_G/sketch.js
+soham_G/style.css
+style.css
+vignesh_shetty.png
+vignesh_shetty/index.html
+vignesh_shetty/sketch.js
+vignesh_shetty/style.css
