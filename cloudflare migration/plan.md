@@ -1,6 +1,6 @@
 # Cabinet — Cloudflare migration: implementation plan (for approval)
 
-**Date:** 2026-10-22 · **Author:** Claude Code · **Status:** **v3**, revised after Codex C1 (`codex-reviews.md`). The tables below are operative; the "Owner decisions (2026-10-22)" section records how v2 got there.
+**Date:** 2026-10-22 (v3.1: 2026-10-23) · **Author:** Claude Code · **Status:** **v3.1**, revised after Codex C1 and the C2 corrections (archive allowlist, watch-path wording). **The tables and the "v3 additions" section are operative.** The "Owner decisions (2026-10-22)" section at the end is a **historical record of v2**; where it differs, the operative text wins.
 Nothing in Cabinet's application files is changed; only this folder (plan + evidence).
 **Inputs:**
 - Codex [`audit.md`](audit.md) (reviewed at `33788af`; GO for a bounded plan and local experiments, NO-GO for
@@ -59,23 +59,23 @@ Nothing in Cabinet's application files is changed; only this folder (plan + evid
 - **Uncommitted owner work** in Cabinet: `cabinet-material.css`, `scratchNotes.md`, `docs/_images/paper2025_26/`,
   `docs/teaching/paper2025.md`. It is never staged by this work. Every test uses clean clones.
 
-## Owner decisions needed
+## Decisions (all decided by the owner, 2026-10-22)
 
 | # | Topic | Proposal |
 | --- | --- | --- |
 | **D1** | Build placement (audit §5) | **Cloudflare builds directly** (as Bookshelf/FFFX). All six sources are public, so the build clones them anonymously and no credential is needed. GitHub Actions stays only during the overlap, running the same script. If a source ever goes private, decide then: a scoped read-only token as a Cloudflare build secret, or moving that build to Actions |
-| **D2** | External revisions (audit §2) | **Pin every mount to an exact commit SHA**: a new `revision` column in `content/external-repos.tsv`. The build fetches exactly that commit, so the same Cabinet commit always gives the same site, and rollbacks are real. A helper (`npm run update-externals`) resolves each repository's current tip and rewrites the pins and inventories (D3) for review and commit. **An external change appears on the site only after its pin is updated and pushed**; nothing updates silently |
+| **D2** | External revisions (audit §2) | **Pin every mount to an exact commit SHA**: a new `revision` column in `content/external-repos.tsv`. The build fetches exactly that commit, so the same Cabinet commit always gives the same site, and rollbacks are real. `npm run update-externals` (C3) updates the pins and **reports allowlist candidates for review**; it never widens an allowlist itself. **An external change appears on the site only after its pin is updated and pushed**; nothing updates silently |
 | **D3** | Mount publication (audit §3) | **Decided (owner): an explicit allowlist per mount; unlisted files are left out and reported, never a failure.** Rule (D3++): publish only what a visitor sees or needs to run the page. `content/external-allowlists/<id>.txt` lists files one by one, the same syntax and checks as `publish.txt`. A **missing listed file fails** the build (a page would break). Policy errors stay **fatal**: absent or malformed list, absolute path, `..`, wildcard, directory entry, a listed symlink or non-regular file, destination collision. **Explicit exceptions** to the D3++ wording are listed as such: the `LICENSE` notices (D3a) and the archive's two linked v1 downloads (D4) |
 | D3a | `LICENSE` files in mounts | **Keep** (licence notices; harmless) |
 | D3b | Tracery `_TraceryTrials.zip`/`.7z`, `fonts-preview.html`, `app.js__` | **Drop** (not linked: development leftovers) |
 | D3c | Working with AI `README.md`/`DOCUMENTATION.md` | **Drop** (not linked) |
-| **D4** | Archive and downloads | Keep the archive, minus `README.md`, `cabinet-index.md.bak`, v2 `DESIGN-SYSTEM.md`/`LANDING-PAGE-NOTES.md` and the v1 `*.map` files. **Keep** the linked v1 `files/deploy.yml.txt` and `requirements.txt`. **Drop** the unlinked `docs/_downloads/` copies (or keep them, if you link them somewhere) |
+| **D4** | Archive and downloads | **The archive gets its own frozen allowlist** (`content/archive-allowlist.txt`), under the same rules as the mounts (C4). It leaves out `README.md`, `cabinet-index.md.bak`, v2 `DESIGN-SYSTEM.md`/`LANDING-PAGE-NOTES.md` and the v1 `*.map` files, and **lists** the linked v1 `files/deploy.yml.txt` and `requirements.txt` as explicit exceptions. **Drop** the unlinked `docs/_downloads/` copies |
 | D5 | Theme `*.map`, `sitemap.xml.gz` | Drop, as on Bookshelf and FFFX |
-| **D6** | `site_url` | **Add `site_url: https://cabinetofcuriosities.in/`.** The sitemap gains its URLs (now empty), and every page gains a canonical link. That changes every HTML page's bytes, so it is a deliberate content change, compared before and after. The validator then takes the domain from `site_url`, not `docs/CNAME`. Alternative: keep it absent (an empty sitemap, as now) |
+| **D6** | `site_url` | **Add `site_url: https://cabinetofcuriosities.in/`.** The sitemap gains its URLs (now empty), and pages gain a canonical link. Every HTML page's bytes change, so the comparison is two-step and every difference is enumerated (v3 additions). The validator then takes the domain from `site_url`, not `docs/CNAME` |
 | **D7** | Self-domain nav | Make the 10 full-domain nav links **root-relative** (`/teaching/…`), and port the Bookshelf validator fixes (`/` resolves to `index.html`; root-relative nav recognised), with a test per target |
 | D8 | Worker name | `cabinet-of-curiosities` (temporary `cabinet-of-curiosities.jesmehta.workers.dev`). `www` is handled at cutover (a Custom Domain is exact-host; `www` → apex needs a redirect rule). That is a later, separate plan |
-| **D9** | Your uncommitted work | Commit it (as you see fit) **before** implementation starts, or keep it aside. The build script builds the working tree, so uncommitted pages would appear in local builds. This work never stages it |
-| D10 | Local external cache | The build may reuse `_external/<id>` **only if** it is already at the pinned SHA (no network). Otherwise it fetches. This allows offline local rebuilds once fetched (audit §2) |
+| **D9** | Owner's uncommitted work | **Stays uncommitted and unpushed** (owner). This work never stages it. Tests and evidence use clean clones at recorded commits only; a working-tree build may contain it and is never evidence |
+| D10 | Local external cache | Approved, as redefined in v3 (cache trust): `_external/` caches **Git objects**; published bytes come from the pinned commit's tree; a warmed cache builds offline, otherwise the build fetches or fails clearly. Plus the `--external-local` development override (v3 additions, development builds) |
 
 ## Proposed changes (Cabinet repository)
 
@@ -84,7 +84,7 @@ Nothing in Cabinet's application files is changed; only this folder (plan + evid
 | C1 | `tools/build-site.mjs` (new) | The single build, ported from Bookshelf/FFFX: guard → generated-content check (cabinet + now) → `mkdocs build --strict` (`.venv`, `SOURCE_DATE_EPOCH`) → drop `*.map`/`sitemap.xml.gz` → **external mounts (C2)** → **archive (C4)** → route validation → publication check → manifest. The redirect pages are normalised to LF so Windows and Linux builds match |
 | C2 | `tools/assemble-external.js` → `tools/external-mounts.mjs` (new), `content/external-repos.tsv` (`revision` column), `content/external-allowlists/<id>.txt` (new) | For each distinct **(repository, revision)** pair: fetch exactly that commit (no credentials, prompts off, `core.autocrlf=false`, `core.longpaths=true`). Rows sharing a repository **and** revision share one fetch; rows with different revisions are fetched separately, never merged. Verify the resolved commit. Then, for each row, publish **only its allowlist**, reading every listed file's bytes **from the pinned commit's tree (`git cat-file`/`git archive`), never from a working copy**, so a locally edited cached file can never be published under the pinned SHA (C1 I2). Keep the required-file/content checks and the MkDocs-collision refusal. Report unlisted files per mount. The old script is retired; the editor's external-manifest page keeps working with the new column |
 | C3 | `tools/update-externals.mjs` (new) | Owner command: resolve each repository's current tip, update the pins, and print a **review report** per mount: files newly present (allowlist **candidates**), listed files now missing, and changed listed files. It **never adds anything to an allowlist by itself**: approving candidates is a separate, explicit edit (later an admin-page action, ToDo) |
-| C4 | Archive policy | `archived-landing-pages/` copied through an explicit exclusion list (D4) |
+| C4 | Archive policy, `content/archive-allowlist.txt` (new) | `archived-landing-pages/` is published **only through its frozen allowlist** (D4), with the same checks as a mount allowlist: unlisted files are left out and reported; a **missing listed file fails**; an absent or malformed list, absolute path, `..`, wildcard, directory entry, listed symlink or non-regular file, and a destination collision are **fatal**. The archive is Cabinet's own content, so it is read from the Cabinet tree being built |
 | C5 | `mkdocs.yml`, `tools/validate-deployment.js` | D6 `site_url`; D7 root-relative nav; validator fixes and tests; validator domain from `site_url` |
 | C6 | `wrangler.jsonc`, `package.json` + lock, `requirements-lock.txt`, `.gitignore` | As FFFX: assets-only `./public`, `404-page`, `workers_dev: true`, `preview_urls: false`; Wrangler 4.149.0; the lock from a clean venv (48 packages above); ignore `public/`, `releases/`, `_external/`, `.venv/` … The `landing-v3` package stays separate and untouched |
 | C7 | `tools/save-artifact.mjs`, `verify-artifact.mjs`, `manifest.mjs`; `build-info.json` outside `public/` | Ported. Every build writes `build-info.json` **next to, not inside, `public/`** (never served): source commit, dirty flag, every external `(repository, revision)`, and whether any `--external-local` override was used. `save-artifact` copies it into the release and **refuses** development builds; `verify-artifact` **refuses** a release whose `build-info.json` is missing or marks a development build. `npm run deploy` always runs a fresh **pinned** build first, so it can never deploy a development `public/` (C1 I1) |
@@ -109,7 +109,9 @@ promote step, MkDocs content/theme (except D6/D7), external repositories, the si
    `..`, wildcard or directory entry; a listed symlink or non-regular file; a destination collision; a missing
    required file; stale generated content; `docs/index.md`; **a modified cached file at an unchanged HEAD is not
    published** (the pinned blob is); conflicting revisions for one repository handled as two fetches.
-   **Must succeed:** an unlisted file present in a mount (omitted and reported).
+   **The same rejection set for the archive allowlist** (C4): a listed file missing; absent or malformed list;
+   absolute, `..`, wildcard or directory entry; listed symlink or non-regular file; destination collision.
+   **Must succeed:** an unlisted file present in a mount or in the archive (omitted and reported).
 4b. **Development boundary (C1 I1):** an `--external-local` build → `save-artifact` refuses; `npm run deploy`
    rebuilds pinned; `verify-artifact` refuses a deliberately packaged development release; provenance is absent from
    `public/`.
@@ -124,7 +126,9 @@ promote step, MkDocs content/theme (except D6/D7), external repositories, the si
    with the new column, admin generation and MkDocs check through the launcher, sitemap button with sibling clones,
    `update-externals`, then the full build. Landing build/promote with an installed browser.
 8. **Cloudflare:** the owner creates the Worker (with the Git-App pre-check); byte check against a local build;
-   watch paths (docs-only skip, runtime deploy); rollback and saved-artifact restore; an independent static server
+   watch paths: a push changing **only internal documentation** (`cloudflare migration/`, `documentation/`,
+   `README.md`, `DEPLOYMENT.md`) is skipped; a push changing **website content under `docs/`** (and, by rule, the TSVs,
+   allowlists, pins, locks, scripts and configuration) **deploys**. Both pushes are proved, as on FFFX; rollback and saved-artifact restore; an independent static server
    serving a saved release.
 9. **Domain** (separate plan and approval): apex + `www`, after FFFX closes.
 
@@ -200,9 +204,13 @@ Until cutover, GitHub Pages stays live. With C8, it is built by the same script,
 approved D-items. Every change is an ordinary commit. After cutover: Cloudflare rollback, saved-artifact redeploy,
 then the shared-zone runbook.
 
-## Owner decisions (2026-10-22) and v2 changes
+## Historical: owner decisions (2026-10-22) and the v2 changes
 
-**Status: v2.** The decisions below supersede the D-table proposals above where they differ.
+**Historical record, not operative.** This is how v2 recorded the owner's decisions. Some v2 claims here were
+superseded by v3 after Codex C1: partial clone is now an experiment, not a commitment (D1); the archive allowlist is
+specified in C4; the D6 comparison enumerates every difference rather than expecting only a canonical line; and the
+development-build boundary covers save, verify and deploy, not only `save-artifact` (D10). The operative text is the
+Decisions and changes tables and the "v3 additions" section above.
 
 | # | Decision | v2 change |
 | --- | --- | --- |
@@ -233,5 +241,6 @@ then the shared-zone runbook.
 ## Approval requested
 
 1. **D1–D10** decided (above). Open: the `sitemap.xml` scope, if the proposal does not fit.
-2. Codex review of plan v2.
-3. Then implementation with local commits only. No push before the owner approves.
+2. Codex review of plan **v3** (C2: GO for bounded implementation and local tests, with the corrections now in v3.1).
+3. Implementation with local commits only, then a Codex post-implementation review. No push before the owner
+   approves.

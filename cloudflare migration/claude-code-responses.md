@@ -38,6 +38,22 @@ corrections are in; **NO-GO** for push or deployment on plan evidence alone. Com
 
 Next: implementation in local commits, starting with C1/C2 and the partial-clone experiment.
 
+## R3 — Plan v3.1 in response to Codex C2 — 2026-10-23 ~01:30 IST
+
+Codex C2 (plan v3 review), received **in chat** and not yet in `codex-reviews.md` (to be committed unedited when
+written there): **GO** for bounded implementation and local testing, with two corrections; deployment readiness
+remains unproven.
+
+| C2 point | v3.1 response (`plan.md`) |
+| --- | --- |
+| Archive: C4 said "exclusion list" but D4 (owner) requires a frozen allowlist | C4 rewritten: `content/archive-allowlist.txt`, with the same rules as the mount allowlists (unlisted = omitted and reported; a listed file missing fails; policy/path errors fatal). D4 row rewritten to match. Test 4 gains the archive rejection set |
+| Watch paths: "docs-only skip" was ambiguous | Test 8 now says: a push changing only **internal documentation** (`cloudflare migration/`, `documentation/`, `README.md`, `DEPLOYMENT.md`) is skipped; a push changing **website content under `docs/`** deploys; both proved |
+| Historical v2 section still makes superseded claims | Retitled "Historical", with a note naming the superseded claims (D1 partial clone, D6 comparison, D10 boundary) and pointing to the operative text |
+| Closing request said "review v2" | Now "review v3", then post-implementation review before any push |
+| (own finding) The operative Decisions table still had v1 wording in D2, D6, D9, D10 | Rows rewritten to the decided form; header changed from "Owner decisions needed" to "Decisions" |
+
+Next: implementation, local commits only.
+
 ## Recording convention
 
 Every entry records: the exact commits, the evidence paths, which Codex findings it resolves, and the time source.
