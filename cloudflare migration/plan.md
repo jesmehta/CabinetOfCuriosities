@@ -1,6 +1,6 @@
 # Cabinet — Cloudflare migration: implementation plan (for approval)
 
-**Date:** 2026-10-22 · **Author:** Claude Code · **Status:** proposal **v2** (owner decisions D1–D10 recorded at the end), for Codex review.
+**Date:** 2026-10-22 · **Author:** Claude Code · **Status:** **v3**, revised after Codex C1 (`codex-reviews.md`). The tables below are operative; the "Owner decisions (2026-10-22)" section records how v2 got there.
 Nothing in Cabinet's application files is changed; only this folder (plan + evidence).
 **Inputs:**
 - Codex [`audit.md`](audit.md) (reviewed at `33788af`; GO for a bounded plan and local experiments, NO-GO for
@@ -65,7 +65,7 @@ Nothing in Cabinet's application files is changed; only this folder (plan + evid
 | --- | --- | --- |
 | **D1** | Build placement (audit §5) | **Cloudflare builds directly** (as Bookshelf/FFFX). All six sources are public, so the build clones them anonymously and no credential is needed. GitHub Actions stays only during the overlap, running the same script. If a source ever goes private, decide then: a scoped read-only token as a Cloudflare build secret, or moving that build to Actions |
 | **D2** | External revisions (audit §2) | **Pin every mount to an exact commit SHA**: a new `revision` column in `content/external-repos.tsv`. The build fetches exactly that commit, so the same Cabinet commit always gives the same site, and rollbacks are real. A helper (`npm run update-externals`) resolves each repository's current tip and rewrites the pins and inventories (D3) for review and commit. **An external change appears on the site only after its pin is updated and pushed**; nothing updates silently |
-| **D3** | Mount publication (audit §3) | **Global exclusions + a committed per-mount inventory.** Global: dotfiles, `*.md`, `*.bak`, `*.map`, `*.js__`, `documentation/`, `node_modules/`, `.github/`, and archives (`*.zip`, `*.7z`) unless a mount allows them. Per mount, `content/external-inventory/<id>.txt` lists every published path. The build **fails if the filtered mount differs from its inventory**, so any new file in an external repository needs a reviewed commit. A hand-written `publish.txt` for 296 student-work files would be unmaintainable; the generated inventory gives the same explicitness |
+| **D3** | Mount publication (audit §3) | **Decided (owner): an explicit allowlist per mount; unlisted files are left out and reported, never a failure.** Rule (D3++): publish only what a visitor sees or needs to run the page. `content/external-allowlists/<id>.txt` lists files one by one, the same syntax and checks as `publish.txt`. A **missing listed file fails** the build (a page would break). Policy errors stay **fatal**: absent or malformed list, absolute path, `..`, wildcard, directory entry, a listed symlink or non-regular file, destination collision. **Explicit exceptions** to the D3++ wording are listed as such: the `LICENSE` notices (D3a) and the archive's two linked v1 downloads (D4) |
 | D3a | `LICENSE` files in mounts | **Keep** (licence notices; harmless) |
 | D3b | Tracery `_TraceryTrials.zip`/`.7z`, `fonts-preview.html`, `app.js__` | **Drop** (not linked: development leftovers) |
 | D3c | Working with AI `README.md`/`DOCUMENTATION.md` | **Drop** (not linked) |
@@ -82,12 +82,12 @@ Nothing in Cabinet's application files is changed; only this folder (plan + evid
 | # | File | Change |
 | --- | --- | --- |
 | C1 | `tools/build-site.mjs` (new) | The single build, ported from Bookshelf/FFFX: guard → generated-content check (cabinet + now) → `mkdocs build --strict` (`.venv`, `SOURCE_DATE_EPOCH`) → drop `*.map`/`sitemap.xml.gz` → **external mounts (C2)** → **archive (C4)** → route validation → publication check → manifest. The redirect pages are normalised to LF so Windows and Linux builds match |
-| C2 | `tools/assemble-external.js` → `tools/external-mounts.mjs` (new), plus `content/external-repos.tsv` (`revision` column) | Fetch each pinned SHA (`git init` + `fetch --depth 1 origin <sha>`, `core.autocrlf=false`, `core.longpaths=true`, prompts off, no credentials); verify the resolved SHA; copy the (sub)folder through the D3 filter; compare with `content/external-inventory/<id>.txt`; keep the existing required-file/content checks and MkDocs-collision refusal. **One fetch per repository**, not per row (SSD is fetched once, not three times). D10 cache. The old script is retired; the editor's external-manifest page keeps working with the new column |
-| C3 | `tools/update-externals.mjs` (new) | Owner command: resolve tips, update pins, regenerate inventories, print a diff summary (new/removed files per mount) |
+| C2 | `tools/assemble-external.js` → `tools/external-mounts.mjs` (new), `content/external-repos.tsv` (`revision` column), `content/external-allowlists/<id>.txt` (new) | For each distinct **(repository, revision)** pair: fetch exactly that commit (no credentials, prompts off, `core.autocrlf=false`, `core.longpaths=true`). Rows sharing a repository **and** revision share one fetch; rows with different revisions are fetched separately, never merged. Verify the resolved commit. Then, for each row, publish **only its allowlist**, reading every listed file's bytes **from the pinned commit's tree (`git cat-file`/`git archive`), never from a working copy**, so a locally edited cached file can never be published under the pinned SHA (C1 I2). Keep the required-file/content checks and the MkDocs-collision refusal. Report unlisted files per mount. The old script is retired; the editor's external-manifest page keeps working with the new column |
+| C3 | `tools/update-externals.mjs` (new) | Owner command: resolve each repository's current tip, update the pins, and print a **review report** per mount: files newly present (allowlist **candidates**), listed files now missing, and changed listed files. It **never adds anything to an allowlist by itself**: approving candidates is a separate, explicit edit (later an admin-page action, ToDo) |
 | C4 | Archive policy | `archived-landing-pages/` copied through an explicit exclusion list (D4) |
 | C5 | `mkdocs.yml`, `tools/validate-deployment.js` | D6 `site_url`; D7 root-relative nav; validator fixes and tests; validator domain from `site_url` |
 | C6 | `wrangler.jsonc`, `package.json` + lock, `requirements-lock.txt`, `.gitignore` | As FFFX: assets-only `./public`, `404-page`, `workers_dev: true`, `preview_urls: false`; Wrangler 4.149.0; the lock from a clean venv (48 packages above); ignore `public/`, `releases/`, `_external/`, `.venv/` … The `landing-v3` package stays separate and untouched |
-| C7 | `tools/save-artifact.mjs`, `verify-artifact.mjs`, `manifest.mjs` | Ported. `SOURCE.txt` also records **every external pin**, so a release fully identifies its inputs |
+| C7 | `tools/save-artifact.mjs`, `verify-artifact.mjs`, `manifest.mjs`; `build-info.json` outside `public/` | Ported. Every build writes `build-info.json` **next to, not inside, `public/`** (never served): source commit, dirty flag, every external `(repository, revision)`, and whether any `--external-local` override was used. `save-artifact` copies it into the release and **refuses** development builds; `verify-artifact` **refuses** a release whose `build-info.json` is missing or marks a development build. `npm run deploy` always runs a fresh **pinned** build first, so it can never deploy a development `public/` (C1 I1) |
 | C8 | `.github/workflows/deploy.yml` | Runs `node tools/build-site.mjs` with the lock (overlap only; retired later) |
 | C9 | 4 `.bat` launchers | `cd /d "%~dp0"`; activate `.venv`, so the admin dashboard's `python`/`mkdocs` and the "MkDocs check" use the pinned environment |
 | C10 | `DEPLOYMENT.md` (new), `README.md` | Runbook: build, preview, editors, update externals, deploy, restore, other hosts, the Git-App pre-check (checklist §5) |
@@ -101,12 +101,20 @@ promote step, MkDocs content/theme (except D6/D7), external repositories, the si
 1. **Baseline:** done (above). Plus screenshots and functional records of the landing page (desktop and mobile),
    compass/dragons, Now, a gallery lightbox, teaching hub, each mount's entry page, and the archive.
 2. **Determinism:** two builds identical; clean clones (`autocrlf` true/false) identical to the repo build; the
-   **D10 cache build equals the network build**.
+   **warm-cache build equals the network build**, and succeeds with the network unavailable (C1 I2).
 3. **Equivalence with live:** the new artifact equals the baseline minus the excluded files (listed exactly), plus
    the D6/D7 changes, which are compared and explained page by page.
-4. **Rejections:** an unpinned row; a SHA that does not resolve; a mount file not in the inventory; an inventory file
-   missing from the mount; an excluded type reaching `public/`; a destination collision; a path escape; a missing
-   required file; stale generated content; `docs/index.md`. Each must fail the build, and runners exit nonzero.
+4. **Rejections** (must fail, runners exit nonzero): an unpinned row; a revision that does not resolve or whose
+   objects are unavailable offline; **a listed file missing** at the pin; an absent or malformed allowlist; an absolute,
+   `..`, wildcard or directory entry; a listed symlink or non-regular file; a destination collision; a missing
+   required file; stale generated content; `docs/index.md`; **a modified cached file at an unchanged HEAD is not
+   published** (the pinned blob is); conflicting revisions for one repository handled as two fetches.
+   **Must succeed:** an unlisted file present in a mount (omitted and reported).
+4b. **Development boundary (C1 I1):** an `--external-local` build → `save-artifact` refuses; `npm run deploy`
+   rebuilds pinned; `verify-artifact` refuses a deliberately packaged development release; provenance is absent from
+   `public/`.
+4c. **Sitemap:** the generated `sitemap.xml` follows the sitemap rule below; every URL resolves to intended public
+   content on the local server.
 5. **HTTP on `wrangler dev`, then `workers.dev`:** every file byte-identical; routes; FFFX redirects; negative URLs
    (every excluded file, repository internals, editors); real 404 page.
 6. **Behaviour:** browser comparison against live, with fixed random seeds as on FFFX: landing map, dragons and
@@ -119,6 +127,61 @@ promote step, MkDocs content/theme (except D6/D7), external repositories, the si
    watch paths (docs-only skip, runtime deploy); rollback and saved-artifact restore; an independent static server
    serving a saved release.
 9. **Domain** (separate plan and approval): apex + `www`, after FFFX closes.
+
+## v3 additions after Codex C1
+
+**Development builds (I1).** `--external-local <id>=<path>` exists for previewing changes to an external project.
+Such a build is recorded as a development build in `build-info.json` (outside `public/`). The supported routes
+refuse it:
+- `save-artifact`, `verify-artifact`: refuse.
+- `npm run deploy`: always rebuilds pinned.
+
+The documented manual recovery deploy is: `verify-artifact`, then `wrangler deploy --assets releases/<name>/site`.
+**Limit:** a raw `wrangler deploy --assets public` by hand bypasses these wrappers. The runbook says so, and says
+never to do it.
+
+**Cache trust (I2).** `_external/` is a cache of **Git objects**, not of files.
+- Published bytes always come from the pinned commit's tree; a working-copy edit is invisible to the build.
+- The cache is checked for the right repository URL. If the pinned commit is not present, it is fetched (or, offline,
+  the build fails clearly).
+- The build never resets or cleans a checkout it did not create. The owner's own development clones are only
+  ever used through `--external-local`.
+- **Partial clone plus sparse checkout** (`--filter=blob:none`, fetching only listed blobs) is an **optimisation
+  to prove in an experiment**. Acceptance: newly listed paths at the same SHA become available; a warmed cache builds
+  offline; bytes and time are measured. If it cannot meet these, the simpler shallow fetch of the pinned commit
+  stays.
+
+**Allowlist generation (I3).** Browser capture is one **candidate generator**, used together with:
+1. Source inspection: every `loadImage`/`loadSound`/`fetch`/`import`/`<script>`/CSS `url()`, fonts, workers and
+   WASM.
+2. **Scenario coverage:** SSD games played with audio unlocked by interaction and later levels reached; Swatch
+   Fields' modes; Tracery bots generating; archive navigation and the intentional downloads.
+3. An **inventory of every source HTML entry**, each classified as public, excluded or redirect. Linked paths are
+   reviewed, not published recursively.
+
+Case-sensitive path checks are included (Linux is case-sensitive; Windows is not). The candidate artifact is then
+validated by those same scenarios.
+
+**Sitemap rule.** `sitemap.xml` = MkDocs' pages **plus** each mount's public entry page and each SSD student
+project page, under the canonical `https://cabinetofcuriosities.in/` (never `workers.dev`). It excludes:
+- 404/error pages, redirect stubs, helpers and templates;
+- pages marked `noindex` or canonical elsewhere;
+- the archive.
+
+It is deduplicated by final URL, uses proper XML escaping, and has deterministic order and dates. It is still plain
+XML (D5). It is separate from the human `compass/sitemap` page and its tool, which are unchanged.
+
+**Comparisons (C1).** The D6 effect is an expectation to test, not an assumption. The sequence:
+1. Pinned and filtered build without D6/D7, against the baseline: only the approved removals differ.
+2. With D6/D7 and the sitemap: **every** difference enumerated and explained.
+
+The retained baseline exceptions are explained and left as they are: the Windows redirect newlines (normalised by
+the build) and the malformed About-page markup (content, untouched).
+
+**Accepted exceptions (C1).** The three Tracery index links to `_TraceryTrials` folders will 404. They are recorded
+by exact URL as owner-accepted, until the TraceryBots repository is cleaned up (ToDo); the link check reports them as
+known exceptions. Owner work (D9) stays uncommitted: tests use clean clones at recorded commits only, and
+working-tree builds are never presented as evidence.
 
 ## Risks
 
