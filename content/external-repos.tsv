@@ -1,9 +1,9 @@
-id	name	repository	subfolder	destination	requiredFiles	requiredContent	status	notes
-working-with-ai	Working with AI	jesmehta/working-with-ai		teaching/working-with-ai	index.html;working-with-ai/01.html		true	
-prompt-generator	Prompt Generator	jesmehta/PromptGenerator		teaching/prompt-generator	index.html;app.js		true	
-oblique-strategies	Oblique Strategies	jesmehta/ObliqueStrategies		teaching/oblique-strategies	index.html	index.html|Oblique Strategies	true	Single-file app -- no second file to require, so content match is the only real signal a full checkout landed.
-ssd-creative-coding-2025-26	SSD Creative Coding 2025-26	jesmehta/SSD_Student_Work	ssd-creative-coding-2025-26	teaching/ssd-creative-coding-2025-26	index.html;script.js		true	
-ssd-creative-coding-2024-25	SSD Creative Coding 2024-25	jesmehta/SSD_Student_Work	ssd-creative-coding-2024-25	teaching/ssd-creative-coding-2024-25	index.html;script.js		true	
-ssd-creative-coding-2023-24	SSD Creative Coding 2023-24	jesmehta/SSD_Student_Work	ssd-creative-coding-2023-24	teaching/ssd-creative-coding-2023-24	index.html;script.js		true	
-swatch-fields	Swatch Fields	jesmehta/swatchFields		swatch-fields	index.html;swatch_lookup.json		true	
-tracery-bots	Tracery Bots	jesmehta/TraceryBots		tracery-bots	index.html;TrippyGourmetBot/sketch.js;MadSolutionistBot/sketch.js		true	
+id	name	repository	revision	subfolder	destination	requiredFiles	requiredContent	status	notes
+working-with-ai	Working with AI	jesmehta/working-with-ai	58f5ac37855f35bd9f12a44ba04cb735b265eeda		teaching/working-with-ai	index.html;working-with-ai/01.html		true	
+prompt-generator	Prompt Generator	jesmehta/PromptGenerator	5532f3063d924288b8f898879f105299eea1235e		teaching/prompt-generator	index.html;app.js		true	
+oblique-strategies	Oblique Strategies	jesmehta/ObliqueStrategies	bb5ca3be3fedb2006de3d0cea3f268f771c57aa3		teaching/oblique-strategies	index.html	index.html|Oblique Strategies	true	Single-file app -- no second file to require, so content match is the only real signal a full checkout landed.
+ssd-creative-coding-2025-26	SSD Creative Coding 2025-26	jesmehta/SSD_Student_Work	45be517c6ffff2d3ff3b53b3f66cc31579de08b1	ssd-creative-coding-2025-26	teaching/ssd-creative-coding-2025-26	index.html;script.js		true	
+ssd-creative-coding-2024-25	SSD Creative Coding 2024-25	jesmehta/SSD_Student_Work	45be517c6ffff2d3ff3b53b3f66cc31579de08b1	ssd-creative-coding-2024-25	teaching/ssd-creative-coding-2024-25	index.html;script.js		true	
+ssd-creative-coding-2023-24	SSD Creative Coding 2023-24	jesmehta/SSD_Student_Work	45be517c6ffff2d3ff3b53b3f66cc31579de08b1	ssd-creative-coding-2023-24	teaching/ssd-creative-coding-2023-24	index.html;script.js		true	
+swatch-fields	Swatch Fields	jesmehta/swatchFields	4c891843989e25841eee02c1b0cd548cc0e0ca4b		swatch-fields	index.html;swatch_lookup.json		true	
+tracery-bots	Tracery Bots	jesmehta/TraceryBots	2e18cd6ee075b1403cd2bea0dff6a66f8e3ede12		tracery-bots	index.html;TrippyGourmetBot/sketch.js;MadSolutionistBot/sketch.js		true	

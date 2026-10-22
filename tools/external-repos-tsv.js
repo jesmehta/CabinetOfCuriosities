@@ -10,13 +10,19 @@
 
 const { parseTsv, serializeTsv, parseList } = require("./cabinet-tsv");
 
-const EXTERNAL_REPOS_COLS = ["id", "name", "repository", "subfolder", "destination", "requiredFiles", "requiredContent", "status", "notes"];
+const EXTERNAL_REPOS_COLS = ["id", "name", "repository", "revision", "subfolder", "destination", "requiredFiles", "requiredContent", "status", "notes"];
 const STATUS_VALUES = ["true", "false", "wip"];
 
 // "owner/repo" only -- this string is passed straight to `git clone
 // https://github.com/<repository>.git`, so it's validated strictly enough
 // to rule out shell/URL injection via a hand-edited TSV cell.
 const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
+
+// The exact commit published (Cloudflare migration, owner decision D2): a full
+// 40-character lowercase SHA, required for every active (status true) row, so
+// the same Cabinet commit always publishes the same external bytes. Updated
+// only on purpose (tools/update-externals.mjs, then review and commit).
+const REVISION_PATTERN = /^[0-9a-f]{40}$/;
 
 function isBlank(value) {
   return value === undefined || value === null || String(value).trim() === "";
@@ -69,6 +75,13 @@ function findExternalRepoProblems(rows) {
       problems.push({ index, id: label, field: "repository", message: `repository "${row.repository}" must look like "owner/repo"` });
     }
 
+    const revision = (row.revision || "").trim();
+    if (revision && !REVISION_PATTERN.test(revision)) {
+      problems.push({ index, id: label, field: "revision", message: `revision "${revision}" must be a full 40-character lowercase commit SHA` });
+    } else if (!revision && (row.status || "").trim().toLowerCase() === "true") {
+      problems.push({ index, id: label, field: "revision", message: "revision is required for an active row (a full 40-character commit SHA; see tools/update-externals.mjs)" });
+    }
+
     if (isBlank(row.destination)) problems.push({ index, id: label, field: "destination", message: "destination is required" });
     else {
       const destination = row.destination.trim().replace(/^\/+|\/+$/g, "");
@@ -98,7 +111,7 @@ function validateExternalRepos(rows) {
 }
 
 module.exports = {
-  EXTERNAL_REPOS_COLS, STATUS_VALUES, REPOSITORY_PATTERN,
+  EXTERNAL_REPOS_COLS, STATUS_VALUES, REPOSITORY_PATTERN, REVISION_PATTERN,
   readExternalRepos, writeExternalRepos,
   parseRequiredFiles, parseRequiredContent,
   findExternalRepoProblems, validateExternalRepos,
