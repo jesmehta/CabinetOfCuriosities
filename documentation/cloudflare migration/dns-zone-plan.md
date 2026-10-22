@@ -234,3 +234,6 @@ health.
   it is unexplained (possibly hidden as system-managed). Residual risk accepted for now: the tokens are held by
   Cloudflare's build system and never stored in a repository. A narrower custom token remains an optional later
   hardening step.
+- **2026-10-22 ~09:05 IST — FFFX Phase C:** `fffx` CNAME deleted and Custom Domain added on Worker
+  `form-follows-fx` (owner). Checks at 03:36 UTC: 79/79 byte-identical; TLS verified; tool paths 404. Hold until
+  2026-10-23 09:06 IST. Details: `form-follows-fx/cloudflare migration/migration-log.md`.
