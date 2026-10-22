@@ -28,9 +28,11 @@ Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare mi
 
 - [x] **10.** Audit MkDocs and the static gallery build. **Codex:** identify output directory, gallery assets, exhibits, navigation and absolute/relative paths. *Done 2026-10-20: Codex `TheBookshelfOfCuriosities/cloudflare migration/audit.md` (at `296a88f`).*
 - [x] **11.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement only required build changes; verify galleries, Markdown pages, thumbnails, static exhibits and unchanged AI-independent CMS operation. *Done 2026-10-21: preview `bookshelf-of-curiosities.jesmehta.workers.dev`, byte-identical to local builds (220/220) across 3 automatic deploys; interaction tests 86/86; editor (CMS) tested unchanged; owner-run rollback and saved-artifact restore verified. Evidence: Bookshelf `cloudflare migration/migration-log.md`.*
-- [ ] **12.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a subsequent push and deployment.
+- [x] **12.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a subsequent push and deployment.
+  *Done 2026-10-22 (Bookshelf): repository private; private-source build `e1efd415` verified 220/220.*
   - *Prerequisite before 13 (unnumbered; shared with FFFX 17 and Cabinet 23):* confirm whether GoDaddy is registrar only or also authoritative DNS for `cabinetofcuriosities.in`. Workers Custom Domains need an active Cloudflare DNS zone, so a separate, owner-approved move of the whole zone (all subdomains, email and verification records, DNSSEC) may be needed first. See notes §8, "Existing domains and GoDaddy". Not exercised by the Dot Mandala pilot (no custom domain).
-- [ ] **13.** Switch the Bookshelf subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, deep links and rollback.
+- [x] **13.** Switch the Bookshelf subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, deep links and rollback.
+  *Done 2026-10-20/22 (Bookshelf): Custom Domain on the Worker; hostname acceptance 220/220; 24 h hold; GitHub Pages retired.*
 
 ## 4. FFFX (4)
 
