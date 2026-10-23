@@ -1,4 +1,7 @@
 site_name: The Cabinet of Curiosities
+# Canonical address (Cloudflare migration D6): gives sitemap.xml its URLs and every page a
+# canonical link; tools/validate-deployment.js reads this site's domain from here.
+site_url: https://cabinetofcuriosities.in/
 site_description: A Collection of Jesal's eclectic interests
 site_author: Jesal Mehta
 copyright: Copyright 2024 Jesal Mehta - Creative Commons Attribution Non Commercial
@@ -13,19 +16,19 @@ nav:
     - teaching/index.md
     - Playing with Pulp : teaching/papiermache.md
     - Dragons of SSD : teaching/dragons.md
-    - SSD Creative Coding 2025-26 : https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2025-26/
-    - SSD Creative Coding 2024-25 : https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2024-25/
-    - SSD Creative Coding 2023-24 : https://cabinetofcuriosities.in/teaching/ssd-creative-coding-2023-24/
-    - Working with AI : https://cabinetofcuriosities.in/teaching/working-with-ai/
-    - Prompt Generator : https://cabinetofcuriosities.in/teaching/prompt-generator/
-    - Oblique Strategies : https://cabinetofcuriosities.in/teaching/oblique-strategies/
+    - SSD Creative Coding 2025-26 : /teaching/ssd-creative-coding-2025-26/
+    - SSD Creative Coding 2024-25 : /teaching/ssd-creative-coding-2024-25/
+    - SSD Creative Coding 2023-24 : /teaching/ssd-creative-coding-2023-24/
+    - Working with AI : /teaching/working-with-ai/
+    - Prompt Generator : /teaching/prompt-generator/
+    - Oblique Strategies : /teaching/oblique-strategies/
   - Machines & Makings :
     - makings/index.md
     - MiniLoom : makings/mini_loom.md
     - Origami & Paper : makings/origami-paper.md
     - Lasercutting : makings/lasercutting.md
     - Drawing Machines : makings/drawing-machines.md
-    - Swatch Fields : https://cabinetofcuriosities.in/swatch-fields/
+    - Swatch Fields : /swatch-fields/
     # - 3D Printing :
     #   - Print Projects :
     #     - Mecha : 3dp/3DP_mecha.md
@@ -61,10 +64,10 @@ nav:
     - Tracery Bots :
       - webtech/traceryBots.md
       # - Trippy Gourmet : webtech/trippyGourmet.md
-      - Trippy Gourmet : https://cabinetofcuriosities.in/tracery-bots/TrippyGourmetBot/
-      - Mad Solutionist : https://cabinetofcuriosities.in/tracery-bots/MadSolutionistBot/
+      - Trippy Gourmet : /tracery-bots/TrippyGourmetBot/
+      - Mad Solutionist : /tracery-bots/MadSolutionistBot/
     - Twine : webtech/emergent_twine.md
-    - Swatch Fields : https://cabinetofcuriosities.in/swatch-fields/
+    - Swatch Fields : /swatch-fields/
   - Bookshelf of Curiosities : https://bookshelf.cabinetofcuriosities.in/
   - Form follows f(x) : https://fffx.cabinetofcuriosities.in/
 

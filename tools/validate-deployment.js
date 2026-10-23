@@ -15,10 +15,14 @@
 //      included because tools/generate_sitemap.py links true AND wip rows
 //      on the public /sitemap/ page -- only false rows are never linked
 //      anywhere.
-//   2. mkdocs.yml's nav: tree -- only its absolute-URL leaves that point
-//      at this site's own domain (read from docs/CNAME); a leaf naming a
+//   2. mkdocs.yml's nav: tree -- its root-relative leaves ("/teaching/...")
+//      and any absolute-URL leaves on this site's own domain (site_url in
+//      mkdocs.yml; it used to be read from docs/CNAME); a leaf naming a
 //      source .md file is left alone, since `mkdocs build --strict`
 //      already fails on an unresolvable one, earlier in the pipeline.
+//      "/" resolves to public/index.html (the landing page) instead of
+//      being skipped. (Cloudflare migration C5, 2026-10-23, ported from
+//      Bookshelf's copy.)
 //   3. Doc-body links inside docs/**/*.md -- sourced from `mkdocs build`'s
 //      own "unrecognized relative link" INFO-level log lines (present on
 //      every plain, non---verbose run) rather than a hand-rolled markdown
@@ -50,7 +54,12 @@ const root = path.resolve(__dirname, "..");
 const entriesPath = path.join(root, "content", "cabinet-entries.tsv");
 const sectionsPath = path.join(root, "content", "cabinet-sections.tsv");
 const mkdocsConfigPath = path.join(root, "mkdocs.yml");
-const cnamePath = path.join(root, "docs", "CNAME");
+
+function readSiteBase(raw) {
+  const m = /^site_url:\s*(\S+)\s*$/m.exec(raw);
+  if (!m) throw new Error("mkdocs.yml has no site_url -- needed to tell self-domain links from external ones");
+  return m[1].endsWith("/") ? m[1] : `${m[1]}/`;
+}
 
 function parseArgs(argv) {
   const args = { publicDir: "public", buildLog: "mkdocs-build.log" };
@@ -73,7 +82,7 @@ function resolveRoutePath(publicDir, rootRelativeHref) {
   const withoutFragment = rootRelativeHref.split("#")[0];
   if (!withoutFragment) return null; // pure same-page anchor, e.g. "#foo"
   const clean = withoutFragment.replace(/^\/+/, "");
-  if (!clean) return null;
+  if (!clean) return path.join(publicDir, "index.html"); // "/" -- the site root, i.e. the landing page
 
   if (clean.endsWith("/")) return path.join(publicDir, clean, "index.html");
   if (path.extname(clean)) return path.join(publicDir, clean);
@@ -144,10 +153,15 @@ function checkNavTargets(publicDir, siteBase, errors) {
   const leaves = parseMkdocsNavLeaves(fs.readFileSync(mkdocsConfigPath, "utf8"));
   let checked = 0;
   for (const { label, target } of leaves) {
-    if (!/^https?:\/\//i.test(target)) continue; // a source .md path -- mkdocs --strict already validated it
-    if (!target.startsWith(siteBase)) continue; // genuinely external (a sibling world, GitHub, Fabacademy, ...)
-
-    const rootRelative = target.slice(siteBase.length - 1); // keep the leading "/"
+    let rootRelative;
+    if (target.startsWith("/") && !target.startsWith("//")) {
+      rootRelative = target; // root-relative, e.g. "/teaching/working-with-ai/" -- a route on this site
+    } else if (/^https?:\/\//i.test(target)) {
+      if (!target.startsWith(siteBase)) continue; // genuinely external (a sibling world, GitHub, Fabacademy, ...)
+      rootRelative = target.slice(siteBase.length - 1); // keep the leading "/"
+    } else {
+      continue; // a source .md path -- mkdocs --strict already validated it
+    }
     const result = checkRoute(publicDir, rootRelative);
     if (result.skipped) continue;
     checked++;
@@ -230,7 +244,7 @@ function main() {
   const publicDir = path.resolve(root, publicDirArg);
   const buildLogPath = path.resolve(root, buildLogArg);
 
-  const siteBase = `https://${fs.readFileSync(cnamePath, "utf8").trim()}/`;
+  const siteBase = readSiteBase(fs.readFileSync(mkdocsConfigPath, "utf8"));
 
   const sections = readSections(fs.readFileSync(sectionsPath, "utf8"), path.relative(root, sectionsPath));
   const entries = readEntries(fs.readFileSync(entriesPath, "utf8"), path.relative(root, entriesPath));
