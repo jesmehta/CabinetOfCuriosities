@@ -265,13 +265,13 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
 
 **Now — finishing the migration**
 
-- [ ] **FFFX close-out** (checklist 16–17), after the hold (2026-10-23 09:06 IST):
+- [x] **FFFX close-out** (checklist 16–17; done 2026-10-23), after the hold (2026-10-23 09:06 IST):
   - [x] full HTTP and browser check on `fffx.cabinetofcuriosities.in` (2026-10-23, FFFX `c27440c`);
   - [x] owner: remove the custom domain from FFFX's GitHub Pages settings (2026-10-23);
   - [x] run the Cabinet sitemap tool with sibling clones after privatization (2026-10-23, `--offline`: works; only
     the timestamp and the D7 nav form changed);
   - [x] owner: make `form-follows-fx` private (2026-10-23; anonymous read fails, github.io 404);
-  - [ ] private-source build test: `1bb8569` pushed; confirm a new Worker version (owner) + byte check;
+  - [x] private-source build test: `1bb8569` served 79/79 byte-identical to its local build (version ID: owner);
   - [x] retire FFFX's `deploy.yml` (`1bb8569`; FFFX had no root `CNAME`); then tick checklist 16–17.
 - [ ] **Cabinet implementation** (plan v3.1; local commits; records committed before code):
   - [ ] step 2: reduce the allowlists to **only what each page loads** (owner, 2026-10-23), for SSD (3 years) and Swatch

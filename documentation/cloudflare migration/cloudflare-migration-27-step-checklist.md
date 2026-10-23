@@ -1,7 +1,7 @@
 # Cloudflare Migration — 27-Step Checklist
 
 **Project:** Cabinet of Curiosities website ecosystem  
-**Status:** Dot Mandala pilot complete (steps 04–09, 2026-10-20). Bookshelf: steps 10–11 complete (2026-10-21); DNS question, then 13 and 12, next. Tick items only after completion.  
+**Status:** Dot Mandala pilot complete (steps 04–09, 2026-10-20). Bookshelf: steps 10–13 complete (2026-10-22). FFFX: steps 14–17 complete (2026-10-23). Cabinet (18–23) in progress. Tick items only after completion.  
 Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare migration/migration-log.md`; `migration-docs` was merged and deleted. Independent final review: `56b607ab7cfc5d943c20d17614c836cd6cf989c9`.  
 **Reference:** `cloudflare-migration-notes.md`  
 **Project policies:** [Transition register](transition-register.md). Algorithm/image/data protection has separate gates and does not expand these 27 hosting steps. Next: Bookshelf audit (10).
@@ -36,10 +36,14 @@ Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare mi
 
 ## 4. FFFX (4)
 
-- [ ] **14.** Audit build and static project routes. **Codex:** inspect data-driven landing, scripts, assets, project links and deployment assumptions. Preserve Dance of Planets / Island Generator publication gates; confirm their sensitive source is excluded from public output until separate protection work passes review (hidden links alone are insufficient).
-- [ ] **15.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement minimal changes; verify subdivision landing, links, assets, interactive projects and unchanged AI-independent CMS operation.
-- [ ] **16.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a fresh deployment.
-- [ ] **17.** Switch the FFFX subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, direct URLs and rollback.
+- [x] **14.** Audit build and static project routes. **Codex:** inspect data-driven landing, scripts, assets, project links and deployment assumptions. Preserve Dance of Planets / Island Generator publication gates; confirm their sensitive source is excluded from public output until separate protection work passes review (hidden links alone are insufficient).
+  *Done 2026-10-21 (FFFX): Codex `form-follows-fx/cloudflare migration/audit.md`; Dance of Planets and Island Generator withheld (`withhold.txt`).*
+- [x] **15.** Deploy and test a Cloudflare preview **and local build**. **Claude Code:** implement minimal changes; verify subdivision landing, links, assets, interactive projects and unchanged AI-independent CMS operation.
+  *Done 2026-10-21/22 (FFFX): Worker `form-follows-fx`; byte-identical to local builds; behaviour, CMS, rollback and saved-artifact restore tested.*
+- [x] **16.** Make the repository private and verify deployment. **Owner:** approve visibility change; test a fresh deployment.
+  *Done 2026-10-23 (FFFX): repository private; private-source build of `1bb8569` verified 79/79.*
+- [x] **17.** Switch the FFFX subdomain and test. **Owner:** approve DNS/custom-domain changes; verify HTTPS, direct URLs and rollback.
+  *Done 2026-10-22/23 (FFFX): Custom Domain 2026-10-22 03:35 UTC; 24 h hold; post-hold HTTP + browser check; GitHub Pages retired. Evidence: `form-follows-fx/cloudflare migration/migration-log.md`.*
 
 ## 5. Cabinet (6)
 
