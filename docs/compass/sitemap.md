@@ -1,6 +1,6 @@
 # Site Map
 
-_Auto-generated 2026-10-02 02:46 UTC directly from each repo's own TSV content files — not hand-maintained._
+_Auto-generated 2026-10-23 16:43 UTC directly from each repo's own TSV content files — not hand-maintained._
 
 Status key: 🟢 live · 🟡 wip (built, not fully finished) · ⚪ no page yet · 🔴 hidden
 
