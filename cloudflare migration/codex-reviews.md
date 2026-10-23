@@ -47,3 +47,49 @@ The proposed scope is reasonable: **canonical live MkDocs pages plus public moun
 **Required next evidence:** clean reproducible release build with complete external provenance and manifests; warm-cache/network equivalence and failure cases above; exact published/removed inventories; baseline and new functional comparisons; portable launcher/editor/admin/sitemap and landing build/promote checks in disposable environments; then post-implementation review. Temporary Worker build, runtime versions, artifact/HTTP/browser comparisons, docs/runtime triggers, eligible rollback and independent saved-artifact restore remain subsequent gates. Preserve owner approval before pushes and account actions.
 
 No build, package install, source generation, browser/network test, branch switch, application/configuration edit, commit, push or deployment occurred. **Only this review file was written.** Claude should answer C1 in `claude-code-responses.md` and revise the plan before implementation.
+
+
+## C2 ? Implementation plan v3 ? chat review recorded 2026-10-23
+
+This records the v3 review previously delivered in this conversation, as requested by the owner. It is a retrospective record, not a claim that a new implementation review occurred at the earlier chat time.
+
+**Plan identity:** v3 introduced by `e9c4687`; plan blob `f81e9d1a769026c1452c87bd8d7af2d37bcf34ec`. Compared with C1 and implementer response R2.
+
+**Verdict: GO for bounded implementation and local testing, with two plan corrections. NO-GO for deployment or cutover on plan evidence alone.**
+
+1. **Archive publication policy conflicts.** Operative C4 (v3 line 87) says exclusion list, while the owner decision D4 (line 213) requires a frozen allowlist. Make C4 use the allowlist and add archive missing-file/path-policy rejection tests.
+2. **Build-trigger wording is ambiguous.** Test 8 (v3 line 127) says ?docs-only skip.? Specify internal documentation only; website content under `docs/` must trigger deployment. Keep TSVs, allowlists, pins, locks, scripts and configuration build-triggering.
+3. **Documentation cleanup.** Clearly label the v2 section as historical and superseded. Update the closing approval request from review v2 to review v3.
+
+V3 otherwise addresses the major C1 findings: pinned Git-object assembly, cache integrity, development-artifact boundaries, reviewed allowlist candidates, interaction coverage and explicit sitemap rules. Implementation, reproducibility, browser checks and restore evidence still require review before the owner-approved push or cutover.
+
+The original chat review made no file changes and ran no builds or deployments.
+
+## C3 ? Implementation plan v3.1 (`5e013db`) ? 2026-10-23 08:07 IST
+
+**Exact plan reviewed:** commit `5e013db7522f8163a16b5fb92c0f9b2a7cc7349a`, `cloudflare migration/plan.md` blob `e093dd6d72e3c2f56f5b8e0146f95100f643c582`. Current local HEAD during review: `5775d957bbf65015777c4067488f53726728f12c`. The plan has no committed difference between the requested revision and that HEAD. Checked the v3-to-v3.1 diff, R3, prior C1/C2 context, Git status/history and the implementation log for scope. Timestamp uses execution-host ISO time with explicit +05:30 offset.
+
+### Verdict
+
+**GO for bounded implementation and disposable local tests. No remaining blocking plan correction found in this revision.** This is approval of the proposed technical approach, not evidence that implementation or deployment gates have passed. Owner approval remains required for pushes, account changes, visibility changes and cutover.
+
+### C2 resolution
+
+- **Archive: resolved.** D4 and C4 now specify `content/archive-allowlist.txt`, frozen and explicit. Unlisted files are omitted/reported; listed missing files and policy/path errors fail. Test 4 includes the archive rejection set and an unlisted-file success case. Linked historical downloads remain explicit exceptions.
+- **Build triggers: resolved.** Test 8 distinguishes internal documentation (`cloudflare migration/`, `documentation/`, README and deployment runbook) from website `docs/`. Website content, TSVs, allowlists, pins, locks, scripts and configuration must deploy. Both skip and deploy pushes must be demonstrated.
+- **Superseded text: resolved.** The opening establishes operative precedence; the v2 section is explicitly historical and names superseded partial-clone, D6 comparison and development-boundary claims. The closing request references the v3 review and requires post-implementation review before any push.
+- **Additional consistency improvements:** D2 no longer rewrites inventories automatically; D6 no longer offers the rejected absent-site_url alternative; D9 preserves owner work; D10 defines the Git-object cache rather than trusting checkout HEAD.
+
+C1 requirements remain in the operative plan: release bytes from pinned trees; separate repository/revision pairs; no cleaning owner checkouts; partial clone treated as an experiment; interaction/source/HTML-entry coverage for allowlists; development save/verify refusal and pinned rebuild on supported deploy; provenance outside served output; explicit sitemap exclusions and two-step artifact comparisons.
+
+### Scope and remaining evidence
+
+Later local commits already add pins, candidate allowlists and external-mount tools. The migration log reports a partial-clone experiment, offline comparison and baseline comparisons. **These implementation changes and experiment results were not independently reviewed or rerun in C3.** Candidate allowlists are explicitly not yet reviewed; do not interpret plan approval as publication approval for those candidates or as a passing post-implementation review.
+
+Next review must inspect actual code and complete artifact publication boundaries, exercise the promised failure cases, validate functional allowlist completeness, check deterministic clean builds and provenance/release verification, review authoring portability, and verify the eventual hosted/restore evidence at the appropriate gates. Preserve the three owner-accepted Tracery broken-link exceptions and disclose them in results. Keep raw CLI deployment bypass limits explicit.
+
+Minor editorial carryovers in historical wording do not block local implementation: offline artifact serving/restoration and network-required deployment should remain clearly distinguished in the final runbook, and site_url effects must be measured rather than assumed to change every HTML file in the same way.
+
+Existing owner changes remain untouched: `docs/_assets/material/css/cabinet-material.css`, `documentation/scratchNotes.md`, `docs/_images/paper2025_26/`, `docs/teaching/paper2025.md`.
+
+**Actions performed:** read-only Git/file inspection and appending C2/C3 to this review record. No application/configuration edits, build, dependency install, network/browser test, commit, push or deployment.
