@@ -24,6 +24,18 @@ const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 // only on purpose (tools/update-externals.mjs, then review and commit).
 const REVISION_PATTERN = /^[0-9a-f]{40}$/;
 
+// Path safety (Codex C4 I1). `id` becomes a file name (content/external-allowlists/<id>.txt) and
+// `destination` / `subfolder` become paths, so all three are restricted to plain, portable names:
+// ID: lowercase slug. Destination/subfolder: "/"-separated segments of letters, digits, "_", "-" and
+// "." (not starting with "."), so no "..", ".", empty segments, leading/trailing "/", backslashes,
+// drive letters, "%"-encoding or spaces. Duplicate and nested destinations are compared case-folded,
+// because Windows and macOS file systems ignore letter case.
+const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
+const PATH_SEGMENT = /^[A-Za-z0-9_][A-Za-z0-9_.-]*$/;
+function safeRelativePath(value) {
+  return typeof value === "string" && value.length > 0 && value.split("/").every(s => PATH_SEGMENT.test(s));
+}
+
 function isBlank(value) {
   return value === undefined || value === null || String(value).trim() === "";
 }
@@ -64,7 +76,9 @@ function findExternalRepoProblems(rows) {
     const label = row.id || `(row ${index + 1})`;
 
     if (isBlank(row.id)) problems.push({ index, id: label, field: "id", message: "id is required" });
-    else if (seenIds.has(row.id)) {
+    else if (!ID_PATTERN.test(row.id)) {
+      problems.push({ index, id: label, field: "id", message: `id "${row.id}" must be a lowercase slug (a-z, 0-9, "-"); it names content/external-allowlists/<id>.txt` });
+    } else if (seenIds.has(row.id)) {
       problems.push({ index, id: label, field: "id", message: `duplicate id "${row.id}" (also row ${seenIds.get(row.id) + 1})` });
     } else seenIds.set(row.id, index);
 
@@ -83,11 +97,17 @@ function findExternalRepoProblems(rows) {
     }
 
     if (isBlank(row.destination)) problems.push({ index, id: label, field: "destination", message: "destination is required" });
-    else {
-      const destination = row.destination.trim().replace(/^\/+|\/+$/g, "");
-      if (seenDestinations.has(destination)) {
-        problems.push({ index, id: label, field: "destination", message: `duplicate destination "${destination}" (also row ${seenDestinations.get(destination) + 1})` });
-      } else seenDestinations.set(destination, index);
+    else if (!safeRelativePath(row.destination)) {
+      problems.push({ index, id: label, field: "destination", message: `destination "${row.destination}" must be a plain relative path like teaching/my-project (no leading or trailing "/", "..", ".", "\\", "%", spaces or drive letters)` });
+    } else {
+      const key = row.destination.toLowerCase(); // case-folded: Windows/macOS treat "A" and "a" as the same folder
+      if (seenDestinations.has(key)) {
+        problems.push({ index, id: label, field: "destination", message: `duplicate destination "${row.destination}" (also row ${seenDestinations.get(key) + 1}; letter case ignored)` });
+      } else seenDestinations.set(key, index);
+    }
+
+    if (!isBlank(row.subfolder) && !safeRelativePath(row.subfolder)) {
+      problems.push({ index, id: label, field: "subfolder", message: `subfolder "${row.subfolder}" must be a plain relative path (same rules as destination)` });
     }
 
     if (isBlank(row.requiredFiles) && isBlank(row.requiredContent)) {
@@ -111,7 +131,7 @@ function validateExternalRepos(rows) {
 }
 
 module.exports = {
-  EXTERNAL_REPOS_COLS, STATUS_VALUES, REPOSITORY_PATTERN, REVISION_PATTERN,
+  EXTERNAL_REPOS_COLS, STATUS_VALUES, REPOSITORY_PATTERN, REVISION_PATTERN, ID_PATTERN, safeRelativePath,
   readExternalRepos, writeExternalRepos,
   parseRequiredFiles, parseRequiredContent,
   findExternalRepoProblems, validateExternalRepos,

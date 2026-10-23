@@ -33,7 +33,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile, cp } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname, join, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { AllowlistError, checkAgainstDir, missingMessage, readAllowlist, summarise } from "./allowlist.mjs";
 
@@ -146,15 +146,15 @@ function fetchBlobs(dir, oids) {
 }
 
 // --- rows ----------------------------------------------------------------------
-const norm = (d) => d.trim().replace(/^\/+|\/+$/g, "");
+const norm = (d) => d.trim(); // destination/subfolder syntax is validated strictly by external-repos-tsv.js (Codex C4 I1)
 
 export async function activeRows() {
   const rows = readExternalRepos(await readFile(TSV, "utf8"), "content/external-repos.tsv");
   validateExternalRepos(rows);
   const active = rows.filter((r) => r.status.trim().toLowerCase() === "true");
-  const dests = active.map((r) => norm(r.destination));
+  const dests = active.map((r) => norm(r.destination).toLowerCase()); // case-folded, as file systems on Windows/macOS
   for (const a of dests) for (const b of dests) {
-    if (a !== b && (b + "/").startsWith(a + "/")) throw new MountError(`external-repos.tsv: destination "${b}" lies inside "${a}"`);
+    if (a !== b && (b + "/").startsWith(a + "/")) throw new MountError(`external-repos.tsv: destination "${b}" lies inside "${a}" (letter case ignored)`);
   }
   return active;
 }
@@ -210,6 +210,9 @@ export async function assembleMounts({ publicDir, offline = false, locals = {} }
     const label = `external ${row.id}`;
     const destination = norm(row.destination);
     const destDir = join(publicDir, destination);
+    // Defence in depth (Codex C4 I1): never write outside the output folder, whatever the TSV says.
+    const inside = (p) => { const r = relative(resolve(publicDir), resolve(p)); return r !== "" && !r.startsWith("..") && !isAbsolute(r); };
+    if (!inside(destDir)) throw new MountError(`${label}: destination "${destination}" resolves outside the output folder`);
     if (existsSync(destDir)) throw new MountError(`${label}: public/${destination} already exists before assembly -- it would collide with an MkDocs page`);
     const entries = await readAllowlist(join(ALLOWLISTS, `${row.id}.txt`), `content/external-allowlists/${row.id}.txt`);
     for (const f of parseRequiredFiles(row.requiredFiles)) {
