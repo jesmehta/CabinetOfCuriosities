@@ -15,9 +15,10 @@
 //   4. external mounts: content/external-repos.tsv at the pinned revisions, only the files
 //      in content/external-allowlists/<id>.txt (tools/external-mounts.mjs)
 //   5. archive: archived-landing-pages/ through content/archive-allowlist.txt (C4)
-//   6. route validation (tools/validate-deployment.js)
-//   7. publication check: nothing private (docs, data, tooling) reached public/
-//   8. build-info.json and public-manifest.sha256, both OUTSIDE public/ (never published)
+//   6. sitemap.xml: add the landing page and the mount pages to MkDocs' list (see extendSitemap)
+//   7. route validation (tools/validate-deployment.js)
+//   8. publication check: nothing private (docs, data, tooling) reached public/
+//   9. build-info.json and public-manifest.sha256, both OUTSIDE public/ (never published)
 //
 // --offline: never use the network for the external mounts (fails if the cache lacks
 //   something). --external-local <id>=<path>: a DEVELOPMENT build of one mount from a local
@@ -59,7 +60,7 @@ const FORBIDDEN_DIRS = ["documentation", "content", "tools", "node_modules", ".g
 const EXCEPTIONS = new Set(["archived-landing-pages/v1/files/requirements.txt"]);
 
 class BuildError extends Error {}
-const step = (n, msg) => console.log(`\n[${n}/8] ${msg}`);
+const step = (n, msg) => console.log(`\n[${n}/9] ${msg}`);
 
 function pythonCommand() {
   const venv = process.platform === "win32" ? join(ROOT, ".venv", "Scripts", "python.exe") : join(ROOT, ".venv", "bin", "python");
@@ -140,13 +141,64 @@ async function assembleArchive() {
 }
 
 // --- 6 ---------------------------------------------------------------------
+// sitemap.xml (plan v3 "Sitemap rule", D6): MkDocs lists only its own pages. Added: the landing
+// page "/" (a static docs/index.html), and for each external mount its entry page plus every
+// first-level <folder>/index.html (SSD student projects, Swatch Fields' modes, the Tracery bots).
+// Skipped: pages marked noindex or canonical to another URL. Never the archive or redirect stubs.
+// Deduplicated by URL, XML-escaped, MkDocs' order then sorted additions, MkDocs' lastmod date.
+// Every URL must resolve to a file in public/.
+const xmlEscape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+
+async function extendSitemap(mounts) {
+  const file = join(PUBLIC, "sitemap.xml");
+  const xml = await readFile(file, "utf8");
+  const siteUrl = (/^site_url:\s*(\S+)\s*$/m.exec(await readFile(join(ROOT, "mkdocs.yml"), "utf8")) || [])[1];
+  if (!siteUrl) throw new BuildError("mkdocs.yml has no site_url (D6): sitemap.xml would have no URLs");
+  const base = siteUrl.endsWith("/") ? siteUrl : siteUrl + "/";
+  const existing = [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1]);
+  const lastmod = (/<lastmod>([^<]*)<\/lastmod>/.exec(xml) || [])[1];
+  const pages = ["index.html"];
+  for (const m of mounts) {
+    pages.push(`${m.destination}/index.html`);
+    for (const e of await readdir(join(PUBLIC, m.destination), { withFileTypes: true })) {
+      if (e.isDirectory() && existsSync(join(PUBLIC, m.destination, e.name, "index.html"))) pages.push(`${m.destination}/${e.name}/index.html`);
+    }
+  }
+  const added = [];
+  for (const p of pages.sort()) {
+    const html = await readFile(join(PUBLIC, p), "utf8");
+    const url = base + p.replace(/index\.html$/, "").split("/").map(encodeURIComponent).join("/");
+    if (/<meta[^>]+name=["']robots["'][^>]+noindex/i.test(html)) continue;
+    const canon = (/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i.exec(html) || [])[1];
+    if (canon && canon !== url) continue;
+    if (!existing.includes(url) && !added.includes(url)) added.push(url);
+  }
+  const entries = added.map((u) => `    <url>\n         <loc>${xmlEscape(u)}</loc>${lastmod ? `\n         <lastmod>${lastmod}</lastmod>` : ""}\n    </url>\n`).join("");
+  if (!xml.includes("</urlset>")) throw new BuildError("sitemap.xml: no </urlset>");
+  await writeFile(file, xml.replace("</urlset>", entries + "</urlset>"));
+  // every URL must be on the canonical host and resolve to a published file
+  const all = [...existing, ...added];
+  const bad = [];
+  for (const u of all) {
+    const loc = u.replace(/&amp;/g, "&");
+    if (!loc.startsWith(base)) { bad.push(`${u} (not under ${base})`); continue; }
+    const rel = decodeURIComponent(loc.slice(base.length));
+    const target = rel === "" || rel.endsWith("/") ? join(PUBLIC, rel, "index.html") : join(PUBLIC, rel);
+    if (!existsSync(target)) bad.push(`${u} (no file)`);
+  }
+  if (new Set(all).size !== all.length) bad.push("duplicate URLs");
+  if (bad.length) throw new BuildError(`sitemap.xml:\n  ${bad.join("\n  ")}`);
+  console.log(`sitemap.xml: ${existing.length} MkDocs page(s) + ${added.length} added (landing page, mount entry and first-level pages) = ${all.length} URLs, all resolve`);
+}
+
+// --- 7 ---------------------------------------------------------------------
 function validateRoutes() {
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "validate-deployment.js"), "--public-dir", PUBLIC, "--build-log", BUILD_LOG], { cwd: ROOT, encoding: "utf8" });
   process.stdout.write((r.stdout || "") + (r.stderr || ""));
   if (r.status !== 0) throw new BuildError("route validation failed (see above)");
 }
 
-// --- 7 ---------------------------------------------------------------------
+// --- 8 ---------------------------------------------------------------------
 async function publicationCheck() {
   const rows = await hashDir(PUBLIC);
   const problems = [];
@@ -179,12 +231,14 @@ async function main() {
   const mounts = await assembleMounts({ publicDir: PUBLIC, offline, locals });
   step(5, "archive (content/archive-allowlist.txt)");
   const archiveUnlisted = await assembleArchive();
-  step(6, "route validation");
+  step(6, "sitemap.xml (MkDocs pages + landing page + mount pages)");
+  await extendSitemap(mounts.mounts);
+  step(7, "route validation");
   validateRoutes();
-  step(7, "publication check");
+  step(8, "publication check");
   const rows = await publicationCheck();
   console.log("nothing private in public/");
-  step(8, "build-info.json and manifest (outside public/)");
+  step(9, "build-info.json and manifest (outside public/)");
   const bytes = (await Promise.all(rows.map((r) => lstat(join(PUBLIC, r.path))))).reduce((n, s) => n + s.size, 0);
   const status = gitOut(["status", "--porcelain"]);
   const info = {
