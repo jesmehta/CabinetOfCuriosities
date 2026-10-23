@@ -108,6 +108,25 @@ async function buildMkdocs(python, epoch) {
 }
 
 // --- 3 ---------------------------------------------------------------------
+// Guard (2026-10-23): with selectolax 1.0.1, mkdocs-glightbox silently dropped EVERY image from the
+// rendered pages (112 images on 6 pages, also on the live site until it was rebuilt). If the Markdown
+// has images but the rendered MkDocs pages have none, a package has broken image rendering: fail.
+async function countIn(dir, ext, re) {
+  let n = 0;
+  for (const e of await readdir(dir, { withFileTypes: true })) {
+    const full = join(dir, e.name);
+    if (e.isDirectory()) n += await countIn(full, ext, re);
+    else if (e.name.endsWith(ext)) n += ((await readFile(full, "utf8")).match(re) || []).length;
+  }
+  return n;
+}
+async function imageGuard() {
+  const inMarkdown = await countIn(join(ROOT, "docs"), ".md", /!\[[^\]]*\]\(|<img\b/g);
+  const inHtml = await countIn(PUBLIC, ".html", /<img\b/g);
+  if (inMarkdown > 0 && inHtml === 0) throw new BuildError(`the Markdown has ${inMarkdown} images but the rendered MkDocs pages have none: an MkDocs plugin or package version broke image rendering (see requirements-lock.txt).`);
+  console.log(`images: ${inHtml} <img> in the rendered MkDocs pages`);
+}
+
 async function tidyMkdocsOutput(dir) {
   const counts = { removed: 0, normalised: 0 };
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -225,6 +244,7 @@ async function main() {
   step(2, "MkDocs");
   await buildMkdocs(python, epoch);
   step(3, "tidy MkDocs output");
+  await imageGuard();
   const tidy = await tidyMkdocsOutput(PUBLIC);
   console.log(`removed ${tidy.removed} file(s) (*.map, sitemap.xml.gz, CNAME); normalised ${tidy.normalised} redirect page(s) to LF`);
   step(4, `external mounts (content/external-repos.tsv${offline ? ", offline" : ""})`);
