@@ -6,6 +6,8 @@
 # human-edited list: after changing it, recreate .venv, reinstall from it, and
 # regenerate this file with: .venv/Scripts/python -m pip freeze  (Windows)
 #                        or: .venv/bin/python -m pip freeze      (macOS/Linux)
+# 2026-10-23: selectolax 1.0.1 -> 1.0.2 only. With 1.0.1, mkdocs-glightbox dropped every image from the
+# MkDocs pages (112 images on 6 pages, silently; found by the browser comparison, cloudflare migration/).
 babel==2.18.0
 backrefs==8.1
 beautifulsoup4==4.15.0
@@ -45,7 +47,7 @@ python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 pyyaml_env_tag==1.1
 requests==2.34.2
-selectolax==1.0.1
+selectolax==1.0.2
 setuptools==84.2.1
 six==1.17.0
 smmap==5.0.3
