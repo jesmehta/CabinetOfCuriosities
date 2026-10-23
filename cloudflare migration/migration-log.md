@@ -179,3 +179,22 @@ commits; final code `aabc4dc` (records after it).
   closed unmerged. Log: `evidence/cloudflare-build-c667e11d-deploy-401.log`.
 - Next: retry the build (same commit) to see whether the 401 was related to the name mismatch; if it recurs,
   check the build token's permissions.
+
+## Worker deployed: version 2ab6c8b4 — 2026-10-24 02:15 IST (20:45 UTC)
+
+- Owner pressed Retry build after the rename. Build `d650f4d6` (commit `1e33e84`): all 9 steps passed; Wrangler
+  uploaded 844 assets (180 already uploaded) in 15.5 s; **Current Version ID `2ab6c8b4-754e-41d3-b9e6-711620e56072`**
+  at `https://cabinet-of-curiosities.jesmehta.workers.dev`. The 401 did not recur, so it was evidently caused by the
+  Worker-name mismatch. Log: `evidence/cloudflare-build-d650f4d6.log`.
+- **HTTP** (`evidence/http-check-workers-dev-2ab6c8b4.txt`) against a local clean build of `1e33e84`: 1,023/1,024
+  byte-identical; 21 routes; 100/100 sitemap URLs; 125/125 never-published paths 404 with the nearest `404.html`;
+  `Server: cloudflare`. The one difference, `compass/about/`, is the Windows-vs-Linux parser difference of the
+  malformed tag: **workers.dev's About page is byte-identical to GitHub Pages'** (both Linux).
+- **Cloudflare = GitHub Pages:** the live site vs the same local build differs in exactly the same file
+  (`evidence/compare-live-github-pages-vs-1e33e84.txt`; one transient GitHub 503 refetched identical), so both
+  hosts serve the same 1,024 files.
+- **Browser** (`evidence/ui-workers-dev-2ab6c8b4.json` vs `ui-live-a7ed6e0.json`): 38/40 views identical in status,
+  title, text, links, element counts, failed requests, lightbox and errors (analytics-beacon noise excluded); the
+  other 2 are the known `#` link-normalisation artifact.
+- Still to do on the preview: Git-App banner check and any Cloudflare name PR (owner); build watch paths and the
+  two-push proof; named functional checks (Codex I4); rollback and saved-artifact restore (owner-run).

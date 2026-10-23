@@ -1,0 +1,418 @@
+2026-10-23T20:44:28.890Z	Initializing build environment...
+2026-10-23T20:44:33.383Z	Success: Finished initializing build environment
+2026-10-23T20:44:35.261Z	Cloning repository...
+2026-10-23T20:44:41.076Z	Restoring from dependencies cache
+2026-10-23T20:44:41.077Z	Restoring from build output cache
+2026-10-23T20:44:41.081Z	Detected the following tools from environment: npm@10.9.2, nodejs@24.22.1
+2026-10-23T20:44:41.734Z	Installing project dependencies: npm clean-install --progress=false
+2026-10-23T20:44:46.380Z	
+2026-10-23T20:44:46.380Z	added 38 packages in 4s
+2026-10-23T20:44:46.380Z	
+2026-10-23T20:44:46.380Z	7 packages are looking for funding
+2026-10-23T20:44:46.380Z	  run `npm fund` for details
+2026-10-23T20:44:46.433Z	Installing project dependencies: pip install -r requirements.txt
+2026-10-23T20:44:47.328Z	Collecting jinja2>=3.0 (from -r requirements.txt (line 1))
+2026-10-23T20:44:47.386Z	  Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-10-23T20:44:47.412Z	Collecting markdown (from -r requirements.txt (line 2))
+2026-10-23T20:44:47.416Z	  Downloading markdown-3.11.2-py3-none-any.whl.metadata (5.1 kB)
+2026-10-23T20:44:47.437Z	Collecting mkdocs>=1.4.2 (from -r requirements.txt (line 3))
+2026-10-23T20:44:47.441Z	  Downloading mkdocs-1.6.1-py3-none-any.whl.metadata (6.0 kB)
+2026-10-23T20:44:47.536Z	Collecting mkdocs-material (from -r requirements.txt (line 4))
+2026-10-23T20:44:47.541Z	  Downloading mkdocs_material-9.7.7-py3-none-any.whl.metadata (19 kB)
+2026-10-23T20:44:47.556Z	Collecting mkdocs-material-extensions (from -r requirements.txt (line 5))
+2026-10-23T20:44:47.560Z	  Downloading mkdocs_material_extensions-1.3.1-py3-none-any.whl.metadata (6.9 kB)
+2026-10-23T20:44:47.589Z	Collecting pymdown-extensions (from -r requirements.txt (line 6))
+2026-10-23T20:44:47.594Z	  Downloading pymdown_extensions-12.3-py3-none-any.whl.metadata (2.9 kB)
+2026-10-23T20:44:47.615Z	Collecting pygments (from -r requirements.txt (line 7))
+2026-10-23T20:44:47.618Z	  Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-23T20:44:47.838Z	Collecting mkdocs-mermaid2-plugin (from -r requirements.txt (line 8))
+2026-10-23T20:44:47.842Z	  Downloading mkdocs_mermaid2_plugin-1.2.3-py3-none-any.whl.metadata (6.1 kB)
+2026-10-23T20:44:48.057Z	Collecting mkdocs-video (from -r requirements.txt (line 9))
+2026-10-23T20:44:48.061Z	  Downloading mkdocs_video-1.5.0-py3-none-any.whl.metadata (9.3 kB)
+2026-10-23T20:44:48.284Z	Collecting mkdocs-git-revision-date-localized-plugin (from -r requirements.txt (line 10))
+2026-10-23T20:44:48.289Z	  Downloading mkdocs_git_revision_date_localized_plugin-1.6.0-py3-none-any.whl.metadata (5.9 kB)
+2026-10-23T20:44:48.503Z	Collecting markdown-captions (from -r requirements.txt (line 11))
+2026-10-23T20:44:48.704Z	  Downloading markdown-captions-2.1.2.tar.gz (3.0 kB)
+2026-10-23T20:44:48.713Z	  Installing build dependencies: started
+2026-10-23T20:44:49.664Z	  Installing build dependencies: finished with status 'done'
+2026-10-23T20:44:49.664Z	  Getting requirements to build wheel: started
+2026-10-23T20:44:50.190Z	  Getting requirements to build wheel: finished with status 'done'
+2026-10-23T20:44:50.191Z	  Preparing metadata (pyproject.toml): started
+2026-10-23T20:44:50.459Z	  Preparing metadata (pyproject.toml): finished with status 'done'
+2026-10-23T20:44:50.737Z	Collecting mkdocs-glightbox (from -r requirements.txt (line 12))
+2026-10-23T20:44:50.741Z	  Downloading mkdocs_glightbox-0.5.2-py3-none-any.whl.metadata (7.4 kB)
+2026-10-23T20:44:50.755Z	Collecting mkdocs-section-index==0.3.10 (from -r requirements.txt (line 17))
+2026-10-23T20:44:50.760Z	  Downloading mkdocs_section_index-0.3.10-py3-none-any.whl.metadata (7.8 kB)
+2026-10-23T20:44:50.774Z	Collecting mkdocs-redirects==1.2.2 (from -r requirements.txt (line 24))
+2026-10-23T20:44:50.777Z	  Downloading mkdocs_redirects-1.2.2-py3-none-any.whl.metadata (5.2 kB)
+2026-10-23T20:44:50.848Z	Collecting MarkupSafe>=2.0 (from jinja2>=3.0->-r requirements.txt (line 1))
+2026-10-23T20:44:50.852Z	  Downloading markupsafe-3.0.4-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-10-23T20:44:50.858Z	Requirement already satisfied: click>=7.0 in /opt/buildhome/.local/lib/python3.14/site-packages (from mkdocs>=1.4.2->-r requirements.txt (line 3)) (8.5.0)
+2026-10-23T20:44:50.868Z	Collecting ghp-import>=1.0 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:50.872Z	  Downloading ghp_import-2.1.0-py3-none-any.whl.metadata (7.2 kB)
+2026-10-23T20:44:50.891Z	Collecting mergedeep>=1.3.4 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:50.895Z	  Downloading mergedeep-1.3.4-py3-none-any.whl.metadata (4.3 kB)
+2026-10-23T20:44:50.923Z	Collecting mkdocs-get-deps>=0.2.0 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:50.926Z	  Downloading mkdocs_get_deps-0.2.2-py3-none-any.whl.metadata (4.0 kB)
+2026-10-23T20:44:50.931Z	Requirement already satisfied: packaging>=20.5 in /opt/buildhome/.local/lib/python3.14/site-packages (from mkdocs>=1.4.2->-r requirements.txt (line 3)) (26.3)
+2026-10-23T20:44:50.942Z	Collecting pathspec>=0.11.1 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:50.946Z	  Downloading pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+2026-10-23T20:44:50.959Z	Collecting pyyaml-env-tag>=0.1 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:50.963Z	  Downloading pyyaml_env_tag-1.1-py3-none-any.whl.metadata (5.5 kB)
+2026-10-23T20:44:51.009Z	Collecting pyyaml>=5.1 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:51.014Z	  Downloading pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-23T20:44:51.065Z	Collecting watchdog>=2.0 (from mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:51.069Z	  Downloading watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl.metadata (44 kB)
+2026-10-23T20:44:51.095Z	Collecting babel>=2.10 (from mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:51.098Z	  Downloading babel-2.18.0-py3-none-any.whl.metadata (2.2 kB)
+2026-10-23T20:44:51.121Z	Collecting backrefs>=5.7.post1 (from mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:51.125Z	  Downloading backrefs-8.1-py314-none-any.whl.metadata (3.0 kB)
+2026-10-23T20:44:51.142Z	Collecting colorama>=0.4 (from mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:51.145Z	  Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+2026-10-23T20:44:51.165Z	Collecting paginate>=0.5 (from mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:51.168Z	  Downloading paginate-0.5.7-py2.py3-none-any.whl.metadata (11 kB)
+2026-10-23T20:44:51.199Z	Collecting requests>=2.30 (from mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:51.201Z	  Using cached requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-10-23T20:44:51.223Z	Collecting beautifulsoup4>=4.6.3 (from mkdocs-mermaid2-plugin->-r requirements.txt (line 8))
+2026-10-23T20:44:51.227Z	  Downloading beautifulsoup4-4.15.0-py3-none-any.whl.metadata (3.8 kB)
+2026-10-23T20:44:51.245Z	Collecting jsbeautifier (from mkdocs-mermaid2-plugin->-r requirements.txt (line 8))
+2026-10-23T20:44:51.249Z	  Downloading jsbeautifier-2.0.3-py3-none-any.whl.metadata (481 bytes)
+2026-10-23T20:44:51.362Z	Collecting setuptools>=18.5 (from mkdocs-mermaid2-plugin->-r requirements.txt (line 8))
+2026-10-23T20:44:51.364Z	  Using cached setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+2026-10-23T20:44:51.695Z	Collecting lxml>=4.7.0 (from mkdocs-video->-r requirements.txt (line 9))
+2026-10-23T20:44:51.699Z	  Downloading lxml-6.1.3-cp314-cp314-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+2026-10-23T20:44:51.725Z	Collecting gitpython>=3.1.59 (from mkdocs-git-revision-date-localized-plugin->-r requirements.txt (line 10))
+2026-10-23T20:44:51.728Z	  Downloading gitpython-3.2.1-py3-none-any.whl.metadata (13 kB)
+2026-10-23T20:44:51.904Z	Collecting selectolax>=0.3.29 (from mkdocs-glightbox->-r requirements.txt (line 12))
+2026-10-23T20:44:52.099Z	  Downloading selectolax-1.0.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (6.9 kB)
+2026-10-23T20:44:52.126Z	Collecting soupsieve>=1.6.1 (from beautifulsoup4>=4.6.3->mkdocs-mermaid2-plugin->-r requirements.txt (line 8))
+2026-10-23T20:44:52.131Z	  Downloading soupsieve-3.0.4-py3-none-any.whl.metadata (4.4 kB)
+2026-10-23T20:44:52.149Z	Collecting typing-extensions>=4.0.0 (from beautifulsoup4>=4.6.3->mkdocs-mermaid2-plugin->-r requirements.txt (line 8))
+2026-10-23T20:44:52.151Z	  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-10-23T20:44:52.168Z	Collecting python-dateutil>=2.8.1 (from ghp-import>=1.0->mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:52.171Z	  Downloading python_dateutil-3.0.0-py2.py3-none-any.whl.metadata (8.2 kB)
+2026-10-23T20:44:52.187Z	Collecting gitdb<5,>=4.0.1 (from gitpython>=3.1.59->mkdocs-git-revision-date-localized-plugin->-r requirements.txt (line 10))
+2026-10-23T20:44:52.191Z	  Downloading gitdb-4.0.12-py3-none-any.whl.metadata (1.2 kB)
+2026-10-23T20:44:52.207Z	Collecting smmap<6,>=3.0.1 (from gitdb<5,>=4.0.1->gitpython>=3.1.59->mkdocs-git-revision-date-localized-plugin->-r requirements.txt (line 10))
+2026-10-23T20:44:52.210Z	  Downloading smmap-5.0.3-py3-none-any.whl.metadata (4.6 kB)
+2026-10-23T20:44:52.219Z	Requirement already satisfied: platformdirs>=2.2.0 in /opt/buildhome/.local/lib/python3.14/site-packages (from mkdocs-get-deps>=0.2.0->mkdocs>=1.4.2->-r requirements.txt (line 3)) (4.13.5)
+2026-10-23T20:44:52.234Z	Collecting six>=1.6 (from python-dateutil>=2.8.1->ghp-import>=1.0->mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:52.237Z	  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-10-23T20:44:52.254Z	Collecting tzdata (from python-dateutil>=2.8.1->ghp-import>=1.0->mkdocs>=1.4.2->-r requirements.txt (line 3))
+2026-10-23T20:44:52.257Z	  Downloading tzdata-2026.5-py2.py3-none-any.whl.metadata (1.4 kB)
+2026-10-23T20:44:52.424Z	Collecting charset_normalizer<4,>=2 (from requests>=2.30->mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:52.426Z	  Using cached charset_normalizer-3.5.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+2026-10-23T20:44:52.447Z	Collecting idna<4,>=2.5 (from requests>=2.30->mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:52.450Z	  Using cached idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-10-23T20:44:52.476Z	Collecting urllib3<3,>=1.26 (from requests>=2.30->mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:52.479Z	  Using cached urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-10-23T20:44:52.501Z	Collecting certifi>=2023.5.7 (from requests>=2.30->mkdocs-material->-r requirements.txt (line 4))
+2026-10-23T20:44:52.505Z	  Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+2026-10-23T20:44:52.528Z	Collecting editorconfig>=0.12.2 (from jsbeautifier->mkdocs-mermaid2-plugin->-r requirements.txt (line 8))
+2026-10-23T20:44:52.532Z	  Downloading editorconfig-0.17.1-py3-none-any.whl.metadata (3.9 kB)
+2026-10-23T20:44:52.543Z	Downloading mkdocs_section_index-0.3.10-py3-none-any.whl (8.8 kB)
+2026-10-23T20:44:52.549Z	Downloading mkdocs_redirects-1.2.2-py3-none-any.whl (6.1 kB)
+2026-10-23T20:44:52.554Z	Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-10-23T20:44:52.561Z	Downloading markdown-3.11.2-py3-none-any.whl (114 kB)
+2026-10-23T20:44:52.572Z	Downloading mkdocs-1.6.1-py3-none-any.whl (3.9 MB)
+2026-10-23T20:44:52.628Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 71.1 MB/s  0:00:00
+2026-10-23T20:44:52.634Z	Downloading mkdocs_material-9.7.7-py3-none-any.whl (9.3 MB)
+2026-10-23T20:44:52.717Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.3/9.3 MB 113.8 MB/s  0:00:00
+2026-10-23T20:44:52.722Z	Downloading mkdocs_material_extensions-1.3.1-py3-none-any.whl (8.7 kB)
+2026-10-23T20:44:52.729Z	Downloading pymdown_extensions-12.3-py3-none-any.whl (277 kB)
+2026-10-23T20:44:52.736Z	Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-23T20:44:52.745Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 161.3 MB/s  0:00:00
+2026-10-23T20:44:52.749Z	Downloading mkdocs_mermaid2_plugin-1.2.3-py3-none-any.whl (17 kB)
+2026-10-23T20:44:52.756Z	Downloading mkdocs_video-1.5.0-py3-none-any.whl (6.6 kB)
+2026-10-23T20:44:52.762Z	Downloading mkdocs_git_revision_date_localized_plugin-1.6.0-py3-none-any.whl (27 kB)
+2026-10-23T20:44:52.768Z	Downloading mkdocs_glightbox-0.5.2-py3-none-any.whl (26 kB)
+2026-10-23T20:44:52.775Z	Downloading babel-2.18.0-py3-none-any.whl (10.2 MB)
+2026-10-23T20:44:52.848Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 138.6 MB/s  0:00:00
+2026-10-23T20:44:52.852Z	Downloading backrefs-8.1-py314-none-any.whl (411 kB)
+2026-10-23T20:44:52.859Z	Downloading beautifulsoup4-4.15.0-py3-none-any.whl (109 kB)
+2026-10-23T20:44:52.866Z	Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+2026-10-23T20:44:52.873Z	Downloading ghp_import-2.1.0-py3-none-any.whl (11 kB)
+2026-10-23T20:44:52.879Z	Downloading gitpython-3.2.1-py3-none-any.whl (231 kB)
+2026-10-23T20:44:52.886Z	Downloading gitdb-4.0.12-py3-none-any.whl (62 kB)
+2026-10-23T20:44:52.892Z	Downloading smmap-5.0.3-py3-none-any.whl (24 kB)
+2026-10-23T20:44:52.900Z	Downloading lxml-6.1.3-cp314-cp314-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+2026-10-23T20:44:52.945Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 118.9 MB/s  0:00:00
+2026-10-23T20:44:52.949Z	Downloading markupsafe-3.0.4-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (23 kB)
+2026-10-23T20:44:52.955Z	Downloading mergedeep-1.3.4-py3-none-any.whl (6.4 kB)
+2026-10-23T20:44:52.963Z	Downloading mkdocs_get_deps-0.2.2-py3-none-any.whl (9.6 kB)
+2026-10-23T20:44:52.969Z	Downloading paginate-0.5.7-py2.py3-none-any.whl (13 kB)
+2026-10-23T20:44:52.974Z	Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+2026-10-23T20:44:52.980Z	Downloading python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+2026-10-23T20:44:52.986Z	Downloading pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (794 kB)
+2026-10-23T20:44:52.992Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 794.2/794.2 kB 131.6 MB/s  0:00:00
+2026-10-23T20:44:52.997Z	Downloading pyyaml_env_tag-1.1-py3-none-any.whl (4.7 kB)
+2026-10-23T20:44:53.001Z	Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+2026-10-23T20:44:53.005Z	Using cached charset_normalizer-3.5.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (255 kB)
+2026-10-23T20:44:53.008Z	Using cached idna-3.20-py3-none-any.whl (69 kB)
+2026-10-23T20:44:53.011Z	Using cached urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-10-23T20:44:53.015Z	Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+2026-10-23T20:44:53.023Z	Downloading selectolax-1.0.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.5 MB)
+2026-10-23T20:44:53.032Z	   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 185.9 MB/s  0:00:00
+2026-10-23T20:44:53.033Z	Using cached setuptools-84.2.1-py3-none-any.whl (876 kB)
+2026-10-23T20:44:53.037Z	Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-10-23T20:44:53.042Z	Downloading soupsieve-3.0.4-py3-none-any.whl (42 kB)
+2026-10-23T20:44:53.047Z	Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-10-23T20:44:53.051Z	Downloading watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl (79 kB)
+2026-10-23T20:44:53.058Z	Downloading jsbeautifier-2.0.3-py3-none-any.whl (93 kB)
+2026-10-23T20:44:53.064Z	Downloading editorconfig-0.17.1-py3-none-any.whl (16 kB)
+2026-10-23T20:44:53.070Z	Downloading tzdata-2026.5-py2.py3-none-any.whl (347 kB)
+2026-10-23T20:44:53.315Z	Building wheels for collected packages: markdown-captions
+2026-10-23T20:44:53.315Z	  Building wheel for markdown-captions (pyproject.toml): started
+2026-10-23T20:44:53.658Z	  Building wheel for markdown-captions (pyproject.toml): finished with status 'done'
+2026-10-23T20:44:53.658Z	  Created wheel for markdown-captions: filename=markdown_captions-2.1.2-py3-none-any.whl size=3443 sha256=ea51bec28697f0bfbf988ee9c017f9b5a579ba6005c6360c482c70106dcaea80
+2026-10-23T20:44:53.658Z	  Stored in directory: /opt/buildhome/.cache/pip/wheels/e7/2e/f5/190d02a762ffe5e4732847bbd529bda9a2bf60421e1bc6bee1
+2026-10-23T20:44:53.658Z	Successfully built markdown-captions
+2026-10-23T20:44:53.900Z	Installing collected packages: paginate, watchdog, urllib3, tzdata, typing-extensions, soupsieve, smmap, six, setuptools, selectolax, pyyaml, pygments, pathspec, mkdocs-material-extensions, mergedeep, MarkupSafe, markdown, lxml, idna, editorconfig, colorama, charset_normalizer, certifi, backrefs, babel, requests, pyyaml-env-tag, python-dateutil, pymdown-extensions, mkdocs-glightbox, mkdocs-get-deps, markdown-captions, jsbeautifier, jinja2, gitdb, beautifulsoup4, gitpython, ghp-import, mkdocs, mkdocs-video, mkdocs-section-index, mkdocs-redirects, mkdocs-mermaid2-plugin, mkdocs-material, mkdocs-git-revision-date-localized-plugin
+2026-10-23T20:45:02.138Z	
+2026-10-23T20:45:02.140Z	Successfully installed MarkupSafe-3.0.4 babel-2.18.0 backrefs-8.1 beautifulsoup4-4.15.0 certifi-2026.10.23 charset_normalizer-3.5.2 colorama-0.4.6 editorconfig-0.17.1 ghp-import-2.1.0 gitdb-4.0.12 gitpython-3.2.1 idna-3.20 jinja2-3.1.6 jsbeautifier-2.0.3 lxml-6.1.3 markdown-3.11.2 markdown-captions-2.1.2 mergedeep-1.3.4 mkdocs-1.6.1 mkdocs-get-deps-0.2.2 mkdocs-git-revision-date-localized-plugin-1.6.0 mkdocs-glightbox-0.5.2 mkdocs-material-9.7.7 mkdocs-material-extensions-1.3.1 mkdocs-mermaid2-plugin-1.2.3 mkdocs-redirects-1.2.2 mkdocs-section-index-0.3.10 mkdocs-video-1.5.0 paginate-0.5.7 pathspec-1.1.1 pygments-2.21.0 pymdown-extensions-12.3 python-dateutil-3.0.0 pyyaml-6.0.3 pyyaml-env-tag-1.1 requests-2.34.2 selectolax-1.0.2 setuptools-84.2.1 six-1.17.0 smmap-5.0.3 soupsieve-3.0.4 typing-extensions-4.16.0 tzdata-2026.5 urllib3-2.8.0 watchdog-6.0.0
+2026-10-23T20:45:02.385Z	Reshimming asdf python...
+2026-10-23T20:45:03.773Z	Executing user build command: pip install -r requirements-lock.txt && npm run build
+2026-10-23T20:45:04.297Z	Requirement already satisfied: babel==2.18.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 11)) (2.18.0)
+2026-10-23T20:45:04.297Z	Requirement already satisfied: backrefs==8.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 12)) (8.1)
+2026-10-23T20:45:04.298Z	Requirement already satisfied: beautifulsoup4==4.15.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 13)) (4.15.0)
+2026-10-23T20:45:04.317Z	Collecting certifi==2026.10.19 (from -r requirements-lock.txt (line 14))
+2026-10-23T20:45:04.320Z	  Using cached certifi-2026.10.19-py3-none-any.whl.metadata (2.5 kB)
+2026-10-23T20:45:04.323Z	Requirement already satisfied: charset-normalizer==3.5.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 15)) (3.5.2)
+2026-10-23T20:45:04.324Z	Requirement already satisfied: click==8.5.0 in /opt/buildhome/.local/lib/python3.14/site-packages (from -r requirements-lock.txt (line 16)) (8.5.0)
+2026-10-23T20:45:04.324Z	Requirement already satisfied: colorama==0.4.6 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 17)) (0.4.6)
+2026-10-23T20:45:04.325Z	Requirement already satisfied: EditorConfig==0.17.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 18)) (0.17.1)
+2026-10-23T20:45:04.325Z	Requirement already satisfied: ghp-import==2.1.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 19)) (2.1.0)
+2026-10-23T20:45:04.326Z	Requirement already satisfied: gitdb==4.0.12 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 20)) (4.0.12)
+2026-10-23T20:45:04.326Z	Requirement already satisfied: GitPython==3.2.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 21)) (3.2.1)
+2026-10-23T20:45:04.327Z	Requirement already satisfied: idna==3.20 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 22)) (3.20)
+2026-10-23T20:45:04.327Z	Requirement already satisfied: Jinja2==3.1.6 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 23)) (3.1.6)
+2026-10-23T20:45:04.328Z	Requirement already satisfied: jsbeautifier==2.0.3 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 24)) (2.0.3)
+2026-10-23T20:45:04.328Z	Requirement already satisfied: lxml==6.1.3 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 25)) (6.1.3)
+2026-10-23T20:45:04.328Z	Requirement already satisfied: Markdown==3.11.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 26)) (3.11.2)
+2026-10-23T20:45:04.329Z	Requirement already satisfied: markdown-captions==2.1.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 27)) (2.1.2)
+2026-10-23T20:45:04.329Z	Requirement already satisfied: MarkupSafe==3.0.4 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 28)) (3.0.4)
+2026-10-23T20:45:04.330Z	Requirement already satisfied: mergedeep==1.3.4 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 29)) (1.3.4)
+2026-10-23T20:45:04.330Z	Requirement already satisfied: mkdocs==1.6.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 30)) (1.6.1)
+2026-10-23T20:45:04.331Z	Requirement already satisfied: mkdocs-get-deps==0.2.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 31)) (0.2.2)
+2026-10-23T20:45:04.331Z	Requirement already satisfied: mkdocs-git-revision-date-localized-plugin==1.6.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 32)) (1.6.0)
+2026-10-23T20:45:04.332Z	Requirement already satisfied: mkdocs-glightbox==0.5.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 33)) (0.5.2)
+2026-10-23T20:45:04.332Z	Requirement already satisfied: mkdocs-material==9.7.7 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 34)) (9.7.7)
+2026-10-23T20:45:04.333Z	Requirement already satisfied: mkdocs-material-extensions==1.3.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 35)) (1.3.1)
+2026-10-23T20:45:04.333Z	Requirement already satisfied: mkdocs-mermaid2-plugin==1.2.3 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 36)) (1.2.3)
+2026-10-23T20:45:04.333Z	Requirement already satisfied: mkdocs-redirects==1.2.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 37)) (1.2.2)
+2026-10-23T20:45:04.334Z	Requirement already satisfied: mkdocs-section-index==0.3.10 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 38)) (0.3.10)
+2026-10-23T20:45:04.334Z	Requirement already satisfied: mkdocs-video==1.5.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 39)) (1.5.0)
+2026-10-23T20:45:04.335Z	Requirement already satisfied: packaging==26.3 in /opt/buildhome/.local/lib/python3.14/site-packages (from -r requirements-lock.txt (line 40)) (26.3)
+2026-10-23T20:45:04.335Z	Requirement already satisfied: paginate==0.5.7 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 41)) (0.5.7)
+2026-10-23T20:45:04.336Z	Requirement already satisfied: pathspec==1.1.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 42)) (1.1.1)
+2026-10-23T20:45:04.336Z	Requirement already satisfied: platformdirs==4.13.5 in /opt/buildhome/.local/lib/python3.14/site-packages (from -r requirements-lock.txt (line 43)) (4.13.5)
+2026-10-23T20:45:04.336Z	Requirement already satisfied: Pygments==2.21.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 44)) (2.21.0)
+2026-10-23T20:45:04.337Z	Requirement already satisfied: pymdown-extensions==12.3 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 45)) (12.3)
+2026-10-23T20:45:04.343Z	Collecting python-dateutil==2.9.0.post0 (from -r requirements-lock.txt (line 46))
+2026-10-23T20:45:04.397Z	  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-10-23T20:45:04.405Z	Requirement already satisfied: PyYAML==6.0.3 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 47)) (6.0.3)
+2026-10-23T20:45:04.406Z	Requirement already satisfied: pyyaml_env_tag==1.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 48)) (1.1)
+2026-10-23T20:45:04.406Z	Requirement already satisfied: requests==2.34.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 49)) (2.34.2)
+2026-10-23T20:45:04.407Z	Requirement already satisfied: selectolax==1.0.2 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 50)) (1.0.2)
+2026-10-23T20:45:04.407Z	Requirement already satisfied: setuptools==84.2.1 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 51)) (84.2.1)
+2026-10-23T20:45:04.408Z	Requirement already satisfied: six==1.17.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 52)) (1.17.0)
+2026-10-23T20:45:04.408Z	Requirement already satisfied: smmap==5.0.3 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 53)) (5.0.3)
+2026-10-23T20:45:04.417Z	Collecting soupsieve==3.0.3 (from -r requirements-lock.txt (line 54))
+2026-10-23T20:45:04.421Z	  Downloading soupsieve-3.0.3-py3-none-any.whl.metadata (4.4 kB)
+2026-10-23T20:45:04.427Z	Requirement already satisfied: typing_extensions==4.16.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 55)) (4.16.0)
+2026-10-23T20:45:04.427Z	Requirement already satisfied: tzdata==2026.5 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 56)) (2026.5)
+2026-10-23T20:45:04.430Z	Requirement already satisfied: urllib3==2.8.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 57)) (2.8.0)
+2026-10-23T20:45:04.430Z	Requirement already satisfied: watchdog==6.0.0 in /opt/buildhome/.asdf/installs/python/3.14.8/lib/python3.14/site-packages (from -r requirements-lock.txt (line 58)) (6.0.0)
+2026-10-23T20:45:04.513Z	Using cached certifi-2026.10.19-py3-none-any.whl (136 kB)
+2026-10-23T20:45:04.517Z	Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-10-23T20:45:04.555Z	Downloading soupsieve-3.0.3-py3-none-any.whl (41 kB)
+2026-10-23T20:45:04.623Z	Installing collected packages: soupsieve, python-dateutil, certifi
+2026-10-23T20:45:04.623Z	  Attempting uninstall: soupsieve
+2026-10-23T20:45:04.628Z	    Found existing installation: soupsieve 3.0.4
+2026-10-23T20:45:04.630Z	    Uninstalling soupsieve-3.0.4:
+2026-10-23T20:45:04.631Z	      Successfully uninstalled soupsieve-3.0.4
+2026-10-23T20:45:04.689Z	  Attempting uninstall: python-dateutil
+2026-10-23T20:45:04.695Z	    Found existing installation: python-dateutil 3.0.0
+2026-10-23T20:45:04.699Z	    Uninstalling python-dateutil-3.0.0:
+2026-10-23T20:45:04.700Z	      Successfully uninstalled python-dateutil-3.0.0
+2026-10-23T20:45:04.783Z	  Attempting uninstall: certifi
+2026-10-23T20:45:04.787Z	    Found existing installation: certifi 2026.10.23
+2026-10-23T20:45:04.789Z	    Uninstalling certifi-2026.10.23:
+2026-10-23T20:45:04.791Z	      Successfully uninstalled certifi-2026.10.23
+2026-10-23T20:45:04.806Z	
+2026-10-23T20:45:04.808Z	Successfully installed certifi-2026.10.19 python-dateutil-2.9.0.post0 soupsieve-3.0.3
+2026-10-23T20:45:04.901Z	Reshimming asdf python...
+2026-10-23T20:45:05.570Z	
+2026-10-23T20:45:05.570Z	> build
+2026-10-23T20:45:05.570Z	> node tools/build-site.mjs
+2026-10-23T20:45:05.570Z	
+2026-10-23T20:45:05.699Z	
+2026-10-23T20:45:05.700Z	[1/9] guard and generated data (content/*.tsv)
+2026-10-23T20:45:05.740Z	Generated docs/_assets/backend/js/cabinet-generated-content.js (10 sections, 41 entries)
+2026-10-23T20:45:05.783Z	(node:2409) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///opt/buildhome/repo/docs/_assets/backend/js/now-markdown.js is not specified and it doesn't parse as CommonJS.
+2026-10-23T20:45:05.783Z	Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+2026-10-23T20:45:05.783Z	To eliminate this warning, add "type": "module" to /opt/buildhome/repo/package.json.
+2026-10-23T20:45:05.784Z	(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-23T20:45:06.144Z	Generated docs/compass/now.md (25 entries, 10 sections configured)
+2026-10-23T20:45:06.151Z	generated content is current
+2026-10-23T20:45:06.152Z	
+2026-10-23T20:45:06.152Z	[2/9] MkDocs
+2026-10-23T20:45:07.515Z	mkdocs build --strict OK (python: python, SOURCE_DATE_EPOCH=1792787070)
+2026-10-23T20:45:07.515Z	
+2026-10-23T20:45:07.515Z	[3/9] tidy MkDocs output
+2026-10-23T20:45:07.573Z	images: 112 <img> in the rendered MkDocs pages
+2026-10-23T20:45:07.601Z	removed 6 file(s) (*.map, sitemap.xml.gz, CNAME); normalised 0 redirect page(s) to LF
+2026-10-23T20:45:07.601Z	
+2026-10-23T20:45:07.601Z	[4/9] external mounts (content/external-repos.tsv)
+2026-10-23T20:45:07.604Z	git version 2.43.0
+2026-10-23T20:45:12.276Z	working-with-ai: 43 file(s), 0.3 MB -> /teaching/working-with-ai/ (jesmehta/working-with-ai@58f5ac37); 3 unlisted: .gitignore, coding-with-ai/ (1), working-with-ai/ (1)
+2026-10-23T20:45:12.861Z	prompt-generator: 4 file(s), 0.0 MB -> /teaching/prompt-generator/ (jesmehta/PromptGenerator@5532f306); 0 unlisted
+2026-10-23T20:45:13.421Z	oblique-strategies: 2 file(s), 0.0 MB -> /teaching/oblique-strategies/ (jesmehta/ObliqueStrategies@bb5ca3be); 0 unlisted
+2026-10-23T20:45:17.414Z	ssd-creative-coding-2025-26: 93 file(s), 55.5 MB -> /teaching/ssd-creative-coding-2025-26/ (jesmehta/SSD_Student_Work@45be517c); 11 unlisted: Deepika_Pest_Control/ (3), Dhruvi_Assignment_2/ (3), Parth/ (1), Pushti_DINOEATS/ (4)
+2026-10-23T20:45:19.358Z	ssd-creative-coding-2024-25: 104 file(s), 21.1 MB -> /teaching/ssd-creative-coding-2024-25/ (jesmehta/SSD_Student_Work@45be517c); 18 unlisted: Aadit_Vanjari/ (2), Arpita_Dhanawade.png, Arpita_Dhanawade/ (4), Arya_Ghagare/ (1), Gloria_Mathew/ (1), Navneet_Krishnan/ (2), Prachi_Khobragade/ (1), Swayam_Kadam/ (1), … 3 more
+2026-10-23T20:45:20.868Z	ssd-creative-coding-2023-24: 69 file(s), 6.9 MB -> /teaching/ssd-creative-coding-2023-24/ (jesmehta/SSD_Student_Work@45be517c); 1 unlisted: Vivan_gupta/ (1)
+2026-10-23T20:45:23.808Z	swatch-fields: 316 file(s), 17.7 MB -> /swatch-fields/ (jesmehta/swatchFields@4c891843); 0 unlisted
+2026-10-23T20:45:24.452Z	tracery-bots: 13 file(s), 0.4 MB -> /tracery-bots/ (jesmehta/TraceryBots@2e18cd6e); 43 unlisted: .gitignore, .nojekyll, _TraceryTrials/ (40), fonts-preview.html
+2026-10-23T20:45:24.453Z	
+2026-10-23T20:45:24.453Z	[5/9] archive (content/archive-allowlist.txt)
+2026-10-23T20:45:24.609Z	archive: 159 file(s) -> /archived-landing-pages/; 9 unlisted: README.md, cabinet-index.md.bak, v1/ (5), v2/ (2)
+2026-10-23T20:45:24.609Z	
+2026-10-23T20:45:24.609Z	[6/9] sitemap.xml (MkDocs pages + landing page + mount pages)
+2026-10-23T20:45:24.633Z	sitemap.xml: 42 MkDocs page(s) + 58 added (landing page, mount entry and first-level pages) = 100 URLs, all resolve
+2026-10-23T20:45:24.633Z	
+2026-10-23T20:45:24.633Z	[7/9] route validation
+2026-10-23T20:45:24.676Z	Checked 21 entr(ies), 4 section(s), 10 nav target(s), and 18 doc-body link(s) against public/
+2026-10-23T20:45:24.677Z	
+2026-10-23T20:45:24.677Z	[8/9] publication check
+2026-10-23T20:45:24.988Z	nothing private in public/
+2026-10-23T20:45:24.988Z	
+2026-10-23T20:45:24.988Z	[9/9] build-info.json and manifest (outside public/)
+2026-10-23T20:45:25.537Z	public/: 1024 files, 138.4 MB -- manifest in public-manifest.sha256, provenance in build-info.json, unlisted files in build-unlisted.txt
+2026-10-23T20:45:25.559Z	Success: Build command completed
+2026-10-23T20:45:25.997Z	Executing user deploy command: npx wrangler deploy
+2026-10-23T20:45:27.674Z	
+2026-10-23T20:45:27.674Z	 ⛅️ wrangler 4.149.0
+2026-10-23T20:45:27.674Z	────────────────────
+2026-10-23T20:45:30.229Z	🌀 Building list of assets...
+2026-10-23T20:45:30.252Z	✨ Read 1227 files from the assets directory /opt/buildhome/repo/public
+2026-10-23T20:45:31.455Z	🌀 Starting asset upload...
+2026-10-23T20:45:34.270Z	🌀 Found 844 new or modified static assets to upload. Proceeding with upload...
+2026-10-23T20:45:34.270Z	+ /assets/javascripts/lunr/min/lunr.jp.min.js
+2026-10-23T20:45:34.270Z	+ /teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/style.css
+2026-10-23T20:45:34.270Z	+ /archived-landing-pages/v1/js/extra.js
+2026-10-23T20:45:34.270Z	+ /swatch-fields/assets/linkedin.svg
+2026-10-23T20:45:34.270Z	+ /teaching/ssd-creative-coding-2024-25/Sharvari_Joshi/index.html
+2026-10-23T20:45:34.270Z	+ /archived-landing-pages/v2-history/04-serpent-redesign/assets/js/cabinet-data.js
+2026-10-23T20:45:34.270Z	+ /fffx/VeraMolnarRetrospective/index.html
+2026-10-23T20:45:34.270Z	+ /teaching/ssd-creative-coding-2024-25/Pratyush_Girap/index.html
+2026-10-23T20:45:34.271Z	+ /assets/javascripts/lunr/min/lunr.vi.min.js
+2026-10-23T20:45:34.271Z	+ /assets/javascripts/lunr/min/lunr.multi.min.js
+2026-10-23T20:45:34.271Z	+ /teaching/ssd-creative-coding-2023-24/Reet_singh/sketch.js
+2026-10-23T20:45:34.271Z	+ /teaching/working-with-ai/coding-with-ai/sidebar.js
+2026-10-23T20:45:34.271Z	+ /archived-landing-pages/v3-history/01-pre-islands-tool-split/index.html
+2026-10-23T20:45:34.271Z	+ /teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibihydreigon-left.png
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2024-25/Swayam_Kadam/sketch.js
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2023-24/Vivan_gupta/sketch.js
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2024-25/Sara_Khan/sketch.js
+2026-10-23T20:45:34.272Z	+ /archived-landing-pages/seaserpent-prototype/index.html
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2024-25/Atharva_Aware/sketch.js
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2025-26/index.html
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1/sketch.js
+2026-10-23T20:45:34.272Z	+ /teaching/ssd-creative-coding-2023-24/kaushik.png
+2026-10-23T20:45:34.272Z	+ /archived-landing-pages/v2/source/cabinet-map-source.json
+2026-10-23T20:45:34.272Z	+ /_assets/backend/js/now-markdown.js
+2026-10-23T20:45:34.273Z	+ /teaching/ssd-creative-coding-2025-26/Jiya_my_name_fliesss/sketch.js
+2026-10-23T20:45:34.273Z	+ /teaching/ssd-creative-coding-2023-24/Tanay_Shetty/sketch.js
+2026-10-23T20:45:34.273Z	+ /assets/javascripts/lunr/min/lunr.zh.min.js
+2026-10-23T20:45:34.273Z	+ /teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/sketch.js
+2026-10-23T20:45:34.274Z	+ /assets/javascripts/lunr/min/lunr.ja.min.js
+2026-10-23T20:45:34.274Z	+ /teaching/ssd-creative-coding-2024-25/Atharva_Aware.png
+2026-10-23T20:45:34.274Z	+ /assets/javascripts/lunr/min/lunr.ta.min.js
+2026-10-23T20:45:34.275Z	+ /teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/sketch.js
+2026-10-23T20:45:34.275Z	+ /teaching/ssd-creative-coding-2024-25/Parikshit/sketch.js
+2026-10-23T20:45:34.275Z	+ /teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/sketch.js
+2026-10-23T20:45:34.275Z	+ /assets/javascripts/lunr/min/lunr.hi.min.js
+2026-10-23T20:45:34.275Z	+ /assets/javascripts/lunr/min/lunr.kn.min.js
+2026-10-23T20:45:34.276Z	+ /teaching/ssd-creative-coding-2024-25/Prachi_Khobragade.png
+2026-10-23T20:45:34.276Z	+ /teaching/ssd-creative-coding-2025-26/Parth/sketch.js
+2026-10-23T20:45:34.276Z	+ /teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/sketch.js
+2026-10-23T20:45:34.277Z	+ /teaching/ssd-creative-coding-2024-25/Madhav_Kansara/sketch.js
+2026-10-23T20:45:34.277Z	+ /archived-landing-pages/v2/source/generate-cabinet-map.js
+2026-10-23T20:45:34.277Z	+ /_assets/backend/css/now.css
+2026-10-23T20:45:34.277Z	+ /swatch-fields/index.html
+2026-10-23T20:45:34.277Z	+ /teaching/working-with-ai/working-with-ai/07.html
+2026-10-23T20:45:34.277Z	+ /teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/sketch.js
+2026-10-23T20:45:34.277Z	+ /teaching/working-with-ai/working-with-ai/02.html
+2026-10-23T20:45:34.277Z	+ /teaching/working-with-ai/working-with-ai/06.html
+2026-10-23T20:45:34.277Z	+ /teaching/working-with-ai/working-with-ai/13.html
+2026-10-23T20:45:34.277Z	+ /archived-landing-pages/v3-history/01-pre-islands-tool-split/cabinet-v3-style.css
+2026-10-23T20:45:34.278Z	+ /assets/javascripts/lunr/min/lunr.nl.min.js
+2026-10-23T20:45:34.278Z	+ /archived-landing-pages/v3-history/01-pre-islands-tool-split/cabinet-v3-treemap.js
+2026-10-23T20:45:34.278Z	+ /teaching/ssd-creative-coding-2024-25/Parikshit.png
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/04.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/01.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/02.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/13.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/09.html
+2026-10-23T20:45:34.278Z	+ /archived-landing-pages/seaserpent-prototype/cabinet-v3-seaserpent.js
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/14.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/05.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/15.html
+2026-10-23T20:45:34.278Z	+ /teaching/working-with-ai/coding-with-ai/background.js
+2026-10-23T20:45:34.279Z	+ /teaching/ssd-creative-coding-2023-24/Vaishnavi_Shetty.png
+2026-10-23T20:45:34.279Z	+ /teaching/ssd-creative-coding-2024-25/Sharvari_Joshi.png
+2026-10-23T20:45:34.279Z	+ /teaching/working-with-ai/coding-with-ai/16.html
+2026-10-23T20:45:34.279Z	+ /teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/sketch.js
+2026-10-23T20:45:34.279Z	+ /teaching/prompt-generator/app.js
+2026-10-23T20:45:34.279Z	+ /teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/stars.png
+2026-10-23T20:45:34.279Z	+ /assets/javascripts/lunr/min/lunr.ro.min.js
+2026-10-23T20:45:34.279Z	+ /archived-landing-pages/v2-history/02-round1-visual-pass/assets/css/cabinet-landing.css
+2026-10-23T20:45:34.279Z	+ /archived-landing-pages/v2-history/04-serpent-redesign/assets/css/cabinet-landing.css
+2026-10-23T20:45:34.279Z	+ /_assets/backend/js/cabinet-v3-production-animate.js
+2026-10-23T20:45:34.279Z	+ /archived-landing-pages/v3-history/01-pre-islands-tool-split/cabinet-v3-data.js
+2026-10-23T20:45:34.279Z	+ /assets/javascripts/lunr/min/lunr.tr.min.js
+2026-10-23T20:45:34.279Z	+ /teaching/working-with-ai/working-with-ai/style.css
+2026-10-23T20:45:34.279Z	+ /archived-landing-pages/v2-history/02-round1-visual-pass/assets/js/cabinet-generated-content.js
+2026-10-23T20:45:34.279Z	+ /_assets/backend/js/cabinet-v3-particles.js
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v2/assets/js/cabinet-generated-content.js
+2026-10-23T20:45:34.280Z	+ /teaching/ssd-creative-coding-2024-25/Avaneesh_Chavan.png
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/404.html
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/trippyGourmet/index.html
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/fffx/particleSystems/index.html
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/3dp/3DP_polyhedra/index.html
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/makings/index.html
+2026-10-23T20:45:34.280Z	+ /teaching/ssd-creative-coding-2024-25/Rhea_Pillai.png
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/index.html
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v1/fffx/VeraMolnarRetrospective/index.html
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v3-history/01-pre-islands-tool-split/cabinet-v3-layout.js
+2026-10-23T20:45:34.280Z	+ /archived-landing-pages/v2-history/01-initial/index.html
+2026-10-23T20:45:34.280Z	+ /3dp/3DP_2019/index.html
+2026-10-23T20:45:34.280Z	+ /3dp/3DP_mecha/index.html
+2026-10-23T20:45:34.280Z	+ /fffx/100Gradients/index.html
+2026-10-23T20:45:34.280Z	+ /physComp/index.html
+2026-10-23T20:45:34.280Z	+ /3dp/3DP_polyhedra/index.html
+2026-10-23T20:45:34.281Z	+ /writings/miscellany/index.html
+2026-10-23T20:45:34.281Z	+ /makings/drawing-machines/index.html
+2026-10-23T20:45:34.281Z	+ /writings/poems/chopped-papaya/index.html
+2026-10-23T20:45:34.281Z	+ /writings/poems/index.html
+2026-10-23T20:45:34.281Z	+ /fab/index.html
+2026-10-23T20:45:34.281Z	+ /teaching/ssd-creative-coding-2024-25/Aadit_Vanjari.png
+2026-10-23T20:45:34.281Z	   (truncating changed assets log, set `WRANGLER_LOG=debug` environment variable to see full diff)
+2026-10-23T20:45:45.354Z	Uploaded 280 of 844 assets
+2026-10-23T20:45:46.708Z	Uploaded 561 of 844 assets
+2026-10-23T20:45:47.910Z	Uploaded 842 of 844 assets
+2026-10-23T20:45:49.821Z	Uploaded 844 of 844 assets
+2026-10-23T20:45:49.821Z	✨ Success! Uploaded 844 files (180 already uploaded) (15.53 sec)
+2026-10-23T20:45:49.821Z	
+2026-10-23T20:45:49.827Z	Total Upload: 0.31 KiB / gzip: 0.22 KiB
+2026-10-23T20:45:53.138Z	Uploaded cabinet-of-curiosities (23.68 sec)
+2026-10-23T20:45:54.864Z	Deployed cabinet-of-curiosities triggers (1.73 sec)
+2026-10-23T20:45:54.865Z	  https://cabinet-of-curiosities.jesmehta.workers.dev
+2026-10-23T20:45:54.865Z	Current Version ID: 2ab6c8b4-754e-41d3-b9e6-711620e56072
+2026-10-23T20:45:54.868Z	
+2026-10-23T20:45:54.869Z	Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+2026-10-23T20:45:54.996Z	Success: Deploy command completed
+2026-10-23T20:45:54.998Z	Uploading to dependency cache
+2026-10-23T20:45:55.001Z	Skipping build output cache as it's not supported for your project
+2026-10-23T20:45:59.423Z	Success: Dependencies uploaded to build cache.
+2026-10-23T20:45:59.779Z	✨ Success! Build completed.
