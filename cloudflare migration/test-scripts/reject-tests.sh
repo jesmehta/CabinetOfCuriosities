@@ -45,6 +45,10 @@ reset; setcol prompt-generator 4 "5532f306";                                 m_f
 reset; setcol prompt-generator 4 "0123456789abcdef0123456789abcdef01234567"; m_fail "revision not on GitHub"         "could not fetch this commit"
 reset; setcol prompt-generator 4 "0123456789abcdef0123456789abcdef01234567"; m_fail "unknown revision, offline"      "not in the cache and --offline" --offline
 reset; setcol tracery-bots 6 "teaching/working-with-ai/bots";                m_fail "destination inside another"     "lies inside"
+reset; setcol tracery-bots 6 "../outside-public";                           m_fail "destination traversal (Codex C4 I1)" "must be a plain relative path" --offline
+[ ! -e "$T/outside-public" ] && { echo "PASS    ... nothing written outside the output folder"; PASS=$((PASS+1)); } || { echo "FAIL    ... $T/outside-public exists"; FAIL=$((FAIL+1)); }
+reset; setcol tracery-bots 1 "../archive-allowlist";                         m_fail "unsafe id (would name a file outside the allowlists)" "lowercase slug" --offline
+reset; setcol tracery-bots 6 "Teaching/Working-With-AI/bots";                m_fail "nested destination, different letter case" "lies inside" --offline
 reset; mkdir -p "$T/m-out/swatch-fields";                                    m_fail "destination already exists (collision)" "already exists before assembly" --offline
 reset; setcol ssd-creative-coding-2025-26 4 "$SSD_OLD"
 out=$(mounts); rc=$?
