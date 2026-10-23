@@ -72,3 +72,27 @@ The owner's uncommitted work (`cabinet-material.css`, `scratchNotes.md`, `docs/_
   copied warm cache also passes.
 - **Next:** step 4 (launchers, `DEPLOYMENT.md`, release tools with `build-info.json` refusal, `update-externals`,
   locks, `wrangler.jsonc`, `deploy.yml` on the new build), then step 5 tests.
+
+## Step 4: config, release tools, update-externals, launchers, workflow, runbook — 2026-10-23 ~22:00–22:30 IST
+
+- `5e0a7e5` C6: `wrangler.jsonc` (Worker `cabinet-of-curiosities`, assets-only `./public`, `404-page`,
+  `workers_dev`, no preview URLs), `package.json` + lock (Wrangler 4.149.0; npm 11 blocked workerd's install script,
+  Wrangler runs; `wrangler dev` is tested in step 5), `requirements-lock.txt` (the 48-package freeze of 2026-10-22),
+  `.gitignore` (build outputs incl. `build-info.json`, `releases/`, `.venv/`, credentials).
+- `56cef9f` C7: `save-artifact`/`verify-artifact` ported; shared `tools/build-info.mjs` refuses development builds,
+  unpinned mounts and missing provenance. `npm run deploy` = fresh build (always pinned) + `wrangler deploy`.
+- `5c86d45` C3: `update-externals` (pins + NEW/MISSING/CHANGED/REMOVED report; never edits allowlists; `--check`).
+  Ran `--check`: all 8 pins current. The report path is tested in step 5 with an older pin.
+- `be4aee4` C9: four launchers start from their own folder and activate `.venv`.
+- `9a4f2ae` C8: `deploy.yml` runs `tools/build-site.mjs` with the lock (temporary, until the domain moves);
+  `tools/assemble-external.js` retired; comments and `BACKEND-AND-DEPLOY.md` (dated superseded note) updated.
+- `76ec000` C10: `DEPLOYMENT.md` runbook; README deploy section rewritten (pinned externals).
+- (Commits were redone once before this entry: the first C6 commit had swept in the staged deletion of
+  `assemble-external.js`; the local commits were reset and recommitted per unit. Nothing had been pushed.)
+- Local `.venv` created from the lock: `pip freeze` equals the lock exactly.
+- **Smoke test** (clean clone of `76ec000`, `--offline` with a copied warm cache): build 1,024 files; save + verify
+  OK; an `--external-local` build is marked DEVELOPMENT and **save refuses it**; a release repackaged as
+  development, and one without `BUILD-INFO.json`, are **refused by verify**; no provenance file in `public/`.
+- **Next: step 5**, the full test round (determinism incl. `autocrlf` and Linux-like conditions, all rejection
+  cases, update-externals report, sitemap, `wrangler dev` HTTP, behaviour vs live incl. scenarios, authoring via the
+  launchers in a disposable clone), then Codex post-implementation review.
