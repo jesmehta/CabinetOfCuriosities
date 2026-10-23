@@ -1,5 +1,5 @@
 // Cabinet -- post-build deployment validation. Run after `mkdocs build
-// --strict`, `assemble-external.js`, and the archived-landing-pages copy
+// --strict`, the external mounts and the archive (tools/build-site.mjs)
 // have all produced public/, so this checks the actually-assembled output,
 // not just the source TSVs/config.
 //
@@ -40,7 +40,7 @@
 // page that, by construction, was just found to exist.
 //
 // Destination collisions between the assembly manifest and MkDocs' own
-// output are caught earlier, in assemble-external.js (it runs after
+// output are caught earlier, in tools/external-mounts.mjs (it runs after
 // `mkdocs build` and refuses to overwrite a path MkDocs already produced) --
 // not repeated here.
 //

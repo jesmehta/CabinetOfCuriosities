@@ -1,5 +1,10 @@
 name: Deploy MkDocs to GitHub Pages
 
+# Cloudflare migration (2026-10): this workflow is TEMPORARY. It keeps GitHub Pages serving
+# cabinetofcuriosities.in until the domain moves to the Cloudflare Worker, then it is removed.
+# It runs the same single build as Cloudflare and local `npm run build` (tools/build-site.mjs),
+# so all three produce the same public/. See DEPLOYMENT.md.
+
 on:
   push:
     branches:
@@ -26,88 +31,28 @@ jobs:
       with:
         python-version: 3.x
 
-    # Explicit rather than relying on the runner image's preinstalled Node,
-    # same reasoning as pinning Python above and mkdocs-section-index in
-    # requirements.txt -- an implicit version can change under us. Needed
-    # from here on for tools/*.js (no npm packages used, so no install step).
+    # Explicit rather than relying on the runner image's preinstalled Node.
+    # The build needs no npm packages (Wrangler is only for Cloudflare
+    # deploys), so there is no npm install step.
     - name: Set up Node
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
 
+    # requirements-lock.txt: the exact package versions every build uses
+    # (Cloudflare, local .venv, here), so all of them produce the same site.
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements-lock.txt
 
-    - name: Guard against docs/index.md
-      run: |
-        if [ -f docs/index.md ]; then
-          echo "ERROR: docs/index.md must not exist. This site uses docs/index.html as the standalone Level 1 landing page. See archived-landing-pages/v2/LANDING-PAGE-NOTES.md."
-          exit 1
-        fi
-
-    # Regenerates the committed output of tools/build-cabinet-content.js and
-    # build-now-content.js and fails if that's not what's already committed --
-    # both are otherwise dev-time-only (run locally, output committed), and
-    # nothing before this checked they were actually re-run after the last
-    # content/*.tsv edit. See documentation/backend-and-deploy/BACKEND-AND-DEPLOY.md.
-    - name: Verify generated content is current
-      run: |
-        node tools/build-cabinet-content.js
-        node tools/build-now-content.js
-        if ! git diff --exit-code -- docs/_assets/backend/js/cabinet-generated-content.js docs/_assets/backend/js/now-data.js docs/_assets/backend/js/now-markdown.js docs/compass/now.md; then
-          echo "ERROR: committed generated content is stale -- run tools/build-cabinet-content.js and tools/build-now-content.js locally and commit the result." >&2
-          exit 1
-        fi
-
-    # Tee'd to a log file (not just captured in the Actions UI) so the
-    # validation step below can read back MkDocs' own "unrecognized
-    # relative link" INFO lines -- see tools/validate-deployment.js's
-    # header. `set -o pipefail` so a failing mkdocs build still fails this
-    # step even though its output is piped through `tee`.
-    - name: Build MkDocs Site
-      run: |
-        set -o pipefail
-        mkdocs build --site-dir public --strict 2>&1 | tee mkdocs-build.log
-
-    # --- Multi-repo assembly (#43 Phase 2 -- generalized from Phase 1's
-    # hand-written per-project checkout/assemble/validate steps into one
-    # manifest (content/external-repos.tsv) and one script
-    # (tools/assemble-external.js). To add another repo: add a row to the
-    # manifest, no workflow change needed. Full reasoning:
-    # documentation/backend-and-deploy/cabinet-multi-repo-assembly-concept-note-short.md
-    # section 8/11.
-    #
-    # Runs AFTER the MkDocs build so it lands in public/ without MkDocs
-    # ever seeing it, and the script refuses to overwrite any path MkDocs
-    # already produced. All-or-nothing: a failed clone, a missing
-    # subfolder, or a missing required file/content fails this step, so
-    # `deploy` (needs: build) never ships a broken or partial assembly.
-    - name: Assemble external projects
-      run: node tools/assemble-external.js --public-dir public
-
-    # Same pattern as the assembly above, local dir instead of a checkout --
-    # makes colophon.md's v1/v2 links resolve instead of 404ing. #61
-    #
-    # Runs BEFORE validation (moved here for #84): the validator now also
-    # checks docs/**/*.md body links, and colophon.md links to these paths,
-    # so it needs the full tree in place first -- checking archived-page
-    # links against a public/ that doesn't have them yet would be a false
-    # positive, not a real bug.
-    - name: Copy archived landing pages
-      run: cp -r archived-landing-pages public/archived-landing-pages
-
-    # Cross-checks every active content/cabinet-{entries,sections}.tsv
-    # row's local href, every self-domain mkdocs.yml nav target, and every
-    # docs/**/*.md body link against the actually-assembled public/ tree.
-    # Deliberately generic over all of them rather than a Teaching-specific
-    # check -- Teaching's assembled galleries and hub links are just some of
-    # what this already covers, so a second special-cased check would only
-    # duplicate it. See tools/validate-deployment.js's header for the full
-    # breakdown (#84).
-    - name: Validate deployment routes
-      run: node tools/validate-deployment.js --public-dir public --build-log mkdocs-build.log
+    # The whole site build lives in tools/build-site.mjs: docs/index.md guard,
+    # generated-content check, mkdocs --strict, external mounts at their pinned
+    # revisions with only their allowlisted files (content/external-repos.tsv,
+    # content/external-allowlists/), the archive through its allowlist,
+    # sitemap.xml, route validation and the publication check.
+    - name: Build site
+      run: node tools/build-site.mjs
 
     - name: Setup Pages
       uses: actions/configure-pages@v5

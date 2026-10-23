@@ -3,7 +3,7 @@
 // checkout/assemble/validate blocks in .github/workflows/deploy.yml (#43
 // Phase 2 -- see documentation/backend-and-deploy/
 // cabinet-multi-repo-assembly-concept-note-short.md section 8). Used by
-// tools/assemble-external.js. Reuses cabinet-tsv.js's tab-split parse/
+// tools/external-mounts.mjs (formerly tools/assemble-external.js). Reuses cabinet-tsv.js's tab-split parse/
 // serialize core rather than re-implementing it, same reasoning as that
 // file gives for sharing with now-tsv.js: one parser, so a malformed row
 // fails loudly the same way everywhere instead of drifting per-file.

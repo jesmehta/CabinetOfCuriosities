@@ -370,6 +370,9 @@ captions/alt text exist.
    committed), and nothing checks they were actually re-run after the
    last `content/*.tsv` edit. Runs `mkdocs build --site-dir public
    --strict`, then **assembles external projects**
+   (*superseded 2026-10-23 by the Cloudflare migration: the whole build is now
+   `tools/build-site.mjs`, external mounts are pinned and allowlisted by
+   `tools/external-mounts.mjs`; see `DEPLOYMENT.md`*)
    (`tools/assemble-external.js`, manifest-driven — see "Multi-repo
    assembly" below) and **validates deployment routes**
    (`tools/validate-deployment.js`, cross-checks every active
@@ -397,6 +400,11 @@ checkout from an empty one), and `status` (`true`/`false`/`wip`, only
 validates it (same shared-parser pattern as `cabinet-tsv.js`) —
 duplicate `id`s and duplicate `destination`s are rejected at parse
 time.
+
+*Superseded 2026-10-23 (Cloudflare migration): `tools/assemble-external.js` is retired. Its successor,
+`tools/external-mounts.mjs`, publishes each row at a pinned `revision` and only the files in
+`content/external-allowlists/<id>.txt`; see `DEPLOYMENT.md` and `cloudflare migration/plan.md`.
+The text below is the history of the retired script.*
 
 `tools/assemble-external.js` replaces the old hand-written
 checkout/assemble/validate step triples (one set of three per project,
