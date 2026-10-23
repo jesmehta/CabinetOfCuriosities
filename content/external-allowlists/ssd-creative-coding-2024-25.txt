@@ -1,6 +1,6 @@
 # Allowlist for external mount "ssd-creative-coding-2024-25" (jesmehta/SSD_Student_Work, ssd-creative-coding-2024-25/) -- tools/allowlist.mjs.
 # Only the files listed here are published; anything else in the repository is left out and reported.
-# Paths are relative to the mount folder; one file per line; a line starting with '#' is a comment.
+# Paths are relative to the mount folder; one file per line; '#' starts a comment.
 #
 # STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
 # file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
@@ -80,7 +80,6 @@ Parikshit/index.html
 Parikshit/sketch.js
 Parikshit/style.css
 Prachi_Khobragade.png
-Prachi_Khobragade/Kawaii Ringtones #6.mp3
 Prachi_Khobragade/index.html
 Prachi_Khobragade/sketch.js
 Prachi_Khobragade/style.css

@@ -266,6 +266,11 @@ Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-rep
 - [ ] **Tracery `_TraceryTrials`:** not needed on Cloudflare (owner); GitHub keeps it as the archive. Excluded by the
   mount allowlist. Note: the Tracery Bots index page links three trial folders, so remove or replace those links
   in the TraceryBots repository.
+- [ ] **Broken sound in SSD 2024-25 `Prachi_Khobragade/` (a bug, not only an optimisation; found 2026-10-23):**
+  `sketch.js` loads `"Kawaii Ringtones #6.mp3"`; the browser treats `#6.mp3` as a URL fragment and requests
+  `Kawaii Ringtones ` (404 on the live site). Owner decision: rename files rather than add special rules. Rename the
+  file without `#` and update `sketch.js` in `SSD_Student_Work`, then update the pin and list it in
+  `content/external-allowlists/ssd-creative-coding-2024-25.txt` (left out until then; the sound is broken either way).
 - [ ] **Landing page `index.html` (6.4 MB; 6.1 MB is SVG path data for 1,168 shapes):** round the coordinates in
   `landing-v3`'s build so the file is roughly halved. Every visitor downloads it (1.5 MB compressed).
 - [x] Paper 2025–26 gallery photos (owner's uncommitted page): compacted 2026-10-22 to 600 px max, metadata

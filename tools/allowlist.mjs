@@ -4,10 +4,11 @@
 // are published; anything else the source contains is left out and reported, never a
 // failure. Same syntax as FFFX's publish.txt:
 //
-//   one file path per line, relative to the source folder; a line starting with '#'
-//   is a comment (only at the start: student filenames contain '#', e.g.
-//   "Kawaii Ringtones #6.mp3", so unlike FFFX's publish.txt there are no inline comments);
+//   one file path per line, relative to the source folder; '#' starts a comment;
 //   files only -- no folders, no wildcards; forward slashes.
+//
+// A file whose name contains '#' cannot be listed; rename it at the source. ('#' also
+// breaks it on the web: a browser treats the rest of the URL as a fragment.)
 //
 // Policy and path errors are FATAL (AllowlistError): an absent or empty list, an absolute
 // path, '..' / '.' / empty parts, a wildcard, a backslash, a path listed twice (also when
@@ -27,8 +28,8 @@ const toPosix = (p) => p.split(sep).join("/");
 export function parseAllowlist(text, label) {
   const entries = text
     .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith("#"));
+    .map((l) => l.replace(/#.*$/, "").trim())
+    .filter(Boolean);
   if (!entries.length) throw new AllowlistError(`${label}: lists no files`);
   const seen = new Map();
   for (const entry of entries) {
