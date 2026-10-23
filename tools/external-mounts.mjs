@@ -71,7 +71,7 @@ const repoUrl = (repository) => `https://github.com/${repository}.git`;
 const cacheDir = (repository) => join(CACHE, repository.replace("/", "__") + ".git");
 
 // Open (or create) the bare cache repository for one source repository.
-async function openCache(repository, offline) {
+export async function openCache(repository, offline) {
   const dir = cacheDir(repository);
   if (!existsSync(dir)) {
     if (offline) throw new MountError(`${repository}: not in the cache (${dir}) and --offline was given -- build once with network first`);
@@ -92,7 +92,7 @@ async function openCache(repository, offline) {
 }
 
 // Make sure the pinned commit and its trees are present; verify the commit id.
-function ensureCommit(dir, repository, revision, offline) {
+export function ensureCommit(dir, repository, revision, offline) {
   const present = spawnSync("git", ["-C", dir, "cat-file", "-e", `${revision}^{commit}`], { env: GIT_ENV }).status === 0;
   if (!present) {
     if (offline) throw new MountError(`${repository}@${revision.slice(0, 8)}: commit not in the cache and --offline was given`);
@@ -107,7 +107,7 @@ function ensureCommit(dir, repository, revision, offline) {
 }
 
 // Every leaf of the commit's tree: [{ mode, type, oid, path }].
-function readTree(dir, revision) {
+export function readTree(dir, revision) {
   const out = String(git(dir, ["ls-tree", "-r", "-z", "--full-tree", revision]));
   return out.split("\0").filter(Boolean).map((line) => {
     const tab = line.indexOf("\t");
