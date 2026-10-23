@@ -311,6 +311,17 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   treats `#6.mp3` as a URL fragment and requests `Kawaii Ringtones ` (404 on the live site). Owner: rename files rather
   than add special rules. Rename it without `#` and update `sketch.js` in `SSD_Student_Work`, then update the pin and
   list it in `content/external-allowlists/ssd-creative-coding-2024-25.txt` (left out until then).
+- [ ] **FFFX landing: Circle Packing thumbnail 404** (pre-existing, also on GitHub Pages): the CSS asks for
+  `_assets/backend/css/assets/thumbs/circle-packing.jpg` (path relative to the CSS file). Fix the path in FFFX.
+- [ ] **Tracery Bots index links `future-bots/`**, which does not exist (404 on the live site too). Remove the link
+  or add the page in the TraceryBots repository.
+- [ ] **Swatch Fields landing page** (swatchFields repository): the social-preview image points at
+  `https://jesmehta.github.io/swatchFields/assets/OpenGraphPreview.jpg` (breaks if that repository's Pages stop);
+  a link goes to `https://cabinetofcuriosities.com` (`.com`, the site is `.in`); a placeholder link
+  `https://linkedin.com/in/yourprofile`.
+- [ ] **SSD 2024-25: two student projects not in the gallery**, `Arpita_Dhanawade/` and `anaya_raul/` (folders and
+  thumbnails exist; the gallery's `script.js` lists 16 of 18). Not published on Cloudflare (owner rule: only what the
+  pages load). If they should appear: add them to the gallery in `SSD_Student_Work`, then to the allowlist.
 - [ ] **`compass/about`:** a malformed `<to do - correct …>` tag in the Markdown source; parsers read it differently.
   Content glitch, left untouched by the migration.
 - [x] Live `sitemap.xml` is empty (no `site_url`): fixed by D6 in the Cabinet build. *(Lands with the Cabinet push.)*
