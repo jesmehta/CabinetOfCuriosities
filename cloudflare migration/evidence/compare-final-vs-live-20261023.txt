@@ -1,0 +1,67 @@
+# New build (aabc4dc, manifest 6f956b70...) vs the live site (GitHub Pages, rebuilt 2026-10-23 from 19b167c with unpinned packages incl. selectolax 1.0.2), byte by byte.
+# Script: test-scripts/compare-live.mjs; every changed line classified by test-scripts/classify-d6d7.mjs (before = live copy).
+# The one 'not on live' file was a transient GitHub 503: refetched 200, identical. So 980/1024 identical.
+# The 4 unexplained lines are known: compass/about's malformed '<to do - correct ...>' tag (parser-version difference,
+# the recorded baseline exception) and compass/sitemap's regeneration timestamp (Cabinet 0cb67ca, not yet live).
+new build 1024 files vs https://cabinetofcuriosities.in: 979 identical, 44 differ, 1 not on live
+
+CHANGED (44):
+3dp/3DP_2019/index.html
+3dp/3DP_flexures/index.html
+3dp/3DP_mecha/index.html
+3dp/3DP_polyhedra/index.html
+404.html
+blog/index.html
+compass/about/index.html
+compass/colophon/index.html
+compass/now/index.html
+compass/sitemap/index.html
+dataviz/index.html
+fab/fab23-bhutan/index.html
+fab/fab25-czechia/index.html
+fab/index.html
+fffx/100Gradients/index.html
+fffx/index.html
+fffx/particleSystems/index.html
+makings/drawing-machines/index.html
+makings/index.html
+makings/lasercutting/index.html
+makings/mini_loom/index.html
+makings/origami-paper/index.html
+physComp/index.html
+sitemap.xml
+teaching/dragons/index.html
+teaching/index.html
+teaching/papiermache/index.html
+travels/index.html
+visual-field-notes/index.html
+webtech/dotMandalaTool/index.html
+webtech/emergent_twine/index.html
+webtech/index.html
+webtech/traceryBots/index.html
+webtech/trippyGourmet/index.html
+writings/essays/a-history-of-design/index.html
+writings/essays/graphic-novels-an-underrated-medium/index.html
+writings/essays/index.html
+writings/index.html
+writings/miscellany/elevator-pitch/index.html
+writings/miscellany/index.html
+writings/poems/choices/index.html
+writings/poems/chopped-papaya/index.html
+writings/poems/index.html
+writings/poems/the-flu/index.html
+
+NOT ON LIVE
+503 teaching/ssd-creative-coding-2024-25/Parikshit/style.css
+
+changed files: 44
+  42	added: canonical link (D6)
+  430	nav link full-domain -> root-relative (D7)
+  42	added: whitespace line emitted with the canonical link (theme template)
+  1	sitemap.xml regenerated with URLs (D6)
+
+UNEXPLAINED changed lines (4):
+  compass/about/index.html +<to do="" correct="" or="" add="" links="" to="" all="" the="" interests=""></to></picture></p>
+  compass/about/index.html -<to do="" -="" correct="" or="" add="" links="" to="" all="" the="" interests=""></to></picture></p>
+  compass/sitemap/index.html +<p><em>Auto-generated 2026-10-23 16:43 UTC directly from each repo’s own TSV content files — not hand-maintained.</em></p>
+  compass/sitemap/index.html -<p><em>Auto-generated 2026-10-02 02:46 UTC directly from each repo’s own TSV content files — not hand-maintained.</em></p>

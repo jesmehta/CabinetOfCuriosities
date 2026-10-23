@@ -1,0 +1,7 @@
+# selectolax finding, 2026-10-23 (MkDocs pages only; same source, two package sets)
+# lock as of 2026-10-22 (selectolax 1.0.1): 0 <img> on all 46 MkDocs pages. lock + selectolax 1.0.2, or latest requirements.txt: 112.
+# Affected: compass/about 10, compass/now 9, fab/fab23-bhutan 36, makings/mini_loom 25, teaching/papiermache 22, webtech/dotMandalaTool 10.
+# Latest requirements.txt differs from the old lock in: certifi, python-dateutil 3.0.0, selectolax 1.0.2, soupsieve 3.0.4; selectolax alone restores the images.
+# Build guard (d9759ff) with selectolax 1.0.1:
+#   build-site: FAILED -- the Markdown has 114 images but the rendered MkDocs pages have none: ...
+# with 1.0.2: images: 112 <img> in the rendered MkDocs pages

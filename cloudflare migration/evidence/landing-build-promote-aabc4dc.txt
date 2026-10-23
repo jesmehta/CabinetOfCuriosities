@@ -1,0 +1,16 @@
+# Landing build/promote (plan test 7), 2026-10-23, disposable clone of aabc4dc in the scratchpad (not the repository folder).
+# landing-v3: npm ci (Playwright 1.62.1), node build-static.mjs, node promote.mjs; then git status: no tracked file changed.
+## build-static.log (tail)
+wrote index.html (6707289 chars of SVG markup, 3444 chars of outline markup, 3685 chars of anim data)
+## promote.log
+unchanged: docs/index.html
+unchanged: docs/_assets/backend/js/cabinet-v3-data.js
+unchanged: docs/_assets/backend/js/cabinet-v3-dragon.js
+unchanged: docs/_assets/backend/js/cabinet-v3-flowfield.js
+unchanged: docs/_assets/backend/js/cabinet-v3-islandshape.js
+unchanged: docs/_assets/backend/js/cabinet-v3-particles.js
+unchanged: docs/_assets/backend/js/cabinet-v3-production-animate.js
+unchanged: docs/_assets/backend/css/cabinet-v3-style.css
+verified: docs/index.html loads clean in headless Chromium (zero console/request errors)
+## git status --porcelain (tracked)
+(none)

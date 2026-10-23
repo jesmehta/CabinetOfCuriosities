@@ -1,0 +1,59 @@
+== Cabinet authoring test  2026-10-23T17:13:41Z  (clone of HEAD aabc4dc)
+
+-- negative control
+PASS  control: without .venv the MkDocs check fails (no global MkDocs reachable)
+-- admin dashboard via run-admin-controls.bat (started from another folder)
+PASS  admin dashboard started via its launcher from C:\Users\Jesal\AppData\Local\Temp\tmp.wQGFv0bAfj
+PASS  admin: mkdocs-check
+PASS  admin: cabinet-content
+PASS  admin: now-content
+PASS  admin: sitemap
+PASS  content generation reproduces the committed files exactly
+warning: in the working copy of 'docs/compass/sitemap.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'documentation/CONTENT-INVENTORY.md', CRLF will be replaced by LF the next time Git touches it
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+PASS  site map lists FFFX and Bookshelf pages from the sibling clones
+-- Cabinet editor via run-cabinet-editor.bat
+PASS  Cabinet editor started via its launcher
+PASS  add entry
+PASS  edit entry 2
+PASS  regenerate (Rebuild)
+PASS  edited title is in the generated content
+PASS  full build with the new entry: public/: 1024 files, 138.4 MB -- manifes
+PASS  delete entry
+PASS  regenerate after delete
+PASS  entry count back to 41
+NOTE  cabinet-entries.tsv differs after add+delete:
+        4,5c4,5
+        < writings-poetry	writings	Poetry			writings/poems/	40	2	true	writing-collection		mkdocs				Migrated from Bookshelf's my-writings/poems/ 2026-09-16.
+        < writings-essays	writings	Essays			writings/essays/	50	2	true	writing-collection		mkdocs				Migrated from Bookshelf's my-writings/essays/ 2026-09-16.
+        ---
+        > writings-poetry	writings	Poetry			writings/poems/	10	2	true	writing-collection		mkdocs				Migrated from Bookshelf's my-writings/poems/ 2026-09-16.
+        > writings-essays	writings	Essays			writings/essays/	20	2	true	writing-collection		mkdocs				Migrated from Bookshelf's my-writings/essays/ 2026-09-16.
+-- Now editor via run-now-editor.bat
+PASS  Now editor started via its launcher
+PASS  Now editor state readable
+PASS  Now regenerate
+PASS  Now regeneration reproduces the committed files
+-- update-externals
+        working-with-ai: up to date (58f5ac37)
+        prompt-generator: up to date (5532f306)
+        oblique-strategies: up to date (bb5ca3be)
+        ssd-creative-coding-2025-26: up to date (45be517c)
+        ssd-creative-coding-2024-25: up to date (45be517c)
+        ssd-creative-coding-2023-24: up to date (45be517c)
+        swatch-fields: up to date (4c891843)
+        
+        tracery-bots: f916b2c2 -> 2e18cd6e (jesmehta/TraceryBots)
+          CHANGED listed files (published with the new pin): 3
+            MadSolutionistBot/index.html
+            TrippyGourmetBot/index.html
+            index.html
+        
+        --check: nothing written. 1 pin(s) would change.
+PASS  update-externals --check reports the older pin's changes
+PASS  --check wrote nothing
+PASS  update-externals restored the current pin; allowlists untouched
+PASS  full build after restore: public/: 1024 files, 138.4 MB -- manifes
+== 25 passed, 0 failed
+cms exit 0

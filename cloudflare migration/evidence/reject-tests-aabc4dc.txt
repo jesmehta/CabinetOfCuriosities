@@ -1,0 +1,93 @@
+== Cabinet rejection tests  2026-10-23T17:15:02Z  (HEAD aabc4dc)
+-- controls
+PASS  control: all mounts assemble offline from the warm cache
+PASS  unlisted files are omitted and reported, not a failure
+-- pins (content/external-repos.tsv)
+PASS  unpinned active row
+        external-mounts: FAILED -- Error: external repo prompt-generator: revision is required for an active row (a full 40-character commit SHA; see tools/update-externals.mjs)
+PASS  short revision
+        external-mounts: FAILED -- Error: external repo prompt-generator: revision "5532f306" must be a full 40-character lowercase commit SHA
+PASS  revision not on GitHub
+        external-mounts: FAILED -- jesmehta/PromptGenerator@0123456789abcdef0123456789abcdef01234567: could not fetch this commit -- does it exist on GitHub (pushed, repository public)? git fetch -q --depth 1 --filter=blob:none --no-tags --no-write-fetch-head origin 0123456789abcdef0123456789abcdef01234567 (in C:\Users\Jesal\AppData\Local\Temp\tmp.aPCxzfdCis\cab-reject\_external\git\jesmehta__PromptGenerator.git) failed: fatal: remote error: upload-pack: not our ref 0123456789abcdef0123456789abcdef01234567
+PASS  unknown revision, offline
+        external-mounts: FAILED -- jesmehta/PromptGenerator@01234567: commit not in the cache and --offline was given
+PASS  destination inside another
+        external-mounts: FAILED -- external-repos.tsv: destination "teaching/working-with-ai/bots" lies inside "teaching/working-with-ai"
+PASS  destination already exists (collision)
+        external-mounts: FAILED -- external swatch-fields: public/swatch-fields already exists before assembly -- it would collide with an MkDocs page
+PASS  two revisions of one repository are fetched and used separately
+PASS    ... and the other rows keep 45be517c
+PASS    ... 2025-26 bytes are the old revision's blob
+-- allowlists (content/external-allowlists/<id>.txt)
+PASS  listed file missing at the pin
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "nope.js" not found in the source -- a page that needs it would break (remove it from the list, or restore the file)
+PASS  letter case differs
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "STYLE.CSS" not found -- the source has "style.css" (letter case differs; paths are case-sensitive on the build server)
+PASS  allowlist absent
+        external-mounts: FAILED -- content/external-allowlists/oblique-strategies.txt: allowlist not found -- every source needs one (an unlisted source is never published whole)
+PASS  allowlist lists nothing
+        external-mounts: FAILED -- content/external-allowlists/oblique-strategies.txt: lists no files
+PASS  absolute path
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "/etc/passwd" -- absolute paths not allowed
+PASS  absolute path (drive letter)
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "C:/Windows/win.ini" -- absolute paths not allowed
+PASS  '..' escape
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "../ObliqueStrategies/index.html" -- '..', '.', empty path parts and folders (trailing '/') not allowed
+PASS  wildcard
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "*.js" -- wildcards not allowed; list files one by one
+PASS  folder entry
+        external-mounts: FAILED -- content/external-allowlists/swatch-fields.txt: "assets" is a folder -- list files one by one
+PASS  folder entry with slash
+        external-mounts: FAILED -- content/external-allowlists/swatch-fields.txt: "assets/" -- '..', '.', empty path parts and folders (trailing '/') not allowed
+PASS  backslash
+        external-mounts: FAILED -- content/external-allowlists/swatch-fields.txt: "mosaic\mosaic.js" -- use forward slashes
+PASS  listed twice
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "app.js" -- listed twice
+PASS  listed twice, letter case only
+        external-mounts: FAILED -- content/external-allowlists/prompt-generator.txt: "App.js" -- differs from "app.js" only in letter case; the two would collide on Windows/macOS
+PASS  required file not listed
+        external-mounts: FAILED -- external prompt-generator: required file "app.js" is not in its allowlist
+-- cache (_external/git)
+PASS  empty cache, offline
+        external-mounts: FAILED -- jesmehta/working-with-ai: not in the cache (C:\Users\Jesal\AppData\Local\Temp\tmp.aPCxzfdCis\cab-reject\_external\git\jesmehta__working-with-ai.git) and --offline was given -- build once with network first
+PASS  foreign folder in the cache is refused, not repaired
+        external-mounts: FAILED -- C:\Users\Jesal\AppData\Local\Temp\tmp.aPCxzfdCis\cab-reject\_external\git\jesmehta__ObliqueStrategies.git is not a cache of https://github.com/jesmehta/ObliqueStrategies.git (not a bare repository with that origin). The build does not repair or delete it: move it away and build again.
+PASS    ... and it was left untouched
+PASS  edited working copy at the same HEAD is not published (pinned blob is)
+-- development override (--external-local)
+PASS  --external-local builds from the folder, marked LOCAL
+PASS    ... with the local edit
+PASS  --external-local with an unknown id
+        external-mounts: FAILED -- --external-local nope: no active row with that id
+SKIP  listed symlink (this Windows account cannot create native symlinks; code review only)
+  (repository symlink / submodule / .gitattributes / LFS pointer cases: no such source exists; code review only)
+-- archive (content/archive-allowlist.txt), full build
+PASS  archive: listed file missing
+        build-site: FAILED -- content/archive-allowlist.txt: "v1/js/extra.js" not found in the source -- a page that needs it would break (remove it from the list, or restore the file)
+PASS  archive: wildcard
+        build-site: FAILED -- content/archive-allowlist.txt: "v1/*.html" -- wildcards not allowed; list files one by one
+PASS  archive: allowlist absent
+        build-site: FAILED -- content/archive-allowlist.txt: allowlist not found -- every source needs one (an unlisted source is never published whole)
+PASS  archive: folder entry
+        build-site: FAILED -- content/archive-allowlist.txt: "v2" -- not a regular file (folders are not allowed; list files one by one)
+PASS  archive: listed .md caught by the publication check
+        build-site: FAILED -- private files reached public/:
+          archived-landing-pages/README.md (file type never published)
+PASS  archive: unlisted file omitted and reported
+-- guards, collisions, publication check, sitemap
+PASS  docs/index.md guard
+        build-site: FAILED -- docs/index.md must not exist. This site uses docs/index.html as the standalone landing page. See archived-landing-pages/v2/LANDING-PAGE-NOTES.md.
+PASS  TSV edited, generated data not regenerated
+        build-site: FAILED -- generated content was out of date with content/*.tsv: docs/_assets/backend/js/cabinet-generated-content.js. It has now been regenerated: review and commit it, then build again.
+PASS  MkDocs page collides with a mount
+        build-site: FAILED -- external swatch-fields: public/swatch-fields already exists before assembly -- it would collide with an MkDocs page
+PASS  listed .md in a mount caught by the publication check
+        build-site: FAILED -- private files reached public/:
+          teaching/working-with-ai/working-with-ai/DOCUMENTATION.md (file type never published)
+PASS  listed dotfile caught by the publication check
+        build-site: FAILED -- private files reached public/:
+          tracery-bots/.gitignore (private file)
+PASS  no site_url
+        build-site: FAILED -- mkdocs.yml has no site_url (D6): sitemap.xml would have no URLs
+== 44 passed, 0 failed, 2 skipped (code review)
+reject exit 0

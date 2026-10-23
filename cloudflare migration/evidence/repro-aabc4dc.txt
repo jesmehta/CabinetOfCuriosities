@@ -1,0 +1,10 @@
+== Cabinet reproducibility  2026-10-23T17:13:41Z  (HEAD aabc4dc)
+A1 (autocrlf=true, empty cache, network): public/: 1024 files, 138.4 MB -- manifest in public-manifest in 36s
+A2 (same clone, warm, --offline): 15s
+B  (autocrlf=false, copied cache, --offline)
+PASS  A1 == A2 (1024 files)
+PASS  A1 == B (1024 files)
+manifest sha256: 6f956b701319042f…
+PASS  build-info externals identical (A1 vs B)
+cache size after a cold build: 80M
+repro exit 0
