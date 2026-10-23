@@ -248,35 +248,95 @@ same Git integration). Details: the `DotMandalaGenerator` repo (`DEPLOYMENT.md`,
 Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-repo assembly).
 **Bookshelf (2026-10-21):** shared build script, publication allowlists, Cloudflare preview `bookshelf-of-curiosities.jesmehta.workers.dev` live and byte-identical to local builds, automatic deploys, interaction and recovery tests done. Cabinet sitemap reads local clones (prerequisite done). Next: move the `cabinetofcuriosities.in` DNS zone from GoDaddy to Cloudflare (`documentation/cloudflare migration/dns-zone-plan.md`), then Bookshelf domain switch, then privatization. Detail: `TheBookshelfOfCuriosities/cloudflare migration/migration-log.md`.
 
-**Progress, 2026-10-22:**
-- **DNS:** the zone is on Cloudflare (nameservers `may`/`west`).
-- **Bookshelf:** `bookshelf.cabinetofcuriosities.in` is served by its Worker (24 h hold, then privatization).
-- **FFFX:** Worker `form-follows-fx.jesmehta.workers.dev` live and recovery-tested; Dance of Planets and Island
-  Generator withheld from the public build. The domain switch waits for Bookshelf to close.
-- **Cabinet:** plan v1 (`CabinetOfCuriosities/cloudflare migration/plan.md`).
+**Progress, 2026-10-23:**
+- **DNS:** the zone is on Cloudflare (nameservers `may`/`west`); GoDaddy stays registrar only.
+- **Dot Mandala:** done (private source, Worker, links switched).
+- **Bookshelf:** done 2026-10-22 (custom domain, Pages retired, repository private, private-source build verified).
+- **FFFX:** Worker on `fffx.cabinetofcuriosities.in` since 2026-10-22 03:35 UTC; hold ends 2026-10-23 09:06 IST; then
+  close-out (below).
+- **Cabinet:** plan v3.1 approved by Codex (C3); implementation step 1 (external-mount fetcher) done, local
+  `CabinetOfCuriosities/cloudflare migration/migration-log.md`.
 
-**Post-migration optimisation pass (Cabinet; owner decision 2026-10-22: after migration, not during).** Measured on the
-2026-10-22 baseline build (157.5 MiB, 1,117 files; evidence `cloudflare migration/evidence/`):
+### Migration: the one list of open items and issues
+
+Single place for everything still open from the Cloudflare migration, across all repositories (owner decision
+2026-10-23). The per-repository `cloudflare migration/` logs keep the evidence and history; items are collected here.
+Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-step-checklist.md).
+
+**Now — finishing the migration**
+
+- [ ] **FFFX close-out** (checklist 16–17), after the hold (2026-10-23 09:06 IST):
+  - [ ] full HTTP and browser check on `fffx.cabinetofcuriosities.in`;
+  - [ ] owner: remove the custom domain from FFFX's GitHub Pages settings;
+  - [ ] run the Cabinet admin sitemap action with sibling clones (FFFX URLs now on the Worker);
+  - [ ] owner: make `form-follows-fx` private; private-source build test (new version, byte check);
+  - [ ] retire FFFX's `deploy.yml` and root `CNAME`; tick checklist 16–17.
+- [ ] **Cabinet implementation** (plan v3.1; local commits; records committed before code):
+  - [ ] step 2: reduce the allowlists to **only what each page loads** (owner, 2026-10-23), for SSD (3 years) and Swatch
+    Fields (owner suspects only `imagesSuperCrop/` is used); also Working with AI, Tracery, Prompt Generator,
+    Oblique Strategies. Source inspection + browser capture + scenarios;
+  - [ ] step 3: `tools/build-site.mjs`, archive allowlist (C4), `site_url` (D6), root-relative nav (D7), validator fixes;
+  - [ ] step 4: launchers (`cd /d "%~dp0"`, `.venv`), `DEPLOYMENT.md`, release tools with `build-info.json`,
+    `update-externals`, lock files, `wrangler.jsonc`, `deploy.yml` on the new build;
+  - [ ] step 5: full test round (determinism, rejections, development boundary, sitemap, HTTP, behaviour, authoring);
+  - [ ] Codex post-implementation review; then owner-approved push; tag `pre-cloudflare` on Cabinet before it.
+- [ ] **Cabinet on Cloudflare** (checklist 19–23): owner creates Worker `cabinet-of-curiosities` with the Git-App
+  pre-check (repository added on GitHub's side); watch paths (internal docs skip, `docs/` deploys; both proved);
+  preview tests; rollback and saved-artifact restore; sitemap private-repository dependencies (checklist 21:
+  `tools/generate_sitemap.py` raw GitHub reads); private-source build (22); apex + `www` cutover (23, its own plan;
+  `www` needs a redirect rule, Custom Domains are exact-host).
+- [ ] **Finalisation** (checklist 24–27): visibility audit, links/analytics/DNS/HTTPS across all sites, remove obsolete
+  deployment configuration, maintenance runbook tested by the owner without AI, Codex final review.
+- [ ] **Owner backups** (gitignored, outside the repositories): Bookshelf `releases/20261020T193032Z_202d69e`, FFFX
+  `releases/20261021T163534Z_9c0f550`, Dot Mandala `releases/`, and Cabinet's first release when it exists.
+
+**Optional / unverified leftovers**
+
+- [ ] Bookshelf: build watch paths (as on FFFX); sitemap through the real admin-dashboard button (only the subprocess
+  call was tested); symlink rejection on Linux; branch-push behaviour.
+- [ ] Dot Mandala: map version `ebff4110` to its commit (`wrangler versions view`); alternative public host tested only
+  with local static servers.
+- [ ] DNS: owner to confirm nothing else (email forwarding, verification records) used the domain; check the
+  Cloudflare build token's permissions (scope unverified, Bookshelf C6/C7).
+- [ ] Milestone 2: free-tier limits at full scale not yet checked (Cabinet's artifact will be measured).
+- [ ] Access control for restricted tools (milestones 6, 10) and protected tools
+  (`cloudflare migration/future-protected-tools-architecture.md`): deferred, separate project. The tool
+  front/back-end split is its own thread.
+
+**Issues found during the migration**
+
+- [ ] **Tracery Bots index links three `_TraceryTrials` folders** that are no longer published (owner-accepted 404s,
+  D3b+). Remove or replace the links in the TraceryBots repository, then update the pin.
+- [ ] **Broken sound in SSD 2024-25 `Prachi_Khobragade/`:** `sketch.js` loads `"Kawaii Ringtones #6.mp3"`; the browser
+  treats `#6.mp3` as a URL fragment and requests `Kawaii Ringtones ` (404 on the live site). Owner: rename files rather
+  than add special rules. Rename it without `#` and update `sketch.js` in `SSD_Student_Work`, then update the pin and
+  list it in `content/external-allowlists/ssd-creative-coding-2024-25.txt` (left out until then).
+- [ ] **`compass/about`:** a malformed `<to do - correct …>` tag in the Markdown source; parsers read it differently.
+  Content glitch, left untouched by the migration.
+- [x] Live `sitemap.xml` is empty (no `site_url`): fixed by D6 in the Cabinet build. *(Lands with the Cabinet push.)*
+- [x] 10 nav links use the full domain, so previews lead to the live site: root-relative (D7), with the build.
+- [x] Windows build differences (CRLF in external clones, long paths, `mkdocs-redirects` CRLF): handled by the build
+  (Git objects read directly; redirect pages normalised).
+- [x] Unlinked copies `docs/_downloads/deploy.yml.txt` / `requirements.txt`: dropped (D4).
+- [x] Cloudflare Git connection made only from Cloudflare's side builds once, then ignores pushes: Git-App pre-check
+  added to the checklist (§5) and to the runbooks.
+- Accepted: the old `jesmehta.github.io/DotMandalaGenerator/` URL stopped at privatization; external bookmarks and the
+  frozen Cabinet v1 archive link to it break.
+
+**After the migration — optimisation pass (owner decision 2026-10-22: after migration, not during)**
+
+Measured on the 2026-10-22 baseline build (157.5 MiB, 1,117 files; evidence `cloudflare migration/evidence/`):
 - [ ] **Oversized images:** 36 images over 500 KB, 51 MB in total, mostly SSD student-game PNGs/JPGs (2–3 MB each,
   shown small) and `_images/`. Resize and recompress (about 1600 px, or WebP); estimated saving 35–45 MB. SSD/Swatch
   images live in their own repositories, so they reach Cabinet by updating the pins.
 - [ ] **p5.js duplicates:** `SSD_Student_Work` ships the full unminified `p5.js` (5 MB) once per year folder (3×), plus
-  `p5.sound` copies. Use `p5.min.js`, one shared copy or the CDN (about 14 MB saved). Tracery's `_TraceryTrials`
-  carries two more p5 copies.
-- [ ] **Tracery `_TraceryTrials`:** not needed on Cloudflare (owner); GitHub keeps it as the archive. Excluded by the
-  mount allowlist. Note: the Tracery Bots index page links three trial folders, so remove or replace those links
-  in the TraceryBots repository.
-- [ ] **Broken sound in SSD 2024-25 `Prachi_Khobragade/` (a bug, not only an optimisation; found 2026-10-23):**
-  `sketch.js` loads `"Kawaii Ringtones #6.mp3"`; the browser treats `#6.mp3` as a URL fragment and requests
-  `Kawaii Ringtones ` (404 on the live site). Owner decision: rename files rather than add special rules. Rename the
-  file without `#` and update `sketch.js` in `SSD_Student_Work`, then update the pin and list it in
-  `content/external-allowlists/ssd-creative-coding-2024-25.txt` (left out until then; the sound is broken either way).
+  `p5.sound` copies. Use `p5.min.js`, one shared copy or the CDN (about 14 MB saved).
 - [ ] **Landing page `index.html` (6.4 MB; 6.1 MB is SVG path data for 1,168 shapes):** round the coordinates in
   `landing-v3`'s build so the file is roughly halved. Every visitor downloads it (1.5 MB compressed).
 - [x] Paper 2025–26 gallery photos (owner's uncommitted page): compacted 2026-10-22 to 600 px max, metadata
   stripped, 7.2 MB → 1.7 MB. Originals in `review/paper2025_26-originals/` (gitignored). Still uncommitted.
 
-**Admin tooling for external mounts (round after migration):** `npm run update-externals` (pins and allowlist
+**After the migration — admin tooling for external mounts:** `npm run update-externals` (pins and allowlist
 candidates) starts as a script. Add admin-page buttons and review tools as needed: running it, showing new and
 removed files per mount, approving allowlist additions. The format is still to decide: a CSV opened in a spreadsheet,
 or a page that loads the TSV with a fuller interface.
