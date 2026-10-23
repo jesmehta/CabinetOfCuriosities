@@ -134,9 +134,13 @@ function readBlobs(dir, oids) {
   return blobs;
 }
 
-function missingBlobs(dir, oids) {
-  const out = String(git(dir, ["cat-file", "--batch-check"], { input: [...new Set(oids)].join("\n") + "\n" }));
-  return out.split("\n").filter((l) => l.endsWith(" missing")).map((l) => l.split(" ")[0]);
+// Which of the listed blobs are not in the cache yet. `rev-list --missing=print` lists a partial clone's missing
+// objects (prefixed "?") without fetching them. (`cat-file --batch-check` was used first: git 2.47 reports
+// "missing", but the git on Cloudflare's build image stops with a fatal error instead -- 2026-10-23.)
+function missingBlobs(dir, revision, oids) {
+  const out = String(git(dir, ["rev-list", "--objects", "--missing=print", "--no-object-names", revision]));
+  const missing = new Set(out.split("\n").filter((l) => l.startsWith("?")).map((l) => l.slice(1).trim()));
+  return [...new Set(oids)].filter((o) => missing.has(o));
 }
 
 function fetchBlobs(dir, oids) {
@@ -235,11 +239,11 @@ export async function assembleMounts({ publicDir, offline = false, locals = {} }
       const { dir, tree } = trees.get(`${row.repository}@${row.revision}`);
       const { listed, unlisted: rest } = checkAgainstTree(tree, row, entries, `content/external-allowlists/${row.id}.txt`);
       const oids = listed.map((x) => x.oid);
-      const missing = missingBlobs(dir, oids);
+      const missing = missingBlobs(dir, row.revision, oids);
       if (missing.length) {
         if (offline) throw new MountError(`${label}: ${missing.length} listed file(s) not in the cache and --offline was given -- build once with network first`);
         fetchBlobs(dir, missing);
-        const still = missingBlobs(dir, oids);
+        const still = missingBlobs(dir, row.revision, oids);
         if (still.length) throw new MountError(`${label}: ${still.length} file(s) still missing after fetching`);
       }
       const blobs = readBlobs(dir, oids);

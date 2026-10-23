@@ -249,6 +249,7 @@ async function main() {
   const tidy = await tidyMkdocsOutput(PUBLIC);
   console.log(`removed ${tidy.removed} file(s) (*.map, sitemap.xml.gz, CNAME); normalised ${tidy.normalised} redirect page(s) to LF`);
   step(4, `external mounts (content/external-repos.tsv${offline ? ", offline" : ""})`);
+  console.log(gitVersion());
   const mounts = await assembleMounts({ publicDir: PUBLIC, offline, locals });
   step(5, "archive (content/archive-allowlist.txt)");
   const archiveUnlisted = await assembleArchive();
