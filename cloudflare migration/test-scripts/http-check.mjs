@@ -20,9 +20,11 @@ const fail = (m) => { failures++; console.log("FAIL  " + m); };
 console.log(`== ${label} (${base})  ${new Date().toISOString()}`);
 
 // 1. every published file, byte-identical (fetched by its exact path), a few at a time
+//    (HTTP_CHECK_CONCURRENCY=1 for servers with a small connection backlog, e.g. python http.server)
 let ok = 0;
-for (let i = 0; i < manifest.length; i += 8) {
-  await Promise.all(manifest.slice(i, i + 8).map(async ({ sha, path }) => {
+const CONC = Number(process.env.HTTP_CHECK_CONCURRENCY) || 8;
+for (let i = 0; i < manifest.length; i += CONC) {
+  await Promise.all(manifest.slice(i, i + CONC).map(async ({ sha, path }) => {
     const r = await fetch(base + "/" + enc(path), { redirect: "follow" });
     const got = createHash("sha256").update(Buffer.from(await r.arrayBuffer())).digest("hex");
     if (r.status !== 200) fail(`${r.status} /${path}`);
@@ -41,6 +43,7 @@ const routes = ["/", "/compass/about/", "/compass/now/", "/compass/sitemap/", "/
 for (const route of routes) {
   const r = await fetch(base + route, { redirect: "manual" });
   const ct = r.headers.get("content-type") || "";
+  await r.arrayBuffer(); // always read the body (a server closing the connection otherwise trips the client)
   if (r.status !== 200 || !ct.startsWith("text/html")) fail(`route ${route}: ${r.status} ${ct}`); else console.log(`PASS  route ${route} 200`);
 }
 
@@ -54,6 +57,7 @@ for (const route of routes) {
   let good = 0;
   for (const u of own) {
     const rr = await fetch(base + u.slice("https://cabinetofcuriosities.in".length), { redirect: "manual" });
+    await rr.arrayBuffer();
     if (rr.status === 200) good++; else fail(`sitemap URL ${u}: ${rr.status} here`);
   }
   console.log(`${good}/${locs.length} sitemap.xml URLs (all on https://cabinetofcuriosities.in/) serve 200 here`);
