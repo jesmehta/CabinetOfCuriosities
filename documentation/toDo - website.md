@@ -274,11 +274,11 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   - [x] private-source build test: `1bb8569` served 79/79 byte-identical to its local build (version ID: owner);
   - [x] retire FFFX's `deploy.yml` (`1bb8569`; FFFX had no root `CNAME`); then tick checklist 16–17.
 - [ ] **Cabinet implementation** (plan v3.1; local commits; records committed before code):
-  - [ ] step 2: reduce the allowlists to **only what each page loads** (owner, 2026-10-23), for SSD (3 years) and Swatch
+  - [x] step 2 (done 2026-10-23): reduce the allowlists to **only what each page loads** (owner, 2026-10-23), for SSD (3 years) and Swatch
     Fields (owner suspects only `imagesSuperCrop/` is used); also Working with AI, Tracery, Prompt Generator,
     Oblique Strategies. Source inspection + browser capture + scenarios;
-  - [ ] step 3: `tools/build-site.mjs`, archive allowlist (C4), `site_url` (D6), root-relative nav (D7), validator fixes;
-  - [ ] step 4: launchers (`cd /d "%~dp0"`, `.venv`), `DEPLOYMENT.md`, release tools with `build-info.json`,
+  - [x] step 3 (done 2026-10-23): `tools/build-site.mjs`, archive allowlist (C4), `site_url` (D6), root-relative nav (D7), validator fixes;
+  - [x] step 4 (done 2026-10-23): launchers (`cd /d "%~dp0"`, `.venv`), `DEPLOYMENT.md`, release tools with `build-info.json`,
     `update-externals`, lock files, `wrangler.jsonc`, `deploy.yml` on the new build;
   - [ ] step 5: full test round (determinism, rejections, development boundary, sitemap, HTTP, behaviour, authoring);
   - [ ] Codex post-implementation review; then owner-approved push; tag `pre-cloudflare` on Cabinet before it.
