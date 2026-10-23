@@ -170,40 +170,34 @@ field conventions (`status`, `weight`, `tags`, etc.) that these TSVs follow.
 
 ## Deploy pipeline
 
-`deploy.yml` runs on every push to `main`:
+**Since the Cloudflare migration (2026-10), the whole site is built by one script,
+`tools/build-site.mjs` (`npm run build`)**, run identically by Cloudflare, by
+`deploy.yml` (GitHub Pages, until the domain moves) and on your own machine.
+Full runbook: [`DEPLOYMENT.md`](DEPLOYMENT.md). The build:
 
-1. **`build`** — checks out the repo, installs Python deps, guards against
-   `docs/index.md` ever being reintroduced (see `WORLD-SYSTEMS.md`'s
-   homepage rule), verifies the committed generated content
+1. guards against `docs/index.md` (see `WORLD-SYSTEMS.md`'s homepage rule)
+   and checks that the committed generated content
    (`cabinet-generated-content.js`, the `now-*` files) is current with
-   `content/*.tsv`, runs `mkdocs build --site-dir public --strict` (teed to
-   `mkdocs-build.log`), assembles external repos per
-   `content/external-repos.tsv` via `tools/assemble-external.js` (six source
-   repos, eight assembly destinations — one manifest row each, no
-   hand-written workflow step per repo), copies in `archived-landing-pages/`,
-   runs `tools/validate-deployment.js` to cross-check every active
-   entry/section href, self-domain nav target, and doc-body link against the
-   actually-assembled `public/` tree, then uploads `public/` as the Pages
-   artifact.
-2. **`deploy`** — publishes that artifact via `actions/deploy-pages`.
+   `content/*.tsv`;
+2. runs `mkdocs build --strict` (log in `mkdocs-build.log`);
+3. drops files visitors don't need (`*.map`, `sitemap.xml.gz`, `CNAME`);
+4. publishes the **external projects** in `content/external-repos.tsv` --
+   each at its pinned `revision` (a commit SHA) and **only the files listed in
+   `content/external-allowlists/<id>.txt`** (`tools/external-mounts.mjs`);
+5. publishes `archived-landing-pages/` through `content/archive-allowlist.txt`;
+6. extends `sitemap.xml` with the landing page and the mount pages;
+7. runs `tools/validate-deployment.js` (every active entry/section href,
+   nav target and doc-body link against the built `public/`);
+8. checks that nothing private reached `public/`, and writes the manifest
+   and `build-info.json` (provenance) next to it.
 
-See `documentation/backend-and-deploy/BACKEND-AND-DEPLOY.md` for the full
-manifest-driven assembly design (replacing the old hand-written
-checkout/copy/validate step triples, one per repo), and
-`tools/validate-deployment.js`'s own header for what its four route checks
-cover.
-
-**Multi-repo assembly gotcha**: the external checkouts pull whatever is
-currently on their default branch at build time — they are not pinned to a
-SHA. That means pushing to one of the six source repos alone does **not**
-update the live site; this workflow only triggers on a push to *this*
-repo's `main`. To pick up a change made in an external repo, either push a
-commit here (anything, even a doc tweak like this one) or re-run the latest
-"Deploy MkDocs to GitHub Pages" workflow run from the Actions tab — the
-re-run re-fetches the external repos fresh since the checkout step has no
-pinned ref. See `content/external-repos.tsv` and
-`tools/assemble-external.js` for the manifest format when adding another
-external repo — no workflow change needed.
+**External projects are pinned.** A push to one of the six source repos does
+**not** change this site. To take a newer version: `npm run update-externals`
+(updates the pins and reports new/missing/changed files per mount; it never
+edits an allowlist), review, edit the allowlists if needed, build, commit and
+push. (Before the migration, the external repos were cloned at whatever was on
+their default branch at build time, by the now-retired
+`tools/assemble-external.js`.)
 
 Migrated from `peaceiris/actions-gh-pages@v3` to GitHub's first-party
 Pages actions (`configure-pages` → `upload-pages-artifact` →
