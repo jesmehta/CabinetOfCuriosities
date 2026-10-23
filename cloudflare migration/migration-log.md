@@ -136,3 +136,16 @@ commits; final code `aabc4dc` (records after it).
   Documented in `DEPLOYMENT.md` section 4 with a `git bundle` backup recipe, and in the ToDo backup item. To prove in
   the recovery drill: verify an old release after newer commits, with the network unavailable, from a bundle clone.
 - Waiting for: owner approval of the first push (tag `pre-cloudflare` first), then the Worker.
+
+## First push (owner-approved) — 2026-10-24 01:07 IST (19:37 UTC)
+
+- **Owner approved the push.** Tag `pre-cloudflare` → `93aef2a` (annotated, pushed), then `main` pushed
+  (`93aef2a..a7ed6e0`, 37 commits). GitHub Actions rebuilt the live GitHub Pages site with the new build: live
+  `sitemap.xml` went from 0 to 100 URLs at 19:38:50 UTC.
+- **Live check** against a local clean build of `a7ed6e0` (`evidence/http-check-live-github-pages-a7ed6e0.txt`):
+  **1,023/1,024 files byte-identical**; 21 routes 200; 100/100 sitemap URLs; **125/125 never-published paths 404**
+  (every approved removal is gone from live). The one difference is `compass/about/`: the malformed
+  `<to do - correct …>` tag, which Python's HTML parser on GitHub's Linux runner reads differently from this
+  machine's (the known pre-existing content glitch, ToDo). Worth noting for the Cloudflare comparison: Cloudflare's
+  Linux build may match GitHub's here rather than the Windows build.
+- Next: owner creates the Worker `cabinet-of-curiosities` (Git-App pre-check on GitHub's side).
