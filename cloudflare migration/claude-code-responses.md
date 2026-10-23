@@ -54,6 +54,24 @@ remains unproven.
 
 Next: implementation, local commits only.
 
+## R4 — Codex C2 recorded, C3 on v3.1; owner answers for step 2 — 2026-10-23 ~08:20 IST
+
+- Codex wrote C2 (the chat review answered in R3) and C3 (v3.1 at `5e013db`: **GO for bounded implementation and
+  local tests; no blocking plan correction**) into `codex-reviews.md`. Committed unedited as `0dbee6d`, before this
+  entry.
+- C3's limits are accepted as stated: the step-1 code, experiment and comparisons (`5cf2167`, `5656072`) were **not**
+  reviewed; the candidate allowlists are not publication-approved. The next Codex review covers the code, failure
+  cases, allowlist completeness, clean deterministic builds, provenance/release checks and authoring portability.
+- C3 editorial notes, carried to the runbook and report: distinguish offline artifact serving/restore from
+  network-required deployment; measure the `site_url` effect per page rather than assuming one uniform change.
+- **Owner answers (step 2):** SSD student folders and Swatch Fields publish **only what the page loads** (owner
+  suspects Swatch Fields uses only `imagesSuperCrop/`).
+- **Owner: rename files rather than add edge-case rules.** The allowlist syntax is back to FFFX's (`#` starts a
+  comment anywhere). The one affected file, SSD 2024-25 `Prachi_Khobragade/Kawaii Ringtones #6.mp3`, is **loaded by
+  `sketch.js` but already broken live**: the browser requests `Kawaii Ringtones ` (404; the full name serves 200).
+  It is left out of the candidate list until it is renamed in `SSD_Student_Work` (ToDo; external repository, so
+  owner-authorised). Assumption, to verify in the browser scenarios: p5's `loadSound` passes the name unencoded.
+
 ## Recording convention
 
 Every entry records: the exact commits, the evidence paths, which Codex findings it resolves, and the time source.

@@ -24,3 +24,12 @@ The owner's uncommitted work (`cabinet-material.css`, `scratchNotes.md`, `docs/_
 - Not yet wired into a build: `tools/build-site.mjs` is step 3. `assemble-external.js` still serves `deploy.yml`.
 - **Next:** step 2 allowlist review (needs the owner for the student folders and Swatch Fields' two image sets),
   step 3 the build script and archive allowlist, then rejection tests in a disposable clone.
+
+## Reviews recorded; allowlist syntax back to FFFX's — 2026-10-23 ~08:20 IST
+
+- `0dbee6d` Codex C2 and C3 committed unedited (C3: GO for v3.1; implementation not yet reviewed). Response R4.
+- Owner: rename files instead of edge-case rules. `tools/allowlist.mjs` uses FFFX's syntax again (`#` comments
+  anywhere). `Kawaii Ringtones #6.mp3` (SSD 2024-25) is left out until renamed upstream: its sound is already broken
+  on the live site (fragment URL, 404). ToDo in `documentation/toDo - website.md`.
+- Re-ran `node tools/external-mounts.mjs --offline` after the change: 8 mounts assembled.
+- Step 2 scope (owner): SSD and Swatch Fields publish only what each page loads.
