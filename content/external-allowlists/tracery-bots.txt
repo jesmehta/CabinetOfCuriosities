@@ -2,10 +2,9 @@
 # Only the files listed here are published; anything else in the repository is left out and reported.
 # Paths are relative to the mount folder; one file per line; '#' starts a comment.
 #
-# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 2e18cd6e: every
-# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers,
-# and _TraceryTrials/ (owner decision D3b+).
-# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+# STATUS: reviewed by source inspection, 2026-10-23 (owner rule: only what the page loads;
+# cloudflare migration/test-scripts/reach-analysis.mjs). Browser capture and scenario tests still to confirm.
+# All remaining files are loaded, plus LICENSE (D3a).
 LICENSE
 MadSolutionistBot/index.html
 MadSolutionistBot/postItBanner.jpeg

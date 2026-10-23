@@ -2,9 +2,11 @@
 # Only the files listed here are published; anything else in the repository is left out and reported.
 # Paths are relative to the mount folder; one file per line; '#' starts a comment.
 #
-# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
-# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
-# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+# STATUS: reviewed by source inspection, 2026-10-23 (owner rule: only what the page loads;
+# cloudflare migration/test-scripts/reach-analysis.mjs). Browser capture and scenario tests still to confirm.
+# Left out (not loaded by any page): Deepika_Pest_Control/{blue,grass,kitchentile}.jpeg, Dhruvi_Assignment_2/
+# {FrederickatheGreat-Regular.ttf, eye.jpg, girl.jpg}, Parth/p5.sound.min.js (Parth loads ../_shared/libs/ instead),
+# Pushti_DINOEATS/{blurry forest, dark forest, forest, grass}.jpg.
 Aarya.png
 Aarya_TOSSBIN/Dustbin.png
 Aarya_TOSSBIN/classroom.jpg
@@ -20,21 +22,15 @@ Arnav/sketch.js
 Arnav/style.css
 Deepika.png
 Deepika_Pest_Control/beige.jpeg
-Deepika_Pest_Control/blue.jpeg
 Deepika_Pest_Control/gamesong.mp3
-Deepika_Pest_Control/grass.jpeg
 Deepika_Pest_Control/index.html
-Deepika_Pest_Control/kitchentile.jpeg
 Deepika_Pest_Control/sketch.js
 Deepika_Pest_Control/style.css
 Dhruvi.png
-Dhruvi_Assignment_2/FrederickatheGreat-Regular.ttf
 Dhruvi_Assignment_2/bow.png
 Dhruvi_Assignment_2/butterfly.png
 Dhruvi_Assignment_2/cat.jpg
 Dhruvi_Assignment_2/cherry.jpg
-Dhruvi_Assignment_2/eye.jpg
-Dhruvi_Assignment_2/girl.jpg
 Dhruvi_Assignment_2/girll.jpg
 Dhruvi_Assignment_2/index.html
 Dhruvi_Assignment_2/nishu.JPG
@@ -66,15 +62,10 @@ Kamlesh_guitar_1_final_ver1/style.css
 Parth.png
 Parth/Road.jpg
 Parth/index.html
-Parth/p5.sound.min.js
 Parth/sketch.js
 Parth/style.css
 Pushti_DINOEATS/black bg.jpg
-Pushti_DINOEATS/blurry forest.jpg
-Pushti_DINOEATS/dark forest.jpg
-Pushti_DINOEATS/forest.jpg
 Pushti_DINOEATS/gaming.mp3
-Pushti_DINOEATS/grass.jpg
 Pushti_DINOEATS/index.html
 Pushti_DINOEATS/sketch.js
 Pushti_DINOEATS/style.css

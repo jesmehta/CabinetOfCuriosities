@@ -2,28 +2,24 @@
 # Only the files listed here are published; anything else in the repository is left out and reported.
 # Paths are relative to the mount folder; one file per line; '#' starts a comment.
 #
-# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
-# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
-# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+# STATUS: reviewed by source inspection, 2026-10-23 (owner rule: only what the page loads;
+# cloudflare migration/test-scripts/reach-analysis.mjs). Browser capture and scenario tests still to confirm.
+# Left out (not loaded by any page): Arpita_Dhanawade/ and anaya_raul/ (folders and thumbnails: not in the
+# gallery's script.js and not linked from Cabinet), Aadit_Vanjari/{Morally Serif.otf, waves.webp},
+# Arya_Ghagare/explosion-fx-343683.mp3, Gloria_Mathew/retro.mp3, Navneet_Krishnan/gible-{left,right}.png,
+# Swayam_Kadam/starry 2.jpg, _shared/libs/p5.min.js (pages load p5.js), and Prachi_Khobragade/Kawaii Ringtones #6.mp3
+# (loaded but unreachable: '#' in the name; rename upstream, see documentation/toDo - website.md).
 Aadit_Vanjari.png
-Aadit_Vanjari/Morally Serif.otf
 Aadit_Vanjari/Roboto-Thin.ttf
 Aadit_Vanjari/index.html
 Aadit_Vanjari/sketch.js
 Aadit_Vanjari/style.css
-Aadit_Vanjari/waves.webp
 Ananya_Adsul.png
 Ananya_Adsul/index.html
 Ananya_Adsul/sketch.js
 Ananya_Adsul/style.css
-Arpita_Dhanawade.png
-Arpita_Dhanawade/Baby shark - Xylophone Cover.mp3
-Arpita_Dhanawade/index.html
-Arpita_Dhanawade/sketch.js
-Arpita_Dhanawade/style.css
 Arya_Ghagare.png
 Arya_Ghagare/duckie.mp3
-Arya_Ghagare/explosion-fx-343683.mp3
 Arya_Ghagare/index.html
 Arya_Ghagare/sketch.js
 Arya_Ghagare/style.css
@@ -48,7 +44,6 @@ Gloria_Mathew/90s.bg.mp3
 Gloria_Mathew/corona.mp3
 Gloria_Mathew/death.mp3
 Gloria_Mathew/index.html
-Gloria_Mathew/retro.mp3
 Gloria_Mathew/sketch.js
 Gloria_Mathew/soap.mp3
 Gloria_Mathew/style.css
@@ -70,8 +65,6 @@ Navneet_Krishnan/chibihydreigon-left.png
 Navneet_Krishnan/chibihydreigon-right.png
 Navneet_Krishnan/chibizweilous-left.png
 Navneet_Krishnan/chibizweilous-right.png
-Navneet_Krishnan/gible-left.png
-Navneet_Krishnan/gible-right.png
 Navneet_Krishnan/index.html
 Navneet_Krishnan/sketch.js
 Navneet_Krishnan/style.css
@@ -112,17 +105,11 @@ Swayam_Kadam/Particle.js
 Swayam_Kadam/index.html
 Swayam_Kadam/sim.png
 Swayam_Kadam/sketch.js
-Swayam_Kadam/starry 2.jpg
 Swayam_Kadam/style.css
 _shared/libs/p5.dom.min.js
 _shared/libs/p5.js
-_shared/libs/p5.min.js
 _shared/libs/p5.sound.min.js
 _shared/libs/p5.svg.js
-anaya_raul.png
-anaya_raul/index.html
-anaya_raul/sketch.js
-anaya_raul/style.css
 index.html
 script.js
 style.css

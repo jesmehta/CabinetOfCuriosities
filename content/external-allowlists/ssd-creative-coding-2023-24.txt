@@ -2,9 +2,9 @@
 # Only the files listed here are published; anything else in the repository is left out and reported.
 # Paths are relative to the mount folder; one file per line; '#' starts a comment.
 #
-# STATUS: CANDIDATE, NOT YET REVIEWED (2026-10-23). Bootstrapped from the tree at 45be517c: every
-# file minus dotfiles, docs (*.md, README, DOCUMENTATION), archives, sources/backups and dev leftovers.
-# To be reduced to what visitors see or need (D3++) by source inspection, browser capture and scenario tests.
+# STATUS: reviewed by source inspection, 2026-10-23 (owner rule: only what the page loads;
+# cloudflare migration/test-scripts/reach-analysis.mjs). Browser capture and scenario tests still to confirm.
+# Left out (not loaded by any page): Vivan_gupta/ARNIM.jpg.
 Dhruv_Belekar_code.png
 Dhruv_Belekar_code/index.html
 Dhruv_Belekar_code/sketch.js
@@ -49,7 +49,6 @@ Vaishnavi_Shetty/index.html
 Vaishnavi_Shetty/sketch.js
 Vaishnavi_Shetty/style.css
 Vivan_gupta.png
-Vivan_gupta/ARNIM.jpg
 Vivan_gupta/Facee.jpg
 Vivan_gupta/index.html
 Vivan_gupta/sketch.js
