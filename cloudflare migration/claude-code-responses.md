@@ -72,6 +72,25 @@ Next: implementation, local commits only.
   It is left out of the candidate list until it is renamed in `SSD_Student_Work` (ToDo; external repository, so
   owner-authorised). Assumption, to verify in the browser scenarios: p5's `loadSound` passes the name unencoded.
 
+## R5 — Fixes for Codex C4 (post-implementation review) — 2026-10-23 ~23:30–00:00 IST
+
+Codex C4 (2026-10-23 23:24:42 IST, reviewed `c2a0e6a`, implementation `aabc4dc`): **HOLD** the first push and the
+Worker until I1–I3 are fixed with focused tests; production cutover/privatization NO-GO. Committed unedited as
+`b5ab43c`, before this entry. All fixes are local commits; nothing pushed.
+
+| C4 point | Fix | Evidence (`evidence/`) |
+| --- | --- | --- |
+| **I1** destinations/ids bypassed the path boundary | `c59b0c1`: ids must be lowercase slugs; destination and subfolder must be plain `/`-separated segments (no `..`, `.`, empty, leading/trailing `/`, `\`, `%`, spaces, drive letters, leading dots); duplicates and nesting compared case-folded; the assembler refuses a destination resolving outside the output folder before any write | `path-safety-tests-7b0bab2.txt` (18/18: 17 unsafe values rejected, committed TSV valid); `reject-tests-7b0bab2.txt` (48/48: traversal via the assembler fails and nothing appears outside the scratch output; unsafe id; case-folded nesting) |
+| **I2** recovery accepted incomplete provenance | `0ea749b`: full schema (source commit SHA, every record's id/repository/subfolder/revision/destination/source/files/bytes, unique ids/destinations), `externalCount` + `externalsDigest` written by the build, **records must equal the active rows of `content/external-repos.tsv` at the release's own source commit** (read from git; fails closed if that commit is unavailable; never today's pins, so rollback still works), and per-mount file counts in the site | `artifact-tests-7b0bab2.txt` (25/25: 16 malformed variants of a checksum-valid release refused, incl. self-consistent truncation and rewrite; missing record; tampered file; development build; stale/edited `public/`) |
+| **I3** repro could print FAIL and exit 0 | `c5f31c9`: `compare-build-info.mjs` exits 1 and sets `FAIL`; compares source commit, development flag, count, digest and all identity fields; `REPRO_INJECT_PROVENANCE_MISMATCH=1` hook | `repro-0579a35.txt` (pass); `repro-injected-provenance-mismatch-0579a35.txt` (FAIL printed, **exit 1**) |
+| **I4** capture ≠ functional scenarios; dev-boundary citation | Report rows 6/6s narrowed to loading coverage with the gallery lightbox as the one functional assertion; new section listing the workflows not yet asserted, to be checked by name on the workers.dev preview; test 4b now cites the artifact suite (earlier citation marked as the implementer-observed smoke test) | `implementation-report.md` |
+| Runbook notes | `0579a35`: branch builds stated as expected, not demonstrated; nearest-404 behaviour described in `DEPLOYMENT.md` and `wrangler.jsonc` consistently with the report | — |
+
+Accepted as stated by C4: the image guard catches total image loss only (per-page image/lightbox checks stay in
+acceptance); Cloudflare Linux build, triggers, deployed behaviour, rollback, Wrangler restore, private-source and
+apex/www remain later gates. Next: focused Codex follow-up review, then owner approval for the first push (which
+changes the live GitHub Pages output as described) and the Worker.
+
 ## Recording convention
 
 Every entry records: the exact commits, the evidence paths, which Codex findings it resolves, and the time source.

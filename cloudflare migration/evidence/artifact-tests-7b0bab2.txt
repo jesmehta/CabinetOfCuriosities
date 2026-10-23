@@ -1,0 +1,30 @@
+== Cabinet artifact tests  2026-10-23T18:00:54Z  (HEAD 7b0bab2)
+PASS  save a pinned build: releases/20261023T180113Z_7b0bab2
+PASS  verify the saved release
+-- provenance (BUILD-INFO.json) variants of a checksum-valid release
+PASS  verify refuses: development-true
+PASS  verify refuses: development-missing
+PASS  verify refuses: no-source-commit
+PASS  verify refuses: short-source-commit
+PASS  verify refuses: externals-empty
+PASS  verify refuses: drop-one-record
+PASS  verify refuses: drop-one-record+count
+PASS  verify refuses: drop-one-record+fix
+PASS  verify refuses: missing-repository+fix
+PASS  verify refuses: short-revision+fix
+PASS  verify refuses: unpinned-source+fix
+PASS  verify refuses: duplicate-id+fix
+PASS  verify refuses: wrong-file-count+fix
+PASS  verify refuses: wrong-destination+fix
+PASS  verify refuses: edited-revision
+PASS  verify refuses: edited-revision+fix
+PASS  verify refuses: BUILD-INFO.json missing
+PASS  verify refuses: a site file changed after saving
+-- save boundary
+PASS  save refuses public/ edited after the build
+PASS  a --external-local build is marked DEVELOPMENT
+PASS  save refuses a DEVELOPMENT build
+PASS  npm run deploy always rebuilds (pinned: no build arguments can be passed through it)
+PASS  save refuses public/ built from an earlier commit
+== 25 passed, 0 failed
+artifact exit 0

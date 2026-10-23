@@ -1,0 +1,20 @@
+PASS  control: committed external-repos.tsv is valid
+PASS  rejected: destination = "../review-outside-public" (parent traversal) -- destination "../review-outside-public" must be a plain relative path like teachi
+PASS  rejected: destination = "teaching/../swatch-fields" (inner traversal) -- destination "teaching/../swatch-fields" must be a plain relative path like teach
+PASS  rejected: destination = "./teaching/x" (dot segment) -- destination "./teaching/x" must be a plain relative path like teaching/my-projec
+PASS  rejected: destination = "/teaching/x" (leading slash (absolute)) -- destination "/teaching/x" must be a plain relative path like teaching/my-project
+PASS  rejected: destination = "teaching/x/" (trailing slash) -- destination "teaching/x/" must be a plain relative path like teaching/my-project
+PASS  rejected: destination = "teaching//x" (empty segment) -- destination "teaching//x" must be a plain relative path like teaching/my-project
+PASS  rejected: destination = "C:/x" (drive letter) -- destination "C:/x" must be a plain relative path like teaching/my-project (no le
+PASS  rejected: destination = "teaching\\x" (backslash) -- destination "teaching\x" must be a plain relative path like teaching/my-project 
+PASS  rejected: destination = "teaching/%2e%2e/x" (percent-encoding) -- destination "teaching/%2e%2e/x" must be a plain relative path like teaching/my-p
+PASS  rejected: destination = "teaching/my project" (space) -- destination "teaching/my project" must be a plain relative path like teaching/my
+PASS  rejected: destination = ".hidden/x" (segment starting with a dot) -- destination ".hidden/x" must be a plain relative path like teaching/my-project (
+PASS  rejected: destination = "Swatch-Fields" (case-folded duplicate of swatch-fields) -- duplicate destination "swatch-fields" (also row 2; letter case ignored)
+PASS  rejected: id = "../archive-allowlist" (id with traversal (would name a file outside external-allowlists/)) -- id "../archive-allowlist" must be a lowercase slug (a-z, 0-9, "-"); it names con
+PASS  rejected: id = "Tracery-Bots" (id not a lowercase slug) -- id "Tracery-Bots" must be a lowercase slug (a-z, 0-9, "-"); it names content/ext
+PASS  rejected: id = "tracery bots" (id with a space) -- id "tracery bots" must be a lowercase slug (a-z, 0-9, "-"); it names content/ext
+PASS  rejected: subfolder = "../ssd-creative-coding-2025-26" (subfolder traversal) -- subfolder "../ssd-creative-coding-2025-26" must be a plain relative path (same r
+PASS  rejected: subfolder = "/abs" (subfolder absolute) -- subfolder "/abs" must be a plain relative path (same rules as destination)
+== 18 passed, 0 failed
+path-safety exit 0

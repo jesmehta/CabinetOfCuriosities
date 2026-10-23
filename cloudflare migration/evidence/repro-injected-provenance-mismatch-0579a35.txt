@@ -1,0 +1,13 @@
+== Cabinet reproducibility  2026-10-23T18:06:45Z  (HEAD 0579a35)
+A1 (autocrlf=true, empty cache, network): public/: 1024 files, 138.4 MB -- manifest in public-manifest in 36s
+A2 (same clone, warm, --offline): 11s
+B  (autocrlf=false, copied cache, --offline)
+PASS  A1 == A2 (1024 files)
+PASS  A1 == B (1024 files)
+manifest sha256: 6f956b701319042f…
+(injected: one revision changed in B)
+FAIL  build-info provenance differs
+  A: ["0579a35af2bad52b1aadcbdc2cd655f230c60ee9",false,8,"2aa5d7b82afe1fa53a6e8f5cc0b4f652fdedc0db70f7768688e5cdecceee9f24",[["working-with-ai","jesmehta/working-with-ai","","58f5ac37855f35bd9f12a44ba04cb735b265eeda","teaching/working-with-ai","pinned",43,275201],["prompt-generator","jesmehta/PromptGener
+  B: ["0579a35af2bad52b1aadcbdc2cd655f230c60ee9",false,8,"2aa5d7b82afe1fa53a6e8f5cc0b4f652fdedc0db70f7768688e5cdecceee9f24",[["working-with-ai","jesmehta/working-with-ai","","0000000000000000000000000000000000000000","teaching/working-with-ai","pinned",43,275201],["prompt-generator","jesmehta/PromptGener
+cache size after a cold build: 80M
+repro (injected) exit 1

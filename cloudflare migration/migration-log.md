@@ -118,3 +118,11 @@ commits; final code `aabc4dc` (records after it).
   was rerun.
 - **Next:** Codex post-implementation review of the code and evidence; then owner approval for the first push
   (which also changes the live GitHub Pages output, as described) and the Worker (checklist 19–23).
+
+## Codex C4 (HOLD) and fixes — 2026-10-23 ~23:25–00:05 IST
+
+- `b5ab43c` Codex C4 committed unedited: HOLD first push/Worker pending I1–I3; I4 qualifies the browser evidence.
+- Fixes `c59b0c1` (I1 path safety), `0ea749b` (I2 provenance), `c5f31c9` (I3 runner), tests `7b0bab2`, docs
+  `0579a35`. Results: path-safety 18/18, artifact suite 25/25, rejection suite 48/48 (2 code-review skips),
+  reproducibility pass with full provenance comparison, injected mismatch exits 1. Response R5; report updated.
+- Next: Codex focused follow-up review; then owner approval for the first push and the Worker.
