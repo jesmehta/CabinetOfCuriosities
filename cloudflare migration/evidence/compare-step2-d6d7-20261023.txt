@@ -1,0 +1,61 @@
+# Comparison step 2 (plan v3): build WITH D6 (site_url) and D7 (root-relative nav) vs step 1. Every changed line classified
+# (cloudflare migration/test-scripts/classify-d6d7.mjs); 0 unexplained. 404.html: nav links only (no canonical).
+changed files: 44
+  42	added: canonical link (D6)
+  430	nav link full-domain -> root-relative (D7)
+  42	added: whitespace line emitted with the canonical link (theme template)
+  1	sitemap.xml regenerated with URLs (D6)
+
+UNEXPLAINED changed lines (0):
+
+baseline 1024 files, new 1024 files: 980 identical, 44 changed, 0 removed, 0 added
+
+CHANGED (44):
+  3dp/3DP_2019/index.html
+  3dp/3DP_flexures/index.html
+  3dp/3DP_mecha/index.html
+  3dp/3DP_polyhedra/index.html
+  404.html
+  blog/index.html
+  compass/about/index.html
+  compass/colophon/index.html
+  compass/now/index.html
+  compass/sitemap/index.html
+  dataviz/index.html
+  fab/fab23-bhutan/index.html
+  fab/fab25-czechia/index.html
+  fab/index.html
+  fffx/100Gradients/index.html
+  fffx/index.html
+  fffx/particleSystems/index.html
+  makings/drawing-machines/index.html
+  makings/index.html
+  makings/lasercutting/index.html
+  makings/mini_loom/index.html
+  makings/origami-paper/index.html
+  physComp/index.html
+  sitemap.xml
+  teaching/dragons/index.html
+  teaching/index.html
+  teaching/papiermache/index.html
+  travels/index.html
+  visual-field-notes/index.html
+  webtech/dotMandalaTool/index.html
+  webtech/emergent_twine/index.html
+  webtech/index.html
+  webtech/traceryBots/index.html
+  webtech/trippyGourmet/index.html
+  writings/essays/a-history-of-design/index.html
+  writings/essays/graphic-novels-an-underrated-medium/index.html
+  writings/essays/index.html
+  writings/index.html
+  writings/miscellany/elevator-pitch/index.html
+  writings/miscellany/index.html
+  writings/poems/choices/index.html
+  writings/poems/chopped-papaya/index.html
+  writings/poems/index.html
+  writings/poems/the-flu/index.html
+
+REMOVED (0):
+
+ADDED (0):

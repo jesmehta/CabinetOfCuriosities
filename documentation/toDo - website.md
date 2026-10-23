@@ -308,7 +308,7 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
 - [ ] **Tracery Bots index links three `_TraceryTrials` folders** that are no longer published (owner-accepted 404s,
   D3b+). Remove or replace the links in the TraceryBots repository, then update the pin.
 - [ ] **Broken sound in SSD 2024-25 `Prachi_Khobragade/`:** `sketch.js` loads `"Kawaii Ringtones #6.mp3"`; the browser
-  treats `#6.mp3` as a URL fragment and requests `Kawaii Ringtones ` (404 on the live site). Owner: rename files rather
+  treats `#6.mp3` as a URL fragment and requests `Kawaii Ringtones ` (404; confirmed in the browser capture 2026-10-23). Owner: rename files rather
   than add special rules. Rename it without `#` and update `sketch.js` in `SSD_Student_Work`, then update the pin and
   list it in `content/external-allowlists/ssd-creative-coding-2024-25.txt` (left out until then).
 - [ ] **FFFX landing: Circle Packing thumbnail 404** (pre-existing, also on GitHub Pages): the CSS asks for
@@ -322,6 +322,9 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
 - [ ] **SSD 2024-25: two student projects not in the gallery**, `Arpita_Dhanawade/` and `anaya_raul/` (folders and
   thumbnails exist; the gallery's `script.js` lists 16 of 18). Not published on Cloudflare (owner rule: only what the
   pages load). If they should appear: add them to the gallery in `SSD_Student_Work`, then to the allowlist.
+- [ ] **Prompt Generator: script error `module is not defined`** in the browser console (pre-existing; the published
+  bytes are identical to the live site). Probably a Node-style `module.exports` in `app.js`; guard it in the
+  PromptGenerator repository.
 - [ ] **`compass/about`:** a malformed `<to do - correct …>` tag in the Markdown source; parsers read it differently.
   Content glitch, left untouched by the migration.
 - [x] Live `sitemap.xml` is empty (no `site_url`): fixed by D6 in the Cabinet build. *(Lands with the Cabinet push.)*

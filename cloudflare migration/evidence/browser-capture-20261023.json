@@ -1,0 +1,1014 @@
+{
+  "/teaching/working-with-ai/coding-with-ai/01.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/01.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/02.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/02.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/03.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/03.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/04.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/04.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/05.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/05.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/06.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/06.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/07.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/07.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/08.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/08.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/09.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/09.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/10.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/10.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/11.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/11.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/12.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/12.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/13.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/13.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/14.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/14.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/15.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/15.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/16.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/16.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/connectors.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/coding-with-ai/index.html": {
+    "requests": {
+      "/teaching/working-with-ai/coding-with-ai/background.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/index.html": 200,
+      "/teaching/working-with-ai/coding-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/coding-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/index.html": {
+    "requests": {
+      "/teaching/working-with-ai/index.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/01.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/01.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/02.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/02.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/03.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/03.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/04.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/04.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/05.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/05.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/06.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/06.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/07.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/07.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/08.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/08.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/09.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/09.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/10.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/10.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/11.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/11.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/12.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/12.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/13.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/13.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/14.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/14.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/15.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/15.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/working-with-ai/working-with-ai/16.html": {
+    "requests": {
+      "/teaching/working-with-ai/working-with-ai/16.html": 200,
+      "/teaching/working-with-ai/working-with-ai/background.js": 200,
+      "/teaching/working-with-ai/working-with-ai/motif.js": 200,
+      "/teaching/working-with-ai/working-with-ai/sidebar.js": 200,
+      "/teaching/working-with-ai/working-with-ai/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/prompt-generator/index.html": {
+    "requests": {
+      "/teaching/prompt-generator/app.js": 200,
+      "/teaching/prompt-generator/index.html": 200,
+      "/teaching/prompt-generator/style.css": 200
+    },
+    "errors": [
+      "module is not defined"
+    ]
+  },
+  "/teaching/oblique-strategies/index.html": {
+    "requests": {
+      "/teaching/oblique-strategies/index.html": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/Dustbin.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/classroom.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/crumbledpaper.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/Aarya_TOSSBIN/throw.mp3": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Arnav/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Arnav/Orbitron-VariableFont_wght.ttf": 200,
+      "/teaching/ssd-creative-coding-2025-26/Arnav/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Arnav/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Arnav/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/beige.jpeg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/gamesong.mp3": 200,
+      "/teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/bow.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/butterfly.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/cat.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/cherry.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/girll.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/nishu.JPG": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/nutella.JPG": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/paw.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/stars.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/zeal.JPG": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Harshdeep_YE_hai_JURRY_WALLA_copy/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Harshdeep_YE_hai_JURRY_WALLA_copy/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Harshdeep_YE_hai_JURRY_WALLA_copy/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Harshdeep_YE_hai_JURRY_WALLA_copy/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Aarya.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Arnav.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Deepika.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Dhruvi.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Harshdeep.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Ishan.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Jiya.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Kamlesh.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Parth.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Pushti_DinoEats.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvani.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvil.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/script.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Ishan/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Ishan/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Ishan/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Ishan/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/Ishan/texas02.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Jiya_my_name_fliesss/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Jiya_my_name_fliesss/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Jiya_my_name_fliesss/jiya name.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Jiya_my_name_fliesss/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Jiya_my_name_fliesss/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1/guitar.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Parth/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Parth/Road.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Parth/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Parth/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Parth/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/black bg.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/gaming.mp3": 200,
+      "/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/space2.jpg": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvani_assignment2.v7/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Sharvil_i_like_ball_final_copy/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Sharvil_i_like_ball_final_copy/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvil_i_like_ball_final_copy/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Sharvil_i_like_ball_final_copy/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/blender.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/collectsound.mp3": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/happy.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/index.html": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/lemon.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/orangee.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/retro.ttf": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/rotapple.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/rotlime.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/sick.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/strawberryy.png": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/style.css": 200,
+      "/teaching/ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER/successful.mp3": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2025-26/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/Roboto-Thin.ttf": 200,
+      "/teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Ananya_Adsul/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Ananya_Adsul/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Ananya_Adsul/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Ananya_Adsul/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/anaya_raul/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/anaya_raul/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/anaya_raul/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/anaya_raul/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/Baby shark - Xylophone Cover.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Arya_Ghagare/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Arya_Ghagare/duckie.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arya_Ghagare/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arya_Ghagare/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arya_Ghagare/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Atharva_Aware/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Atharva_Aware/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Atharva_Aware/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Atharva_Aware/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/Atharva_Aware/wave.jpg": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Avaneesh_Chavan/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Avaneesh_Chavan/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Avaneesh_Chavan/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Avaneesh_Chavan/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/crum2.jpeg": 200,
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/sm duo 5.jpg": 200,
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/sm logo.jpg": 200,
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/90s.bg.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/corona.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/death.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/soap.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew/tic.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Aadit_Vanjari.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Ananya_Adsul.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Arya_Ghagare.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Atharva_Aware.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Avaneesh_Chavan.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Bhakti_Sharma.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Gloria_Mathew.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Parikshit.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Prachi_Khobragade.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Rhea_Pillai.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sara_Khan.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sharvari_Joshi.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/script.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/PixelifySans-VariableFont_wght.ttf": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/blaster-2-81267.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/gun-firing-117043.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/spaceship.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Madhav_Kansara/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/battlefeild.jpg": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibideino-left.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibideino-right.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibihydreigon-left.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibihydreigon-right.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibizweilous-left.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/chibizweilous-right.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Parikshit/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Parikshit/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Parikshit/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Parikshit/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.dom.min.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.svg.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/Kawaii Ringtones ": 404,
+      "/teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": [
+      "not ready to play file, buffer has yet to load. Try preload()",
+      "not ready to play file, buffer has yet to load. Try preload()",
+      "not ready to play file, buffer has yet to load. Try preload()"
+    ]
+  },
+  "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/Background.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/Battery.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/Fly.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/PixelifySans-Regular.ttf": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/night8bit.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Pratyush_Girap/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Rhea_Pillai/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Rhea_Pillai/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Rhea_Pillai/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Rhea_Pillai/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Sara_Khan/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Sara_Khan/Sound.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sara_Khan/bird3.jpg": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sara_Khan/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sara_Khan/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sara_Khan/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Sharvari_Joshi/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Sharvari_Joshi/Game Over Sound Effect.mp3": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sharvari_Joshi/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sharvari_Joshi/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Sharvari_Joshi/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam/Particle.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam/index.html": 200,
+      "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam/sim.png": 200,
+      "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/Swayam_Kadam/style.css": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2024-25/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_code/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_code/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_code/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_code/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_project1/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_project1/fireworks-29629.mp3": 200,
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_project1/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_project1/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_project1/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_code.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Dhruv_Belekar_project1.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Kashvi_Shah.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Mitali_Yeole.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Reet_singh.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Scarlett_Dsouza.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Sia_Jariwala.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Siddhi_Shethia.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vaishnavi_Shetty.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vivan_gupta.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/kaushik.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/kumkum_bharambe.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/script.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/soham_G.png": 200,
+      "/teaching/ssd-creative-coding-2023-24/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/vignesh_shetty.png": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Kashvi_Shah/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Kashvi_Shah/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Kashvi_Shah/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Kashvi_Shah/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/kaushik/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/kaushik/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/kaushik/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/kaushik/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/kumkum_bharambe/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/kumkum_bharambe/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/kumkum_bharambe/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/kumkum_bharambe/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Mitali_Yeole/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Mitali_Yeole/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Mitali_Yeole/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Mitali_Yeole/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Reet_singh/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Reet_singh/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Reet_singh/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Reet_singh/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Scarlett_Dsouza/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Scarlett_Dsouza/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Scarlett_Dsouza/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Scarlett_Dsouza/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Sia_Jariwala/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Sia_Jariwala/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Sia_Jariwala/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Sia_Jariwala/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Siddhi_Shethia/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Siddhi_Shethia/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Siddhi_Shethia/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Siddhi_Shethia/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/soham_G/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/soham_G/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/soham_G/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/soham_G/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty/iron-man-repulsor-157371.mp3": 200,
+      "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty/main-qimg-2923dd2eeae5c94bda4cdfd85996f9c5-lq.jpg": 200,
+      "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Tanay_Shetty/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Vaishnavi_Shetty/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Vaishnavi_Shetty/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vaishnavi_Shetty/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vaishnavi_Shetty/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/vignesh_shetty/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/vignesh_shetty/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/vignesh_shetty/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/vignesh_shetty/style.css": 200
+    },
+    "errors": []
+  },
+  "/teaching/ssd-creative-coding-2023-24/Vivan_gupta/index.html": {
+    "requests": {
+      "/teaching/ssd-creative-coding-2023-24/Vivan_gupta/Facee.jpg": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vivan_gupta/index.html": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vivan_gupta/sketch.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/Vivan_gupta/style.css": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.js": 200,
+      "/teaching/ssd-creative-coding-2023-24/_shared/libs/p5.sound.min.js": 200
+    },
+    "errors": []
+  },
+  "/swatch-fields/index.html": {
+    "requests": {
+      "/swatch-fields/assets/fabacademy.svg": 200,
+      "/swatch-fields/assets/fabricademy.svg": 200,
+      "/swatch-fields/assets/instagram.svg": 200,
+      "/swatch-fields/assets/linkedin.svg": 200,
+      "/swatch-fields/index.html": 200
+    },
+    "errors": []
+  },
+  "/swatch-fields/mosaic/index.html": {
+    "requests": {
+      "/swatch-fields/mosaic/index.html": 200,
+      "/swatch-fields/mosaic/mosaic.js": 200
+    },
+    "errors": []
+  },
+  "/swatch-fields/polar-Grid/index.html": {
+    "requests": {
+      "/swatch-fields/polar-Grid/index.html": 200,
+      "/swatch-fields/polar-Grid/script.js": 200
+    },
+    "errors": []
+  },
+  "/tracery-bots/index.html": {
+    "requests": {
+      "/tracery-bots/index.html": 200
+    },
+    "errors": []
+  },
+  "/tracery-bots/MadSolutionistBot/index.html": {
+    "requests": {
+      "/tracery-bots/MadSolutionistBot/index.html": 200,
+      "/tracery-bots/MadSolutionistBot/postItBanner.jpeg": 200,
+      "/tracery-bots/MadSolutionistBot/sketch.js": 200,
+      "/tracery-bots/MadSolutionistBot/style.css": 200,
+      "/tracery-bots/MadSolutionistBot/tracery.js": 200
+    },
+    "errors": []
+  },
+  "/tracery-bots/TrippyGourmetBot/index.html": {
+    "requests": {
+      "/tracery-bots/TrippyGourmetBot/bananaDog_v2_TripLite.jpg": 200,
+      "/tracery-bots/TrippyGourmetBot/index.html": 200,
+      "/tracery-bots/TrippyGourmetBot/sketch.js": 200,
+      "/tracery-bots/TrippyGourmetBot/style.css": 200,
+      "/tracery-bots/TrippyGourmetBot/tracery.js": 200
+    },
+    "errors": []
+  }
+}

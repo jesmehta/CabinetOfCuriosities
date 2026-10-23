@@ -33,3 +33,42 @@ The owner's uncommitted work (`cabinet-material.css`, `scratchNotes.md`, `docs/_
   on the live site (fragment URL, 404). ToDo in `documentation/toDo - website.md`.
 - Re-ran `node tools/external-mounts.mjs --offline` after the change: 8 mounts assembled.
 - Step 2 scope (owner): SSD and Swatch Fields publish only what each page loads.
+
+## Steps 2 and 3: allowlists reviewed, build script, archive, site_url, nav, sitemap — 2026-10-23 ~08:30–10:00 IST
+
+**Step 2, allowlists (owner rule: only what the page loads).**
+- Method 1, source inspection (`test-scripts/reach-analysis.mjs`): follows src/href, script string literals
+  (resolved against the loading page) and CSS url() from each entry page. Libraries are reached but not mined.
+- Swatch Fields: the static pass cannot see lookup-driven names, so it was checked by hand: both `imagesSuperCrop/`
+  (tiles) and `imagesBordered/` (hover previews) are loaded for all 152 `swatch_lookup.json` filenames. All 316 kept.
+- SSD: 296 → 266 files. Removed: unused assets, duplicate libraries, and the two 2024-25 projects not in that year's
+  gallery (`Arpita_Dhanawade/`, `anaya_raul/`). Other mounts unchanged. `3bc0ae6`.
+- An earlier suspicion was wrong and is withdrawn: `Dhruvi_Assignment_2` loads `girll.jpg`, which exists (`girl.jpg`
+  is the unused copy).
+- Method 2, browser capture (`test-scripts/capture-requests.mjs`; `evidence/browser-capture-20261023.*`): 91 pages
+  (every HTML page of every mount, clicked, keyed, waited) on a full candidate build. **No published page requested
+  a file the lists leave out**; the only misses are the two unlisted projects, opened directly. Confirmed: the
+  `Kawaii Ringtones #6.mp3` request is cut at `#` (404) and p5 reports the sound never loaded. Pre-existing script
+  error on Prompt Generator (`module is not defined`). Method 3 (scenario play-through) remains for the test round.
+- Issues found are in the ToDo one list (Tracery `future-bots/` link, Swatch Fields landing links, the unlisted SSD
+  projects, Prompt Generator error, FFFX thumbnail).
+
+**Step 3, build.**
+- `fd735d0` removes the unlinked `docs/_downloads/` copies (D4). `ced80d0` `tools/build-site.mjs` (C1),
+  `tools/manifest.mjs`, `content/archive-allowlist.txt` (C4: 159 of 168 files; the 9 D4/D5 drops).
+- **Comparison step 1** (`evidence/compare-step1-filtered-vs-baseline-20261023.txt`), clean clone, no D6/D7:
+  1,024 files; **1,022 identical to the baseline**; 0 added; 93 removed, every one approved (D3b/D3b+/D3c/D4/D5,
+  step-2 SSD removals, `CNAME`); the 2 changed files are the redirect pages normalised to LF, **now byte-identical to
+  live**. `CNAME` is dropped by the build (GitHub Pages only; the Actions deploy does not need it, as on FFFX).
+- `7dfb57d` C5: `site_url` (D6), 10 nav links root-relative (D7), validator ported from Bookshelf (domain from
+  `site_url`, `/` resolves). **Comparison step 2** (`evidence/compare-step2-d6d7-20261023.txt`): 44 files changed, 0
+  added/removed; every changed line classified, **0 unexplained**: 42 pages gain the canonical link (plus one template
+  whitespace line each), 430 nav links become root-relative, `404.html` changes in nav links only, `sitemap.xml`
+  gains URLs. (That comparison's manifest predates the sitemap step below.)
+- `85a1935` sitemap rule: MkDocs' 42 pages + the landing page `/` (not a MkDocs page, so MkDocs omits it) + each
+  mount's entry and first-level pages = **100 URLs**, all on `https://cabinetofcuriosities.in/`, every one resolves
+  to a published file (checked by the build). `evidence/sitemap-20261023.xml`.
+- Builds ran in clean clones with the scratch venv (Python 3.14.6; the lock file is step 4); `--offline` with a
+  copied warm cache also passes.
+- **Next:** step 4 (launchers, `DEPLOYMENT.md`, release tools with `build-info.json` refusal, `update-externals`,
+  locks, `wrangler.jsonc`, `deploy.yml` on the new build), then step 5 tests.

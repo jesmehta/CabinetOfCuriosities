@@ -1,0 +1,21 @@
+# Browser capture (plan I3 method 2), 2026-10-23 ~08:50-09:10 IST. Full candidate build served locally (python http.server),
+# every HTML page of every mount opened, canvas clicked, keys pressed, waited. Compared with the reviewed allowlists.
+# The two 'requested but not in allowlist' groups are the unlisted 2024-25 projects, opened directly by this run (nothing links them).
+91 page(s) -> C:/Users/Jesal/AppData/Local/Temp/claude/f----SnowCrash---WebPages/8281b7f5-f147-4863-a11a-889af3f32825/scratchpad/capture.json
+pages: 91
+
+REQUESTED BUT NOT IN ALLOWLIST (7):
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/Baby shark - Xylophone Cover.mp3 (from /teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html)
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html (from /teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html)
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/sketch.js (from /teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html)
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/style.css (from /teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html)
+  teaching/ssd-creative-coding-2024-25/anaya_raul/index.html (from /teaching/ssd-creative-coding-2024-25/anaya_raul/index.html)
+  teaching/ssd-creative-coding-2024-25/anaya_raul/sketch.js (from /teaching/ssd-creative-coding-2024-25/anaya_raul/index.html)
+  teaching/ssd-creative-coding-2024-25/anaya_raul/style.css (from /teaching/ssd-creative-coding-2024-25/anaya_raul/index.html)
+
+NOT FOUND / FAILED (1):
+  /teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/Kawaii Ringtones  404 (from /teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/index.html)
+
+PAGE ERRORS (2):
+  /teaching/prompt-generator/index.html: module is not defined
+  /teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/index.html: not ready to play file, buffer has yet to load. Try preload() | not ready to play file, buffer has yet to load. Try preload() | not ready to play file, buffer has yet to load. Try preload()

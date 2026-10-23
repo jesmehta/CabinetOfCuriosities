@@ -1,0 +1,105 @@
+# Comparison step 1 (plan v3): pinned + filtered build WITHOUT D6/D7 vs the 6300dfa baseline. Clean clone of 93aef2a + uncommitted
+# build files (since committed as 3bc0ae6, fd735d0, ced80d0). Every difference listed; all removals are approved items.
+# The 2 changed files are the mkdocs-redirects pages normalised to LF: both now byte-identical to the live site.
+baseline 1117 files, new 1024 files: 1022 identical, 2 changed, 93 removed, 0 added
+
+CHANGED (2):
+  fffx/PackingShapes/index.html
+  fffx/VeraMolnarRetrospective/index.html
+
+REMOVED (93):
+  CNAME
+  _downloads/deploy.yml.txt
+  _downloads/requirements.txt
+  archived-landing-pages/README.md
+  archived-landing-pages/cabinet-index.md.bak
+  archived-landing-pages/v1/assets/javascripts/bundle.88dd0f4e.min.js.map
+  archived-landing-pages/v1/assets/javascripts/workers/search.6ce7567c.min.js.map
+  archived-landing-pages/v1/assets/stylesheets/main.6f8fc17f.min.css.map
+  archived-landing-pages/v1/assets/stylesheets/palette.06af60db.min.css.map
+  archived-landing-pages/v1/sitemap.xml.gz
+  archived-landing-pages/v2/DESIGN-SYSTEM.md
+  archived-landing-pages/v2/LANDING-PAGE-NOTES.md
+  assets/javascripts/bundle.d7400e89.min.js.map
+  assets/javascripts/workers/search.2c215733.min.js.map
+  assets/stylesheets/main.ec1eaa64.min.css.map
+  assets/stylesheets/palette.ab4e12ef.min.css.map
+  sitemap.xml.gz
+  teaching/ssd-creative-coding-2023-24/Vivan_gupta/ARNIM.jpg
+  teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/Morally Serif.otf
+  teaching/ssd-creative-coding-2024-25/Aadit_Vanjari/waves.webp
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade.png
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/Baby shark - Xylophone Cover.mp3
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/index.html
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/sketch.js
+  teaching/ssd-creative-coding-2024-25/Arpita_Dhanawade/style.css
+  teaching/ssd-creative-coding-2024-25/Arya_Ghagare/explosion-fx-343683.mp3
+  teaching/ssd-creative-coding-2024-25/Gloria_Mathew/retro.mp3
+  teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/gible-left.png
+  teaching/ssd-creative-coding-2024-25/Navneet_Krishnan/gible-right.png
+  teaching/ssd-creative-coding-2024-25/Prachi_Khobragade/Kawaii Ringtones #6.mp3
+  teaching/ssd-creative-coding-2024-25/Swayam_Kadam/starry 2.jpg
+  teaching/ssd-creative-coding-2024-25/_shared/libs/p5.min.js
+  teaching/ssd-creative-coding-2024-25/anaya_raul.png
+  teaching/ssd-creative-coding-2024-25/anaya_raul/index.html
+  teaching/ssd-creative-coding-2024-25/anaya_raul/sketch.js
+  teaching/ssd-creative-coding-2024-25/anaya_raul/style.css
+  teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/blue.jpeg
+  teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/grass.jpeg
+  teaching/ssd-creative-coding-2025-26/Deepika_Pest_Control/kitchentile.jpeg
+  teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/FrederickatheGreat-Regular.ttf
+  teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/eye.jpg
+  teaching/ssd-creative-coding-2025-26/Dhruvi_Assignment_2/girl.jpg
+  teaching/ssd-creative-coding-2025-26/Parth/p5.sound.min.js
+  teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/blurry forest.jpg
+  teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/dark forest.jpg
+  teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/forest.jpg
+  teaching/ssd-creative-coding-2025-26/Pushti_DINOEATS/grass.jpg
+  teaching/working-with-ai/.gitignore
+  teaching/working-with-ai/coding-with-ai/README.md
+  teaching/working-with-ai/working-with-ai/DOCUMENTATION.md
+  tracery-bots/.gitignore
+  tracery-bots/.nojekyll
+  tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/index.html
+  tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/jquery-3.1.1.min.js
+  tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/p5.js
+  tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/sketch.js
+  tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/style.css
+  tracery-bots/_TraceryTrials/Tracery A2Z CFG Shiffman/tracery.js
+  tracery-bots/_TraceryTrials/Tracery attempt 1/TrippyGourmet,json
+  tracery-bots/_TraceryTrials/Tracery attempt 1/index.html
+  tracery-bots/_TraceryTrials/Tracery attempt 1/libraries/app.js__
+  tracery-bots/_TraceryTrials/Tracery attempt 1/libraries/p5.dom.js
+  tracery-bots/_TraceryTrials/Tracery attempt 1/libraries/p5.js
+  tracery-bots/_TraceryTrials/Tracery attempt 1/libraries/p5.sound.js
+  tracery-bots/_TraceryTrials/Tracery attempt 1/libraries/tracery.min.js
+  tracery-bots/_TraceryTrials/Tracery attempt 1/sketch.js
+  tracery-bots/_TraceryTrials/Tracery attempt 1/spellbook.json
+  tracery-bots/_TraceryTrials/Tracery attempt 2/TrippyGourmet,json
+  tracery-bots/_TraceryTrials/Tracery attempt 2/index.html
+  tracery-bots/_TraceryTrials/Tracery attempt 2/jquery-3.1.1.min.js
+  tracery-bots/_TraceryTrials/Tracery attempt 2/libraries/app.js__
+  tracery-bots/_TraceryTrials/Tracery attempt 2/libraries/p5.dom.js
+  tracery-bots/_TraceryTrials/Tracery attempt 2/libraries/p5.sound.js
+  tracery-bots/_TraceryTrials/Tracery attempt 2/p5.js
+  tracery-bots/_TraceryTrials/Tracery attempt 2/sketch.js
+  tracery-bots/_TraceryTrials/Tracery attempt 2/spellbook.json
+  tracery-bots/_TraceryTrials/Tracery attempt 2/tracery.js
+  tracery-bots/_TraceryTrials/Tracery attempt 2/tracery.min.js
+  tracery-bots/_TraceryTrials/Tracery trials
+  tracery-bots/_TraceryTrials/Trippy Gourmet
+  tracery-bots/_TraceryTrials/TrippyG/index.html
+  tracery-bots/_TraceryTrials/TrippyG/jquery-3.1.1.min.js
+  tracery-bots/_TraceryTrials/TrippyG/p5.js
+  tracery-bots/_TraceryTrials/TrippyG/sketch.js
+  tracery-bots/_TraceryTrials/TrippyG/style.css
+  tracery-bots/_TraceryTrials/TrippyG/tracery.js
+  tracery-bots/_TraceryTrials/TrippyTechnologist/trippyTechnologist v2.0.json
+  tracery-bots/_TraceryTrials/TrippyTechnologist/trippyTechnologist v2.5.json
+  tracery-bots/_TraceryTrials/TrippyTechnologist/trippyTechnologist v2.6.json
+  tracery-bots/_TraceryTrials/TrippyTechnologist/trippyTechnologist.json
+  tracery-bots/_TraceryTrials/_TraceryTrials.7z
+  tracery-bots/_TraceryTrials/_TraceryTrials.zip
+  tracery-bots/fonts-preview.html
+
+ADDED (0):
