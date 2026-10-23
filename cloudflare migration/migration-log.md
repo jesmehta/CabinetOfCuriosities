@@ -126,3 +126,13 @@ commits; final code `aabc4dc` (records after it).
   `0579a35`. Results: path-safety 18/18, artifact suite 25/25, rejection suite 48/48 (2 code-review skips),
   reproducibility pass with full provenance comparison, injected mismatch exits 1. Response R5; report updated.
 - Next: Codex focused follow-up review; then owner approval for the first push and the Worker.
+
+## Codex C5: GO for the first push and the temporary Worker — 2026-10-24 ~00:15 IST
+
+- `df5510c` Codex C5 committed unedited: I1–I3 closed; **GO for the owner-approved first push and temporary Worker
+  deployment**; domain cutover and privatization still pending; I4 (named functional checks) is a later gate on
+  workers.dev.
+- C5's recovery qualification: `verify-artifact` needs the release's source commit in a local full clone.
+  Documented in `DEPLOYMENT.md` section 4 with a `git bundle` backup recipe, and in the ToDo backup item. To prove in
+  the recovery drill: verify an old release after newer commits, with the network unavailable, from a bundle clone.
+- Waiting for: owner approval of the first push (tag `pre-cloudflare` first), then the Worker.

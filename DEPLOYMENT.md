@@ -140,6 +140,20 @@ npm run verify-artifact -- releases/<name printed by save-artifact>
 what it is. Both tools refuse a development build. `releases/` is not committed: **copy important releases to a
 backup location.**
 
+**`verify-artifact` also needs this repository's history.** It checks the release's record of external projects
+against `content/external-repos.tsv` **as it was at the release's own source commit**, read with `git` from the
+clone you run it in. So verify from a **full** clone that contains that commit (your normal working copy, or a fresh
+full `git clone` — not a shallow one). It refuses, and says so, if the commit is missing. For recovery without
+GitHub, back up the history together with the releases:
+
+```sh
+git bundle create ../cabinet-history-<date>.bundle --all     # one file with the whole history
+# to use it later, anywhere:  git clone cabinet-history-<date>.bundle CabinetOfCuriosities
+```
+
+Refresh the bundle whenever you back up a new release. A release folder alone can still be served by any static
+host (section 8); only the verification step needs the history.
+
 ## 5. Deploy to Cloudflare manually
 
 Log in with narrow permissions only for the deploy, then log out:
