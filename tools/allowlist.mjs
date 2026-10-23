@@ -89,6 +89,7 @@ export async function checkAgainstDir(entries, dir, label) {
 async function listFiles(dir, prefix = "") {
   const out = [];
   for (const e of await readdir(dir, { withFileTypes: true })) {
+    if (e.name === ".git") continue; // a local clone's repository data (--external-local), never a source file
     const rel = prefix ? `${prefix}/${e.name}` : e.name;
     if (e.isDirectory()) out.push(...(await listFiles(join(dir, e.name), rel)));
     else out.push(rel);
