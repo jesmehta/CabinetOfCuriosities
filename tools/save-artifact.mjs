@@ -50,7 +50,7 @@ async function main() {
   } catch {
     throw new Error("No readable build-info.json found next to public/. Run `npm run build` first.");
   }
-  checkBuildInfo(info, "build-info.json");
+  checkBuildInfo(info, "build-info.json", { root: ROOT, siteDir: PUBLIC_DIR });
   const actual = await hashDir(PUBLIC_DIR);
   const problems = diffManifests(expected, actual);
   if (problems.length) {

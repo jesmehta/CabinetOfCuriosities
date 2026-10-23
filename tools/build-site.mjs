@@ -35,6 +35,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { AllowlistError, checkAgainstDir, readAllowlist, summarise } from "./allowlist.mjs";
 import { MountError, assembleMounts, gitVersion, parseLocals } from "./external-mounts.mjs";
+import { externalsDigest } from "./build-info.mjs";
 import { formatManifest, hashDir } from "./manifest.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -268,6 +269,8 @@ async function main() {
     sourceDateEpoch: epoch || null,
     tools: { node: process.version, git: gitVersion(), python: spawnSync(python, ["--version"], { encoding: "utf8" }).stdout.trim() },
     externals: mounts.mounts,
+    externalCount: mounts.mounts.length,
+    externalsDigest: externalsDigest(mounts.mounts),
     files: rows.length,
     bytes,
   };

@@ -12,9 +12,12 @@
 // A raw `wrangler deploy` of an unverified folder bypasses this check: never do that.
 
 import { readFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { diffManifests, hashDir, parseManifest } from "./manifest.mjs";
 import { checkBuildInfo } from "./build-info.mjs";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 async function main() {
   const arg = process.argv[2];
@@ -27,7 +30,7 @@ async function main() {
   } catch {
     throw new Error("BUILD-INFO.json missing or unreadable: provenance unknown, do NOT restore this artifact");
   }
-  checkBuildInfo(info, `${arg}/BUILD-INFO.json`);
+  checkBuildInfo(info, `${arg}/BUILD-INFO.json`, { root: ROOT, siteDir: join(dir, "site") });
   const expected = parseManifest(await readFile(join(dir, "SHA256SUMS"), "utf8"));
   const actual = await hashDir(join(dir, "site"));
   const problems = diffManifests(expected, actual);
