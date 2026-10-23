@@ -1,0 +1,19 @@
+{
+  "name": "cabinet-of-curiosities",
+  "private": true,
+  "description": "Site build and deployment tooling. The site itself is MkDocs + external mounts + the archive; see DEPLOYMENT.md. (landing-v3/ has its own, separate package.json.)",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node tools/build-site.mjs",
+    "preview": "npm run build && python -m http.server 8000 --bind 127.0.0.1 --directory public",
+    "update-externals": "node tools/update-externals.mjs",
+    "save-artifact": "node tools/save-artifact.mjs",
+    "verify-artifact": "node tools/verify-artifact.mjs",
+    "deploy": "node tools/build-site.mjs && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.149.0"
+  }
+}

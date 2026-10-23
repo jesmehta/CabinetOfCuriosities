@@ -13,11 +13,9 @@ _test-build/
 public/
 node_modules/
 
-# Scratch clone target for tools/assemble-external.js (#43 Phase 2) -- same
-# role _external/ played as an actions/checkout destination in the old
-# hand-written deploy.yml steps, just no longer created by GitHub Actions
-# itself. Never committed, CI-only in practice, but the script can also be
-# run locally to test the manifest.
+# Cache of the external repositories' Git objects (tools/external-mounts.mjs,
+# _external/git/<owner>__<repo>.git). Never committed. (It used to be the
+# scratch clone target of the retired tools/assemble-external.js.)
 _external/
 
 # Third-party map/design reference images, local-only (unclear licensing
@@ -46,3 +44,22 @@ documentation/backend-and-deploy/cloudflare-js-snippet.md
 landing-v3/pasted-config.json
 
 _temp
+
+# Site build (npm run build / tools/build-site.mjs) -- regenerated, never committed.
+# build-info.json and build-unlisted.txt sit next to public/, never inside it (Cloudflare migration).
+mkdocs-build.log
+public-manifest.sha256
+build-info.json
+build-unlisted.txt
+
+# Saved known-good builds (npm run save-artifact) -- back them up outside the repo
+releases/
+
+# Tooling
+.wrangler/
+.venv/
+
+# Never commit credentials
+.dev.vars
+.env
+.env.*

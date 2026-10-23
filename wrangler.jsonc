@@ -1,0 +1,26 @@
+// Cloudflare Workers with Static Assets — hosting configuration ONLY.
+// The single Cloudflare-specific file in this repo. There is no Worker script:
+// Cloudflare serves the files in public/ (built by `npm run build`, i.e. tools/build-site.mjs).
+// public/ is an ordinary static website and can be uploaded unchanged to any other host.
+// Build settings that are NOT in this file (dashboard only): the build command, and the
+// build watch paths that skip internal-documentation-only pushes -- see DEPLOYMENT.md.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker name in the Cloudflare dashboard (Git integration).
+  // Temporary address: https://cabinet-of-curiosities.jesmehta.workers.dev
+  // (cabinetofcuriosities.in is attached later as a Custom Domain, in the dashboard;
+  // www needs its own handling, because a Custom Domain matches one exact hostname).
+  "name": "cabinet-of-curiosities",
+  "compatibility_date": "2026-10-01",
+  // Serve the site at the workers.dev address above (until the custom domain is attached).
+  "workers_dev": true,
+  // No per-version public preview URLs (every uploaded version would otherwise stay
+  // reachable at its own address). NOTE: this does not stop builds of other branches;
+  // that is a separate dashboard setting (see DEPLOYMENT.md).
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    // Unknown paths get MkDocs' own 404.html with a real 404 status, as on GitHub Pages.
+    "not_found_handling": "404-page"
+  }
+}
