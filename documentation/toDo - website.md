@@ -280,7 +280,7 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   - [x] step 3 (done 2026-10-23): `tools/build-site.mjs`, archive allowlist (C4), `site_url` (D6), root-relative nav (D7), validator fixes;
   - [x] step 4 (done 2026-10-23): launchers (`cd /d "%~dp0"`, `.venv`), `DEPLOYMENT.md`, release tools with `build-info.json`,
     `update-externals`, lock files, `wrangler.jsonc`, `deploy.yml` on the new build;
-  - [ ] step 5: full test round (determinism, rejections, development boundary, sitemap, HTTP, behaviour, authoring);
+  - [x] step 5 (done 2026-10-23; `cloudflare migration/implementation-report.md`): full test round (determinism, rejections, development boundary, sitemap, HTTP, behaviour, authoring);
   - [ ] Codex post-implementation review; then owner-approved push; tag `pre-cloudflare` on Cabinet before it.
 - [ ] **Cabinet on Cloudflare** (checklist 19–23): owner creates Worker `cabinet-of-curiosities` with the Git-App
   pre-check (repository added on GitHub's side); watch paths (internal docs skip, `docs/` deploys; both proved);
@@ -326,6 +326,13 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   only by typing the URL). Not published on Cloudflare (owner rule: only what the pages load). If the omission was a
   mistake: add them to the gallery in `SSD_Student_Work`, update the pin, and add their files to
   `content/external-allowlists/ssd-creative-coding-2024-25.txt`. If intentional: nothing to do.
+- [ ] **Cabinet `extra.css` background image 404** (pre-existing, also on the live site):
+  `docs/_assets/material/css/extra.css` line 44 uses `url('../images/DotMandala/DMUI-22.jpg')`, which resolves to
+  `/_assets/material/images/…` (no such folder); the image lives in `docs/_images/DotMandala/`. Fix the path
+  (`../../../_images/DotMandala/DMUI-22.jpg`) and check the Dot Mandala page. Found by the step-5 browser capture.
+- [x] **Images missing on 6 MkDocs pages** (About, Now, Fab23 Bhutan, Mini Loom, Papier-mâché, Dot Mandala; 112
+  images): `selectolax` 1.0.1 made `mkdocs-glightbox` drop them, on the live site too, until GitHub rebuilt it with
+  1.0.2 on 2026-10-23. Fixed in Cabinet's lock (1.0.2) with a build guard (local commits `0732cf3`, `d9759ff`).
 - [ ] **Prompt Generator: script error `module is not defined`** in the browser console (pre-existing; the published
   bytes are identical to the live site). Probably a Node-style `module.exports` in `app.js`; guard it in the
   PromptGenerator repository.

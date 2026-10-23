@@ -96,3 +96,25 @@ The owner's uncommitted work (`cabinet-material.css`, `scratchNotes.md`, `docs/_
 - **Next: step 5**, the full test round (determinism incl. `autocrlf` and Linux-like conditions, all rejection
   cases, update-externals report, sitemap, `wrangler dev` HTTP, behaviour vs live incl. scenarios, authoring via the
   launchers in a disposable clone), then Codex post-implementation review.
+
+## Step 5: full test round — 2026-10-23 ~22:30–23:10 IST
+
+Summary and evidence table: [implementation-report.md](implementation-report.md). All on clean clones of committed
+commits; final code `aabc4dc` (records after it).
+- Rejection suite **44/44** (2 code-review skips); determinism: 3 identical builds (`autocrlf` true cold/network,
+  warm offline, `autocrlf` false) `6f956b70…`; authoring via launchers **25/25**; landing build/promote reproduces
+  the committed files; `wrangler dev` HTTP: 1,024/1,024 bytes, 100/100 sitemap URLs, 125/125 never-published 404;
+  saved release on a Python static server: same; browser vs live: equal on all 40 views apart from local-only
+  artifacts; final build vs **today's live site**: 980/1,024 identical, every other changed line explained.
+- **Found: selectolax 1.0.1 dropped 112 images on 6 MkDocs pages** (live too, until today's GitHub rebuild with
+  1.0.2). `0732cf3` pins 1.0.2; `d9759ff` adds a build guard (proven against 1.0.1). The earlier step-1/2
+  comparisons were against an image-less baseline; the final-vs-live comparison supersedes them.
+- Scenario capture on the final build: 99 pages, 882 requests, no missing published file; only the known `#` sound
+  and a pre-existing `extra.css` background-image path (ToDo). Cloudflare redirects `/x/index.html` → `/x/` (307)
+  and serves the nearest `404.html` (archive v1): host differences, recorded.
+- Test-design errors fixed along the way (not code defects): a letter-case test hit the required-file check first;
+  two publication tests needed network for never-fetched blobs; Git Bash rewrote URL paths (`MSYS_NO_PATHCONV=1`);
+  the HTTP check must read every body on Python's server. The first capture run was invalid for that reason and
+  was rerun.
+- **Next:** Codex post-implementation review of the code and evidence; then owner approval for the first push
+  (which also changes the live GitHub Pages output, as described) and the Worker (checklist 19–23).
