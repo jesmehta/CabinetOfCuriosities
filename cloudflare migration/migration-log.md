@@ -166,3 +166,16 @@ commits; final code `aabc4dc` (records after it).
   Cabinet now has a root `package.json` without `"type"`; harmless (Node reparses it as ES module). Not changed:
   setting a type would break either the CommonJS tools or that file.
 - Next: push `b59a8f1` (owner approval) so Cloudflare rebuilds; then the byte comparison on workers.dev.
+
+## Second Cloudflare build: build passed, upload 401; Worker renamed — 2026-10-24 ~02:00 IST
+
+- Build `c667e11d` (20:27 UTC, from `1e33e84`): **all 9 build steps passed on Cloudflare** (git 2.43.0, Python
+  3.14.8): 1,024 files, 112 images, 100 sitemap URLs — the `rev-list --missing=print` fix works on the build image.
+- **Deploy failed:** Wrangler 4.149.0 found 844 unique assets to upload (its "1227 files" count includes folders,
+  as FFFX's 126 vs 79), and every upload batch got `401 Unauthorized` after 5 retries. Nothing deployed.
+- Also: "Failed to match Worker name": the owner had created the Worker as `cabinetofcuriosities`, the config says
+  `cabinet-of-curiosities` (D8). Cloudflare overrode the name and said it would open a pull request on the
+  repository. **Owner renamed the Worker to `cabinet-of-curiosities`** (2026-10-24). Any such pull request is to be
+  closed unmerged. Log: `evidence/cloudflare-build-c667e11d-deploy-401.log`.
+- Next: retry the build (same commit) to see whether the 401 was related to the name mismatch; if it recurs,
+  check the build token's permissions.
