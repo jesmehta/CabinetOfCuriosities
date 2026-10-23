@@ -149,3 +149,20 @@ commits; final code `aabc4dc` (records after it).
   machine's (the known pre-existing content glitch, ToDo). Worth noting for the Cloudflare comparison: Cloudflare's
   Linux build may match GitHub's here rather than the Windows build.
 - Next: owner creates the Worker `cabinet-of-curiosities` (Git-App pre-check on GitHub's side).
+
+## Worker created; first Cloudflare build failed; fix — 2026-10-24 ~01:20–01:45 IST
+
+- **Owner** created Worker `cabinet-of-curiosities` (Git integration). First build `ea36b9be` (19:47 UTC, from
+  `a7ed6e0`): environment Python 3.14.8; Cloudflare's automatic `pip install -r requirements.txt` drifted
+  `certifi`, `python-dateutil` (3.0.0), `soupsieve`, and the lock install put them back (as designed). Steps 1–3
+  passed (112 images; 0 redirect pages needed LF normalisation on Linux). **Step 4 failed:** `git cat-file
+  --batch-check` with `GIT_NO_LAZY_FETCH=1` exits fatally on Cloudflare's git ("could not fetch … from promisor
+  remote") where git 2.47 prints "missing". Log: `evidence/cloudflare-build-ea36b9be-failed.log`.
+- `b59a8f1`: missing blobs are now found with `git rev-list --objects --missing=print` (lists a partial clone's
+  missing objects without fetching; git ≥ 2.16); the build log prints the git version. Tested: cold network
+  assembly = warm offline assembly, all mount files identical to the live build; rejection suite 48/48
+  (`evidence/reject-tests-b59a8f1.txt`).
+- The Node warning `MODULE_TYPELESS_PACKAGE_JSON` for `docs/_assets/backend/js/now-markdown.js` appears because
+  Cabinet now has a root `package.json` without `"type"`; harmless (Node reparses it as ES module). Not changed:
+  setting a type would break either the CommonJS tools or that file.
+- Next: push `b59a8f1` (owner approval) so Cloudflare rebuilds; then the byte comparison on workers.dev.
