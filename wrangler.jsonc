@@ -20,7 +20,8 @@
   "preview_urls": false,
   "assets": {
     "directory": "./public",
-    // Unknown paths get MkDocs' own 404.html with a real 404 status, as on GitHub Pages.
+    // Unknown paths get a 404.html with a real 404 status: the NEAREST one up the path, so under
+    // /archived-landing-pages/v1/ it is that archived site's own 404 page (GitHub Pages always used the root one).
     "not_found_handling": "404-page"
   }
 }

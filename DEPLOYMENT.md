@@ -197,8 +197,8 @@ allowlists), `archived-landing-pages/`, `tools/`, `mkdocs.yml`, `overrides/`, lo
 `wrangler.jsonc`. Test both: a push touching only `cloudflare migration/` produces no build; a push touching
 `docs/` produces a new version.
 
-**Branch builds:** the dashboard has no switch to stop builds of other branches. With preview URLs disabled they
-build a version but are never deployed to the live address. Avoid pushing other branches to GitHub.
+**Branch builds (expected, not yet demonstrated for Cabinet):** on Bookshelf the dashboard had no switch to stop
+builds of other branches; with preview URLs disabled they built a version that was never deployed to the live address. Avoid pushing other branches to GitHub.
 
 ## 7. What is live? Roll back
 
