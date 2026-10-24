@@ -335,6 +335,9 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
 - [x] **Images missing on 6 MkDocs pages** (About, Now, Fab23 Bhutan, Mini Loom, Papier-mâché, Dot Mandala; 112
   images): `selectolax` 1.0.1 made `mkdocs-glightbox` drop them, on the live site too, until GitHub rebuilt it with
   1.0.2 on 2026-10-23. Fixed in Cabinet's lock (1.0.2) with a build guard (local commits `0732cf3`, `d9759ff`).
+- [ ] **Bookshelf and FFFX answer plain HTTP since the move** (found 2026-10-24): `http://bookshelf…/` and
+  `http://fffx…/` return 200 over HTTP; GitHub Pages redirected to HTTPS. Fix (owner, dashboard, zone-wide): SSL/TLS
+  → Edge Certificates → **Always Use HTTPS** on. Step 0 of `CabinetOfCuriosities/cloudflare migration/domain-plan.md`.
 - [ ] **Prompt Generator: script error `module is not defined`** in the browser console (pre-existing; the published
   bytes are identical to the live site). Probably a Node-style `module.exports` in `app.js`; guard it in the
   PromptGenerator repository.
