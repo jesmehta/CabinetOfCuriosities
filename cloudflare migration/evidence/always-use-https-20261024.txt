@@ -1,0 +1,12 @@
+# Always Use HTTPS (domain plan step 0), turned on by the owner 2026-10-24; checked 2026-10-24T03:26:13Z
+http://bookshelf.cabinetofcuriosities.in/                    301 https://bookshelf.cabinetofcuriosities.in/
+http://bookshelf.cabinetofcuriosities.in/scifi/?x=1          301 https://bookshelf.cabinetofcuriosities.in/scifi/?x=1
+http://fffx.cabinetofcuriosities.in/                         301 https://fffx.cabinetofcuriosities.in/
+http://fffx.cabinetofcuriosities.in/genuary/genuary-2024/    301 https://fffx.cabinetofcuriosities.in/genuary/genuary-2024/
+http://fffx.cabinetofcuriosities.in/no-such/                 301 https://fffx.cabinetofcuriosities.in/no-such/
+https://bookshelf.cabinetofcuriosities.in/scifi/             200 
+https://fffx.cabinetofcuriosities.in/                        200 
+http://cabinet-of-curiosities.jesmehta.workers.dev/          200 
+https://cabinet-of-curiosities.jesmehta.workers.dev/         200 
+http://cabinetofcuriosities.in/                              301 https://cabinetofcuriosities.in/
+http://www.cabinetofcuriosities.in/                          301 https://cabinetofcuriosities.in/

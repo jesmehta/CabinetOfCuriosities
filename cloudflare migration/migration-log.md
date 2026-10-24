@@ -254,3 +254,10 @@ commits; final code `aabc4dc` (records after it).
   preserving path and query, and zone-wide **Always Use HTTPS** — found: Bookshelf and FFFX answer plain HTTP (200)
   since the move (GitHub Pages redirected); ToDo. For Codex review together with `b59a8f1` and the preview evidence.
 - Owner: zipped and backed up the Cabinet, Bookshelf and FFFX releases, and made Cabinet's history bundle.
+
+## Always Use HTTPS on (domain plan step 0) — 2026-10-24
+
+- Owner turned on SSL/TLS → Edge Certificates → **Always Use HTTPS** for the zone (HSTS left off).
+- Checked (`evidence/always-use-https-20261024.txt`): `http://` on Bookshelf and FFFX → **301** to `https://`, path
+  and query kept (also for an unknown path); `https://` pages 200; apex and `www` (still GitHub Pages) unchanged;
+  workers.dev (not in the zone) unaffected. Fixes the plain-HTTP regression on Bookshelf and FFFX since their move.
