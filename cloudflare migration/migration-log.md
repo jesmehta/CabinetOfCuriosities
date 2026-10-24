@@ -280,3 +280,7 @@ commits; final code `aabc4dc` (records after it).
   stop/rollback conditions; step 0 marked done.
 - **Preflight G1 (public part): passed** (`evidence/domain-preflight-g1-20261024.txt`): apex only A ×4, TTL 300, no
   AAAA/CAA/TXT; `www` CNAME → `jesmehta.github.io`, TTL 300; Bookshelf/FFFX untouched; GitHub Pages healthy and bound.
+- **Fresh functional run (saved transcripts, `FC_KNOWN_FAIL=Prachi_Khobragade`):** live 54 checks, 1 failed (known);
+  workers.dev 54 checks, 1 failed (known); compare: **53 equal and passing, 1 known pre-existing failure identical on
+  both, 0 not**; all three runs exit 0 (`evidence/functional-{live,workers-dev,compare}-rerun-20261024.*`).
+  Deepika_Pest_Control passed on both this time; the earlier live failure was a one-off.

@@ -1,0 +1,56 @@
+ok    landing: compass links, animation, compass W navigates  -- compass hit areas 4; W -> /compass/sitemap/
+ok    now: sections rendered
+ok    prompt-generator: New changes the prompt
+ok    oblique-strategies: Pick new changes the card
+ok    tracery TrippyGourmetBot: Generate produces text  -- 2 new item(s): "Ruthlessly stir-fried aubergine crumbs served under roughly "
+ok    tracery MadSolutionistBot: Generate produces text  -- 2 new item(s): "AI powered plate that hotlinks your spouse's parents' co-wor"
+ok    swatch polar-Grid: load, draw, switch to grid, hover preview  -- hover: BCSwatch_149_MadderPwd_Neutral_Myro_NoAddit_60m.jpg
+ok    swatch mosaic: sample image -> mosaic -> PNG and CSV downloads  -- png 1564448 B, csv 1216022 B
+ok    working-with-ai: index -> lesson 01 (both courses)
+ok    archive: index links open
+ok    ssd ssd-creative-coding-2025-26/Parth  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Deepika_Pest_Control  -- canvas changed true, audio starts 2
+ok    ssd ssd-creative-coding-2025-26/Dhruvi_Assignment_2  -- canvas changed false, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Arnav  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Sharvil_i_like_ball_final_copy  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Aarya_TOSSBIN  -- canvas changed false, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Harshdeep_YE_hai_JURRY_WALLA_copy  -- canvas changed true, audio starts 2
+ok    ssd ssd-creative-coding-2025-26/Ishan  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Jiya_my_name_fliesss  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1  -- canvas changed false, audio starts 10
+ok    ssd ssd-creative-coding-2025-26/Pushti_DINOEATS  -- canvas changed true, audio starts 2
+ok    ssd ssd-creative-coding-2025-26/Sharvani_assignment2.v7  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER  -- canvas changed true, audio starts 1
+ok    ssd ssd-creative-coding-2024-25/Aadit_Vanjari  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Ananya_Adsul  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Arya_Ghagare  -- canvas changed true, audio starts 3
+ok    ssd ssd-creative-coding-2024-25/Atharva_Aware  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Avaneesh_Chavan  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Bhakti_Sharma  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Gloria_Mathew  -- canvas changed true, audio starts 4
+ok    ssd ssd-creative-coding-2024-25/Madhav_Kansara  -- canvas changed true, audio starts 2
+ok    ssd ssd-creative-coding-2024-25/Navneet_Krishnan  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Parikshit  -- canvas changed true, audio starts 0
+FAIL  ssd ssd-creative-coding-2024-25/Prachi_Khobragade  -- canvas changed false, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Pratyush_Girap  -- canvas changed true, audio starts 2
+ok    ssd ssd-creative-coding-2024-25/Rhea_Pillai  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2024-25/Sara_Khan  -- canvas changed true, audio starts 8
+ok    ssd ssd-creative-coding-2024-25/Sharvari_Joshi  -- canvas changed false, audio starts 2
+ok    ssd ssd-creative-coding-2024-25/Swayam_Kadam  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Dhruv_Belekar_project1  -- canvas changed true, audio starts 302
+ok    ssd ssd-creative-coding-2023-24/Dhruv_Belekar_code  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Kashvi_Shah  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/kaushik  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/kumkum_bharambe  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Mitali_Yeole  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Reet_singh  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Scarlett_Dsouza  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Sia_Jariwala  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Siddhi_Shethia  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/soham_G  -- canvas changed false, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Tanay_Shetty  -- canvas changed false, audio starts 8
+ok    ssd ssd-creative-coding-2023-24/Vaishnavi_Shetty  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/vignesh_shetty  -- canvas changed true, audio starts 0
+ok    ssd ssd-creative-coding-2023-24/Vivan_gupta  -- canvas changed true, audio starts 0
+== 54 checks, 1 failed (judged on this host alone), 1 of them known pre-existing
+workers.dev exit 0

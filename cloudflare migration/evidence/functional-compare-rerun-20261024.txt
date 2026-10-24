@@ -1,0 +1,3 @@
+KNOWN      ssd ssd-creative-coding-2024-25/Prachi_Khobragade (fails identically on both hosts)
+== 53 checks equal and passing on cabinet-of-curiosities.jesmehta.workers.dev, 1 known pre-existing failure(s) identical on both, 0 not
+compare exit 0
