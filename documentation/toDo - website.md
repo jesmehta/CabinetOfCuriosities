@@ -328,7 +328,7 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   only by typing the URL). Not published on Cloudflare (owner rule: only what the pages load). If the omission was a
   mistake: add them to the gallery in `SSD_Student_Work`, update the pin, and add their files to
   `content/external-allowlists/ssd-creative-coding-2024-25.txt`. If intentional: nothing to do.
-- [ ] **Cabinet `extra.css` background image 404** (pre-existing, also on the live site):
+- [x] **Cabinet `extra.css` background image 404** (fixed 2026-10-24, path corrected; deployed as the watch-path deploy test) (pre-existing, also on the live site):
   `docs/_assets/material/css/extra.css` line 44 uses `url('../images/DotMandala/DMUI-22.jpg')`, which resolves to
   `/_assets/material/images/…` (no such folder); the image lives in `docs/_images/DotMandala/`. Fix the path
   (`../../../_images/DotMandala/DMUI-22.jpg`) and check the Dot Mandala page. Found by the step-5 browser capture.
