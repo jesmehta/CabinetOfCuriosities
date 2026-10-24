@@ -198,3 +198,18 @@ commits; final code `aabc4dc` (records after it).
   other 2 are the known `#` link-normalisation artifact.
 - Still to do on the preview: Git-App banner check and any Cloudflare name PR (owner); build watch paths and the
   two-push proof; named functional checks (Codex I4); rollback and saved-artifact restore (owner-run).
+
+## Build watch paths proved; second version; release for the recovery drill — 2026-10-24 ~07:55–08:05 IST
+
+- Owner: no "disconnected" banner; no name pull request from Cloudflare. Owner set the build watch paths (exclude,
+  one entry each): `cloudflare migration/*`, `documentation/*`, `README.md`, `DEPLOYMENT.md`, `WORLD-SYSTEMS.md`.
+- **Skip proved:** push of `4e7606d` (records only, all 7 files under `cloudflare migration/`): visible on GitHub,
+  **no Cloudflare build** (owner, dashboard).
+- **Deploy proved:** push of `7cd5541` + `4e0ec60` (owner-approved real fix: `docs/_assets/material/css/extra.css`
+  background-image path, the ToDo item) at 02:27:37 UTC; the new `extra.css` was served by workers.dev at
+  02:28:49 UTC. Dot Mandala page now loads `/_images/DotMandala/DMUI-22.jpg` (200; it was a 404 on every host).
+  HTTP check vs a local clean build of `4e0ec60`: 1,023/1,024 (the known About-page parser difference), 100/100
+  sitemap, 125/125 404 (`evidence/http-check-workers-dev-4e0ec60.txt`). Version ID: to be read from the dashboard.
+- Saved release for the drill: `releases/20261024T023115Z_4e0ec60` (clean clone, 1,024 files, no `-dirty`),
+  copied into the repository's gitignored `releases/`; `verify-artifact` OK from the real repository.
+- Next: owner-run dashboard rollback to `2ab6c8b4`, then the saved-artifact restore via Wrangler.

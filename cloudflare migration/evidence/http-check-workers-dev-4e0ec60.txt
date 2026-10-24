@@ -1,0 +1,27 @@
+== workers-dev-after-4e0ec60 (https://cabinet-of-curiosities.jesmehta.workers.dev)  2026-10-24T02:29:01.992Z
+FAIL  bytes differ: /compass/about/index.html
+1023/1024 published files served with identical bytes
+PASS  route / 200
+PASS  route /compass/about/ 200
+PASS  route /compass/now/ 200
+PASS  route /compass/sitemap/ 200
+PASS  route /teaching/ 200
+PASS  route /teaching/dragons/ 200
+PASS  route /makings/mini_loom/ 200
+PASS  route /teaching/working-with-ai/ 200
+PASS  route /teaching/prompt-generator/ 200
+PASS  route /teaching/oblique-strategies/ 200
+PASS  route /teaching/ssd-creative-coding-2025-26/ 200
+PASS  route /teaching/ssd-creative-coding-2024-25/ 200
+PASS  route /teaching/ssd-creative-coding-2023-24/ 200
+PASS  route /swatch-fields/ 200
+PASS  route /swatch-fields/mosaic/ 200
+PASS  route /tracery-bots/ 200
+PASS  route /tracery-bots/TrippyGourmetBot/ 200
+PASS  route /archived-landing-pages/ 200
+PASS  route /archived-landing-pages/v1/ 200
+PASS  route /fffx/PackingShapes/ 200
+PASS  route /fffx/VeraMolnarRetrospective/ 200
+100/100 sitemap.xml URLs (all on https://cabinetofcuriosities.in/) serve 200 here
+125/125 never-published paths return 404 with the nearest 404.html (5 under a folder with its own 404.html)
+== 1 FAILURE(S)
