@@ -248,14 +248,15 @@ same Git integration). Details: the `DotMandalaGenerator` repo (`DEPLOYMENT.md`,
 Next in sequence: Bookshelf → FFFX → Cabinet (last, because of its multi-repo assembly).
 **Bookshelf (2026-10-21):** shared build script, publication allowlists, Cloudflare preview `bookshelf-of-curiosities.jesmehta.workers.dev` live and byte-identical to local builds, automatic deploys, interaction and recovery tests done. Cabinet sitemap reads local clones (prerequisite done). Next: move the `cabinetofcuriosities.in` DNS zone from GoDaddy to Cloudflare (`documentation/cloudflare migration/dns-zone-plan.md`), then Bookshelf domain switch, then privatization. Detail: `TheBookshelfOfCuriosities/cloudflare migration/migration-log.md`.
 
-**Progress, 2026-10-23:**
+**Progress, 2026-10-24:**
 - **DNS:** the zone is on Cloudflare (nameservers `may`/`west`); GoDaddy stays registrar only.
 - **Dot Mandala:** done (private source, Worker, links switched).
 - **Bookshelf:** done 2026-10-22 (custom domain, Pages retired, repository private, private-source build verified).
 - **FFFX:** Worker on `fffx.cabinetofcuriosities.in` since 2026-10-22 03:35 UTC; hold ends 2026-10-23 09:06 IST; then
   close-out (below).
-- **Cabinet:** plan v3.1 approved by Codex (C3); implementation step 1 (external-mount fetcher) done, local
-  `CabinetOfCuriosities/cloudflare migration/migration-log.md`.
+- **Cabinet:** implemented and reviewed (Codex C3–C7); Worker `cabinet-of-curiosities` live; **apex and `www`
+  switched to Cloudflare 2026-10-24**; hold until 2026-10-25 09:45 IST, then Pages retirement and the privatization
+  decision. `CabinetOfCuriosities/cloudflare migration/migration-log.md`.
 
 ### Migration: the one list of open items and issues
 
@@ -273,7 +274,7 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   - [x] owner: make `form-follows-fx` private (2026-10-23; anonymous read fails, github.io 404);
   - [x] private-source build test: `1bb8569` served 79/79 byte-identical to its local build (version ID: owner);
   - [x] retire FFFX's `deploy.yml` (`1bb8569`; FFFX had no root `CNAME`); then tick checklist 16–17.
-- [ ] **Cabinet implementation** (plan v3.1; local commits; records committed before code):
+- [x] **Cabinet implementation** (plan v3.1; done 2026-10-23/24):
   - [x] step 2 (done 2026-10-23): reduce the allowlists to **only what each page loads** (owner, 2026-10-23), for SSD (3 years) and Swatch
     Fields (owner suspects only `imagesSuperCrop/` is used); also Working with AI, Tracery, Prompt Generator,
     Oblique Strategies. Source inspection + browser capture + scenarios;
@@ -281,12 +282,14 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   - [x] step 4 (done 2026-10-23): launchers (`cd /d "%~dp0"`, `.venv`), `DEPLOYMENT.md`, release tools with `build-info.json`,
     `update-externals`, lock files, `wrangler.jsonc`, `deploy.yml` on the new build;
   - [x] step 5 (done 2026-10-23; `cloudflare migration/implementation-report.md`): full test round (determinism, rejections, development boundary, sitemap, HTTP, behaviour, authoring);
-  - [ ] Codex post-implementation review; then owner-approved push; tag `pre-cloudflare` on Cabinet before it.
-- [ ] **Cabinet on Cloudflare** (checklist 19–23): owner creates Worker `cabinet-of-curiosities` with the Git-App
-  pre-check (repository added on GitHub's side); watch paths (internal docs skip, `docs/` deploys; both proved);
-  preview tests; rollback and saved-artifact restore; sitemap private-repository dependencies (checklist 21:
-  `tools/generate_sitemap.py` raw GitHub reads); private-source build (22); apex + `www` cutover (23, its own plan;
-  `www` needs a redirect rule, Custom Domains are exact-host).
+  - [x] Codex post-implementation review (C4 HOLD → fixes → C5 GO); owner-approved push 2026-10-24; tag `pre-cloudflare` → `93aef2a`.
+- [ ] **Cabinet on Cloudflare** (checklist 19–23):
+  - [x] Worker `cabinet-of-curiosities` (Git-App pre-check done; no banner); watch paths proved (skip and deploy);
+    workers.dev byte/browser/functional checks; dashboard rollback and saved-artifact restore; bundle recovery;
+    sitemap tool reads local clones (21).
+  - [x] Apex + `www` cutover (23): 2026-10-24, acceptance passed (`domain-plan.md`).
+  - [ ] After the hold (2026-10-25 09:45 IST): repeat acceptance; owner removes the custom domain from GitHub Pages;
+    privatization decision; private-source build (22); retire `deploy.yml` and `docs/CNAME`.
 - [ ] **Finalisation** (checklist 24–27): visibility audit, links/analytics/DNS/HTTPS across all sites, remove obsolete
   deployment configuration, maintenance runbook tested by the owner without AI, Codex final review.
 - [ ] **Owner backups** (gitignored, outside the repositories): Bookshelf `releases/20261020T193032Z_202d69e`, FFFX

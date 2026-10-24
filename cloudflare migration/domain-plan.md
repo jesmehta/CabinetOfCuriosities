@@ -1,7 +1,9 @@
 # Cabinet — apex and `www` cutover plan (checklist step 23), for Codex review
 
 **Date:** 2026-10-24 · **Author:** Claude Code · **Status:** v2 after Codex C6/C7 — **conditional GO** for Phase C once
-the preflight gates below pass and are recorded. Step 0 done (C7 accepted). Phase C not executed. Follows the shared DNS runbook
+the preflight gates below pass and are recorded. Step 0 done (C7 accepted). **Preflight G1–G5 passed and Phase C
+executed 2026-10-24 03:49–04:15 UTC; acceptance passed; hold until 2026-10-25 04:15 UTC** (migration log, "Phase C").
+`www` returned 522 for about 6 minutes until the redirect rule's parameters were corrected (owner fixed forward). Follows the shared DNS runbook
 ([dns-zone-plan.md](../documentation/cloudflare%20migration/dns-zone-plan.md), phases C/D as used for Bookshelf and
 FFFX). Owner performs every dashboard step; Claude Code checks and records.
 

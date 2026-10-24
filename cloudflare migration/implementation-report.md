@@ -13,8 +13,10 @@ the new "Functional scenarios not yet asserted" section reflect them. Response: 
   same files as GitHub Pages; build watch paths proved (records-only push skipped, `docs/` change deployed);
   dashboard rollback and Wrangler saved-artifact restore proved; history-bundle recovery proved; named functional
   checks run on both hosts; Always Use HTTPS on (domain plan step 0, Codex C7).
-- **Pending:** domain plan Phase C (apex + `www`) after its recorded preflight gates (Codex C6 conditional GO); the
-  24-hour hold; then GitHub Pages retirement, the privatization decision and a private-source build.
+- **Done 2026-10-24:** domain plan preflight G1–G5 and Phase C — apex Custom Domain and `www` redirect live,
+  acceptance passed (redirect matrix 20/20, files, sitemap, 404s, functional checks, analytics, siblings).
+- **Pending:** the 24-hour hold (until 2026-10-25 04:15 UTC); then GitHub Pages retirement, the privatization
+  decision and a private-source build.
 - Details: migration log (from "First push"), `domain-plan.md`.
 Detailed chronology: [migration-log.md](migration-log.md). Responses to reviews: [claude-code-responses.md](claude-code-responses.md).
 

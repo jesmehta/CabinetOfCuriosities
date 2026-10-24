@@ -91,6 +91,27 @@ acceptance); Cloudflare Linux build, triggers, deployed behaviour, rollback, Wra
 apex/www remain later gates. Next: focused Codex follow-up review, then owner approval for the first push (which
 changes the live GitHub Pages output as described) and the Worker.
 
+## R6 — Codex C6 (preview, fetch fix, domain plan) and C7 (step 0) — 2026-10-24 ~09:00–09:50 IST
+
+Codex C6 (08:54:55 IST, reviewed `4f38831`): fetch fix and preview/recovery accepted; GO for step 0; **conditional
+GO for Phase C** after explicit recorded preflight gates; Pages retirement/privatization held. C7 (08:57:17 IST,
+`50323b4`): step 0 accepted. Both committed unedited as `75ef15d`.
+
+| C6/C7 point | Response | Evidence / commit |
+| --- | --- | --- |
+| 401 "evidently caused" by the name mismatch is too strong | Reworded as a correlation, cause not isolated (log correction; report) | `b461bc0` |
+| Functional count: retained aggregate is 52, not 53; reruns unsaved | Raw 52 kept and stated; fresh full run on both hosts with saved transcripts: **53 equal and passing, 1 known identical, 0 not** | `535cc57`, `evidence/functional-*-rerun-20261024.*` |
+| SSD pass is canvas presence; audio counts calls | Report wording narrowed (asserted vs compared vs noted) | `b461bc0` |
+| Host-mode runner did not fail on failures | Host mode exits 1; `FC_KNOWN_FAIL` for known breaks, counted only if identical on both hosts | `b461bc0` |
+| Implementation report status stale | "Current status" rewritten (done vs pending), updated again after Phase C | `b461bc0`, this commit |
+| Raw bundle-drill transcript | `test-scripts/bundle-drill.sh` + `evidence/bundle-drill-20261024.txt` | `b461bc0` |
+| Preflight gates and stop conditions into the runbook | `domain-plan.md` v2: G1–G5, stop/rollback list, header-level redirect matrix, hold after acceptance | `b461bc0` |
+| Execute preflight and record | G1 public + dashboard, G2 (rollback to `883108be`), G3 (Universal cert Active), G4 (rule deployed dormant), G5 (redirect matrix baseline 20/20) | `9a26067`, `evidence/domain-preflight-*` |
+| C7: domain plan still says step 0 unexecuted | Marked done with evidence | `b461bc0` |
+| Phase C | Executed by the owner; `www` 522 for about 6 min (rule parameters wrong), fixed forward by the owner (no visitors yet); full acceptance passed | `6e309d1`, migration log "Phase C" |
+
+Not done yet, as C6 requires: repeat acceptance at the end of the hold before unbinding Pages; private-source build.
+
 ## Recording convention
 
 Every entry records: the exact commits, the evidence paths, which Codex findings it resolves, and the time source.

@@ -237,3 +237,9 @@ health.
 - **2026-10-22 ~09:05 IST — FFFX Phase C:** `fffx` CNAME deleted and Custom Domain added on Worker
   `form-follows-fx` (owner). Checks at 03:36 UTC: 79/79 byte-identical; TLS verified; tool paths 404. Hold until
   2026-10-23 09:06 IST. Details: `form-follows-fx/cloudflare migration/migration-log.md`.
+- **2026-10-24 — Always Use HTTPS on** (zone-wide; Bookshelf/FFFX had answered plain HTTP since their move).
+- **2026-10-24 ~09:20–09:45 IST — Cabinet Phase C (apex + `www`):** apex A ×4 deleted and Custom Domain
+  `cabinetofcuriosities.in` added on Worker `cabinet-of-curiosities` (served at 03:50 UTC); `www` CNAME →
+  `cabinetofcuriosities.in`, proxied, with a 301 Redirect Rule to the apex (522 for about 6 min until the rule was
+  corrected). Acceptance passed; hold until 2026-10-25 04:15 UTC. Plan and details:
+  `CabinetOfCuriosities/cloudflare migration/domain-plan.md` and its migration log.

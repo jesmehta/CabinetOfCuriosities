@@ -1,7 +1,7 @@
 # Cloudflare Migration — 27-Step Checklist
 
 **Project:** Cabinet of Curiosities website ecosystem  
-**Status:** Dot Mandala pilot complete (steps 04–09, 2026-10-20). Bookshelf: steps 10–13 complete (2026-10-22). FFFX: steps 14–17 complete (2026-10-23). Cabinet (18–23) in progress. Tick items only after completion.  
+**Status:** Dot Mandala pilot complete (steps 04–09, 2026-10-20). Bookshelf: steps 10–13 complete (2026-10-22). FFFX: steps 14–17 complete (2026-10-23). Cabinet: 18–21 complete; domain switched 2026-10-24 (23, in hold); 22 after the hold. Tick items only after completion.  
 Dot Mandala evidence: private `DotMandalaGenerator` repo, `main`, `cloudflare migration/migration-log.md`; `migration-docs` was merged and deleted. Independent final review: `56b607ab7cfc5d943c20d17614c836cd6cf989c9`.  
 **Reference:** `cloudflare-migration-notes.md`  
 **Project policies:** [Transition register](transition-register.md). Algorithm/image/data protection has separate gates and does not expand these 27 hosting steps. Next: Bookshelf audit (10).
@@ -53,12 +53,17 @@ it in Cloudflare's search. Then confirm there is no "disconnected from your Git 
 settings page, and that a test push creates a new version. A public repository picked only in Cloudflare builds once,
 then ignores pushes, and would fail after privatization. See `form-follows-fx/cloudflare migration/migration-log.md`.
 
-- [ ] **18.** Audit the *actual* deployment workflow and external mounts. **Codex:** inspect `.github/workflows/deploy.yml`, MkDocs, `tools/assemble-external.js`, `content/external-repos.tsv`, validators and sitemap dependencies. Distinguish required build operations from authoring and GitHub Pages-only operations.
-- [ ] **19.** Adapt the build for Cloudflare without changing site content. **Claude Code:** compare direct Cloudflare builds against retaining GitHub Actions for host-neutral artifact generation; document credential, maintenance, manual recovery and portability trade-offs; implement the approved option.
-- [ ] **20.** Test the complete generated artifact **locally and on preview**. Verify mounted repositories, navigation, generated content, archived pages, routes, CMS independence, host-neutral output and exclusion of unintended development files.
-- [ ] **21.** Repair sitemap private-repository dependencies. Remove or authenticate anonymous `raw.githubusercontent.com` reads as needed; validate generated sitemap output.
+- [x] **18.** Audit the *actual* deployment workflow and external mounts. **Codex:** inspect `.github/workflows/deploy.yml`, MkDocs, `tools/assemble-external.js`, `content/external-repos.tsv`, validators and sitemap dependencies. Distinguish required build operations from authoring and GitHub Pages-only operations.
+  *Done 2026-10-21 (Cabinet): Codex `CabinetOfCuriosities/cloudflare migration/audit.md`.*
+- [x] **19.** Adapt the build for Cloudflare without changing site content. **Claude Code:** compare direct Cloudflare builds against retaining GitHub Actions for host-neutral artifact generation; document credential, maintenance, manual recovery and portability trade-offs; implement the approved option.
+  *Done 2026-10-23 (Cabinet): direct Cloudflare build (D1); one build script; pinned, allowlisted external mounts; plan v3.1, Codex C3–C5.*
+- [x] **20.** Test the complete generated artifact **locally and on preview**. Verify mounted repositories, navigation, generated content, archived pages, routes, CMS independence, host-neutral output and exclusion of unintended development files.
+  *Done 2026-10-23/24 (Cabinet): local test round and workers.dev: byte checks, rejection/artifact suites, functional checks on both hosts, rollback and saved-artifact restore; `implementation-report.md`, Codex C4–C6.*
+- [x] **21.** Repair sitemap private-repository dependencies. Remove or authenticate anonymous `raw.githubusercontent.com` reads as needed; validate generated sitemap output.
+  *Done (Cabinet): `tools/generate_sitemap.py` reads local sibling clones (no raw GitHub reads); tested with FFFX private (2026-10-23) and in the authoring test. `sitemap.xml` (100 URLs) generated and checked by the build.*
 - [ ] **22.** Test private-source deployment. Verify the Cloudflare build and dependencies still work after the **owner-approved** repository visibility change.
 - [ ] **23.** Switch the main domain and verify. **Owner:** approve Cloudflare custom-domain/DNS changes; test HTTPS, internal/external links, analytics and rollback.
+  *In progress (Cabinet): apex Custom Domain and `www` redirect live 2026-10-24 03:50/03:58 UTC; acceptance passed; hold until 2026-10-25 04:15 UTC, then GitHub Pages retired. `CabinetOfCuriosities/cloudflare migration/domain-plan.md`.*
 
 ## 6. Finalisation (4)
 

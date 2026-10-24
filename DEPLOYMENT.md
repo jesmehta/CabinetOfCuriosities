@@ -8,9 +8,10 @@ TSVs, tooling and the external repositories' private files stay out.
 Everything below works without Claude/Codex. Commands are run from the repository folder. The same structure as
 the FFFX and Bookshelf runbooks, which are proven on Cloudflare.
 
-**Status (2026-10-23):** being prepared for the move from GitHub Pages to Cloudflare (plan:
-`cloudflare migration/plan.md`). `cabinetofcuriosities.in` (and `www`) are still served by GitHub Pages. No
-Cloudflare Worker exists yet. History and evidence: `cloudflare migration/`.
+**Status (2026-10-24):** `cabinetofcuriosities.in` is served by the Cloudflare Worker `cabinet-of-curiosities`
+(Custom Domain since 2026-10-24 03:50 UTC); `www` redirects to it (section 9). It builds automatically on every push
+to `main` that changes the site. **Hold until 2026-10-25 04:15 UTC:** GitHub Pages still runs (`deploy.yml`) and keeps
+its custom domain as the fallback; after the hold it is retired. History and evidence: `cloudflare migration/`.
 
 ## What is published
 
@@ -240,6 +241,25 @@ After 1 or 2, also fix or revert the bad commit, otherwise the next push deploys
 any static web host. Its 404 page is `404.html`; configure the host to serve it for missing pages if it doesn't
 do so automatically. `wrangler.jsonc` is the only Cloudflare-specific file.
 
+## 9. The domain (Cloudflare DNS)
+
+Zone `cabinetofcuriosities.in` on Cloudflare (registrar: GoDaddy). Set up 2026-10-24 (`cloudflare migration/domain-plan.md`):
+
+| Item | Setting |
+| --- | --- |
+| Apex `cabinetofcuriosities.in` | **Custom Domain** on Worker `cabinet-of-curiosities` (*Worker → Settings → Domains & Routes*); Cloudflare manages its DNS record and certificate |
+| `www` | CNAME `www` → `cabinetofcuriosities.in`, **Proxied** (orange), plus the Redirect Rule below |
+| Redirect Rule "www to apex" | *Rules → Redirect Rules*: when `http.host eq "www.cabinetofcuriosities.in"`, dynamic `concat("https://cabinetofcuriosities.in", http.request.uri.path)`, **301**, preserve query string |
+| Always Use HTTPS | *SSL/TLS → Edge Certificates*: **On** (zone-wide: apex, `www`, Bookshelf, FFFX). HSTS off |
+| Untouched | `bookshelf` and `fffx` (their own Workers' Custom Domains), `_domainconnect` (GoDaddy leftover) |
+
+**Check:** `bash "cloudflare migration/test-scripts/redirect-matrix.sh"` (20 cases: http/https × apex/www, paths, queries).
+
+**Roll the domain back to GitHub Pages** (only while GitHub Pages still serves the site with its custom domain): remove
+the Custom Domain from the Worker; add four A records for the apex, `185.199.108.153`, `185.199.109.153`,
+`185.199.110.153`, `185.199.111.153` (DNS only); set `www` back to CNAME `jesmehta.github.io` (DNS only); disable the
+redirect rule. A Worker version rollback (section 7) does not change DNS.
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -260,4 +280,5 @@ do so automatically. `wrangler.jsonc` is the only Cloudflare-specific file.
 | Admin dashboard's "MkDocs check" fails but `npm run build` works | It was started without `.venv`. Use `run-admin-controls.bat`. |
 | `EBUSY … rmdir` (Windows) | Something has `public/` open (preview server, `wrangler dev`, Explorer). Close it and rerun. |
 | Pushes no longer create new versions; the Builds settings page says "This project is disconnected from your Git account" | Cloudflare's GitHub App cannot see the repository: add it under GitHub → Settings → Applications → Installed GitHub Apps → **Cloudflare Workers and Pages** → Repository access, then reconnect on the Builds page (*Manage*, never *Disconnect*). Check for a **new version ID** after each push that should deploy. (FFFX, 2026-10-21.) |
+| `www` shows a Cloudflare error (522) | The redirect rule is not active or does not match: `www` is proxied, so without the rule Cloudflare tries to fetch from an origin. Check the rule (section 9) is deployed and its hostname is exactly `www.cabinetofcuriosities.in` (2026-10-24). |
 | Cloudflare build fails installing Python packages | Check the build log; Cloudflare's Python version can be pinned with the build variable `PYTHON_VERSION`. |
