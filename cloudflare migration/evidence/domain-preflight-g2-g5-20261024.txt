@@ -1,0 +1,11 @@
+# Domain preflight G2-G5 (owner dashboard + Claude Code checks), 2026-10-24 ~09:10-09:20 IST
+G2 known-good version: owner rolled back the Worker to 883108be (Cloudflare build of 4e0ec60). Checked: workers.dev About page sha d05e26dd... = GitHub Pages' (Linux build); extra.css has the fixed path. Release + history bundle backed up (owner).
+G3 certificates (owner screenshot, SSL/TLS > Edge Certificates): Universal *.cabinetofcuriosities.in + cabinetofcuriosities.in Active, expires 2027-01-19 (Managed); Backup issued; Advanced certs for fffx and bookshelf Active. Apex and www covered. No CAA at the apex (G1).
+G1 dashboard (owner screenshot): 8 records - apex A x4 185.199.108-111.153 DNS only Auto; _domainconnect CNAME -> _domainconnect.gd.domaincontrol.com DNS only (GoDaddy leftover, untouched); www CNAME -> jesmehta.github.io DNS only Auto; bookshelf and fffx Worker records proxied (untouched).
+G4 redirect rule 'www to apex' deployed while www is DNS only (owner chose 'Ignore and deploy rule anyway'); dormant:
+# Preflight G4 check after the www redirect rule was deployed (dormant: www still DNS only), 2026-10-24T03:45:04Z
+http://www.cabinetofcuriosities.in/                     301 https://cabinetofcuriosities.in/ Server: GitHub.com
+https://www.cabinetofcuriosities.in/teaching/?a=1&b=2   301 https://cabinetofcuriosities.in/teaching/?a=1&b=2 Server: GitHub.com
+https://cabinetofcuriosities.in/                        200  Server: GitHub.com
+G5 tools: redirect-matrix.sh baseline against GitHub Pages 20/20 (redirect-matrix-baseline-github-pages.txt); http-check.mjs; local clean build of 4e0ec60; functional-checks.mjs with FC_KNOWN_FAIL.
+RESULT: G1-G5 pass. Phase C may start (owner).

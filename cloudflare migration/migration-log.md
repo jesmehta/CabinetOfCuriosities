@@ -284,3 +284,8 @@ commits; final code `aabc4dc` (records after it).
   workers.dev 54 checks, 1 failed (known); compare: **53 equal and passing, 1 known pre-existing failure identical on
   both, 0 not**; all three runs exit 0 (`evidence/functional-{live,workers-dev,compare}-rerun-20261024.*`).
   Deepika_Pest_Control passed on both this time; the earlier live failure was a one-off.
+- **Preflight G2–G5 passed** (`evidence/domain-preflight-g2-g5-20261024.txt`): Worker rolled back to `883108be`
+  (Cloudflare build; About page = GitHub's); Universal certificate covering apex and `*.` Active; dashboard records
+  as expected (plus the untouched GoDaddy `_domainconnect` CNAME); "www to apex" rule deployed while `www` is DNS only
+  (dormant: GitHub still answers); redirect matrix baseline 20/20 on GitHub Pages
+  (`test-scripts/redirect-matrix.sh`). **Ready for Phase C** (owner).
