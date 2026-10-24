@@ -1,0 +1,11 @@
+== bundle drill  2026-10-24T03:29:19Z  (repository HEAD 75ef15d; release 20261024T023115Z_4e0ec60, source 4e0ec60)
+bundle: 84M
+clone from bundle at 75ef15d; remote: https://invalid.invalid/none.git
+OK: 1024 files in F:/__SnowCrash/__WebPages/CabinetOfCuriosities/releases/20261024T023115Z_4e0ec60/site match SHA256SUMS; pinned build of 4e0ec60674cf10b629ec9834c5caaa4cedf27dac
+source_commit: 4e0ec60674cf10b629ec9834c5caaa4cedf27dac
+working_tree_had_changes: no
+saved_utc: 2026-10-24T02:31:16.015Z
+node: v24.18.0
+PASS  verify from the bundle clone (no network)
+PASS  shallow clone refuses: verify-artifact: F:/__SnowCrash/__WebPages/CabinetOfCuriosities/releases/20261024T023115Z_4e0ec60/BUILD-INFO.json: cannot read content/external-repos.tsv at the
+== passed

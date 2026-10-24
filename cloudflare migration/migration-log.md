@@ -261,3 +261,22 @@ commits; final code `aabc4dc` (records after it).
 - Checked (`evidence/always-use-https-20261024.txt`): `http://` on Bookshelf and FFFX → **301** to `https://`, path
   and query kept (also for an unknown path); `https://` pages 200; apex and `www` (still GitHub Pages) unchanged;
   workers.dev (not in the zone) unaffected. Fixes the plain-HTTP regression on Bookshelf and FFFX since their move.
+
+## Codex C6/C7; corrections; preflight started — 2026-10-24 ~09:00–09:20 IST
+
+- `75ef15d` Codex C6 (fetch fix and preview/recovery accepted; **conditional GO** for Phase C after explicit,
+  recorded preflight gates; Pages retirement/privatization held) and C7 (step 0 accepted) committed unedited.
+- **Correction (C6):** the upload 401 disappeared after the Worker rename and a retry; that is a **correlation, the
+  cause is not isolated** (the "evidently caused" wording in the deployment entry above is superseded).
+- **Correction (C6):** the first retained functional comparison is **52 equal and passing, 2 not** (Deepika failed on
+  the live reference only; Prachi fails on both). The Deepika reruns were not saved at the time. A fresh full run on
+  both hosts with saved transcripts is running (`evidence/functional-*-rerun-20261024.*`). SSD checks assert canvas
+  presence and drawing; audio counts start/play calls (not audibility); canvas change is only noted.
+- `functional-checks.mjs`: host mode now exits 1 on failures; both modes take `FC_KNOWN_FAIL` for known
+  pre-existing breaks (counted only if identical on both hosts).
+- Recorded bundle drill transcript: `test-scripts/bundle-drill.sh`, `evidence/bundle-drill-20261024.txt` (bundle
+  clone with an unreachable remote verifies the release; shallow clone refuses).
+- Implementation report status rewritten (done vs pending); domain plan v2 with C6's preflight gates G1–G5 and
+  stop/rollback conditions; step 0 marked done.
+- **Preflight G1 (public part): passed** (`evidence/domain-preflight-g1-20261024.txt`): apex only A ×4, TTL 300, no
+  AAAA/CAA/TXT; `www` CNAME → `jesmehta.github.io`, TTL 300; Bookshelf/FFFX untouched; GitHub Pages healthy and bound.

@@ -4,8 +4,18 @@
 implementation and local tests). **Source reviewed should be:** local `main` at the commit that adds this report
 (implementation code up to `aabc4dc`, plus records). **Updated after Codex C4** (HOLD, I1–I4): code fixes `c59b0c1`
 (I1), `0ea749b` (I2), `c5f31c9` (I3), tests `7b0bab2`, docs `0579a35`; the rows for tests 2, 4, 4b, 6 and 6s and
-the new "Functional scenarios not yet asserted" section reflect them. Response: R5. **Nothing in this work has been pushed** after `93aef2a`; no
-Worker exists; GitHub Pages still serves the live site from `93aef2a`'s tree (built by the old `deploy.yml`).
+the new "Functional scenarios not yet asserted" section reflect them. Response: R5.
+
+**Current status (2026-10-24, after Codex C5–C7; replaces the original "nothing pushed / no Worker" line):**
+- **Done:** first push (owner-approved, tag `pre-cloudflare` → `93aef2a`); live GitHub Pages rebuilt by the new build
+  (1,023/1,024 = local build; the known About-page parser difference); Worker `cabinet-of-curiosities` built on
+  Cloudflare (Git 2.43.0, Python 3.14.8) after the fetch fix `b59a8f1` and a Worker rename; workers.dev serves the
+  same files as GitHub Pages; build watch paths proved (records-only push skipped, `docs/` change deployed);
+  dashboard rollback and Wrangler saved-artifact restore proved; history-bundle recovery proved; named functional
+  checks run on both hosts; Always Use HTTPS on (domain plan step 0, Codex C7).
+- **Pending:** domain plan Phase C (apex + `www`) after its recorded preflight gates (Codex C6 conditional GO); the
+  24-hour hold; then GitHub Pages retirement, the privatization decision and a private-source build.
+- Details: migration log (from "First push"), `domain-plan.md`.
 Detailed chronology: [migration-log.md](migration-log.md). Responses to reviews: [claude-code-responses.md](claude-code-responses.md).
 
 ## What changed (plan items → commits)
@@ -49,13 +59,19 @@ Detailed chronology: [migration-log.md](migration-log.md). Responses to reviews:
 ## Functional checks on workers.dev (Codex C4 I4), 2026-10-24
 
 `test-scripts/functional-checks.mjs`, run on workers.dev (version `49524ba6`) and on live GitHub Pages, compared:
-**54 named checks; 53 equal and passing on both hosts; 1 equal and broken on both (pre-existing).**
+**First retained comparison (raw, `functional-compare-20261024.txt`): 54 checks, 52 equal and passing, 2 not** —
+`Prachi_Khobragade` broken on both hosts (pre-existing), and `Deepika_Pest_Control` failing on the *live reference*
+only (it passed on workers.dev). The 3/3 Deepika reruns mentioned below were not saved as files at first (Codex C6);
+a fresh full run on both hosts with saved transcripts and the known-exception rule (`FC_KNOWN_FAIL`) is recorded
+as `functional-*-rerun-20261024.*` (see the migration log for its result).
 - Landing: compass hit areas, animation running, compass W navigates to `/compass/sitemap/`; Now sections render.
 - Prompt Generator "New" and Oblique Strategies "Pick new" change their text; both Tracery bots generate items.
 - Swatch Fields polar grid: loads and draws, switching to grid mode redraws, hovering shows a swatch filename; mosaic:
   sample image → mosaic drawn → PNG (1.5 MB) and CSV (1.2 MB) downloads.
 - Working with AI: lesson 01 of both courses; archive: every index link opens.
-- 44 SSD project pages: canvas present and drawn after clicks/keys, audio starts where it does on live.
+- 44 SSD project pages: **asserted** = a canvas exists and is drawn after clicks/keys; **compared** = whether
+  start/play audio calls happen (counted calls, not audible output), as on live; a canvas change after input is only
+  *noted* (animation alone can change it). No level progression is asserted.
   `Prachi_Khobragade` is blank on **both** hosts (the `#`-named sound stops p5's preload; ToDo).
   `Deepika_Pest_Control` failed once on live (slow load) and passed 3/3 reruns on both hosts.
 - Evidence: `functional-workers-dev-49524ba6.json`, `functional-live-github-pages.json`, `functional-compare-20261024.txt`.
@@ -97,12 +113,15 @@ asserted, to be done as named checks on the temporary workers.dev preview (befor
   LFS pointers (no such source exists): code review only.
 - A hand-typed `wrangler deploy` of a development `public/` bypasses the wrappers (runbook says never).
 - Offline: a warm cache builds without network; deployment always needs network; a saved release needs none.
-- Cloudflare-side gates are **not** done: Worker creation (Git-App pre-check), build on Cloudflare's Linux image,
-  watch paths (docs skip / `docs/` deploys), workers.dev checks, rollback, saved-artifact restore via Wrangler,
-  private-source build, apex + `www` cutover (separate plan).
-- The first push will also change the **live GitHub Pages** site (the overlap workflow runs the new build): the
-  differences are exactly the ones in test 3 (removals, canonical links, nav form, sitemap).
+- *(Superseded 2026-10-24: the Cloudflare-side preview gates — Worker, Linux build, watch paths, workers.dev checks,
+  rollback, Wrangler restore — are done; see "Current status" above. Still pending: private-source build and apex +
+  `www` cutover.)*
+- *(Superseded: the first push happened on 2026-10-24 and changed live GitHub Pages exactly as described in test 3.)*
+- The upload 401 on the second Cloudflare build disappeared after the Worker was renamed and the build retried; the
+  cause is **not isolated** (correlation only; Codex C6).
 
 ## Requested next
 
-Codex post-implementation review of this code and evidence; then owner approval for the first push and the Worker.
+*(Original request — implementation review, then first push and Worker — is complete: Codex C4/C5, pushed, Worker
+live.)* Now: execute the domain plan's preflight gates (G1–G5), then owner-run Phase C, acceptance, the 24-hour hold
+and Phase D.

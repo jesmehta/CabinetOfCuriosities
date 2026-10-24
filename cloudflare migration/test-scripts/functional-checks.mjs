@@ -3,19 +3,26 @@
 //   node functional-checks.mjs --compare <a.json> <b.json>
 // Each check records observations and a pass flag with its condition. Some behaviour can only be judged against
 // the reference host (e.g. a game that plays sound only on an in-game event): those are compared, not judged.
+// Exit status (Codex C6): host mode exits 1 if any check fails; compare mode exits 1 unless every check is equal and
+// passing. FC_KNOWN_FAIL=<regex> names known pre-existing failures (e.g. "Prachi_Khobragade"): they are reported as
+// KNOWN and do not fail the run, but only if they fail identically on both hosts (compare mode).
+// What the SSD checks assert: a canvas exists and is drawn after input; "audio" counts calls to start/play (not
+// audible output); a canvas change after input is only noted (animation alone can change it).
 import fs from "node:fs";
 import { pathToFileURL } from "node:url";
 
 if (process.argv[2] === "--compare") {
   const [a, b] = process.argv.slice(3).map((f) => JSON.parse(fs.readFileSync(f, "utf8")));
-  let ok = 0, bad = 0;
+  const KNOWN = process.env.FC_KNOWN_FAIL ? new RegExp(process.env.FC_KNOWN_FAIL) : null;
+  let ok = 0, bad = 0, known = 0;
   for (const k of Object.keys(a.checks)) {
     const x = a.checks[k], y = b.checks[k];
     const same = y && JSON.stringify(x.compare) === JSON.stringify(y.compare);
     const pass = y && (y.pass !== false);
+    if (same && !pass && x.pass === false && KNOWN && KNOWN.test(k)) { known++; console.log(`KNOWN      ${k} (fails identically on both hosts)`); continue; }
     if (same && pass) ok++; else { bad++; console.log(`DIFF/FAIL  ${k}\n   ${a.label}: ${JSON.stringify(x.compare)} pass=${x.pass}\n   ${b.label}: ${JSON.stringify(y && y.compare)} pass=${y && y.pass}${y && y.note ? "  (" + y.note + ")" : ""}`); }
   }
-  console.log(`== ${ok} checks equal and passing on ${b.label}, ${bad} not`);
+  console.log(`== ${ok} checks equal and passing on ${b.label}, ${known} known pre-existing failure(s) identical on both, ${bad} not`);
   process.exit(bad ? 1 : 0);
 }
 
@@ -168,5 +175,8 @@ for (const path of ssd) {
 }
 await browser.close();
 fs.writeFileSync(out, JSON.stringify({ label, base, date: new Date().toISOString(), checks }, null, 2));
-const failed = Object.values(checks).filter((c) => c.pass === false).length;
-console.log(`== ${Object.keys(checks).length} checks, ${failed} failed (judged on this host alone)`);
+const KNOWN_HOST = process.env.FC_KNOWN_FAIL ? new RegExp(process.env.FC_KNOWN_FAIL) : null;
+const failedNames = Object.keys(checks).filter((k) => checks[k].pass === false);
+const unknownFails = failedNames.filter((k) => !(KNOWN_HOST && KNOWN_HOST.test(k)));
+console.log(`== ${Object.keys(checks).length} checks, ${failedNames.length} failed (judged on this host alone), ${failedNames.length - unknownFails.length} of them known pre-existing`);
+process.exit(unknownFails.length ? 1 : 0);

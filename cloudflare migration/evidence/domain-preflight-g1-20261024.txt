@@ -1,0 +1,45 @@
+# Domain preflight G1 (public part): DNS for apex and www, 2026-10-24T03:31:09Z. Resolvers: Cloudflare DoH, Google DoH.
+cloudflare-dns.com cabinetofcuriosities.in A: A 185.199.110.153 ttl=300 | A 185.199.108.153 ttl=300 | A 185.199.109.153 ttl=300 | A 185.199.111.153 ttl=300
+cloudflare-dns.com cabinetofcuriosities.in AAAA: (none)
+cloudflare-dns.com cabinetofcuriosities.in CNAME: (none)
+cloudflare-dns.com cabinetofcuriosities.in CAA: (none)
+cloudflare-dns.com cabinetofcuriosities.in TXT: (none)
+cloudflare-dns.com cabinetofcuriosities.in NS: NS may.ns.cloudflare.com. ttl=86400 | NS west.ns.cloudflare.com. ttl=86400
+cloudflare-dns.com www.cabinetofcuriosities.in A: CNAME jesmehta.github.io. ttl=300 | A 185.199.108.153 ttl=3600 | A 185.199.109.153 ttl=3600 | A 185.199.110.153 ttl=3600 | A 185.199.111.153 ttl=3600
+cloudflare-dns.com www.cabinetofcuriosities.in AAAA: CNAME jesmehta.github.io. ttl=300 | AAAA 2606:50c0:8002::153 ttl=3600 | AAAA 2606:50c0:8000::153 ttl=3600 | AAAA 2606:50c0:8003::153 ttl=3600 | AAAA 2606:50c0:8001::153 ttl=3600
+cloudflare-dns.com www.cabinetofcuriosities.in CNAME: CNAME jesmehta.github.io. ttl=300
+cloudflare-dns.com www.cabinetofcuriosities.in CAA: CNAME jesmehta.github.io. ttl=300 | CAA 0 issue "digicert.com" ttl=3600 | CAA 0 issue "letsencrypt.org" ttl=3600 | CAA 0 issue "sectigo.com" ttl=3600 | CAA 0 issuewild "digicert.com" ttl=3600 | CAA 0 issuewild "letsencrypt.org" ttl=3600 | CAA 0 issuewild "sectigo.com" ttl=3600
+cloudflare-dns.com www.cabinetofcuriosities.in TXT: CNAME jesmehta.github.io. ttl=300
+cloudflare-dns.com www.cabinetofcuriosities.in NS: CNAME jesmehta.github.io. ttl=300
+dns.google cabinetofcuriosities.in A: A 185.199.111.153 ttl=300 | A 185.199.109.153 ttl=300 | A 185.199.110.153 ttl=300 | A 185.199.108.153 ttl=300
+dns.google cabinetofcuriosities.in AAAA: (none)
+dns.google cabinetofcuriosities.in CNAME: (none)
+dns.google cabinetofcuriosities.in CAA: (none)
+dns.google cabinetofcuriosities.in TXT: (none)
+dns.google cabinetofcuriosities.in NS: NS west.ns.cloudflare.com. ttl=21600 | NS may.ns.cloudflare.com. ttl=21600
+dns.google www.cabinetofcuriosities.in A: CNAME jesmehta.github.io. ttl=300 | A 185.199.109.153 ttl=3600 | A 185.199.110.153 ttl=3600 | A 185.199.111.153 ttl=3600 | A 185.199.108.153 ttl=3600
+dns.google www.cabinetofcuriosities.in AAAA: CNAME jesmehta.github.io. ttl=300 | AAAA 2606:50c0:8001::153 ttl=3600 | AAAA 2606:50c0:8000::153 ttl=3600 | AAAA 2606:50c0:8002::153 ttl=3600 | AAAA 2606:50c0:8003::153 ttl=3600
+dns.google www.cabinetofcuriosities.in CNAME: CNAME jesmehta.github.io. ttl=300
+dns.google www.cabinetofcuriosities.in CAA: CNAME jesmehta.github.io. ttl=300 | CAA 0 issuewild "digicert.com" ttl=3600 | CAA 0 issue "sectigo.com" ttl=3600 | CAA 0 issuewild "letsencrypt.org" ttl=3600 | CAA 0 issue "letsencrypt.org" ttl=3600 | CAA 0 issuewild "sectigo.com" ttl=3600 | CAA 0 issue "digicert.com" ttl=3600
+dns.google www.cabinetofcuriosities.in TXT: CNAME jesmehta.github.io. ttl=300
+dns.google www.cabinetofcuriosities.in NS: CNAME jesmehta.github.io. ttl=300
+
+# Bookshelf / FFFX custom domains (must stay untouched):
+"data":"172.67.128.162" "data":"104.21.1.58"  <- bookshelf A
+"data":"172.67.128.162" "data":"104.21.1.58"  <- fffx A
+
+# GitHub Pages health (fallback G2):
+https://cabinetofcuriosities.in/                 200  server=Server: GitHub.com
+https://cabinetofcuriosities.in/teaching/        200  server=Server: GitHub.com
+https://www.cabinetofcuriosities.in/x/?a=1       301 https://cabinetofcuriosities.in/x/?a=1 server=Server: GitHub.com
+
+# Reading (Claude Code):
+# - Apex: only A x4 (GitHub Pages), TTL 300 (Cloudflare "auto"); no AAAA, no CAA, no TXT at the apex: no conflict for
+#   a Custom Domain, no CAA blocking Cloudflare's certificate authorities.
+# - www: one CNAME -> jesmehta.github.io, TTL 300. The CAA records listed under www are github.io's, reached through
+#   the CNAME; once www is a proxied record pointing at the apex they no longer apply.
+# - TTLs are already 300 s: no TTL-lowering wait is needed.
+# - Bookshelf and FFFX resolve to Cloudflare (unchanged; must stay untouched).
+# - GitHub Pages serves the apex (200) and redirects www with path and query (301): fallback healthy and bound.
+# Owner parts still open: proxy/TTL as shown in the dashboard; G2 active version; G3 edge-certificate coverage;
+# G4 redirect rule prepared.
