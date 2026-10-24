@@ -213,3 +213,23 @@ commits; final code `aabc4dc` (records after it).
 - Saved release for the drill: `releases/20261024T023115Z_4e0ec60` (clean clone, 1,024 files, no `-dirty`),
   copied into the repository's gitignored `releases/`; `verify-artifact` OK from the real repository.
 - Next: owner-run dashboard rollback to `2ab6c8b4`, then the saved-artifact restore via Wrangler.
+
+## Recovery drill: dashboard rollback and saved-artifact restore (owner-run) — 2026-10-24 ~08:00–08:15 IST
+
+- Version built from `4e0ec60` (the `extra.css` fix): **`883108be-f39f-4053-a2cd-a1245b24543f`** (owner).
+- **Dashboard rollback** (owner) to `2ab6c8b4`: by 02:34:42 UTC workers.dev served the old `extra.css`
+  (`url('../images/…')`; old background path 404 again). HTTP check vs the local build of `1e33e84` (the commit
+  `2ab6c8b4` was built from): 1,023/1,024 (the known Windows/Linux About-page difference), 100/100 sitemap,
+  125/125 404 (`evidence/http-check-after-rollback-2ab6c8b4.txt`).
+- **Saved-artifact restore** (owner, Wrangler 4.149.0, narrow-scope login, then logout):
+  `npm run verify-artifact -- releases/20261024T023115Z_4e0ec60` OK (pinned build of `4e0ec60`, clean tree), then
+  `npx wrangler deploy --assets releases/…/site --message "restore saved artifact"` → **version
+  `49524ba6-8c2a-4ac2-9705-12d8ff014bd4`**; Wrangler uploaded 1 file (the Windows-rendered About page; the other
+  1,023 were already stored). HTTP check: **1,024/1,024 byte-identical to the release**, 100/100 sitemap, 125/125
+  404 (`evidence/http-check-after-restore-49524ba6.txt`). Dashboard shows `49524ba6` "restore saved artifact"
+  (Wrangler) above `883108be` (Build, main).
+- Note: the active version is now the Windows-built release (only the About page differs from a Linux build); the
+  next deploying push replaces it with a Cloudflare build.
+- Recovery drill still to add before the domain gate (Codex C5): verify an old release after newer commits with
+  the network off, from a history bundle.
+- Next: named functional checks on workers.dev (Codex I4); then the apex/www domain plan.
