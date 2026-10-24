@@ -291,6 +291,8 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   deployment configuration, maintenance runbook tested by the owner without AI, Codex final review.
 - [ ] **Owner backups** (gitignored, outside the repositories): Bookshelf `releases/20261020T193032Z_202d69e`, FFFX
   `releases/20261021T163534Z_9c0f550`, Dot Mandala `releases/`, and Cabinet's first release when it exists.
+  *2026-10-24: owner zipped and backed up the Cabinet, Bookshelf and FFFX releases. Still open: Dot Mandala's
+  `releases/` (if not included) and Cabinet's history bundle.*
   **Cabinet also needs its history next to its releases** (Codex C5): its `verify-artifact` reads the release's
   source commit from git, so keep a `git bundle create … --all` with the backups (`DEPLOYMENT.md` section 4).
 
