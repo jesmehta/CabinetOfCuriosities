@@ -41,7 +41,7 @@ body[data-md-page="dotMandalaTool"] .md-main__inner {
 
 /* page background */
 body.page-dot-mandala {
-  background-image: url('../images/DotMandala/DMUI-22.jpg');
+  background-image: url('../../../_images/DotMandala/DMUI-22.jpg');
   background-attachment: fixed;
   /* background-position: center center; */
   
