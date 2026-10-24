@@ -233,3 +233,13 @@ commits; final code `aabc4dc` (records after it).
 - Recovery drill still to add before the domain gate (Codex C5): verify an old release after newer commits with
   the network off, from a history bundle.
 - Next: named functional checks on workers.dev (Codex I4); then the apex/www domain plan.
+
+## History-bundle recovery check (Codex C5 qualification) — 2026-10-24 ~08:20 IST
+
+- `git bundle create … --all` at `f2cffcd`: **86 MB**, one file. A clone made from it, with its remote set to an
+  unreachable address, verified the older release `releases/20261024T023115Z_4e0ec60` (source `4e0ec60`, several
+  commits behind HEAD): **OK**, 1,024 files, pinned build of `4e0ec60`. No network was used.
+- A shallow clone (`--depth 1`) **refuses**, as documented: "cannot read content/external-repos.tsv at the
+  release's source commit … Run this from a complete clone that contains that commit."
+- So the supported recovery set is: the release folder plus a full clone or a history bundle (`DEPLOYMENT.md`
+  section 4). Owner: keep a bundle with the release backups (ToDo backup item).
