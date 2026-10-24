@@ -43,7 +43,10 @@ async function page(path, opts = {}) {
   return { p, ctx, errors, status: resp.status() };
 }
 const canvasSig = (p, sel) => p.evaluate((s) => { const c = document.querySelector(s); if (!c) return null; try { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0, h = 0; for (let i = 0; i < d.length; i += 16) { if (d[i] || d[i + 1] || d[i + 2]) n++; h = (h * 31 + d[i] + d[i + 1] * 3 + d[i + 2] * 7) >>> 0; } return { nonBlank: n, hash: h }; } catch (e) { return { error: e.message }; } }, sel);
+// FC_ONLY=<regex>: run only the checks whose name matches (reruns of a single page).
+const ONLY = process.env.FC_ONLY ? new RegExp(process.env.FC_ONLY) : null;
 async function run(name, fn) {
+  if (ONLY && !ONLY.test(name)) return;
   try { checks[name] = await fn(); } catch (e) { checks[name] = { pass: false, note: "error: " + e.message.slice(0, 160), compare: "error" }; }
   console.log(`${checks[name].pass === false ? "FAIL" : "ok  "}  ${name}${checks[name].note ? "  -- " + checks[name].note : ""}`);
 }

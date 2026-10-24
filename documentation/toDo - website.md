@@ -291,8 +291,8 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
   deployment configuration, maintenance runbook tested by the owner without AI, Codex final review.
 - [ ] **Owner backups** (gitignored, outside the repositories): Bookshelf `releases/20261020T193032Z_202d69e`, FFFX
   `releases/20261021T163534Z_9c0f550`, Dot Mandala `releases/`, and Cabinet's first release when it exists.
-  *2026-10-24: owner zipped and backed up the Cabinet, Bookshelf and FFFX releases. Still open: Dot Mandala's
-  `releases/` (if not included) and Cabinet's history bundle.*
+  *2026-10-24: owner zipped and backed up the Cabinet, Bookshelf and FFFX releases. Cabinet's history bundle done
+  (owner, 2026-10-24). Still open: Dot Mandala's `releases/`, if not included.*
   **Cabinet also needs its history next to its releases** (Codex C5): its `verify-artifact` reads the release's
   source commit from git, so keep a `git bundle create … --all` with the backups (`DEPLOYMENT.md` section 4).
 
@@ -314,7 +314,7 @@ Checklist: [27-step checklist](cloudflare%20migration/cloudflare-migration-27-st
 - [ ] **Tracery Bots index links three `_TraceryTrials` folders** that are no longer published (owner-accepted 404s,
   D3b+). Remove or replace the links in the TraceryBots repository, then update the pin.
 - [ ] **Broken sound in SSD 2024-25 `Prachi_Khobragade/`:** `sketch.js` loads `"Kawaii Ringtones #6.mp3"`; the browser
-  treats `#6.mp3` as a URL fragment and requests `Kawaii Ringtones ` (404; confirmed in the browser capture 2026-10-23). Owner: rename files rather
+  treats `#6.mp3` as a URL fragment and requests `Kawaii Ringtones ` (404; confirmed in the browser capture 2026-10-23). **Worse than a missing sound: the failed preload stops p5 from starting, so the whole project page is blank** (both hosts; functional checks 2026-10-24). Owner: rename files rather
   than add special rules. Rename it without `#` and update `sketch.js` in `SSD_Student_Work`, then update the pin and
   list it in `content/external-allowlists/ssd-creative-coding-2024-25.txt` (left out until then).
 - [ ] **FFFX landing: Circle Packing thumbnail 404** (pre-existing, also on GitHub Pages): the CSS asks for

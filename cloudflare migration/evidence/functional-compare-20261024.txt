@@ -1,0 +1,12 @@
+ok
+== 54 checks, 1 failed (judged on this host alone)
+== 54 checks, 2 failed (judged on this host alone)
+DIFF/FAIL  ssd ssd-creative-coding-2025-26/Deepika_Pest_Control
+   cabinetofcuriosities.in: {"canvas":false,"drawn":false,"audioStarted":false} pass=false
+   cabinet-of-curiosities.jesmehta.workers.dev: {"canvas":true,"drawn":true,"audioStarted":true} pass=true  (canvas changed true, audio starts 2)
+DIFF/FAIL  ssd ssd-creative-coding-2024-25/Prachi_Khobragade
+   cabinetofcuriosities.in: {"canvas":false,"drawn":false,"audioStarted":false} pass=false
+   cabinet-of-curiosities.jesmehta.workers.dev: {"canvas":false,"drawn":false,"audioStarted":false} pass=false  (canvas changed false, audio starts 0)
+== 52 checks equal and passing on cabinet-of-curiosities.jesmehta.workers.dev, 2 not
+
+[exited with code 1]

@@ -46,7 +46,23 @@ Detailed chronology: [migration-log.md](migration-log.md). Responses to reviews:
 
 **Runners exit nonzero on failure** (seen: the first rejection run had 3 test-design failures and exited 1).
 
-## Functional scenarios not yet asserted (Codex C4 I4)
+## Functional checks on workers.dev (Codex C4 I4), 2026-10-24
+
+`test-scripts/functional-checks.mjs`, run on workers.dev (version `49524ba6`) and on live GitHub Pages, compared:
+**54 named checks; 53 equal and passing on both hosts; 1 equal and broken on both (pre-existing).**
+- Landing: compass hit areas, animation running, compass W navigates to `/compass/sitemap/`; Now sections render.
+- Prompt Generator "New" and Oblique Strategies "Pick new" change their text; both Tracery bots generate items.
+- Swatch Fields polar grid: loads and draws, switching to grid mode redraws, hovering shows a swatch filename; mosaic:
+  sample image → mosaic drawn → PNG (1.5 MB) and CSV (1.2 MB) downloads.
+- Working with AI: lesson 01 of both courses; archive: every index link opens.
+- 44 SSD project pages: canvas present and drawn after clicks/keys, audio starts where it does on live.
+  `Prachi_Khobragade` is blank on **both** hosts (the `#`-named sound stops p5's preload; ToDo).
+  `Deepika_Pest_Control` failed once on live (slow load) and passed 3/3 reruns on both hosts.
+- Evidence: `functional-workers-dev-49524ba6.json`, `functional-live-github-pages.json`, `functional-compare-20261024.txt`.
+- Not asserted: specific level progression inside each game (only that input changes the canvas and audio behaves as
+  on live), dragons' individual behaviours.
+
+## Functional scenarios before the checks above (Codex C4 I4, historical)
 
 The browser evidence above proves pages and their requested files load; it does not assert workflows. Not yet
 asserted, to be done as named checks on the temporary workers.dev preview (before the domain gate):

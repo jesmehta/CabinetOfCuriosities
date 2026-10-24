@@ -243,3 +243,14 @@ commits; final code `aabc4dc` (records after it).
   release's source commit … Run this from a complete clone that contains that commit."
 - So the supported recovery set is: the release folder plus a full clone or a history bundle (`DEPLOYMENT.md`
   section 4). Owner: keep a bundle with the release backups (ToDo backup item).
+
+## Functional checks (Codex I4), domain plan, backups — 2026-10-24 ~08:30–09:30 IST
+
+- `275f1b8` `test-scripts/functional-checks.mjs`: 54 named checks run on workers.dev and live, compared. **53 equal
+  and passing on both; `Prachi_Khobragade` blank on both** (pre-existing: the `#` sound stops p5's preload — worse
+  than a missing sound; ToDo corrected). `Deepika_Pest_Control` failed once on live (slow load), 3/3 reruns pass on
+  both. Details in `implementation-report.md`; evidence `functional-*`.
+- `941cddd` `domain-plan.md` (apex + `www`): Custom Domain for the apex, proxied `www` with a 301 redirect rule
+  preserving path and query, and zone-wide **Always Use HTTPS** — found: Bookshelf and FFFX answer plain HTTP (200)
+  since the move (GitHub Pages redirected); ToDo. For Codex review together with `b59a8f1` and the preview evidence.
+- Owner: zipped and backed up the Cabinet, Bookshelf and FFFX releases, and made Cabinet's history bundle.
