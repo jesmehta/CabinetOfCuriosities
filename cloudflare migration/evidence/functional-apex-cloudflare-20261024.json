@@ -1,0 +1,502 @@
+{
+  "label": "cabinetofcuriosities.in",
+  "base": "https://cabinetofcuriosities.in",
+  "date": "2026-10-24T04:07:15.761Z",
+  "checks": {
+    "landing: compass links, animation, compass W navigates": {
+      "pass": true,
+      "compare": {
+        "hits": 4,
+        "animating": true,
+        "landed": {
+          "path": "/compass/sitemap/",
+          "status": 200
+        }
+      },
+      "note": "compass hit areas 4; W -> /compass/sitemap/"
+    },
+    "now: sections rendered": {
+      "pass": true,
+      "compare": {
+        "sections": 10
+      }
+    },
+    "prompt-generator: New changes the prompt": {
+      "pass": true,
+      "compare": {
+        "produced": true,
+        "changed": true
+      }
+    },
+    "oblique-strategies: Pick new changes the card": {
+      "pass": true,
+      "compare": {
+        "produced": true,
+        "changed": true
+      }
+    },
+    "tracery TrippyGourmetBot: Generate produces text": {
+      "pass": true,
+      "compare": {
+        "added": true,
+        "textNonEmpty": true
+      },
+      "note": "2 new item(s): \"Lightly steamed peas chunks under slightly sauteed rice sala\""
+    },
+    "tracery MadSolutionistBot: Generate produces text": {
+      "pass": true,
+      "compare": {
+        "added": true,
+        "textNonEmpty": true
+      },
+      "note": "2 new item(s): \"AI powered stiletto heel that ports from your spouse's paren\""
+    },
+    "swatch polar-Grid: load, draw, switch to grid, hover preview": {
+      "pass": true,
+      "compare": {
+        "drew": true,
+        "modeChanged": true,
+        "hoverShowsFile": true
+      },
+      "note": "hover: BCSwatch_149_MadderPwd_Neutral_Myro_NoAddit_60m.jpg"
+    },
+    "swatch mosaic: sample image -> mosaic -> PNG and CSV downloads": {
+      "pass": true,
+      "compare": {
+        "mosaic": true,
+        "png": "mosaic.png",
+        "csv": "mosaic_tile_to_swatch.csv"
+      },
+      "note": "png 1564448 B, csv 1216022 B"
+    },
+    "working-with-ai: index -> lesson 01 (both courses)": {
+      "pass": true,
+      "compare": [
+        {
+          "status": 200,
+          "title": true,
+          "text": true
+        },
+        {
+          "status": 200,
+          "title": true,
+          "text": true
+        }
+      ]
+    },
+    "archive: index links open": {
+      "pass": true,
+      "compare": {
+        "links": 10,
+        "statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ]
+      }
+    },
+    "ssd ssd-creative-coding-2025-26/Parth": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Deepika_Pest_Control": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 2"
+    },
+    "ssd ssd-creative-coding-2025-26/Dhruvi_Assignment_2": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed false, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Arnav": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Sharvil_i_like_ball_final_copy": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Aarya_TOSSBIN": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed false, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Harshdeep_YE_hai_JURRY_WALLA_copy": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 2"
+    },
+    "ssd ssd-creative-coding-2025-26/Ishan": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Jiya_my_name_fliesss": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Kamlesh_guitar_1_final_ver1": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed false, audio starts 10"
+    },
+    "ssd ssd-creative-coding-2025-26/Pushti_DINOEATS": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 2"
+    },
+    "ssd ssd-creative-coding-2025-26/Sharvani_assignment2.v7": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2025-26/Siah_FINAL_GAME_NEON_JUICE_CENTER": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 7"
+    },
+    "ssd ssd-creative-coding-2024-25/Aadit_Vanjari": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Ananya_Adsul": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Arya_Ghagare": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 3"
+    },
+    "ssd ssd-creative-coding-2024-25/Atharva_Aware": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Avaneesh_Chavan": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Bhakti_Sharma": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Gloria_Mathew": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 4"
+    },
+    "ssd ssd-creative-coding-2024-25/Madhav_Kansara": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 2"
+    },
+    "ssd ssd-creative-coding-2024-25/Navneet_Krishnan": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Parikshit": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Prachi_Khobragade": {
+      "pass": false,
+      "compare": {
+        "canvas": false,
+        "drawn": false,
+        "audioStarted": false
+      },
+      "note": "canvas changed false, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Pratyush_Girap": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 2"
+    },
+    "ssd ssd-creative-coding-2024-25/Rhea_Pillai": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2024-25/Sara_Khan": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 8"
+    },
+    "ssd ssd-creative-coding-2024-25/Sharvari_Joshi": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed false, audio starts 2"
+    },
+    "ssd ssd-creative-coding-2024-25/Swayam_Kadam": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Dhruv_Belekar_project1": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed true, audio starts 274"
+    },
+    "ssd ssd-creative-coding-2023-24/Dhruv_Belekar_code": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Kashvi_Shah": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/kaushik": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/kumkum_bharambe": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Mitali_Yeole": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Reet_singh": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Scarlett_Dsouza": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Sia_Jariwala": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Siddhi_Shethia": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/soham_G": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed false, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Tanay_Shetty": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": true
+      },
+      "note": "canvas changed false, audio starts 8"
+    },
+    "ssd ssd-creative-coding-2023-24/Vaishnavi_Shetty": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/vignesh_shetty": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    },
+    "ssd ssd-creative-coding-2023-24/Vivan_gupta": {
+      "pass": true,
+      "compare": {
+        "canvas": true,
+        "drawn": true,
+        "audioStarted": false
+      },
+      "note": "canvas changed true, audio starts 0"
+    }
+  }
+}

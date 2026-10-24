@@ -1,0 +1,10 @@
+# Sibling and analytics checks after the Cabinet apex/www cutover, 2026-10-24T04:04:28Z
+## Analytics beacon (test-scripts/beacon-check.mjs)
+PASS  https://cabinetofcuriosities.in/  script=true rum=[204 POST /cdn-cgi/rum]
+PASS  https://cabinetofcuriosities.in/teaching/  script=true rum=[204 POST /cdn-cgi/rum]
+PASS  https://bookshelf.cabinetofcuriosities.in/  script=true rum=[204 POST /cdn-cgi/rum]
+PASS  https://fffx.cabinetofcuriosities.in/  script=true rum=[204 POST /cdn-cgi/rum]
+## FFFX: 79/79 byte-identical to a local build of 1bb8569; sitemap 22 URLs on fffx host; 45/45 never-published 404 (all checks passed)
+## Bookshelf: 219/220 byte-identical to releases/20261020T193032Z_202d69e; the one difference is sitemap.xml <lastmod> dates only (deployed version e1efd415 was built from the later commit f34b91c, 2026-10-22)
+## Cabinet -> Bookshelf/FFFX absolute links in the published site: 22 unique; all 200 except https://bookshelf.cabinetofcuriosities.in/agatha/ (404), which appears only in the frozen archive (archived-landing-pages/v2*, historical, accepted).
+## Bookshelf/FFFX landing pages: no absolute links to the Cabinet apex/www found on their home pages.

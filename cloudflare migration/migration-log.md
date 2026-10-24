@@ -289,3 +289,34 @@ commits; final code `aabc4dc` (records after it).
   as expected (plus the untouched GoDaddy `_domainconnect` CNAME); "www to apex" rule deployed while `www` is DNS only
   (dormant: GitHub still answers); redirect matrix baseline 20/20 on GitHub Pages
   (`test-scripts/redirect-matrix.sh`). **Ready for Phase C** (owner).
+
+## Phase C: apex and www on Cloudflare — 2026-10-24 ~09:20–09:45 IST (03:49–04:15 UTC)
+
+- **Owner, step A** (apex): opened the Custom Domain form, deleted the four apex A records, confirmed the Custom
+  Domain `cabinetofcuriosities.in` on Worker `cabinet-of-curiosities`. At **03:50:00 UTC** Cloudflare DoH returned
+  `104.21.1.58`/`172.67.128.162` and the apex answered 200 from Cloudflare with a valid certificate (CN
+  `cabinetofcuriosities.in`, Google Trust Services WE1); no measurable gap.
+- **Owner, step B** (`www`): CNAME `www` → `cabinetofcuriosities.in`, **Proxied**. **`www` returned 522** (03:52 UTC):
+  the redirect rule had wrong parameters (owner) and did not match, so Cloudflare tried an origin fetch. Stop
+  condition met; the owner chose to fix forward instead of rolling `www` back (no visitors yet: no launch). Rule
+  corrected to `http.host eq "www.cabinetofcuriosities.in"` → dynamic
+  `concat("https://cabinetofcuriosities.in", http.request.uri.path)`, 301, preserve query string. **`www` redirected
+  correctly from 03:58:46 UTC** (about 6 minutes of 522 on `www` only; apex unaffected).
+  Evidence of the failure: `evidence/redirect-matrix-www-522-before-rule-fix.txt`.
+- **Acceptance (all passed):**
+  - Redirect matrix **20/20**, pinned to Cloudflare and through DNS (`evidence/redirect-matrix-cloudflare-*.txt`):
+    http/https × apex/www × root, deep, unknown, multiple and percent-encoded queries; `http://www` is one hop to the
+    HTTPS apex; no loops; every final answer from Cloudflare.
+  - Apex files (`evidence/http-check-apex-cloudflare-20261024.txt`): 1,023/1,024 byte-identical to the local
+    Windows build of `4e0ec60`; the About page is the Linux build (`d05e26dd…`), as on workers.dev and GitHub
+    Pages; 21 routes; 100/100 sitemap URLs; 125/125 never-published 404 with the nearest 404.html.
+  - Functional checks on the apex vs workers.dev: **53 equal and passing, 1 known identical** (`evidence/functional-*-apex-*`).
+  - Analytics beacon accepted (204) on apex, `/teaching/`, Bookshelf, FFFX; FFFX 79/79; Bookshelf 219/220 (sitemap
+    dates only); Cabinet's 22 absolute sibling links 200 except one in the frozen archive
+    (`evidence/siblings-beacon-after-cutover-20261024.txt`).
+- **Hold:** GitHub Pages stays enabled with its custom domain through the hold, which runs from acceptance
+  (**about 04:15 UTC, 2026-10-24**) until at least **2026-10-25 04:15 UTC (09:45 IST)**. Rollback during the hold:
+  remove the Custom Domain, re-add the four A records and the `www` CNAME → `jesmehta.github.io` (DNS only), disable
+  the redirect rule.
+- Next (after the hold): repeat acceptance; then owner removes the custom domain from GitHub Pages and decides on
+  privatization (checklist 22); private-source build; retire `deploy.yml` and `docs/CNAME` (checklist 23).
